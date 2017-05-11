@@ -1,0 +1,65 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify admin_urls admin_static waves_tags %}
+
+{% block breadcrumbs %}
+{% endblock %}
+{% block object-tools-items %}
+    <li>
+        <a type="button" href="{% url 'admin:waves_aparam_add' %}?for-submission={{ original.pk }}"
+           target="_self"
+           title="Service"
+           class="btn btn-high btn-primary"
+           id="add_submission_link" style="display: none;">
+            Add a new param
+        </a>
+    </li>
+    <li>
+        <a type="button" href="{% url 'admin:waves_service_change' original.service.pk %}"
+           target="_self"
+           title="Service"
+           class="btn btn-high btn-info"
+           id="service_link">
+            Edit Service
+        </a>
+    </li>
+    <li>
+        <a type="button" href="{% url 'admin:waves_service_changelist' %}"
+           target="_self"
+           title="Service"
+           class="btn btn-high btn-info"
+           id="service_list_link">
+            Service's list
+        </a>
+    </li>
+    <li>
+        <a type="button" href="{% url 'waves:job_submission' original.service.pk %}"
+           title="View online"
+           class="btn btn-high btn-info"
+           id="view_service">
+            Online
+        </a>
+    </li>
+
+    {{ block.super }}
+{% endblock %}
+
+{% block admin_change_form_document_ready %}
+{{ block.super }}
+<script type="text/javascript">
+    (function ($) {
+        $(document).on('formset:added', function (event, $row, formsetName) {
+            if (formsetName == 'submission_inputs') {
+                // Do something
+                event.stopImmediatePropagation();
+                event.stopPropagation();
+                var rel = new RelatedInlinePopup();
+                rel.popupInline($('#add_submission_link').attr('href'));
+                // $('#add_submission_link').trigger('click');
+            }
+        });
+        $(document).on('formset:removed', function (event, $row, formsetName) {
+            // Row removed
+        });
+    })(django.jQuery);
+</script>
+{% endblock %}

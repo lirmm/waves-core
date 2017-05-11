@@ -1,0 +1,371 @@
+[
+{
+  "model": "waves.job",
+  "fields": {
+    "created": "2016-11-23T15:27:40.386Z",
+    "updated": "2016-11-23T16:11:08.932Z",
+    "slug": "2ce51990-cf77-427e-9914-b71ad6f00e24",
+    "title": "my Physic_IST job",
+    "service": [
+      "physic_ist",
+      "1.0",
+      3
+    ],
+    "status": 6,
+    "status_mail": 6,
+    "client": 1,
+    "email_to": "marc.chakiachvili@lirmm.fr",
+    "exit_code": 0,
+    "results_available": true,
+    "nb_retry": 0,
+    "remote_job_id": "[sge+ssh://wilkins.lirmm.fr:22]-[469]",
+    "remote_history_id": null,
+    "submission": [
+      "complete",
+      [
+        "physic_ist",
+        "1.0",
+        3
+      ]
+    ]
+  }
+},
+{
+  "model": "waves.job",
+  "fields": {
+    "created": "2016-11-23T16:06:50.682Z",
+    "updated": "2016-11-24T15:12:23.108Z",
+    "slug": "9a4bf3af-2519-4fbc-8833-d64fee67c816",
+    "title": "my MAFFT job",
+    "service": [
+      "mafft_1",
+      "7.221.1",
+      0
+    ],
+    "status": 9,
+    "status_mail": 9,
+    "client": 1,
+    "email_to": "marc.chakiachvili@lirmm.fr",
+    "exit_code": 0,
+    "results_available": false,
+    "nb_retry": 5,
+    "remote_job_id": null,
+    "remote_history_id": "c208cae497e6c8e6",
+    "submission": [
+      "imported_submission_1",
+      [
+        "mafft_1",
+        "7.221.1",
+        0
+      ]
+    ]
+  }
+},
+{
+  "model": "waves.jobinput",
+  "fields": {
+    "order": 4,
+    "slug": "ab4cbcf2-1143-456c-b49c-bec7ccc6a283",
+    "job": [
+      "2ce51990-cf77-427e-9914-b71ad6f00e24",
+      [
+        "physic_ist",
+        "1.0",
+        3
+      ]
+    ],
+    "value": "newForest.txt",
+    "remote_input_id": null,
+    "type": "text",
+    "name": "f",
+    "param_type": 2,
+    "label": "New Forest File"
+  }
+},
+{
+  "model": "waves.jobinput",
+  "fields": {
+    "order": 6,
+    "slug": "482dd516-1189-4971-9f3c-f25a87c064b2",
+    "job": [
+      "2ce51990-cf77-427e-9914-b71ad6f00e24",
+      [
+        "physic_ist",
+        "1.0",
+        3
+      ]
+    ],
+    "value": "physic_ist_tree.txt",
+    "remote_input_id": null,
+    "type": "text",
+    "name": "o",
+    "param_type": 2,
+    "label": "Output file name"
+  }
+},
+{
+  "model": "waves.jobinput",
+  "fields": {
+    "order": 0,
+    "slug": "77305621-2db8-4fe0-8c61-cec88201ba3a",
+    "job": [
+      "2ce51990-cf77-427e-9914-b71ad6f00e24",
+      [
+        "physic_ist",
+        "1.0",
+        3
+      ]
+    ],
+    "value": "physic_ist.nhx",
+    "remote_input_id": null,
+    "type": "file",
+    "name": "s",
+    "param_type": 2,
+    "label": "Source Tree File"
+  }
+},
+{
+  "model": "waves.jobinput",
+  "fields": {
+    "order": 2,
+    "slug": "736a2809-f98d-469d-9f6b-ffb04eeebe3b",
+    "job": [
+      "9a4bf3af-2519-4fbc-8833-d64fee67c816",
+      [
+        "mafft_1",
+        "7.221.1",
+        0
+      ]
+    ],
+    "value": "--adjustdirection",
+    "remote_input_id": null,
+    "type": "select",
+    "name": "adjustdirection",
+    "param_type": 4,
+    "label": "Direction of nucleotide sequences"
+  }
+},
+{
+  "model": "waves.jobinput",
+  "fields": {
+    "order": 1,
+    "slug": "d57243d3-da42-4927-8d7c-8ab03ed84d5d",
+    "job": [
+      "9a4bf3af-2519-4fbc-8833-d64fee67c816",
+      [
+        "mafft_1",
+        "7.221.1",
+        0
+      ]
+    ],
+    "value": "mafft-fftns",
+    "remote_input_id": null,
+    "type": "select",
+    "name": "cond_flavour",
+    "param_type": 4,
+    "label": "MAFFT flavour"
+  }
+},
+{
+  "model": "waves.jobinput",
+  "fields": {
+    "order": 0,
+    "slug": "0641a538-4549-44b2-b629-f8bb9b48d8a3",
+    "job": [
+      "9a4bf3af-2519-4fbc-8833-d64fee67c816",
+      [
+        "mafft_1",
+        "7.221.1",
+        0
+      ]
+    ],
+    "value": "aln.fasta",
+    "remote_input_id": null,
+    "type": "file",
+    "name": "inputSequences",
+    "param_type": 2,
+    "label": "Sequences to align"
+  }
+},
+{
+  "model": "waves.jobinput",
+  "fields": {
+    "order": 3,
+    "slug": "688d8197-cba7-4119-908f-c9fb5bb725e8",
+    "job": [
+      "9a4bf3af-2519-4fbc-8833-d64fee67c816",
+      [
+        "mafft_1",
+        "7.221.1",
+        0
+      ]
+    ],
+    "value": "fasta",
+    "remote_input_id": null,
+    "type": "select",
+    "name": "outputFormat",
+    "param_type": 4,
+    "label": "Output format"
+  }
+},
+{
+  "model": "waves.joboutput",
+  "fields": {
+    "order": 0,
+    "slug": "06ff13fa-1760-446a-9927-677eccc2f4dc",
+    "job": [
+      "2ce51990-cf77-427e-9914-b71ad6f00e24",
+      [
+        "physic_ist",
+        "1.0",
+        3
+      ]
+    ],
+    "value": "job.stdout",
+    "may_be_empty": true,
+    "remote_output_id": null,
+    "_name": "Standard output",
+    "type": "txt"
+  }
+},
+{
+  "model": "waves.joboutput",
+  "fields": {
+    "order": 0,
+    "slug": "6e8a8377-0b46-4354-b12c-35d6cfd81a36",
+    "job": [
+      "2ce51990-cf77-427e-9914-b71ad6f00e24",
+      [
+        "physic_ist",
+        "1.0",
+        3
+      ]
+    ],
+    "value": "job.stderr",
+    "may_be_empty": true,
+    "remote_output_id": null,
+    "_name": "Standard error",
+    "type": "txt"
+  }
+},
+{
+  "model": "waves.joboutput",
+  "fields": {
+    "order": 0,
+    "slug": "59b638b3-cefe-4b48-9c8a-105e1ff00af4",
+    "job": [
+      "2ce51990-cf77-427e-9914-b71ad6f00e24",
+      [
+        "physic_ist",
+        "1.0",
+        3
+      ]
+    ],
+    "value": "%s",
+    "may_be_empty": false,
+    "remote_output_id": null,
+    "_name": "Inferred supertree",
+    "type": "txt"
+  }
+},
+{
+  "model": "waves.joboutput",
+  "fields": {
+    "order": 0,
+    "slug": "5e37a418-123c-453a-9e73-0799798b95a8",
+    "job": [
+      "2ce51990-cf77-427e-9914-b71ad6f00e24",
+      [
+        "physic_ist",
+        "1.0",
+        3
+      ]
+    ],
+    "value": "%s",
+    "may_be_empty": false,
+    "remote_output_id": null,
+    "_name": "New source trees",
+    "type": "txt"
+  }
+},
+{
+  "model": "waves.joboutput",
+  "fields": {
+    "order": 0,
+    "slug": "7ced98bd-7232-4fcc-b664-d0214b098a52",
+    "job": [
+      "9a4bf3af-2519-4fbc-8833-d64fee67c816",
+      [
+        "mafft_1",
+        "7.221.1",
+        0
+      ]
+    ],
+    "value": "job.stdout",
+    "may_be_empty": true,
+    "remote_output_id": null,
+    "_name": "Standard output",
+    "type": "txt"
+  }
+},
+{
+  "model": "waves.joboutput",
+  "fields": {
+    "order": 0,
+    "slug": "2e995b76-8032-44cc-9c44-0ab0405105b1",
+    "job": [
+      "9a4bf3af-2519-4fbc-8833-d64fee67c816",
+      [
+        "mafft_1",
+        "7.221.1",
+        0
+      ]
+    ],
+    "value": "job.stderr",
+    "may_be_empty": true,
+    "remote_output_id": null,
+    "_name": "Standard error",
+    "type": "txt"
+  }
+},
+{
+  "model": "waves.joboutput",
+  "fields": {
+    "order": 0,
+    "slug": "cd11af43-f4b5-4c9c-8aae-8024be20bc20",
+    "job": [
+      "9a4bf3af-2519-4fbc-8833-d64fee67c816",
+      [
+        "mafft_1",
+        "7.221.1",
+        0
+      ]
+    ],
+    "value": "outputFasta",
+    "may_be_empty": false,
+    "remote_output_id": null,
+    "_name": "outputFasta",
+    "type": "txt"
+  }
+},
+{
+  "model": "waves.joboutput",
+  "fields": {
+    "order": 0,
+    "slug": "67008f06-c39b-4341-b91d-b91129e90000",
+    "job": [
+      "9a4bf3af-2519-4fbc-8833-d64fee67c816",
+      [
+        "mafft_1",
+        "7.221.1",
+        0
+      ]
+    ],
+    "value": "outputClustalW",
+    "may_be_empty": false,
+    "remote_output_id": null,
+    "_name": "outputClustalW",
+    "type": "txt"
+  }
+}
+]

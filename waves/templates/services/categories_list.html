@@ -1,0 +1,73 @@
+{% extends "services/base.html" %}
+{% load waves_tags %}
+{% block container %}
+    <div id="sec1" class="text-page">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h1>{% include "_brandname.html" %}</h1>
+                    <p class="lead">Services currently available on this platform</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sec2" class="text-page">
+        <div class="container">
+            <div class="row">
+                {% for category in online_categories %}
+                    <div class="list-group">
+                        <a href="{% url 'waves:category_details' category.id %}" class="list-group-item active">
+                            <h4>{{ category.name }}</h4></a>
+                        <p class="list-group-item text-muted text-justify">
+                            <i>{{ category.short_description }}</i>
+                        </p>
+                        {% for service in category.category_public_tools|slice:":3" %}
+                            <div class="list-group-item">
+                                <h4 class="list-group-item-heading ">
+                                    <a href="{% url 'waves:service_details' service.id %}">
+                                        {{ service.name }} - {{ service.version }}
+                                    </a>
+                                </h4>
+                                {% if user.is_staff %}
+                                    <hr/>
+                                    <p class="list-group-item-text">
+                                        Created by: {{ service.created_by.name }}<br/>
+                                        Current Status: {{ service.get_status_display }}
+                                    <p class="text-right">
+                                        <a class="btn btn-default" href="{% url 'admin:waves_service_change' service.id %}">Admin</a>
+                                    </p>
+                                    <hr/>
+                                    </p>
+                                {% endif %}
+                                <p class="list-group-item-text">
+                                    {{ service.short_description|default:service.description|truncatechars:200 }}</p>
+                                <p class="text-right">
+                                    Released {{ service.created }}<br/>
+                                    Last update {{ service.updated }}
+                                </p>
+                                <div class="list-group-item-text text-right">
+                                    {% online_exec_button service=service %}
+                                </div>
+                                <hr/>
+                            </div>
+                            {% if forloop.last %}
+                                <a class="list-group-item active" href="{% url 'waves:category_details' category.id %}">
+                                    <span class="badge">
+                                    {{ category.category_tools.values|length }}
+                                    </span>
+                                    See All
+                                </a>
+                            {% endif %}
+                            {% empty %}
+                            <div class="list-group-item">
+                                <p class="list-group-item-text text-info">
+                                    Sorry no service available in this category for the moment
+                                </p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

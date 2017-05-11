@@ -1,0 +1,16 @@
+.dis_dep_parameter {
+
+}
+
+.hid_dep_parameter {
+    display: none;
+}
+
+#panel-form-service{
+    padding-top: 2%;
+    padding-left: 7%;
+}
+
+.copypaste > div.form-group >  div.controls {
+    width:100%;
+}

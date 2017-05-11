@@ -1,0 +1,94 @@
+{% extends "services/base.html" %}
+
+{% block navbar-left %}
+    {% include "_navbar.html" with active_link="jobs" %}
+{% endblock %}
+
+{% block container %}
+    <div id="sec1" class="text-page">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h1><strong>Your jobs</strong></h1>
+                </div>
+            </div>
+        </div><!-- /.container -->
+    </div>
+    <div id="sec2" class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {% if is_paginated %}
+                    <div align="center">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li><a href="{% url 'waves:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="#">previous</a></li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                <li {% ifequal i page_obj.number %}class="active"{% endifequal %}>
+                                    <a href="{% url 'waves:job_list' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+                                </li>
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li><a href="{% url 'waves:job_list' %}?page={{ page_obj.next_page_number }}">next</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="#">next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+                {% for job in job_list %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title">
+                                <h3>
+                                    <span class="label label-{{ job.label_class }} pull-right">{{ job.get_status_display }}</span>
+                                    {{ job.title }}
+                                </h3>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="list-group">
+                                <li class="list-group-item"><a href="{% url 'waves:job_details' job.slug %}"> &gt; See
+                                    Details</a></li>
+                                <li class="list-group-item"><em>Submitted :</em> {{ job.created }}</li>
+                                <li class="list-group-item"><em>Updated :</em> {{ job.updated }}</li>
+                                {% if request.user.is_staff %}
+                                    <li class="list-group-item">User: {{ job.client }}</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if is_paginated %}
+                    <div align="center">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li><a href="{% url 'waves:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="#">previous</a></li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                <li {% ifequal i page_obj.number %}class="active"{% endifequal %}>
+                                    <a href="{% url 'waves:job_list' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+                                </li>
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li><a href="{% url 'waves:job_list' %}?page={{ page_obj.next_page_number }}">next</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="#">next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

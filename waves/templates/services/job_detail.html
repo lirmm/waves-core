@@ -1,0 +1,239 @@
+{% extends "services/base.html" %}
+{% load waves_tags %}
+{% block scripts %}
+    {{ block.super }}
+    <script>
+        var reloading;
+
+        function checkReloading() {
+            if (window.location.hash == "#autoreload") {
+                reloading = setTimeout("window.location.reload();", 5000);
+                $('#reloadCB').bootstrapToggle('on');
+            }
+        }
+
+        function toggleAutoRefresh(checked) {
+            if (checked) {
+                window.location.replace("#autoreload");
+                reloading = setTimeout("window.location.reload();", 5000);
+            } else {
+                window.location.replace("#");
+                clearTimeout(reloading);
+            }
+        }
+        $(function () {
+            $('#reloadCB').change(function () {
+                console.log('toggle fired' + $(this).prop('checked'));
+                toggleAutoRefresh($(this).prop('checked'));
+            })
+        })
+        // $("#reloadCB").onSwitchChange(toggleAutoRefresh($("#reloadCB")));
+        window.onload = checkReloading;
+
+    </script>
+{% endblock %}
+{% block container %}
+    <div id="sec1">
+        <div class="text-page container">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <p class="panel-title">
+                            <h2>
+                                {{ job.service }} job
+                                <span class="label label-{{ job.label_class }} pull-right">{{ job.get_status_display }}</span>
+                            </h2>
+                            <div class="text-right">
+                                Auto Refresh
+                                <input type="checkbox" data-toggle="toggle" data-size="small" id="reloadCB"></div>
+                            </p>
+                        </div>
+                        <div class="panel-body">
+                            <div class="panel-group" id="panel-inout-{{ job.slug }}">
+                                {% for job_input in job.input_files.all %}
+                                    {% if forloop.first %}
+                                        <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <a class="panel-title collapsed" data-toggle="collapse"
+                                               data-parent="#panel-inout-{{ job.slug }}"
+                                               href="#panel-input-{{ job.id }}">Job inputs</a>
+                                        </div>
+                                        <div id="panel-input-{{ job.id }}" class="panel-collapse">
+                                        <div class="panel-body">
+                                        <dl>
+                                    {% endif %}
+                                <dt>
+                                    {{ job_input.label }}</dt>
+                                <dd class="input_output">
+                                    {{ job_input.value }}
+                                    <div class="pull-right">
+                                        <a href="{% url 'waves:job_input' job_input.slug %}">See
+                                            online</a>
+                                        &nbsp;|&nbsp;
+                                        <a href="{% url 'waves:job_input' job_input.slug %}?export=1">
+                                            Download File <i
+                                                class="glyphicon glyphicon-download-alt"></i>
+                                        </a>
+                                    </div>
+                                </dd>
+                                {% if forloop.last %}
+                                    </dl>
+                                    </div>
+                                    </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                                {% for job_input in job.input_params %}
+                                    {% if forloop.first %}
+                                        <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <a class="panel-title collapsed" data-toggle="collapse"
+                                               data-parent="#panel-inout-{{ job.slug }}"
+                                               href="#panel-params-{{ job.id }}">Job params</a>
+                                        </div>
+                                        <div id="panel-params-{{ job.id }}" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                        <dl>
+                                    {% endif %}
+                                <div>
+                                    <dt style="display:inline-block">"{{ job_input.label }}":</dt>
+                                    <dd style="display:inline-block" class="input_output">
+                                        {% if job_input.type == 'select' %}
+                                            {{ job_input.get_label_for_choice }}
+                                        {% else %}
+                                            {{ job_input.value }}
+                                        {% endif %}
+                                    </dd>
+                                </div>
+                                {% if forloop.last %}
+                                    </dl>
+                                    </div>
+                                    </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <a class="panel-title {% if not job.results_available %}collapsed{% endif %}"
+                                           data-toggle="collapse"
+                                           data-parent="#panel-inout-{{ job.slug }}"
+                                           href="#panel-output-{{ job.id }}">Outputs</a>
+                                    </div>
+                                    <div id="panel-output-{{ job.id }}"
+                                         class="panel-collapse {% if not job.results_available %}collapsed{% endif %}">
+                                        <div class="panel-body">
+                                            <dl>
+                                                {% for job_output in job.outputs.all %}
+                                                    <dt>{{ job_output.name }}
+                                                    </dt>
+                                                    <dd class="input_output">
+                                                        {{ job_output.value }}
+                                                        <div class="pull-right">
+                                                        {%  if job_output.available %}
+                                                            {% if job_output.display_online %}
+                                                                <a href="{% url 'waves:job_output' job_output.slug %}">See
+                                                                    online</a>
+                                                                &nbsp;|&nbsp;
+                                                            {% endif %}
+
+                                                            <a href="{{ job_output.download_url }}">Download
+                                                                File
+                                                                <i class="glyphicon glyphicon-download-alt"></i></a>
+                                                            {% else %}
+                                                            <p class="text-muted">
+                                                                <em>Not available for now</em>
+                                                            </p>
+                                                        {% endif %}
+                                                        </div>
+                                                        {% if not forloop.last %}
+                                                            <hr/>
+                                                        {% endif %}
+                                                    </dd>
+                                                    {% empty %}
+                                                    <dt><i>Not available for now, please wait job completion</i></dt>
+                                                {% endfor %}
+                                            </dl>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <a class="panel-title collapsed" data-toggle="collapse"
+                                           data-parent="#panel-inout-{{ job.slug }}"
+                                           href="#panel-runon-{{ job.id }}">Running configuration</a>
+                                    </div>
+                                    <div id="panel-runon-{{ job.id }}" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <p>Your job is currently planned to run on
+                                                "{{ job.submission.get_runner.name }}"</p>
+                                            <blockquote>
+                                                <small>{{ job.submission.get_runner.description|safe }}</small>
+                                            </blockquote>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer text-right">
+                            <em>
+                                Created on {{ job.created }} <br/>
+                                Last update {{ job.updated }}
+                            </em>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-4 panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Job History
+                        </div>
+                        <div class="panel-body">
+                            <div class="panel-group" id="panel-job-{{ job.slug }}">
+                                {% for history in job.public_history %}
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <a class="panel-title collapsed" data-toggle="collapse"
+                                               data-parent="#panel-job-{{ job.slug }}"
+                                               href="#panel-element-{{ history.id }}">{{ history.get_status_display }}
+                                                - {{ history.timestamp }}</a>
+                                        </div>
+                                        {% if history.message %}
+                                            <div id="panel-element-{{ history.id }}" class="panel-collapse collapse">
+                                                <div class="panel-footer">
+                                                    {{ history.message }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-body text-right">
+                            <a class="btn btn-primary" href="{% url 'waves:service_details' job.service.id %}">Back to
+                                service</a>
+                            {% online_exec_button service=job.service label="New job" %}
+                        </div>
+                    </div>
+                    {% if user.is_staff %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title ">
+                                    <span class="text-primary">Admin</span>
+                                </h3>
+                            </div>
+                            <div class="panel-body text-right">
+                                <a class="btn btn-default" href="{% url 'admin:waves_job_change' job.id %}">job</a>
+                                <a class="btn btn-default"
+                                   href="{% url 'admin:waves_service_change' job.service.id %}">Service</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
