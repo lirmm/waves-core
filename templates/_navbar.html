@@ -1,0 +1,6 @@
+<li {% if active_link == "home" %}class="active"{% endif %}><a href="/">Home</a></li>
+<li {% if active_link == "services" %}class="active"{% endif %}><a href="{% url 'waves:services_list' %}">Online
+    services</a></li>
+{% if user.is_authenticated %}
+    <li {% if active_link == "jobs" %}class="active"{% endif %}><a href="{% url 'waves:job_list' %}">Your jobs</a></li>
+{% endif %}

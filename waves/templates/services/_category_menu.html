@@ -1,0 +1,29 @@
+{% load mptt_tags %}
+
+<div class="sidebar-nav">
+    <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <span class="visible-xs navbar-brand">Categories</span>
+        </div>
+        <div class="navbar-collapse collapse sidebar-navbar-collapse">
+            <ul class="nav navbar-nav">
+                {% recursetree nodes %}
+                    <li>
+                        <a href="{% url 'waves:category_details' node.id %}">{{ node.name }}</a>
+                        {% if not node.is_leaf_node %}
+                            <ul class="children">
+                               {{ children }}
+                            </ul>
+                        {% endif %}
+                    </li>
+                {% endrecursetree %}
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</div>

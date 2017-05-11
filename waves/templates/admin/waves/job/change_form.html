@@ -1,0 +1,31 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify admin_urls admin_static %}
+{% block object-tools-items %}
+    <li>
+        <a type="button" href="{% url 'waves:job_rerun' original.id %}"
+           title="View online"
+           class="btn btn-high btn-info"
+           id="view_service">
+           Re-Run job
+        </a>
+    </li>
+    <li>
+        <a type="button" href="{% url 'admin:waves_service_change' original.service.id %}"
+           title="View online"
+           class="btn btn-high btn-info"
+           id="view_service">
+            View service
+        </a>
+    </li>
+    <li>
+        <a type="button" href="{% url 'waves:job_details' original.slug %}"
+           title="View online"
+           class="btn btn-high btn-info"
+           id="view_online">
+            View online
+        </a>
+    </li>
+{% endblock %}
+{% block submit_buttons_bottom %}
+    {{ block.super }}
+{% endblock %}

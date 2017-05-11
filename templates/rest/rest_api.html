@@ -1,0 +1,44 @@
+{% extends 'base_site.html' %}
+
+{% block title %}{{ block.super }} API REST Access{% endblock %}
+
+{% block navbar-left %}
+    {% include "_navbar.html" with active_link="rest_api" %}
+{% endblock %}
+
+{% block messages %}
+    <div class="messages alert alert-warning">  <!-- singular -->
+        <a class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span></a>
+        Content is currently under construction and is therefore not accurate.
+    </div>
+{% endblock %}
+
+{% block container %}
+    <div id="sec1" class="text-page">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h1>{% include "_brandname.html" %} REST API</h1>
+                    <p class="lead">Access our services from your own application / services</p>
+                    <p class="emphasis">Entry point: <a href="{% url 'waves_api:api-root' %}">Go</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sec2" class="text">
+        <div class="container">
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">REST API Services</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% include 'rest/_rest_api_content.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

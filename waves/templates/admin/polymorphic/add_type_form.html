@@ -1,0 +1,18 @@
+{% extends "admin/polymorphic/add_type_form.html" %}
+{% load i18n admin_static %}
+{% block extrastyle %}
+    {{ block.super }}
+    <link href="{% static 'waves/css/bootstrap-switch.min.css' %}" rel="stylesheet" media="screen">
+{% endblock extrastyle %}
+{% block extrahead %}
+    <script type="text/javascript" src="{% static 'waves/js/bootstrap-switch.min.js' %}"></script>
+    {{ block.super }}
+    <script>
+        (function ($) {
+            $(document).ready(function () {
+               $('input:radio').bootstrapSwitch('size', 'mini');
+               $('input:radio').bootstrapSwitch('radioAllOff', true);
+            })
+        })(jQuery || django.jQuery);
+    </script>
+{% endblock %}y

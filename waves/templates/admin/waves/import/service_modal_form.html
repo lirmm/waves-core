@@ -1,0 +1,70 @@
+{% load crispy_forms_tags %}
+{% if form %}
+    <form class="form-horizontal" id="form_import" method="post" action="{{ request.path }}">
+{% endif %}
+<div class="modal-header">
+    <h3>Import a Service from {{ context_object_name }}</h3>
+</div>
+<div class="modal-body">
+        {% if messages %}
+            <ul id="form-message" class="messages messagelist">
+                {% for message in messages %}
+                    <li class="{% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% if form %}
+        <div id="form_import_content" style="z-index: 5" align="center">
+            {% csrf_token %}
+            <div id="form_import_fields">
+                {% crispy form %}
+            </div>
+        </div>
+        {% endif %}
+</div>
+<div class="modal-footer">
+    <button type="button" class="button" data-dismiss="modal">Close</button>
+    <button name="launch-import" class="button" id="launch-import" type="submit">
+        Import selected
+    </button>
+
+    <script type="text/javascript">
+        (function ($) {
+            $('#form_import').submit(function (e) {
+                $.ajax({
+                    type: $("#form_import").attr('method'),
+                    url: $("#form_import").attr('action'),
+                    data: $("#form_import").serialize(),
+                    // dataType: 'json',
+                    beforeSend: function () {
+                        $('#launch-import').attr('disabled', 'disabled');
+                        $('#id_tool_list').attr('disabled', 'disabled');
+                    },
+                }).complete(function () {
+                    $('#launch-import').removeAttr('disabled');
+                    $('#id_tool_list').removeAttr('disabled');
+                }).done(function (data) {
+                    window.location.replace(data.url_redirect);
+                    $('#form-modal').modal('toggle');
+                }).fail(function (xhr, thrownError) {
+                    // handle response errors here
+                    console.log('errors ' + JSON.stringify(xhr.responseJSON['form_html']));
+                    $('#form_import_fields').html(xhr.responseJSON['form_html'])
+                    $('#form_import_fields > div.alert.alert-block.alert-danger > ul').addClass('messagelist');
+                    $('#form_import_fields > div.alert.alert-block.alert-danger > ul > li').addClass('error');
+                    $('.help-block').css('display', 'none');
+
+                }).always(function (data) {
+                    // console.log('always call ' + JSON.stringify(data));
+                });
+                return false;
+            });
+        })(jQuery || django.jQuery)
+    </script>
+
+</div>
+{% if form %}
+    </form>
+{% endif %}

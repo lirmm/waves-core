@@ -1,0 +1,27 @@
+{% extends "base_waves.html" %}
+
+{% block container %}
+    <div id="sec1">
+        <div class="text-page container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">{{ file_name }}</h3>
+                        </div>
+                        <div class="panel-body file_content">
+                            <div class="panel-title">{{ file_description|default:"" }}</div>
+                            <pre>{{ file_content }}</pre>
+                        </div>
+                        <div class="panel-footer">
+                            <a href="{{ return_link }}">Back</a>
+                            <span class="pull-right">
+                                <a href="?export=1">Download File <i class="glyphicon glyphicon-download-alt"></i></a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

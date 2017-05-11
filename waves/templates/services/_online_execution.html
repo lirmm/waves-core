@@ -1,0 +1,4 @@
+{% if available_for_submission %}
+    <a class="btn btn-primary" href="{% url 'waves:job_submission' service.id %}">
+        {% if label %}{{ label }}{% else %}Online execution{% endif %}</a>
+{% endif %}

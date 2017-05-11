@@ -1,0 +1,83 @@
+{% extends "admin/base.html" %}
+{% load i18n waves_tags admin_static %}
+
+{% block admin_title %}
+    <div id="grp-admin-brand">
+        <img src="{% static 'waves/logos/waves.png' %}" width="40px" id="#navbar-logo" style="float:left;"/>
+        <h1 id="grp-admin-title">
+            <span>
+                {% if grappelli_admin_title %} {{ grappelli_admin_title }} {% else %} {% get_admin_title %}{% endif %}
+            </span>
+        </h1>
+    </div>
+{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}
+    <!-- waves extra admin styles -->
+    <!--link href="{% static 'waves/admin/css/admin.css' %}" rel="stylesheet" media="screen">
+    <link href="{% static 'waves/admin/css/modal.css' %}" rel="stylesheet" media="screen"-->
+    <!-- //waves extra admin styles -->
+{% endblock extrastyle %}
+
+{% block extrahead %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'waves/ico/favicon.png' %}"/>
+    {{ block.super }}
+    <!-- waves extra head js -->
+    <!-- //waves extra head js -->
+{% endblock %}
+{% block footer %}
+    {{ block.super }}
+    <div id="popup_modal" class="modal fade" style="display: none" role="dialog"
+         data-backdrop="static"
+         data-keyboard="false"
+         aria-labelledby="modalDialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" id="popup_modal_content">
+                <div class="modal-header">
+                    <h4>Info</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal_alert" style="display: none"
+         class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myAlertDialog"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" id="alert_modal_content">
+                <div class="modal-header">
+                    <h4>Info</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        (function ($) {
+            $(document).ready(function () {
+                $('fieldset.collapse.open').removeClass('collapsed');
+                $('#modal_alert').on('show.bs.modal', function () {
+                    console.log('opened !');
+                    $(this).find('.modal-dialog').css({
+                        'max-height': '50%'
+                    });
+                }).on('hidden.bs.modal', function () {
+                    $(this).find('.modal-body').html("");
+                    console.log("closed");
+                });
+            });
+        })(jQuery || django.jQuery);
+        {% block javascript_init %}
+        {% endblock %}
+    </script>
+{% endblock %}
