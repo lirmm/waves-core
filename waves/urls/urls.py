@@ -2,10 +2,12 @@ from __future__ import unicode_literals
 
 from django.conf.urls import url
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 
 from waves.admin.views import *
 from waves.views.jobs import *
 from waves.views.services import *
+# TODO change auth decorators to specific WAVES ones
 
 urlpatterns = [
     url(r'^services/$', CategoryListView.as_view(), name='services_list'),
@@ -13,10 +15,10 @@ urlpatterns = [
     url(r'^services/(?P<pk>[0-9]+)/$', ServiceDetailView.as_view(), name='service_details'),
     url(r'^services/(?P<pk>[0-9]+)/create$', JobSubmissionView.as_view(), name='job_submission'),
     # url(r'^unauthorized/$', HTML403.as_view(), name="unauthorized"),
-    url(r'^jobs/(?P<slug>[\w-]+)/$', JobView.as_view(), name="job_details"),
-    url(r'^jobs/inputs/(?P<slug>[\w-]+)/$', JobInputView.as_view(), name="job_input"),
-    url(r'^jobs/outputs/(?P<slug>[\w-]+)/$', JobOutputView.as_view(), name="job_output"),
-    url(r'^jobs/$', JobListView.as_view(), name="job_list"),
+    url(r'^jobs/(?P<slug>[\w-]+)/$', login_required(JobView.as_view()), name="job_details"),
+    url(r'^jobs/inputs/(?P<slug>[\w-]+)/$', login_required(JobInputView.as_view()), name="job_input"),
+    url(r'^jobs/outputs/(?P<slug>[\w-]+)/$', login_required(JobOutputView.as_view()), name="job_output"),
+    url(r'^jobs/$', login_required(JobListView.as_view()), name="job_list"),
     url(r'^service/(?P<service_id>\d+)/import$', staff_member_required(ServiceParamImportView.as_view()),
         name="service_import_form"),
     url(r'^runner/(?P<runner_id>\d+)/import$', staff_member_required(RunnerImportToolView.as_view()),

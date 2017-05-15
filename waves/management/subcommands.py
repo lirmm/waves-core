@@ -21,11 +21,11 @@ from rest_framework.exceptions import ValidationError
 import waves.exceptions
 import waves.settings
 from waves.compat import available_themes
-from waves.models import Job
+from waves.models import Job, AParam
 from waves.models.serializers.services import ServiceSerializer
 
 __all__ = ['InitDbCommand', 'CleanUpCommand', 'ImportCommand',
-           'DumpConfigCommand', 'CreateDefaultRunner']
+           'DumpConfigCommand']
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +99,7 @@ class InitDbCommand(BaseCommand):
         if process:
             # Delete all WAVES data
             ServiceCategory.objects.all().delete()
+            AParam.objects.all().delete()
             Service.objects.all().delete()
             Job.objects.all().delete()
             try:
@@ -125,26 +126,6 @@ class InitDbCommand(BaseCommand):
                     exc.__class__.__name__, str(exc)))
         else:
             action_cancelled(self.stdout)
-
-
-class CreateDefaultRunner(BaseCommand):
-    """
-    WAVES command to init default runner issued from available classes in PYTHON path
-    """
-    def handle(self, *args, **options):
-        from waves.models import Runner
-        if boolean_input('Do you wish to erase current runners ? [y/N]', False):
-            Runner.objects.all().delete()
-        try:
-            self.stdout.write('Creating runners ...')
-            from waves.utils.runners import get_runners_list
-            for clazz in get_runners_list(flat=True):
-                Runner.objects.create(name="%s Runner" % clazz[1], clazz=clazz[0])
-                self.stdout.write("Created 'Runner Adaptor: %s'" % clazz[1])
-            self.stdout.write("... Ready !")
-        except Exception as exc:
-            self.stderr.write('Error occurred, you database may be inconsistent ! \n %s - %s ' % (
-                exc.__class__.__name__, str(exc)))
 
 
 class CleanUpCommand(BaseCommand):

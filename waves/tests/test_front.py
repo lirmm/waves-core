@@ -4,7 +4,7 @@ Unit test some front pages rendenring
 from __future__ import unicode_literals
 
 from django.test import TestCase
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 
 
 class WavesPagesTestCase(TestCase):

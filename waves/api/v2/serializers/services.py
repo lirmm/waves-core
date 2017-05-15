@@ -5,13 +5,13 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils.html import strip_tags
 from rest_framework import serializers
 from rest_framework.reverse import reverse as reverse
-from constance import config
+
 import waves.settings
-from .inputs import InputSerializer
 from dynamic import DynamicFieldsModelSerializer
 from waves.models.metas import ServiceMeta
 from waves.models.services import *
 from waves.models.submissions import *
+from .inputs import InputSerializer
 
 __all__ = ['MetaSerializer', 'OutputSerializer', 'ServiceSerializer',
            'ServiceFormSerializer', 'ServiceSubmissionSerializer', 'ServiceMetaSerializer']
@@ -162,7 +162,7 @@ class ServiceFormSerializer(serializers.ModelSerializer):
 
     def get_form(self, obj):
         """ Create the form and return its content"""
-        from waves.views.forms.services import ServiceSubmissionForm
+        from forms import ServiceSubmissionForm
         from django.template import RequestContext
         import re
         form = ServiceSubmissionForm(instance=self.instance, parent=self.instance.service)

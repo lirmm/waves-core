@@ -1,19 +1,17 @@
 from __future__ import unicode_literals
 
 import copy
+import logging
+
 from constance import config
 from django import forms
 from django.core.exceptions import ValidationError
-from multiupload.fields import MultiFileField
-from constance import config
-import waves.models.services
-import waves.settings
+
+from waves.forms.lib.crispy import FormHelper
 from waves.models.inputs import *
 from waves.models.samples import *
 from waves.models.submissions import Submission
 from waves.utils.validators import ServiceInputValidator
-from waves.views.forms.lib.crispy import FormHelper
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -73,11 +71,7 @@ class ServiceSubmissionForm(forms.ModelForm):
         field_name = service_input.name
         if isinstance(service_input, FileInput):
             field_dict.update(dict(allow_empty_file=False, required=False))
-            if service_input.multiple:
-                field_dict.update(dict(min_num=1, max_file_size=config.WAVES_UPLOAD_MAX_SIZE))
-                form_field = MultiFileField(**field_dict)
-            else:
-                form_field = forms.FileField(**field_dict)
+            form_field = forms.FileField(**field_dict)
         elif isinstance(service_input, BooleanParam):
             field_dict.update(dict(initial=(service_input.default == service_input.true_value)))
             form_field = forms.BooleanField(**field_dict)

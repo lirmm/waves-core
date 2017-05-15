@@ -8,6 +8,7 @@ try:
         from jet.admin import CompactInline
     else:
         from django.contrib.admin import StackedInline
+
         class CompactInline(StackedInline):
             """ Inherit base class """
             pass
@@ -27,7 +28,7 @@ except ImportError:
     raise
 try:
     if 'bootstrap_themes' in settings.INSTALLED_APPS:
-        from bootstrap_themes import list_themes
+        from bootstrap_themes import list_themes, available_themes
     else:
         available_themes = (
             ('default', 'Default'),

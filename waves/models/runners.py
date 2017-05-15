@@ -12,6 +12,13 @@ from waves.models.base import Described, ExportAbleMixin
 __all__ = ['Runner']
 
 
+class RunnerManager(models.Manager):
+
+    def create_default(self, **kwargs):
+
+        return super(RunnerManager, self).create(**kwargs)
+
+
 class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     """ Represents a generic job adaptor meta information (resolved at runtime via clazz attribute) """
     # TODO manage cleanly change in actual clazz value (when changed)
@@ -21,6 +28,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
         db_table = 'waves_runner'
         verbose_name = 'Execution'
         verbose_name_plural = "Execution"
+    objects = RunnerManager()
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
     # TODO add choices issued from get_importers
     importer_clazz = models.CharField('Importer', max_length=200, null=True, blank=True, choices=[])

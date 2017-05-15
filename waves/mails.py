@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
 
+import logging
+
+from constance import config
 from django.conf import settings
 from mail_templated import send_mail
-from constance import config
 
+logger = logging.getLogger(__name__)
 
 class JobMailer(object):
     """
@@ -43,9 +46,12 @@ class JobMailer(object):
         """
         if self.mail_activated:
             context = self.get_context_data()
-            return send_mail(template_name=template, context=context, from_email=config.WAVES_SERVICES_EMAIL,
-                             recipient_list=[self.job.email_to], subject=subject,
-                             fail_silently=not settings.DEBUG)
+            try:
+                return send_mail(template_name=template, context=context, from_email=config.WAVES_SERVICES_EMAIL,
+                                 recipient_list=[self.job.email_to], subject=subject,
+                                 fail_silently=not settings.DEBUG)
+            except Exception as e:
+                logger.exception("Failed to send mail %s", e.message)
         else:
             # No mail sent since not activated (keep value returned at same type than send_mail
             return 0
