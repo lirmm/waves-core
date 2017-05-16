@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 import copy
 import logging
 
-from constance import config
 from django import forms
 from django.core.exceptions import ValidationError
 
+from waves.compat import config
 from waves.forms.lib.crispy import FormHelper
 from waves.models.inputs import *
 from waves.models.samples import *
@@ -103,11 +103,7 @@ class ServiceSubmissionForm(forms.ModelForm):
 
     @staticmethod
     def get_helper(**kwargs):
-        try:
-            return FormHelper(**kwargs)
-        except ImportError as e:
-            raise RuntimeError(
-                'Wrong form processor, unable to create any form (%s) -- %s' % (config.WAVES_FORM_PROCESSOR, e))
+        return FormHelper(**kwargs)
 
     def _create_copy_paste_field(self, service_input):
         # service_input.mandatory = False # Field is validated in clean process

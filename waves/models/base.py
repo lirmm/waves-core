@@ -5,7 +5,7 @@ import re
 import uuid
 
 import inflection
-from constance import config
+from waves.compat import config
 from django.db import models
 
 import waves.settings

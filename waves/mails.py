@@ -2,11 +2,12 @@ from __future__ import unicode_literals
 
 import logging
 
-from constance import config
+from waves.compat import config
 from django.conf import settings
 from mail_templated import send_mail
 
 logger = logging.getLogger(__name__)
+
 
 class JobMailer(object):
     """

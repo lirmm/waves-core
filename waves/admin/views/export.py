@@ -5,7 +5,7 @@ from os.path import join
 
 from django.contrib import messages
 from django.shortcuts import redirect
-from constance import config
+from waves.compat import config
 
 import waves.settings
 from waves.models.base import ExportAbleMixin

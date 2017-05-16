@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import logging
 
-from constance import config
+from waves.compat import config
 from django.conf import settings
 from django.core import mail
 from django.test import override_settings

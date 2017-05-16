@@ -8,7 +8,7 @@ from crispy_forms.layout import Layout, Field
 from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
-from constance import config
+from waves.compat import config
 import waves.settings
 from waves.models.inputs import *
 from waves.models.submissions import Submission

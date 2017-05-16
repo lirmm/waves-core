@@ -8,7 +8,7 @@ import sys
 import time
 from itertools import chain
 
-from constance import config
+from waves.compat import config
 from django.core.management.base import BaseCommand, CommandError
 from waves.adaptors.exceptions.adaptors import AdaptorException
 

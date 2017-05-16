@@ -1,99 +1,113 @@
-{% extends "base_waves.html" %}
+{% extends "services/base.html" %}
 {% load waves_tags %}
-{% block container %}
-    <div id="sec1" class="text-page">
-        <div class="container">
-            {% include 'services/_service_head.html' with service=service %}
-        </div><!-- /.container -->
-    </div>
-    <div id="sec2" class="container-fluid">
-        <div class="row-fluid">
-            <div class="col-md-3">
-                {% categories_menu current=service.category %}
-            </div>
-            <div class="col-md-6">
-                {% block service_body %}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title ">
-                                <span class="text-primary">{{ service.name }} v{{ service.version }}</span>
-                            </h3>
-                        </div>
-                        <div class="panel-body">
-                            {{ service.description|safe }}
-                            <!-- Meta features -->
-                            <dl>
-                                {% for meta in service_feat %}
-                                    {% if forloop.first %}
-                                        <h4 class="text-primary">{{ meta }}</h4>
-                                    {% else %}
-                                        <dt>{{ meta.value|safe }}</dt>
-                                        <dd>
-                                            <pre>{{ meta.description|safe }}</pre>
-                                        </dd>
-                                    {% endif %}
-                                {% endfor %}
-                            </dl>
 
-                            {% block job_submission_bottom %}
-                                {% register_for_api_button service=service %}
-                                <p class="text-right">
-                                    {% online_exec_button service=service %}
-                                </p>
-                            {% endblock %}
-                        </div>
-                    </div>
-                    <div class="panel-footer text-right">
-                        Last update {{ service.updated }}
-                    </div>
-                {% endblock service_body %}
-            </div>
-            <div class="col-md-3">
-                {% block service_cold %}
-                    <div class="panel-group" id="panel-102030">
-                        {% for meta in service_website %}
-                            {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_website forloop=forloop open=True %}
-                        {% endfor %}
-                        {% for meta in service_doc %}
-                            {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_doc forloop=forloop open=False %}
-                        {% endfor %}
-                        {% for meta in service_download %}
-                            {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_download forloop=forloop open=False %}
-                        {% endfor %}
-                        {% for meta in service_rtfm %}
-                            {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_rtfm forloop=forloop open=False %}
-                        {% endfor %}
-                    </div>
-                    {% block job_submission %}
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title ">
-                                    <span class="text-primary">Online execution</span>
-                                </h3>
-                            </div>
-                            <div class="panel-body text-right">
-                                {% register_for_api_button service=service %}
-                                {% online_exec_button service=service %}
-                            </div>
-                        </div>
-                        {% if user.is_staff %}
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title ">
-                                    <span class="text-primary">Admin</span>
-                                </h3>
-                            </div>
-                            <div class="panel-body text-right">
-                                <a class="btn btn-default"
-                                    href="{% url 'admin:waves_service_change' service.id %}">Edit Service</a>
-                                <a class="btn btn-default"
-                                    href="{% url 'admin:waves_job_changelist' %}?service__id__exact={{ service.id }}">View jobs</a>
-                            </div>
-                        </div>
-                        {% endif %}
-                    {% endblock %}
-                {% endblock service_cold %}
-            </div>
+{% block title %}{{ service.name }} :: {{ service.version }}{% endblock %}
+
+{% block navbar-left %}{% include "_navbar.html" with active_link="services" %}{% endblock %}
+
+{% block container %}
+    {% block service_head %}
+        <div id="sec1" class="text-page">
+            <div class="container">
+                {% include 'services/_service_head.html' with service=service %}
+            </div><!-- /.container -->
         </div>
-    </div>
+    {% endblock %}
+    {% block service_main %}
+        <div class="row-fluid">
+            {% block colg-3 %}
+                <div class="col-md-3">
+                    {% categories_menu current=service.category %}
+                </div>
+            {% endblock %}
+            {% block colc-6 %}
+                <div class="col-md-6">
+                    {% block service_body %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title ">
+                                    <span class="text-primary">{{ service.name }} v{{ service.version }}</span>
+                                </h3>
+                            </div>
+                            <div class="panel-body">
+                                {{ service.description|safe }}
+                                <!-- Meta features -->
+                                <dl>
+                                    {% for meta in service_feat %}
+                                        {% if forloop.first %}
+                                            <h4 class="text-primary">{{ meta }}</h4>
+                                        {% else %}
+                                            <dt>{{ meta.value|safe }}</dt>
+                                            <dd>
+                                                <pre>{{ meta.description|safe }}</pre>
+                                            </dd>
+                                        {% endif %}
+                                    {% endfor %}
+                                </dl>
+
+                                {% block job_submission_bottom %}
+                                    <p class="text-right">
+                                        {% online_exec_button service=service %}
+                                    </p>
+                                {% endblock %}
+                            </div>
+                        </div>
+                        <div class="panel-footer text-right">
+                            Last update {{ service.updated }}
+                        </div>
+                    {% endblock service_body %}
+                </div>
+            {% endblock %}
+            {% block cold-3 %}
+                <div class="col-md-3">
+                    {% block service_cold %}
+                        <div class="panel-group" id="panel-102030">
+                            {% for meta in service_website %}
+                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_website forloop=forloop open=True %}
+                            {% endfor %}
+                            {% for meta in service_doc %}
+                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_doc forloop=forloop open=False %}
+                            {% endfor %}
+                            {% for meta in service_download %}
+                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_download forloop=forloop open=False %}
+                            {% endfor %}
+                            {% for meta in service_rtfm %}
+                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_rtfm forloop=forloop open=False %}
+                            {% endfor %}
+                        </div>
+                        {% block job_submission %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title ">
+                                        <span class="text-primary">Online execution</span>
+                                    </h3>
+                                </div>
+                                <div class="panel-body text-right">
+                                    {% online_exec_button service=service %}
+                                </div>
+                            </div>
+                            {% if user.is_staff %}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title ">
+                                            <span class="text-primary">Admin</span>
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body text-right">
+                                        <a class="btn btn-default"
+                                           href="{% url 'admin:waves_service_change' service.id %}">Edit Service</a>
+                                        <a class="btn btn-default"
+                                           href="{% url 'admin:waves_job_changelist' %}?service__id__exact={{ service.id }}">View
+                                            jobs</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endblock %}
+                    {% endblock service_cold %}
+                </div>
+            {% endblock %}
+        </div>
+    {% endblock %}
+    {% block service_foot %}
+    {% endblock %}
 {% endblock %}

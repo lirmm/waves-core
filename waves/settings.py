@@ -4,37 +4,30 @@ These settings may be overridden in your Django main configuration file
 """
 from __future__ import unicode_literals
 
-from os.path import join, dirname
+from os.path import join
+
 from django.conf import settings
 
+from . import __version__
 
-def __init_setting(var, default=None, override=None):
-    """
-    Get setting var value from possible locations:
-     - check in Django base settings.py
-     - if default is set, set settings value
-     - return setting value
+WAVES_VERSION = __version__
+WAVES_DATA_ROOT = getattr(settings, 'WAVES_DATA_ROOT', join(settings.BASE_DIR, 'data'))
+WAVES_JOB_DIR = getattr(settings, 'WAVES_JOB_DIR', join(WAVES_DATA_ROOT, 'jobs'))
+WAVES_SAMPLE_DIR = getattr(settings, 'WAVES_SAMPLE_DIR', join(settings.MEDIA_ROOT, 'sample'))
+WAVES_UPLOAD_MAX_SIZE = getattr(settings, 'WAVES_UPLOAD_MAX_SIZE', 20 * 1024 * 1024)
+WAVES_HOST = getattr(settings, 'WAVES_HOST', 'http://localhost')
 
-    :param var: var name to check
-    :param default: default value
-    :param override: override another app settings value
-    :return: the setting final value
-    """
-    settings_val = getattr(settings, var, None)
-    if settings_val is None:
-        setattr(settings, var, default)
-        settings_val = default
-    if override is not None:
-        # override another app variable if not specified in settings
-        if getattr(settings, override, None) is None:
-            setattr(settings, override, settings_val)
-    # in any case, register default value to settings
-    return settings_val
-
-WAVES_VERSION = '1.1'
-WAVES_DATA_ROOT = __init_setting('WAVES_DATA_ROOT', default=join(settings.BASE_DIR, 'data'))
-WAVES_JOB_DIR = __init_setting('WAVES_JOB_DIR', default=join(WAVES_DATA_ROOT, 'jobs'))
-WAVES_SAMPLE_DIR = __init_setting('WAVES_SAMPLE_DIR', default=join(settings.MEDIA_ROOT, 'sample'))
-WAVES_UPLOAD_MAX_SIZE = __init_setting('WAVES_UPLOAD_MAX_SIZE', default=20 * 1024 * 1024)
-WAVES_TEMPLATE_PACK = __init_setting('WAVES_TEMPLATE_PACK', default='bootstrap3', override='CRISPY_TEMPLATE_PACK')
-WAVES_HOST = __init_setting('WAVES_HOST', default='http://localhost')
+WAVES_ACCOUNT_ACTIVATION_DAYS = getattr(settings, 'WAVES_ACCOUNT_ACTIVATION_DAYS', 7)
+WAVES_ADMIN_EMAIL = getattr(settings, 'WAVES_ADMIN_EMAIL', 'admin@atgc-montpellier.fr')
+WAVES_ADMIN_HEADLINE = getattr(settings, 'WAVES_ADMIN_HEADLINE', "Waves")
+WAVES_ADMIN_TITLE = getattr(settings, 'WAVES_ADMIN_TITLE', 'WAVES Administration')
+WAVES_ALLOW_JOB_SUBMISSION = getattr(settings, 'WAVES_ALLOW_JOB_SUBMISSION', True)
+WAVES_APP_NAME = getattr(settings, 'WAVES_APP_NAME', 'WAVES')
+WAVES_APP_VERBOSE_NAME = getattr(settings, 'WAVES_APP_VERBOSE_NAME',
+                                 'Web Application for Versatile & Easy bioinformatics Services')
+WAVES_JOBS_MAX_RETRY = getattr(settings, 'WAVES_JOBS_MAX_RETRY', 5)
+WAVES_KEEP_ANONYMOUS_JOBS = getattr(settings, 'WAVES_KEEP_ANONYMOUS_JOBS', 30)
+WAVES_KEEP_REGISTERED_JOBS = getattr(settings, 'WAVES_KEEP_REGISTERED_JOBS', 120)
+WAVES_NOTIFY_RESULTS = getattr(settings, 'WAVES_NOTIFY_RESULTS', True)
+WAVES_REGISTRATION_ALLOWED = getattr(settings, 'WAVES_REGISTRATION_ALLOWED', True)
+WAVES_SERVICES_EMAIL = getattr(settings, 'WAVES_SERVICES_EMAIL', 'waves@atgc-montpellier.fr')

@@ -8,7 +8,6 @@ import os
 from os import path as path
 from os.path import join
 
-from constance import config
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
@@ -22,6 +21,7 @@ import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.exceptions.adaptors
 import waves.settings
+from waves.compat import config
 from waves.exceptions import WavesException
 from waves.exceptions.jobs import JobInconsistentStateError, JobMissingMandatoryParam
 from waves.mails import JobMailer

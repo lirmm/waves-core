@@ -6,7 +6,6 @@ from ..subcommands import *
 
 CLEAN = 'clean'
 CONFIG = 'config'
-INIT = 'init'
 DUMP = 'dump'
 LOAD = 'load'
 QUEUE = 'queue'

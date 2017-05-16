@@ -11,8 +11,8 @@
     <script src="{% static 'waves/js/forms.js' %}"></script>
 {% endblock scripts %}
 
-{% block service_body %}
-    <div class="panel panel-default">
+{% block service_main %}
+    <div class="panel panel-info">
         <div class="panel-heading">
             <a href="{% url 'waves:service_details' service.id %}">
                 <h3 class="panel-title">{{ service.name }} online submission</h3>
@@ -44,11 +44,8 @@
         </div>
         <div class="panel-footer">
             <span class="text-left">
-                <a href="{% url 'waves:service_details' service.id %}">Back to service page</a>
+                <a href="{% url 'waves:service_details' service.id %}">Back to service</a>
             </span>
         </div>
     </div>
-{% endblock %}
-
-{% block job_submission %}
 {% endblock %}

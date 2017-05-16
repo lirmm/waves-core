@@ -40,12 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'waves',
     'adminsortable2',
     'mail_templated',
-    'constance',
+    # 'constance',
     'crispy_forms',
-    'constance.backends.database',
+    # 'constance.backends.database',
     'rest_framework'
 ]
 
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'waves_core.urls'
@@ -135,6 +137,7 @@ MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
 MEDIA_URL = "/media/"
 
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 LOGGING_CONFIG = None
 LOGGING = {
@@ -189,3 +192,5 @@ LOGGING = {
     }
 }
 logging.config.dictConfig(LOGGING)
+
+INTERNAL_IPS = ("127.0.0.1", )

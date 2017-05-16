@@ -6,8 +6,8 @@ import logging
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils.html import strip_tags
 from rest_framework.reverse import reverse as reverse
-
-import waves.settings
+from django.conf import settings
+# import waves.settings
 from dynamic import DynamicFieldsModelSerializer
 from waves.api.v1.serializers.inputs import *
 from waves.models import SubmissionOutput as ServiceOutput, ServiceMeta, Service, \
@@ -162,13 +162,9 @@ class ServiceFormSerializer(serializers.ModelSerializer):
     css = serializers.SerializerMethodField()
     form = serializers.SerializerMethodField()
     post_uri = serializers.SerializerMethodField()
-    template_pack = serializers.SerializerMethodField()
+    template_pack = settings.CRISPY_TEMPLATE_PACK
     service = serializers.SerializerMethodField()
     label = serializers.CharField(source='name')
-
-    def get_template_pack(self, obj):
-        """ Retrieve WAVES TEMPLATE PACK """
-        return waves.settings.WAVES_TEMPLATE_PACK
 
     def get_css(self, obj):
         """ link to service css """

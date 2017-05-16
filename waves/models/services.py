@@ -5,13 +5,13 @@ from __future__ import unicode_literals
 
 import os
 
-from constance import config
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 from mptt.models import MPTTModel, TreeForeignKey
 
+from waves.compat import config
 from waves.models.adaptors import *
 from waves.models.base import *
 

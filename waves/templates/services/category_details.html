@@ -1,4 +1,4 @@
-{% extends 'base_waves.html' %}
+{% extends 'services/base.html' %}
 {% load waves_tags %}
 {% block container %}
     <div id="sec1" class="text-page">
@@ -62,7 +62,7 @@
                                                 Updated : {{ service.updated }}
                                             </p>
                                             <a class="btn btn-default"
-                                               href="{% url 'waves:service_details' service.id %}">Service page</a>
+                                               href="{% url 'waves:service_details' service.id %}">Details</a>
                                             {% online_exec_button service=service %}
                                         </div>
                                     </div>
@@ -76,7 +76,7 @@
                             {% empty %}
                             <div class="panel panel-default">
                                 <div class="panel-body">
-                                    <p class="alert alert-info">
+                                    <p class="alert alert-warning">
                                         Sorry no service available in this category for the moment
                                     </p>
                                 </div>

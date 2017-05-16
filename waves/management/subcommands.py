@@ -8,10 +8,9 @@ import sys
 import uuid
 from shutil import rmtree
 
-from constance import config
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import BaseCommand, CommandError
-from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.db import (
     DEFAULT_DB_ALIAS, transaction,
@@ -20,12 +19,11 @@ from rest_framework.exceptions import ValidationError
 
 import waves.exceptions
 import waves.settings
-from waves.compat import available_themes
-from waves.models import Job, AParam
+from waves.compat import config
+from waves.models import Job
 from waves.models.serializers.services import ServiceSerializer
 
-__all__ = ['InitDbCommand', 'CleanUpCommand', 'ImportCommand',
-           'DumpConfigCommand']
+__all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand']
 
 logger = logging.getLogger(__name__)
 
@@ -85,49 +83,6 @@ def action_cancelled(out):
     sys.exit(3)
 
 
-class InitDbCommand(BaseCommand):
-    """ Initialise WAVES DB with default values """
-    help = "Init DB data - :WARNING: reset data to its origin"
-
-    def handle(self, *args, **options):
-        """ Handle InitDB command """
-        from waves.models import Service, ServiceCategory
-        self.stdout.write(self.style.WARNING('Warning, this action reset ALL waves data to initial'))
-        process = False
-        if boolean_input("Do you want to proceed ? [y/N]", False):
-            process = True
-        if process:
-            # Delete all WAVES data
-            ServiceCategory.objects.all().delete()
-            AParam.objects.all().delete()
-            Service.objects.all().delete()
-            Job.objects.all().delete()
-            try:
-                self.stdout.write("Configuring WAVES application:")
-                site_theme = choice_input('Choose your bootstrap theme (def:%s)' % config.WAVES_BOOTSTRAP_THEME,
-                                          choices=[theme[1] for theme in available_themes],
-                                          default=6)
-                call_command('constance', 'set', 'WAVES_BOOTSTRAP_THEME', available_themes[site_theme-1][0])
-                self.stdout.write("... Done")
-                allow_registration = boolean_input("Do you want to allow user registration ? [y/N]", False)
-                call_command('constance', 'set', 'WAVES_REGISTRATION_ALLOWED', bool(allow_registration))
-                self.stdout.write("... Done")
-                allow_submits = boolean_input("Do you want to allow job submissions ? [y/N]", False)
-                call_command('constance', 'set', 'WAVES_ALLOW_JOB_SUBMISSION', bool(allow_submits))
-                self.stdout.write("... Done")
-                call_command('constance', 'set', 'WAVES_SITE_MAINTENANCE', True)
-                self.stdout.write("Your site configuration is ready, site is currently in 'maintenance' mode")
-                # TODO add ask for import sample services ?
-                if boolean_input("Do you want to create a superadmin user ? [y/N]", False):
-                    call_command('createsuperuser')
-                self.stdout.write('Your WAVES data are ready :-)')
-            except Exception as exc:
-                self.stderr.write('Error occurred, you database may be inconsistent ! \n %s - %s ' % (
-                    exc.__class__.__name__, str(exc)))
-        else:
-            action_cancelled(self.stdout)
-
-
 class CleanUpCommand(BaseCommand):
     """ Clean up file system according to jobs in database """
     help = "Clean up inconsistent data on disk related to jobs"
@@ -141,7 +96,7 @@ class CleanUpCommand(BaseCommand):
 
     def handle(self, *args, **options):
         removed = []
-        for dir_name in os.listdir(waves.settings.WAVES_JOB_DIR):
+        for dir_name in os.listdir(settings.WAVES_JOB_DIR):
             try:
                 # DO nothing, job exists in DB
                 Job.objects.get(slug=uuid.UUID('{%s}' % dir_name))
@@ -251,17 +206,17 @@ class DumpConfigCommand(BaseCommand):
         """
         import waves.settings
         from django.conf import settings
-        var_dict = vars(waves.settings)
-        self.stdout.write("*******************************")
-        self.stdout.write("****  WAVES current setup *****")
-        self.stdout.write("*******************************")
+        from waves.compat import config
+        var_dict = dir(config)
+        self.stdout.write("************************************************")
         self.stdout.write('Current Django default database: %s' % settings.DATABASES['default']['ENGINE'])
         self.stdout.write('Current Django static dir: %s' % settings.STATICFILES_DIRS)
         self.stdout.write('Current Django static root: %s' % settings.STATIC_ROOT)
         self.stdout.write('Current Django media path: %s' % settings.MEDIA_ROOT)
         self.stdout.write('Current Django allowed hosts: %s' % settings.ALLOWED_HOSTS)
-        self.stdout.write("********* CONFIGURED IN local.env **************")
-        for key in sorted(var_dict.keys()):
+        self.stdout.write("************************************************")
+        self.stdout.write("****  WAVES current setup *****")
+        for key in sorted(var_dict):
             if key.startswith('WAVES'):
-                self.stdout.write('%s: %s' % (key, var_dict[key]))
+                self.stdout.write('%s: %s' % (key, getattr(config, key, 'not Set')))
         self.stdout.write("************************************************")

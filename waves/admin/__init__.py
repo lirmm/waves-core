@@ -7,4 +7,5 @@ from waves.admin.services import *
 from waves.admin.submissions import SubmissionOutputInline, ExitCodeInline, SampleDependentInputInline, \
     FileInputSampleInline
 from waves.admin.inputs import *
-from waves.admin.config import *
+if 'constance' in settings.INSTALLED_APPS:
+    from waves.admin.config import *

@@ -1,9 +1,0 @@
-{% extends "mail_templated/base.tpl" %}
-{% load waves_tags %}
-{% block subject %}
-::{% get_app_name %}:: {% block subject_content %}{% endblock %}
-{% endblock %}
-
-{% block body %}
-    Plain text Part
-{% endblock %}
