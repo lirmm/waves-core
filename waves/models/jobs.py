@@ -62,11 +62,12 @@ class JobManager(models.Manager):
         :param user: current user (may be Anonymous)
         :return: QuerySet
         """
+        if not user or user.is_anonymous:
+            return self.none()
         if user.is_superuser:
             return self.all()
         if user.is_staff:
             return self.filter(Q(service__created_by=user) | Q(client=user) | Q(email_to=user.email))
-        # return self.filter(Q(client=user) | Q(email_to=user.email))
         return self.filter(client=user)
 
     def get_service_job(self, user, service):
@@ -93,7 +94,7 @@ class JobManager(models.Manager):
         .. note::
             Pending jobs are all jobs which are 'Created', 'Prepared', 'Queued', 'Running'
         """
-        if user is not None:
+        if user and not user.is_anonymous:
             if user.is_superuser or user.is_staff:
                 # return all pending jobs
                 return self.filter(status__in=(

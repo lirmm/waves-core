@@ -337,7 +337,7 @@
   // MODAL DATA-API
   // ==============
 
-  $(document).on('click.bs.modal.data-waves_api', '[data-toggle="modal"]', function (e) {
+  $(document).on('click.bs.modal.data-waves:api_v2', '[data-toggle="modal"]', function (e) {
     var $this   = $(this)
     var href    = $this.attr('href')
     var $target = $($this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, ''))) // strip for ie7

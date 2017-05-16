@@ -27,7 +27,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     availability = models.IntegerField('Availability', default=3,
                                        choices=[(0, "Not Available"),
                                                 (1, "Available on web only"),
-                                                (2, "Available on waves_api only"),
+                                                (2, "Available on waves:api_v2 only"),
                                                 (3, "Available on both")])
     name = models.CharField('Submission title', max_length=255, null=False, blank=False)
     service = models.ForeignKey(Service, on_delete=models.CASCADE, null=False, related_name='submissions')
@@ -66,7 +66,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
 
     @property
     def available_api(self):
-        """ return whether submission is available for waves_api calls """
+        """ return whether submission is available for waves:api_v2 calls """
         return self.availability >= 2
 
     def __str__(self):

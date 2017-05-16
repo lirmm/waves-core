@@ -7,7 +7,7 @@ import waves.settings
 
 
 class config(object):
-    """ Fake constance config class to enable compat in other files (accessing directly constance config var 
+    """ Fake constance config class to enable compatibility in waves files (accessing directly constance config var 
     from config object """
     __dict__ = {'WAVES_ACCOUNT_ACTIVATION_DAYS'}
     pass

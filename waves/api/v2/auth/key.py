@@ -9,7 +9,7 @@ User = get_user_model()
 class APIKeyAuthBackend(BaseAuthentication):
     """ API (public key) authentication backend """
     def authenticate(self, request):
-        """ Authenticate from waves_api GET or POST 'api_key' param"""
+        """ Authenticate from waves:api_v2 GET or POST 'api_key' param"""
         api_key = request.POST.get('api_key', request.GET.get('api_key', None))
         if not api_key:
             return None

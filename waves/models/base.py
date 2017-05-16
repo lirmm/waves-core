@@ -90,7 +90,7 @@ class ApiModel(models.Model):
 
     def create_api_name(self):
         """
-        Construct a new waves_api name issued from field_api_name
+        Construct a new waves:api_v2 name issued from field_api_name
         :return:
         """
         return inflection.underscore(re.sub(r'[^\w]+', '_', getattr(self, self.field_api_name))).lower()

@@ -31,3 +31,4 @@ WAVES_KEEP_REGISTERED_JOBS = getattr(settings, 'WAVES_KEEP_REGISTERED_JOBS', 120
 WAVES_NOTIFY_RESULTS = getattr(settings, 'WAVES_NOTIFY_RESULTS', True)
 WAVES_REGISTRATION_ALLOWED = getattr(settings, 'WAVES_REGISTRATION_ALLOWED', True)
 WAVES_SERVICES_EMAIL = getattr(settings, 'WAVES_SERVICES_EMAIL', 'waves@atgc-montpellier.fr')
+WAVES_TEMPLATE_PACK = getattr(settings, 'CRISPY_TEMPLATE_PACK', 'bootstrap3')
