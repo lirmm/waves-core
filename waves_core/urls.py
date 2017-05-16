@@ -25,9 +25,10 @@ urlpatterns = [
     url(r'^waves/', include('waves.urls.urls', namespace='waves')),
     url(r'^waves/api/v1/', include('waves.api.v1.urls', namespace='waves_api_v1')),
     url(r'^waves/api/v2/', include('waves.api.v2.urls', namespace='waves_api')),
-
+    url(r'^jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    url(r'^jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
-              + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar

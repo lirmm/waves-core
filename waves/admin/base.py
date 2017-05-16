@@ -81,7 +81,8 @@ class WavesModelAdmin(ModelAdmin):
             'waves/admin/js/modal.js'
         )
         css = {
-            'screen': ('waves/admin/css/admin.css', 'waves/admin/css/modal.css')
+            'screen': ('waves/admin/css/admin.css',
+                       'waves/admin/css/modal.css')
         }
 
 

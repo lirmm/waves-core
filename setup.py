@@ -4,13 +4,15 @@ from setuptools import find_packages, setup
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
+
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='waves-core',
-    version='1.0.0',
+    version=__import__('waves').__version__,
     packages=find_packages(),
+    provides=['waves'],
     include_package_data=True,
     license='GPLv3',
     description='WAVES - core ',
@@ -20,7 +22,6 @@ setup(
     install_requires=[
         'saga-python==0.45.1',
         'django-admin-sortable2==0.6.10',
-        'django-constance==2.0.0',
         'django-crispy-forms==1.6.1',
         'django-mail-templated==2.6.5',
         'djangorestframework==3.5.4',

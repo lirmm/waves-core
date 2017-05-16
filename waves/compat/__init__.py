@@ -7,16 +7,17 @@ from django.conf import settings
 from django.contrib.admin import StackedInline
 
 if 'jet' in settings.INSTALLED_APPS:
-    from jet import *
+    from jet.admin import CompactInline
 else:
     class CompactInline(StackedInline):
-            """ Inherit base class """
-            pass
+        """ Inherit base class """
+        pass
 
 if 'ckeditor' in settings.INSTALLED_APPS:
     from .ckeditor import *
 else:
     from django.db import models
+
 
     class RichTextField(models.TextField):
         """ Override RichTextField """
@@ -28,6 +29,7 @@ else:
     available_themes = (
         ('default', 'Default'),
     )
+
 
     def list_themes():
         return available_themes

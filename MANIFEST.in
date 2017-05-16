@@ -3,3 +3,4 @@ include README.md
 recursive-include waves/static *
 recursive-include waves/templates *
 recursive-include docs *
+recursive-exclude waves_core *

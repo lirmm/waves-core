@@ -6,24 +6,20 @@
         <img src="{% static 'waves/logos/waves.png' %}" width="40px" id="#navbar-logo" style="float:left;"/>
         <h1 id="grp-admin-title">
             <span>
-                {% if grappelli_admin_title %} {{ grappelli_admin_title }} {% else %} {% get_admin_title %}{% endif %}
+                {% if grappelli_admin_title %} {{ grappelli_admin_title }} {% else %}
+                    {{ site_title|default:_('Django site admin') }} {% endif %}
             </span>
         </h1>
     </div>
 {% endblock %}
 {% block extrastyle %}
     {{ block.super }}
-    <!-- waves extra admin styles -->
-    <!--link href="{% static 'waves/admin/css/admin.css' %}" rel="stylesheet" media="screen">
-    <link href="{% static 'waves/admin/css/modal.css' %}" rel="stylesheet" media="screen"-->
-    <!-- //waves extra admin styles -->
 {% endblock extrastyle %}
 
 {% block extrahead %}
     <link rel="shortcut icon" type="image/png" href="{% static 'waves/ico/favicon.png' %}"/>
     {{ block.super }}
-    <!-- waves extra head js -->
-    <!-- //waves extra head js -->
+
 {% endblock %}
 {% block footer %}
     {{ block.super }}
