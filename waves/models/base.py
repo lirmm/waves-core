@@ -8,7 +8,7 @@ import inflection
 from waves.compat import config
 from django.db import models
 
-import waves.settings
+from waves.settings import waves_settings
 from waves.compat import RichTextField
 
 __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 'ApiModel',
@@ -109,7 +109,7 @@ class UrlMixin(object):
         """ short cut to :func:`get_url()`
         :return: current absolute uri for Job
         """
-        return "%s%s" % (waves.settings.WAVES_HOST, self.get_absolute_url())
+        return "%s%s" % (waves_settings.HOST, self.get_absolute_url())
 
     def get_url(self):
         """ Calculate and return absolute 'front-office' url for a model object
@@ -139,7 +139,7 @@ class ExportAbleMixin(object):
         """ Import model object serializer, serialize and write data to disk """
         from os.path import join
         import json
-        file_path = join(config.WAVES_DATA_ROOT, self.export_file_name)
+        file_path = join(config.DATA_ROOT, self.export_file_name)
         with open(file_path, 'w') as fp:
             try:
                 serializer = self.serializer()

@@ -163,14 +163,13 @@ class FileInputAdmin(AParamAdmin):
     inlines = [FileInputSampleInline]
     # TODO activate sample selection dependencies (both on forms and on submission)
     # TOD, SampleDependentInputInline,]
-    readonly_fields = ['regexp',]
+    readonly_fields = ['regexp', ]
 
 
 @admin.register(TextParam)
 class TextParamAdmin(AParamAdmin):
     """ BaseParam subclass Admin """
     base_model = TextParam
-
 
 
 @admin.register(BooleanParam)
@@ -219,7 +218,6 @@ class AllParamModelAdmin(PolymorphicMPTTParentModelAdmin):
     )
     list_filter = (PolymorphicChildModelFilter, 'submission', 'submission__service')
     list_display = ('get_class_label', 'label', 'name', 'submission')
-
 
     def get_model_perms(self, request):
         return {}  # super(AllParamModelAdmin, self).get_model_perms(request)

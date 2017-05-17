@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse as reverse
 
 from django.conf import settings
-import waves.settings
+from waves.settings import waves_settings
 from dynamic import DynamicFieldsModelSerializer
 from waves.models.metas import ServiceMeta
 from waves.models.services import *
@@ -150,7 +150,7 @@ class ServiceFormSerializer(serializers.ModelSerializer):
     service = serializers.SerializerMethodField()
 
     def get_template_pack(self, obj):
-        return waves.settings.WAVES_TEMPLATE_PACK
+        return waves_settings.TEMPLATE_PACK
 
     def get_css(self, obj):
         """ link to service css """

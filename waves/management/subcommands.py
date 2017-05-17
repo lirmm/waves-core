@@ -18,7 +18,7 @@ from django.db import (
 from rest_framework.exceptions import ValidationError
 
 import waves.exceptions
-import waves.settings
+from waves.settings import waves_settings
 from waves.compat import config
 from waves.models import Job
 from waves.models.serializers.services import ServiceSerializer
@@ -96,7 +96,7 @@ class CleanUpCommand(BaseCommand):
 
     def handle(self, *args, **options):
         removed = []
-        for dir_name in os.listdir(settings.WAVES_JOB_DIR):
+        for dir_name in os.listdir(settings.JOB_DIR):
             try:
                 # DO nothing, job exists in DB
                 Job.objects.get(slug=uuid.UUID('{%s}' % dir_name))
@@ -114,12 +114,12 @@ class CleanUpCommand(BaseCommand):
                 if choice == 1:
                     self.stdout.write("Directories to delete: ")
                     for dir_name in removed:
-                        self.stdout.write(os.path.join(waves.settings.WAVES_JOB_DIR, dir_name))
+                        self.stdout.write(os.path.join(waves_settings.JOB_DIR, dir_name))
                 elif choice == 2:
                     for dir_name in removed:
                         self.stdout.write('Removed directory: %s' % dir_name)
                         # onerror(os.path.islink, path, sys.exc_info())
-                        rmtree(os.path.join(waves.settings.WAVES_JOB_DIR, dir_name),
+                        rmtree(os.path.join(waves_settings.JOB_DIR, dir_name),
                                onerror=self.print_file_error)
                     removed = []
                 else:
@@ -182,12 +182,12 @@ class ImportCommand(BaseCommand):
 
     def find_export_files(self, export, type_model):
         file_name = '%s_%s.json' % (type_model, export)
-        export_file = os.path.join(config.WAVES_DATA_ROOT, file_name)
+        export_file = os.path.join(config.DATA_ROOT, file_name)
         if os.path.isfile(export_file):
             return export_file
         else:
             raise CommandError("Unable to find exported file: %s, are they in your data root (%s)? " % (
-                file_name, config.WAVES_DATA_ROOT))
+                file_name, config.DATA_ROOT))
 
 
 class DumpConfigCommand(BaseCommand):
@@ -204,10 +204,10 @@ class DumpConfigCommand(BaseCommand):
         :param args: Command arguments (expected none)
         :param options: Command options (expected none)
         """
-        import waves.settings
         from django.conf import settings
         from waves.compat import config
         var_dict = dir(config)
+        print var_dict, vars(config)
         self.stdout.write("************************************************")
         self.stdout.write('Current Django default database: %s' % settings.DATABASES['default']['ENGINE'])
         self.stdout.write('Current Django static dir: %s' % settings.STATICFILES_DIRS)
@@ -216,7 +216,6 @@ class DumpConfigCommand(BaseCommand):
         self.stdout.write('Current Django allowed hosts: %s' % settings.ALLOWED_HOSTS)
         self.stdout.write("************************************************")
         self.stdout.write("****  WAVES current setup *****")
-        for key in sorted(var_dict):
-            if key.startswith('WAVES'):
-                self.stdout.write('%s: %s' % (key, getattr(config, key, 'not Set')))
+        for key in sorted(config.defaults.keys()):
+            self.stdout.write('%s: %s' % (key, getattr(config, key, 'not Set')))
         self.stdout.write("************************************************")

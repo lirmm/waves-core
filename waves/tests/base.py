@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 
 @override_settings(
     MEDIA_ROOT=os.path.join(dirname(settings.BASE_DIR), 'tests', 'media'),
-    WAVES_JOB_DIR=str(os.path.join(dirname(settings.BASE_DIR), 'tests', 'data', 'jobs')),
-    WAVES_DATA_ROOT=str(os.path.join(dirname(settings.BASE_DIR), 'tests', 'data')),
-    WAVES_SAMPLE_DIR=str(os.path.join(dirname(settings.BASE_DIR), 'tests', 'data', 'sample'))
+    JOB_DIR=str(os.path.join(dirname(settings.BASE_DIR), 'tests', 'data', 'jobs')),
+    DATA_ROOT=str(os.path.join(dirname(settings.BASE_DIR), 'tests', 'data')),
+    SAMPLE_DIR=str(os.path.join(dirname(settings.BASE_DIR), 'tests', 'data', 'sample'))
 )
 class WavesBaseTestCase(TestCase):
 

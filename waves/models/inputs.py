@@ -8,7 +8,7 @@ from django.db import models
 from django.utils.safestring import mark_safe
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey
 
-import waves.settings
+from waves.settings import waves_settings
 from waves.models.adaptors import DTOMixin
 from waves.models.base import Ordered, ApiModel
 from waves.utils.validators import validate_list_comma, validate_list_param
@@ -364,7 +364,7 @@ class FileInput(AParam):
 
     class_label = "File Input"
 
-    max_size = models.BigIntegerField('Maximum allowed file size ', default=waves.settings.WAVES_UPLOAD_MAX_SIZE / 1024,
+    max_size = models.BigIntegerField('Maximum allowed file size ', default=waves_settings.UPLOAD_MAX_SIZE / 1024,
                                       help_text="in Ko")
     allowed_extensions = models.CharField('Filter by extensions', max_length=255,
                                           help_text="Comma separated list, * means no filter",

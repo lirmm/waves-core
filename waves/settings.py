@@ -1,43 +1,135 @@
 """
-WAVES proprietary optional settings
+WAVES settings management
 These settings may be overridden in your Django main configuration file
 """
 from __future__ import unicode_literals
 
+from importlib import import_module
 from os.path import join
 
 from django.conf import settings
+from django.test.signals import setting_changed
+from django.utils import six
+import socket
 
-from . import __version__
+try:
+    HOSTNAME = socket.gethostname()
+except:
+    HOSTNAME = 'localhost'
 
-WAVES_VERSION = __version__
-WAVES_DATA_ROOT = getattr(settings, 'WAVES_DATA_ROOT', join(settings.BASE_DIR, 'data'))
-WAVES_JOB_DIR = getattr(settings, 'WAVES_JOB_DIR', join(WAVES_DATA_ROOT, 'jobs'))
-WAVES_SAMPLE_DIR = getattr(settings, 'WAVES_SAMPLE_DIR', join(settings.MEDIA_ROOT, 'sample'))
-WAVES_UPLOAD_MAX_SIZE = getattr(settings, 'WAVES_UPLOAD_MAX_SIZE', 20 * 1024 * 1024)
-WAVES_HOST = getattr(settings, 'WAVES_HOST', 'http://localhost')
 
-WAVES_ACCOUNT_ACTIVATION_DAYS = getattr(settings, 'WAVES_ACCOUNT_ACTIVATION_DAYS', 7)
-WAVES_ADMIN_EMAIL = getattr(settings, 'WAVES_ADMIN_EMAIL', 'admin@atgc-montpellier.fr')
-WAVES_ADMIN_HEADLINE = getattr(settings, 'WAVES_ADMIN_HEADLINE', "Waves")
-WAVES_ADMIN_TITLE = getattr(settings, 'WAVES_ADMIN_TITLE', 'WAVES Administration')
-WAVES_ALLOW_JOB_SUBMISSION = getattr(settings, 'WAVES_ALLOW_JOB_SUBMISSION', True)
-WAVES_APP_NAME = getattr(settings, 'WAVES_APP_NAME', 'WAVES')
-WAVES_APP_VERBOSE_NAME = getattr(settings, 'WAVES_APP_VERBOSE_NAME',
-                                 'Web Application for Versatile & Easy bioinformatics Services')
-WAVES_JOBS_MAX_RETRY = getattr(settings, 'WAVES_JOBS_MAX_RETRY', 5)
-WAVES_KEEP_ANONYMOUS_JOBS = getattr(settings, 'WAVES_KEEP_ANONYMOUS_JOBS', 30)
-WAVES_KEEP_REGISTERED_JOBS = getattr(settings, 'WAVES_KEEP_REGISTERED_JOBS', 120)
-WAVES_NOTIFY_RESULTS = getattr(settings, 'WAVES_NOTIFY_RESULTS', True)
-WAVES_REGISTRATION_ALLOWED = getattr(settings, 'WAVES_REGISTRATION_ALLOWED', True)
-WAVES_SERVICES_EMAIL = getattr(settings, 'WAVES_SERVICES_EMAIL', 'waves@atgc-montpellier.fr')
-WAVES_TEMPLATE_PACK = getattr(settings, 'CRISPY_TEMPLATE_PACK', 'bootstrap3')
+def perform_import(val, setting_name):
+    """
+    If the given setting is a string import notation,
+    then perform the necessary import or imports.
+    """
+    if val is None:
+        return None
+    elif isinstance(val, six.string_types):
+        return import_from_string(val, setting_name)
+    elif isinstance(val, (list, tuple)):
+        return [import_from_string(item, setting_name) for item in val]
+    return val
 
-WAVES_ADAPTORS_CLASSES = getattr(settings, 'WAVES_ADAPTORS_CLASSES', [
-    'waves.adaptors.core.shell.SshShellAdaptor',
-    'waves.adaptors.core.cluster.LocalClusterAdaptor',
-    'waves.adaptors.core.shell.SshKeyShellAdaptor',
-    'waves.adaptors.core.shell.LocalShellAdaptor',
-    'waves.adaptors.core.cluster.SshClusterAdaptor',
-    'waves.adaptors.core.cluster.SshKeyClusterAdaptor',
-])
+
+def import_from_string(val, setting_name):
+    """
+    Attempt to import a class from a string representation.
+    """
+    try:
+        # Nod to tastypie's use of importlib.
+        parts = val.split('.')
+        module_path, class_name = '.'.join(parts[:-1]), parts[-1]
+        module = import_module(module_path)
+        return getattr(module, class_name)
+    except (ImportError, AttributeError) as e:
+        msg = "Could not import '%s' for WAVES settings '%s': %s." % (val, e.__class__.__name__, e)
+        raise ImportError(msg)
+
+
+DEFAULTS = {
+    'VERSION': __import__('waves').__version__,
+    'DATA_ROOT': join(settings.BASE_DIR, 'data'),
+    'JOB_DIR': join(settings.BASE_DIR, 'data', 'jobs'),
+    'SAMPLE_DIR': join(settings.MEDIA_ROOT, 'sample'),
+    'UPLOAD_MAX_SIZE': 20 * 1024 * 1024,
+    'HOST': HOSTNAME,
+    'ACCOUNT_ACTIVATION_DAYS': 7,
+    'ADMIN_EMAIL': 'admin@atgc-montpellier.fr',
+    'ALLOW_JOB_SUBMISSION': True,
+    'APP_NAME': 'WAVES',
+    'JOBS_MAX_RETRY': 5,
+    'KEEP_ANONYMOUS_JOBS': 30,
+    'KEEP_REGISTERED_JOBS': 120,
+    'NOTIFY_RESULTS': True,
+    'REGISTRATION_ALLOWED': True,
+    'SERVICES_EMAIL': 'waves@atgc-montpellier.fr',
+    'TEMPLATE_PACK': 'bootstrap3',
+    'ADAPTORS_CLASSES': (
+        'waves.adaptors.core.shell.SshShellAdaptor',
+        'waves.adaptors.core.cluster.LocalClusterAdaptor',
+        'waves.adaptors.core.shell.SshKeyShellAdaptor',
+        'waves.adaptors.core.shell.LocalShellAdaptor',
+        'waves.adaptors.core.cluster.SshClusterAdaptor',
+        'waves.adaptors.core.cluster.SshKeyClusterAdaptor',
+    ),
+    'PERMISSION_CLASSES': (
+        'waves.api.'
+    ),
+    'MAILER_CLASS': 'waves.mails.JobMailer'
+}
+
+IMPORT_STRINGS = [
+    'ADAPTORS_CLASSES',
+    'MAILER_CLASS'
+]
+
+
+class WavesSettings(object):
+    """
+    WAVES settings object, allow WAVES settings access from properties
+    """
+
+    def __init__(self, waves_settings=None, defaults=None, imports_string=None):
+        if waves_settings:
+            self._waves_settings = waves_settings
+        self.defaults = defaults or DEFAULTS
+        self.import_strings = imports_string or IMPORT_STRINGS
+
+    @property
+    def waves_settings(self):
+        if not hasattr(self, '_waves_settings'):
+            self._waves_settings = getattr(settings, 'WAVES_CONFIG', {})
+        return self._waves_settings
+
+    def __getattr__(self, attr):
+        if attr not in self.defaults:
+            raise AttributeError("Invalid WAVES setting: '%s'" % attr)
+
+        try:
+            # Check if present in user settings
+            val = self.waves_settings[attr]
+        except KeyError:
+            # Fall back to defaults
+            val = self.defaults[attr]
+
+        # Coerce import strings into classes
+        if attr in self.import_strings:
+            val = perform_import(val, attr)
+
+        # Cache the result
+        setattr(self, attr, val)
+        return val
+
+
+waves_settings = WavesSettings(None, DEFAULTS, IMPORT_STRINGS)
+
+
+def reload_waves_settings(*args, **kwargs):
+    global waves_settings
+    setting, value = kwargs['setting'], kwargs['value']
+    if setting == 'WAVES_CONFIG':
+        waves_settings = WavesSettings(value, DEFAULTS, IMPORT_STRINGS)
+
+
+setting_changed.connect(reload_waves_settings)

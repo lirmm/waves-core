@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from waves.compat import config
 
-import waves.settings
+from waves.settings import waves_settings
 from waves.models.base import ExportAbleMixin
 from waves.views.files import DownloadFileView
 
@@ -37,7 +37,7 @@ class ModelExportView(DownloadFileView):
 
     @property
     def file_path(self):
-        return join(config.WAVES_DATA_ROOT, self.file_name)
+        return join(config.DATA_ROOT, self.file_name)
 
     @property
     def file_name(self):

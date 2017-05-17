@@ -7,7 +7,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.utils.html import strip_tags
 from rest_framework.reverse import reverse as reverse
 
-import waves.settings
+from waves.settings import waves_settings
 from waves.api.v1.serializers.inputs import *
 from waves.models import SubmissionOutput as ServiceOutput, ServiceMeta, Service, \
     Submission as ServiceSubmission
@@ -166,7 +166,7 @@ class ServiceFormSerializer(serializers.ModelSerializer):
     label = serializers.CharField(source='name')
 
     def get_template_pack(self, obj):
-        return waves.settings.WAVES_TEMPLATE_PACK
+        return waves_settings.TEMPLATE_PACK
 
     def get_css(self, obj):
         """ link to service css """

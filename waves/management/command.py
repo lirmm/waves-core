@@ -13,7 +13,7 @@ from django.core.management.base import BaseCommand, CommandError
 from waves.adaptors.exceptions.adaptors import AdaptorException
 
 import waves.exceptions
-import waves.settings
+from waves.settings import waves_settings
 from waves.management.runner import DaemonRunner
 from waves.models import Job
 
@@ -41,7 +41,7 @@ class DaemonCommand(BaseCommand):
     stdin_path = '/dev/null'
     stdout_path = '/dev/stdout'
     stderr_path = '/dev/stderr'
-    work_dir = waves.settings.WAVES_DATA_ROOT
+    work_dir = waves_settings.DATA_ROOT
     # pid configuration
     pidfile_path = '/tmp/daemon_command.pid'
     pidfile_timeout = 5
@@ -131,7 +131,7 @@ class JobQueueCommand(DaemonCommand):
     """
     help = 'Managing WAVES job queue states'
     SLEEP_TIME = 2
-    pidfile_path = os.path.join(waves.settings.WAVES_DATA_ROOT, 'waves_queue.pid')
+    pidfile_path = os.path.join(waves_settings.DATA_ROOT, 'waves_queue.pid')
     pidfile_timeout = 5
 
     def loop_callback(self):
@@ -185,12 +185,12 @@ class JobQueueCommand(DaemonCommand):
 class PurgeDaemonCommand(DaemonCommand):
     help = 'Clean up old jobs '
     SLEEP_TIME = 86400
-    pidfile_path = os.path.join(waves.settings.WAVES_DATA_ROOT, 'waves_clean.pid')
+    pidfile_path = os.path.join(waves_settings.DATA_ROOT, 'waves_clean.pid')
 
     def loop_callback(self):
         logger.info("Purge job launched at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
-        date_anonymous = datetime.date.today() - datetime.timedelta(config.WAVES_KEEP_ANONYMOUS_JOBS)
-        date_registered = datetime.date.today() - datetime.timedelta(config.WAVES_KEEP_REGISTERED_JOBS)
+        date_anonymous = datetime.date.today() - datetime.timedelta(config.KEEP_ANONYMOUS_JOBS)
+        date_registered = datetime.date.today() - datetime.timedelta(config.KEEP_REGISTERED_JOBS)
         anonymous = Job.objects.filter(client__isnull=True, updated__lt=date_anonymous)
         registered = Job.objects.filter(client__isnull=False, updated__lt=date_registered)
         for job in list(chain(*[anonymous, registered])):

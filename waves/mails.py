@@ -2,9 +2,12 @@ from __future__ import unicode_literals
 
 import logging
 
-from waves.compat import config
 from django.conf import settings
-from mail_templated import send_mail
+from django.core.mail import EmailMessage
+from django.template import Context
+from django.template.loader import get_template
+
+from waves.compat import config
 
 logger = logging.getLogger(__name__)
 
@@ -20,14 +23,9 @@ class JobMailer(object):
     _template_subject = None
     _template_mail = None
 
-    def __init__(self, job):
-        super(JobMailer, self).__init__()
-        self.job = job
-
     def get_context_data(self):
-        return {'job': self.job,
-                'WAVES_APP_NAME': config.WAVES_APP_NAME,
-                'contact': config.WAVES_SERVICES_EMAIL}
+        return {'APP_NAME': config.APP_NAME,
+                'contact': config.SERVICES_EMAIL}
 
     @property
     def mail_activated(self):
@@ -37,9 +35,9 @@ class JobMailer(object):
         :return: True if mail are to be sent, False either
         :rtype: bool
         """
-        return config.WAVES_NOTIFY_RESULTS and self.job.service.email_on
+        return config.NOTIFY_RESULTS and self.job.service.email_on
 
-    def _send_job_mail(self, template, subject="Your Job"):
+    def _send_job_mail(self, job, template, subject="Your Job"):
         """ Check if send mail is needed, in such case, create a template email and... send it to specified client
 
         :return: the number of mail sent, should be 0 or 1
@@ -47,55 +45,60 @@ class JobMailer(object):
         """
         if self.mail_activated:
             context = self.get_context_data()
+            context['job'] = job
             try:
-                return send_mail(template_name=template, context=context, from_email=config.WAVES_SERVICES_EMAIL,
-                                 recipient_list=[self.job.email_to], subject=subject,
-                                 fail_silently=not settings.DEBUG)
+                message = get_template(template_name=template).render(Context(context))
+                msg = EmailMessage(subject=subject, body=message, to=job.email_to,
+                                   from_email=config.WAVES_SERVICES_MAIL)
+                msg.content_subtype = 'html'
+                msg.send(fail_silently=not settings.DEBUG)
             except Exception as e:
-                logger.exception("Failed to send mail %s", e.message)
+                logger.exception("Failed to send mail to %s from %s :%s", (job.email_to,
+                                                                           config.WAVES_SERVICE_MAIL,
+                                                                           e.message))
         else:
-            # No mail sent since not activated (keep value returned at same type than send_mail
+            logger.info('Mail not sent to %s, mails are not activated', job.email_to)
             return 0
 
-    def send_job_submission_mail(self):
+    def send_job_submission_mail(self, job):
         """
         Send Job Submission confirmation email
 
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(template="emails/job_submitted.html")
+        return self._send_job_mail(job, "emails/job_submitted.html")
 
-    def send_job_completed_mail(self):
+    def send_job_completed_mail(self, job):
         """
         Send Job completed email
 
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(template="emails/job_completed.html")
+        return self._send_job_mail(job, "emails/job_completed.html")
 
-    def send_job_error_email(self):
+    def send_job_error_email(self, job):
         """
         Send Job error email
 
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(template="emails/job_error.html")
+        return self._send_job_mail(job, "emails/job_error.html")
 
-    def send_job_cancel_email(self):
+    def send_job_cancel_email(self, job):
         """
         Send Job cancelled email
 
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(template="emails/job_cancelled.html")
+        return self._send_job_mail(job, "emails/job_cancelled.html")
 
-    def send_job_admin_error(self):
+    def send_job_admin_error(self, job):
         """ Admin mail to notify run error
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(template="emails/job_admin_error.html")
+        return self._send_job_mail(job, "emails/job_admin_error.html")

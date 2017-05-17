@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'waves',
     'adminsortable2',
-    'mail_templated',
+    # 'mail_templated',
     'crispy_forms',
     'rest_framework',
     'django_render_partial'

@@ -20,7 +20,7 @@ from django.utils.translation import ugettext as _
 import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.exceptions.adaptors
-import waves.settings
+from waves.settings import waves_settings
 from waves.compat import config
 from waves.exceptions import WavesException
 from waves.exceptions.jobs import JobInconsistentStateError, JobMissingMandatoryParam
@@ -386,7 +386,7 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         :return: working dir
         :rtype: unicode
         """
-        return os.path.join(waves.settings.WAVES_JOB_DIR, str(self.slug))
+        return os.path.join(waves_settings.JOB_DIR, str(self.slug))
 
     @property
     def adaptor(self):
@@ -435,22 +435,22 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         :return: the nmmber of mail sent (should be one)
         :rtype: int
         """
-        mailer = JobMailer(job=self)
+        mailer = JobMailer()
         if self.status != self.status_mail and self.status == self.JOB_ERROR:
-            mailer.send_job_admin_error()
-        if config.WAVES_NOTIFY_RESULTS and self.service.email_on:
+            mailer.send_job_admin_error(self)
+        if config.NOTIFY_RESULTS and self.service.email_on:
             if self.email_to is not None and self.status != self.status_mail:
                 # should send a email
                 try:
                     nb_sent = 0
                     if self.status == self.JOB_CREATED:
-                        nb_sent = mailer.send_job_submission_mail()
+                        nb_sent = mailer.send_job_submission_mail(self)
                     elif self.status == self.JOB_TERMINATED:
-                        nb_sent = mailer.send_job_completed_mail()
+                        nb_sent = mailer.send_job_completed_mail(self)
                     elif self.status == self.JOB_ERROR:
-                        nb_sent = mailer.send_job_error_email()
+                        nb_sent = mailer.send_job_error_email(self)
                     elif self.status == self.JOB_CANCELLED:
-                        nb_sent = mailer.send_job_cancel_email()
+                        nb_sent = mailer.send_job_cancel_email(self)
                     # Avoid resending emails when last status mail already sent
                     self.status_mail = self.status
                     if nb_sent > 0:
@@ -540,7 +540,7 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
 
     def retry(self, message):
         """ Add a new try for job execution, save retry reason in JobAdminHistory, save job """
-        if self.nb_retry <= config.WAVES_JOBS_MAX_RETRY:
+        if self.nb_retry <= config.JOBS_MAX_RETRY:
             self.nb_retry += 1
             self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status, is_admin=True)
             self.save()
@@ -626,7 +626,7 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         self.save()
         if self.status == self.JOB_COMPLETED:
             self.run_results()
-        if self.status == self.JOB_UNDEFINED and self.nb_retry > config.WAVES_JOBS_MAX_RETRY:
+        if self.status == self.JOB_UNDEFINED and self.nb_retry > config.JOBS_MAX_RETRY:
             self.run_cancel()
         self.save_status_history(self.status)
         return self.status

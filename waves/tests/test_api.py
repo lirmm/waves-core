@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 import waves.models.services
-import waves.settings
+from waves.settings import waves_settings
 from waves.models import Job
 from waves.models.inputs import AParam
 from waves.tests.base import WavesBaseTestCase

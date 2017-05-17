@@ -33,7 +33,8 @@ else:
         return available_themes
 
 if 'constance' not in settings.INSTALLED_APPS:
-    from noconstance import config
+    # from noconstance import config
+    from waves.settings import waves_settings as config
     constance = None
 else:
     import compat_constance

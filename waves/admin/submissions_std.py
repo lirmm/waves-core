@@ -93,4 +93,4 @@ class OrganizeInputInline(StackedPolymorphicInline):
         ListFieldInline,
         TextFieldInline
     )
-    classes = ["collapse", ]
+    classes = ["", ]

@@ -9,7 +9,7 @@ from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
 from waves.compat import config
-import waves.settings
+from waves.settings import waves_settings
 from waves.models.inputs import *
 from waves.models.submissions import Submission
 from waves.models.services import Service, ServiceCategory
@@ -80,13 +80,13 @@ class ServiceForm(forms.ModelForm):
         self.fields['runner'].required = False
         if not self.fields['created_by'].initial:
             self.fields['created_by'].initial = self.current_user
-        if not config.WAVES_NOTIFY_RESULTS:
+        if not config.NOTIFY_RESULTS:
             self.fields['email_on'].widget.attrs['disabled'] = 'disabled'
             self.fields['email_on'].help_text = '<span class="warning">Disabled by main configuration</span><br/>' \
                                                 + self.fields['email_on'].help_text
 
     def clean_email_on(self):
-        if not config.WAVES_NOTIFY_RESULTS:
+        if not config.NOTIFY_RESULTS:
             return self.instance.email_on
         else:
             return self.cleaned_data.get('email_on')

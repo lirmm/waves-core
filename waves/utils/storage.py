@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import os
 
-import waves.settings
+from waves.settings import waves_settings
 from django.core.files.storage import FileSystemStorage
 
 
@@ -11,7 +11,7 @@ class WavesStorage(FileSystemStorage):
     """ Waves FileSystem Storage engine """
 
     def __init__(self):
-        super(WavesStorage, self).__init__(location=waves.settings.WAVES_DATA_ROOT,
+        super(WavesStorage, self).__init__(location=waves_settings.DATA_ROOT,
                                            directory_permissions_mode=0o775,
                                            file_permissions_mode=0o775)
 

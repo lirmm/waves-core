@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django import template
 
-import waves.settings
+from waves.settings import waves_settings
 from waves.models import ServiceCategory
 
 register = template.Library()
@@ -24,4 +24,4 @@ def online_exec_button(context, service, label=None):
 
 @register.simple_tag
 def get_app_version():
-    return waves.settings.WAVES_VERSION
+    return waves_settings.VERSION

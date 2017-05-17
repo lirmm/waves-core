@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @override_settings(
-    WAVES_NOTIFY_RESULTS=True,
+    NOTIFY_RESULTS=True,
 )
 class JobMailTest(WavesBaseTestCase):
     @classmethod
@@ -40,7 +40,7 @@ class JobMailTest(WavesBaseTestCase):
         sent_mail = mail.outbox[-1]
         self.assertTrue(job.service.name in sent_mail.subject)
         self.assertEqual(job.email_to, sent_mail.to[0])
-        self.assertEqual(config.WAVES_SERVICES_EMAIL, sent_mail.from_email)
+        self.assertEqual(config.SERVICES_EMAIL, sent_mail.from_email)
         logger.debug('Mail subject: %s', sent_mail.subject)
         logger.debug('Mail from: %s', sent_mail.from_email)
         logger.debug('Mail content: \n%s', sent_mail.body)

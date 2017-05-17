@@ -218,7 +218,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, DTOMixin, HasRu
     @property
     def sample_dir(self):
         """ Return expected sample dir for a Service """
-        return os.path.join(config.WAVES_SAMPLE_DIR, self.api_name)
+        return os.path.join(config.SAMPLE_DIR, self.api_name)
 
     @property
     def default_submission(self):
@@ -253,10 +253,10 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, DTOMixin, HasRu
         """
         if user.is_anonymous():
             return (self.status == Service.SRV_PUBLIC and
-                    config.WAVES_ALLOW_JOB_SUBMISSION is True)
+                    config.ALLOW_JOB_SUBMISSION is True)
         # RULES to set if user can access submissions
         return (self.status == Service.SRV_PUBLIC and
-                config.WAVES_ALLOW_JOB_SUBMISSION is True) or \
+                config.ALLOW_JOB_SUBMISSION is True) or \
                (self.status == Service.SRV_DRAFT and self.created_by == user) or \
                (self.status == Service.SRV_TEST and user.is_staff) or \
                (self.status == Service.SRV_RESTRICTED and (

@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from rest_framework import serializers as rest_serializer
 
-import waves.settings
+from waves.settings import waves_settings
 from waves.api.v2.serializers.dynamic import DynamicFieldsModelSerializer
 from waves.api.v2.serializers import ServiceSerializer as BaseServiceSerializer, \
     ServiceSubmissionSerializer as BaseServiceSubmissionSerializer
