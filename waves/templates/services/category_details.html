@@ -25,6 +25,12 @@
                                 <div class="panel panel-default">
                                     <div class="panel-body">
                                         {{ category.description|safe }}
+                                        {% if user.is_staff %}
+                                                <div class="text-right">
+                                                    <a class="btn btn-warning"
+                                                       href="{% url 'admin:waves_servicecategory_change' category.id %}">Admin</a>
+                                                </div>
+                                        {% endif %}
                                     </div>
                                     {% if category.ref %}
                                         <div class="panel-footer text-right">
@@ -73,7 +79,7 @@
                                     </div>
                                 </div>
                             </div>
-                            {% empty %}
+                        {% empty %}
                             <div class="panel panel-default">
                                 <div class="panel-body">
                                     <p class="alert alert-warning">

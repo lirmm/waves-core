@@ -58,26 +58,26 @@
                 <div class="col-md-3">
                     {% block service_cold %}
                         {% if service.metas and service.metas.count > 0 %}
-                        <div class="panel-group" id="panel-102030">
-                            {% for meta in service_website %}
-                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_website forloop=forloop open=True %}
-                            {% endfor %}
-                            {% for meta in service_cite %}
-                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_cite forloop=forloop open=True %}
-                            {% endfor %}
-                            {% for meta in service_doc %}
-                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_doc forloop=forloop open=False %}
-                            {% endfor %}
-                            {% for meta in service_download %}
-                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_download forloop=forloop open=False %}
-                            {% endfor %}
-                            {% for meta in service_rtfm %}
-                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_rtfm forloop=forloop open=False %}
-                            {% endfor %}
-                            {% for meta in service_cmd %}
-                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_cmd forloop=forloop open=False %}
-                            {% endfor %}
-                        </div>
+                            <div class="panel-group" id="panel-102030">
+                                {% for meta in service_website %}
+                                    {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_website forloop=forloop open=True %}
+                                {% endfor %}
+                                {% for meta in service_cite %}
+                                    {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_cite forloop=forloop open=True %}
+                                {% endfor %}
+                                {% for meta in service_doc %}
+                                    {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_doc forloop=forloop open=False %}
+                                {% endfor %}
+                                {% for meta in service_download %}
+                                    {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_download forloop=forloop open=False %}
+                                {% endfor %}
+                                {% for meta in service_rtfm %}
+                                    {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_rtfm forloop=forloop open=False %}
+                                {% endfor %}
+                                {% for meta in service_cmd %}
+                                    {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_cmd forloop=forloop open=False %}
+                                {% endfor %}
+                            </div>
                         {% endif %}
                         {% block job_submission %}
                             <div class="panel panel-default">
@@ -98,11 +98,10 @@
                                         </h3>
                                     </div>
                                     <div class="panel-body text-right">
-                                        <a class="btn btn-default"
-                                           href="{% url 'admin:waves_service_change' service.id %}">Edit Service</a>
-                                        <a class="btn btn-default"
-                                           href="{% url 'admin:waves_job_changelist' %}?service__id__exact={{ service.id }}">View
-                                            jobs</a>
+                                        <a class="btn btn-warning"
+                                           href="{% url 'admin:waves_service_change' service.id %}">Service</a>
+                                        <a class="btn btn-warning"
+                                           href="{% url 'admin:waves_job_changelist' %}?service__id__exact={{ service.id }}">Jobs</a>
                                     </div>
                                 </div>
                             {% endif %}
