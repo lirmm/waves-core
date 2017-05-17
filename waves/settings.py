@@ -32,3 +32,12 @@ WAVES_NOTIFY_RESULTS = getattr(settings, 'WAVES_NOTIFY_RESULTS', True)
 WAVES_REGISTRATION_ALLOWED = getattr(settings, 'WAVES_REGISTRATION_ALLOWED', True)
 WAVES_SERVICES_EMAIL = getattr(settings, 'WAVES_SERVICES_EMAIL', 'waves@atgc-montpellier.fr')
 WAVES_TEMPLATE_PACK = getattr(settings, 'CRISPY_TEMPLATE_PACK', 'bootstrap3')
+
+WAVES_ADAPTORS_CLASSES = getattr(settings, 'WAVES_ADAPTORS_CLASSES', [
+    'waves.adaptors.core.shell.SshShellAdaptor',
+    'waves.adaptors.core.cluster.LocalClusterAdaptor',
+    'waves.adaptors.core.shell.SshKeyShellAdaptor',
+    'waves.adaptors.core.shell.LocalShellAdaptor',
+    'waves.adaptors.core.cluster.SshClusterAdaptor',
+    'waves.adaptors.core.cluster.SshKeyClusterAdaptor',
+])

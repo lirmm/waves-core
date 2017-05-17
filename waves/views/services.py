@@ -7,9 +7,8 @@ from django.core.urlresolvers import reverse
 from django.db.models import Prefetch
 from django.views import generic
 
-from base import WavesBaseContextMixin
-from waves.forms.services import ServiceSubmissionForm
 from waves.exceptions.jobs import JobException
+from waves.forms.services import ServiceSubmissionForm
 from waves.models import ServiceCategory, Service, ServiceMeta, Job
 from waves.models.submissions import Submission
 
@@ -35,6 +34,7 @@ class ServiceDetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super(ServiceDetailView, self).get_context_data(**kwargs)
         get_context_meta_service(context, self.object)
+        print context
         context['categories'] = ServiceCategory.objects.all()
         return context
 
@@ -47,7 +47,7 @@ class ServiceDetailView(generic.DetailView):
         return obj
 
 
-class CategoryDetailView(generic.DetailView, WavesBaseContextMixin, ):
+class CategoryDetailView(generic.DetailView):
     context_object_name = 'category'
     model = ServiceCategory
     template_name = 'services/category_details.html'
@@ -62,7 +62,7 @@ class CategoryDetailView(generic.DetailView, WavesBaseContextMixin, ):
         )
 
 
-class CategoryListView(generic.ListView, WavesBaseContextMixin):
+class CategoryListView(generic.ListView):
     template_name = "services/categories_list.html"
     model = ServiceCategory
     context_object_name = 'online_categories'
@@ -76,7 +76,7 @@ class CategoryListView(generic.ListView, WavesBaseContextMixin):
         )
 
 
-class JobSubmissionView(ServiceDetailView, generic.FormView, WavesBaseContextMixin):
+class JobSubmissionView(ServiceDetailView, generic.FormView):
     model = Service
     template_name = 'services/service_form.html'
     form_class = ServiceSubmissionForm

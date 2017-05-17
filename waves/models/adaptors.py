@@ -116,7 +116,7 @@ class HasAdaptorParamsMixin(models.Model):
     def get_concrete_adaptor(self, init_params=None):
         """ Instantiate and return a new Adaptor class Instance initialized with setup parameters """
         try:
-            return import_string(self.clazz)(init_params=init_params or None)
+            return import_string(self.clazz)(init_params=init_params)
         except ImportError:
             return None
 

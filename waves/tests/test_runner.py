@@ -73,12 +73,6 @@ class TestJobRunner(WavesBaseTestCase):
 
     """
 
-    def testLoadModules(self):
-        from waves.addons.loader import load_core, load_extra_adaptors #, load_extra_importers
-        cores = load_core()
-        addons = load_extra_adaptors()
-        # importers = load_extra_importers()
-
     def _debug_job_state(self):
         logger.debug('Internal state %s, current %s', self.current_job._status, self.current_job.status)
 

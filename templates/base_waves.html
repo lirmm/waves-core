@@ -71,22 +71,13 @@
 {% endblock navbar %}
 
 {% block messages %}
-    {% if messages %}
-        {% for message in messages %}
-            <div class="messages alert alert-{{ message.tags }} alert-dismissible fade in">  <!-- singular -->
-                <a class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span></a>
-                {{ message|safe }}
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="messages alert alert-warning alert-dismissible fade in" style="width:15%; left:auto; right: 10px;">
-            <!-- singular -->
+    {% for message in messages %}
+        <div class="messages alert alert-{{ message.tags }} alert-dismissible fade in">  <!-- singular -->
             <a class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span></a>
-            WAVES '0.1.0Beta' version, mind this is beta!
+            {{ message|safe }}
         </div>
-    {% endif %}
+    {% endfor %}
 {% endblock %}
 
 {% block splash %}
@@ -94,7 +85,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6 col-sm-6">
-                    <p>WAVES-CORE - v{% get_app_version  %}</p>
+                    <p>WAVES-CORE - v{% get_app_version %}</p>
                 </div>
                 <div class="col-md-6 col-sm-6">
                     <p>A versatile and easy way to publish and execute your services</p>

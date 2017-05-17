@@ -3,13 +3,11 @@ from __future__ import unicode_literals
 
 from django.views import generic
 
-from base import WavesBaseContextMixin
 from waves.models import Job, JobOutput, JobInput
 from waves.views.files import DownloadFileView
 
 
-
-class JobView(generic.DetailView, WavesBaseContextMixin):
+class JobView(generic.DetailView):
     """ Job Detail view """
     model = Job
     slug_field = 'slug'
@@ -17,8 +15,7 @@ class JobView(generic.DetailView, WavesBaseContextMixin):
     context_object_name = 'job'
 
 
-
-class JobListView(generic.ListView, WavesBaseContextMixin):
+class JobListView(generic.ListView):
     """ Job List view (for user) """
     model = Job
     template_name = 'services/job_list.html'
@@ -30,9 +27,13 @@ class JobListView(generic.ListView, WavesBaseContextMixin):
         return Job.objects.get_user_job(user=self.request.user)
 
 
-
-class JobFileView(DownloadFileView, WavesBaseContextMixin):
+class JobFileView(DownloadFileView):
     """ Extended FileView for job files """
+
+    @property
+    def file_description(self):
+        raise NotImplementedError()
+
     context_object_name = "file_obj"
 
     @property
@@ -48,7 +49,6 @@ class JobFileView(DownloadFileView, WavesBaseContextMixin):
         return self.object.job.get_absolute_url()
 
 
-
 class JobOutputView(JobFileView):
     """ Extended JobFileView for job outputs """
     model = JobOutput
@@ -56,7 +56,6 @@ class JobOutputView(JobFileView):
     @property
     def file_description(self):
         return self.object.name
-
 
 
 class JobInputView(JobFileView):

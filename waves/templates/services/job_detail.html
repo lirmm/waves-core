@@ -32,7 +32,7 @@
 
     </script>
 {% endblock %}
-{% block container %}
+{% block content_main %}
     <div id="sec1">
         <div class="text-page container">
             <div class="row">
@@ -130,27 +130,27 @@
                                                     <dd class="input_output">
                                                         {{ job_output.value }}
                                                         <div class="pull-right">
-                                                        {%  if job_output.available %}
-                                                            {% if job_output.display_online %}
-                                                                <a href="{% url 'waves:job_output' job_output.slug %}">See
-                                                                    online</a>
-                                                                &nbsp;|&nbsp;
-                                                            {% endif %}
+                                                            {% if job_output.available %}
+                                                                {% if job_output.display_online %}
+                                                                    <a href="{% url 'waves:job_output' job_output.slug %}">See
+                                                                        online</a>
+                                                                    &nbsp;|&nbsp;
+                                                                {% endif %}
 
-                                                            <a href="{{ job_output.download_url }}">Download
-                                                                File
-                                                                <i class="glyphicon glyphicon-download-alt"></i></a>
+                                                                <a href="{{ job_output.download_url }}">Download
+                                                                    File
+                                                                    <i class="glyphicon glyphicon-download-alt"></i></a>
                                                             {% else %}
-                                                            <p class="text-muted">
-                                                                <em>Not available for now</em>
-                                                            </p>
-                                                        {% endif %}
+                                                                <p class="text-muted">
+                                                                    <em>Not available for now</em>
+                                                                </p>
+                                                            {% endif %}
                                                         </div>
                                                         {% if not forloop.last %}
                                                             <hr/>
                                                         {% endif %}
                                                     </dd>
-                                                    {% empty %}
+                                                {% empty %}
                                                     <dt><i>Not available for now, please wait job completion</i></dt>
                                                 {% endfor %}
                                             </dl>

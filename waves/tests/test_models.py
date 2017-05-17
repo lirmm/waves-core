@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 def create_runners():
     """ Create base models from all Current implementation parameters """
-    from waves.utils.runners import get_runners_list
+    from admin.runners import get_runners_list
     runners = []
-    for clazz in get_runners_list(flat=True):
+    for clazz in get_runners_list():
         runners.append(Runner.objects.create(name="%s Runner" % clazz[1], clazz=clazz[0]))
     return runners
 

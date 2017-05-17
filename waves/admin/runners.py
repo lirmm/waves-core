@@ -134,3 +134,5 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
             return obj.clazz
         else:
             return "Implementation class not available !"
+
+

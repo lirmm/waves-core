@@ -33,9 +33,8 @@ class AdaptorInitParamForm(ModelForm):
                         self.fields['value'] = ChoiceField(choices=choices, initial=initial)
                     if not concrete.init_value_editable(instance.name):
                         self.fields['value'].widget.attrs['readonly'] = True
-                        self.fields['value'].widget.attrs['disabled'] = True
                         self.fields['prevent_override'].widget.attrs['checked'] = True
-                        self.fields['prevent_override'].widget.attrs['disabled'] = True
+                        self.fields['prevent_override'].widget.attrs['readonly'] = True
                 if instance.crypt:
                     self.fields['value'].widget = PasswordInput(render_value=instance.value,
                                                                 attrs={'autocomplete': 'new-password'})

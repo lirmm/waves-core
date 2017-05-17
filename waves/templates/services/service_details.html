@@ -1,19 +1,15 @@
 {% extends "services/base.html" %}
 {% load waves_tags %}
 
-{% block title %}{{ service.name }} :: {{ service.version }}{% endblock %}
-
-{% block navbar-left %}{% include "_navbar.html" with active_link="services" %}{% endblock %}
-
-{% block container %}
-    {% block service_head %}
-        <div id="sec1" class="text-page">
-            <div class="container">
-                {% include 'services/_service_head.html' with service=service %}
-            </div><!-- /.container -->
-        </div>
-    {% endblock %}
-    {% block service_main %}
+{% block content_head %}
+    <div id="sec1" class="text-page">
+        <div class="container">
+            {% include 'services/_service_head.html' with service=service %}
+        </div><!-- /.container -->
+    </div>
+{% endblock %}
+{% block content_main %}
+    <div id="sec1">
         <div class="row-fluid">
             {% block colg-3 %}
                 <div class="col-md-3">
@@ -61,9 +57,13 @@
             {% block cold-3 %}
                 <div class="col-md-3">
                     {% block service_cold %}
+                        {% if service.metas and service.metas.count > 0 %}
                         <div class="panel-group" id="panel-102030">
                             {% for meta in service_website %}
                                 {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_website forloop=forloop open=True %}
+                            {% endfor %}
+                            {% for meta in service_cite %}
+                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_cite forloop=forloop open=True %}
                             {% endfor %}
                             {% for meta in service_doc %}
                                 {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_doc forloop=forloop open=False %}
@@ -74,7 +74,11 @@
                             {% for meta in service_rtfm %}
                                 {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_rtfm forloop=forloop open=False %}
                             {% endfor %}
+                            {% for meta in service_cmd %}
+                                {% include 'services/_service_link_panel.html' with meta=meta title=service_meta_title_cmd forloop=forloop open=False %}
+                            {% endfor %}
                         </div>
+                        {% endif %}
                         {% block job_submission %}
                             <div class="panel panel-default">
                                 <div class="panel-heading">
@@ -107,7 +111,5 @@
                 </div>
             {% endblock %}
         </div>
-    {% endblock %}
-    {% block service_foot %}
-    {% endblock %}
+    </div>
 {% endblock %}

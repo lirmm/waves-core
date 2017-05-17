@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'adminsortable2',
     'mail_templated',
     'crispy_forms',
-    'rest_framework'
+    'rest_framework',
+    'django_render_partial'
 ]
 
 
@@ -72,7 +73,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'constance.context_processors.config',
             ],
         },
     },

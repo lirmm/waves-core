@@ -2,6 +2,11 @@
     min-height:100px;
     overflow: hidden;
 }
+
+input[readonly] {
+    background-color:lightgrey;
+    color: #333333;
+}
 .ui-state-default a.errortab {
     background-color: #bf3030;
     color: white

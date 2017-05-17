@@ -30,10 +30,10 @@ waves_admin_url = [
         name="runner_test_connection"),
 ]
 waves_front_url = [
-    url(r'^services/$', CategoryListView.as_view(), name='services_list'),
+    url(r'^categories/$', CategoryListView.as_view(), name='services_list'),
     url(r'^category/(?P<pk>[0-9]+)/$', CategoryDetailView.as_view(), name='category_details'),
-    url(r'^services/(?P<pk>[0-9]+)/$', ServiceDetailView.as_view(), name='service_details'),
-    url(r'^services/(?P<pk>[0-9]+)/create$', JobSubmissionView.as_view(), name='job_submission'),
+    url(r'^service/(?P<pk>[0-9]+)/$', ServiceDetailView.as_view(), name='service_details'),
+    url(r'^service/(?P<pk>[0-9]+)/create$', JobSubmissionView.as_view(), name='job_submission'),
     url(r'^jobs/(?P<slug>[\w-]+)/$', login_required(JobView.as_view()), name="job_details"),
     url(r'^jobs/inputs/(?P<slug>[\w-]+)/$', login_required(JobInputView.as_view()), name="job_input"),
     url(r'^jobs/outputs/(?P<slug>[\w-]+)/$', login_required(JobOutputView.as_view()), name="job_output"),
