@@ -11,18 +11,18 @@ from rest_framework.decorators import detail_route
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework.response import Response
 
+from waves.api.views.base import WavesAuthenticatedView
+from waves.api.v2.serializers.jobs import JobSerializer
+from waves.api.v2.serializers.services import ServiceSerializer, ServiceFormSerializer, ServiceMetaSerializer, \
+    ServiceSubmissionSerializer
 from waves.exceptions.jobs import JobException
 from waves.models import Service, Job
 from waves.models.submissions import Submission
-from ..serializers.jobs import JobSerializer
-from ..serializers.services import ServiceSerializer, ServiceFormSerializer, ServiceMetaSerializer, \
-    ServiceSubmissionSerializer
-from ..views.base import WavesBaseView
 
 logger = logging.getLogger(__name__)
 
 
-class ServiceViewSet(viewsets.ReadOnlyModelViewSet, WavesBaseView):
+class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API entry point to Services (Retrieve, job submission)
     """
@@ -85,7 +85,7 @@ class MultipleFieldLookupMixin(object):
 
 
 class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIView, generics.CreateAPIView,
-                               WavesBaseView):
+                               WavesAuthenticatedView):
     """ Service job Submission view """
     queryset = Submission.objects.all()
     serializer_class = ServiceSubmissionSerializer
@@ -100,6 +100,7 @@ class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIVie
         """ Retrieve object or redirect to 404 """
         return get_object_or_404(self.get_queryset())
 
+    # TODO add check authorization
     def post(self, request, *args, **kwargs):
         """ Create a new job from submitted params """
         if logger.isEnabledFor(logging.DEBUG):

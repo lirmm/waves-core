@@ -2,12 +2,14 @@
 from __future__ import unicode_literals
 
 from rest_framework import viewsets
+
 from waves.models import ServiceCategory
-from waves.api.v1.serializers import CategorySerializer
-from . import WavesBaseView
+from ..serializers import CategorySerializer
+
+__all__ = ['CategoryViewSet']
 
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet, WavesBaseView):
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API entry point to list services categories
     """

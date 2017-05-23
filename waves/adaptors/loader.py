@@ -9,4 +9,4 @@ class AdaptorLoader(object):
     adaptors_classes = waves_settings.ADAPTORS_CLASSES
 
     def get_adaptors(self):
-        return sorted([adaptor_class() for adaptor_class in [import_from_string(item) for item in self.adaptors_classes]])
+        return sorted([adaptor_class() for adaptor_class in self.adaptors_classes])

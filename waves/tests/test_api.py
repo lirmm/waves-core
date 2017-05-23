@@ -9,14 +9,12 @@ from django.core.urlresolvers import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-import waves.models.services
-from waves.settings import waves_settings
 from waves.models import Job
 from waves.models.inputs import AParam
 from waves.tests.base import WavesBaseTestCase
 
 logger = logging.getLogger(__name__)
-AuthModel = get_user_model()
+User = get_user_model()
 
 
 def _create_test_file(path, index):
@@ -30,63 +28,59 @@ def _create_test_file(path, index):
 
 
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):
+    fixtures = ['waves/tests/fixtures/users.json', 'waves/tests/fixtures/services.json']
+
     def setUp(self):
         super(WavesAPITestCase, self).setUp()
-        self.super_user = AuthModel.objects.create(email='superadmin@waves.fr',
-                                                   is_superuser=True)
-        self.admin_user = AuthModel.objects.create(email='admin@waves.fr',
-                                                   is_staff=True)
-        self.api_user = AuthModel.objects.create(email="waves:api_v2@waves.fr",
-                                                 is_staff=False,
-                                                 is_superuser=False,
-                                                 is_active=True)
-        self.api_user.profile.registered_for_api = True
-        self.api_user.save()
-        self.users = {'waves:api_v2': self.api_user, 'admin': self.admin_user, 'root': self.super_user}
-
-    def tearDown(self):
-        super(WavesAPITestCase, self).tearDown()
-
-    def testSetUp(self):
-        self.assertTrue(self.super_user.is_superuser)
-        self.assertIsNotNone(self.super_user.profile.api_key)
-        self.assertTrue(self.admin_user.is_staff)
-        self.assertFalse(self.api_user.is_staff)
-
-    def _dataUser(self, user='waves:api_v2', initial={}):
-        initial.update({'api_key': self.users[user].profile.api_key})
-        return initial
+        super_user = User.objects.create(email='superadmin@waves.fr', username="superadmin", is_superuser=True)
+        super_user.set_password('superadmin')
+        admin_user = User.objects.create(email='admin@waves.fr', username="admin", is_staff=True)
+        admin_user.set_password('admin')
+        api_user = User.objects.create(email="waves:api_v2@waves.fr", username="simpleuser", is_staff=False,
+                                       is_superuser=False, is_active=True)
+        api_user.set_password('user')
+        self.users = {'simpleuser': api_user, 'admin': admin_user, 'root': super_user}
 
 
 class ServiceTests(WavesAPITestCase):
-    def test_api_key(self):
-        api_root = self.client.get(reverse('waves:api_v2:waves:api_v2-root'), data=self._dataUser('root'))
-        self.assertEqual(api_root.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(api_root.data), 3)
+    def test_api_root(self):
+        for api_version in ('api_v1', 'api_v2'):
+            api_root = self.client.get(reverse('waves:' + api_version + ':api-root'))
+            self.assertEqual(api_root.status_code, status.HTTP_200_OK)
+            logger.debug('Results: %s ', api_root.data)
+            self.assertIn('categories', api_root.data.keys())
+            self.assertIn('services', api_root.data.keys())
+            self.assertIn('jobs', api_root.data.keys())
 
     def test_list_services(self):
-        tool_list = self.client.get(reverse('waves:api_v2:waves-services-list'),
-                                    data=self._dataUser('admin'),
-                                    format='json')
-        self.assertEqual(tool_list.status_code, status.HTTP_200_OK)
-        self.assertIsNotNone(tool_list)
-        for servicetool in tool_list.data:
-            self.assertIsNotNone(servicetool['url'])
-            detail = self.client.get(servicetool['url'],
-                                     data=self._dataUser('admin'), )
-            self.assertEqual(detail.status_code, status.HTTP_200_OK)
-            tool_data = detail.data
-            self.assertIsNotNone(tool_data['name'])
+        for api_version in ('api_v1', 'api_v2'):
+            tool_list = self.client.get(reverse('waves:' + api_version + ':waves-services-list'), format='json')
+            self.assertIsNotNone(tool_list)
+            logger.debug(tool_list.data)
+            for servicetool in tool_list.data:
+                logger.debug('ServiceTool: %s', servicetool['name'])
+                self.assertIsNotNone(servicetool['url'])
+                detail = self.client.get(servicetool['url'])
+                logger.debug("Details: %s", detail.data)
+                self.assertEqual(detail.status_code, status.HTTP_200_OK)
+                submission = self.client.get(detail.data['default_submission_uri'])
+                tool_data = detail.data
+                logger.debug(submission.data)
+                self.assertIsNotNone(tool_data['name'])
 
     def test_list_categories(self):
-        category_list = self.client.get(
-            reverse('waves:api_v2:waves-services-category-list'), data=self._dataUser())
-        self.assertEqual(category_list.status_code, status.HTTP_200_OK)
-        self.assertGreaterEqual(len(category_list.data), 0)
-        for category in category_list.data:
-            self.assertGreaterEqual(category['tools'], 1)
+        for api_version in ('api_v1', 'api_v2'):
+            logger.debug('Testing %s ', api_version)
+            category_list = self.client.get(
+                reverse('waves:' + api_version + ':waves-services-category-list'))
+            self.assertEqual(category_list.status_code, status.HTTP_200_OK)
+            self.assertGreaterEqual(len(category_list.data), 0)
+            for category in category_list.data:
+                self.assertGreaterEqual(category['tools'], 1)
+            logger.debug('Ended %s ', api_version)
 
     def testHTTPMethods(self):
+        # TODO test authorization
         pass
 
 
@@ -183,7 +177,7 @@ class JobTests(WavesAPITestCase):
                 self.assertIsInstance(job, Job)
                 self.assertEqual(job.status, Job.JOB_CREATED)
         else:
-            self.skipTest("Service physic_ist not available on waves:api_v2 [status_code:%s]" % url_post.status_code )
+            self.skipTest("Service physic_ist not available on waves:api_v2 [status_code:%s]" % url_post.status_code)
 
     def testMissingParam(self):
         response = self.client.get(reverse('waves:api_v2:waves-services-detail',

@@ -9,7 +9,6 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
-from mptt.models import MPTTModel, TreeForeignKey
 
 from waves.compat import config
 from waves.models.adaptors import *
@@ -69,7 +68,7 @@ class ServiceManager(models.Manager):
         return self.get(api_name=api_name, version=version, status=status)
 
 
-class ServiceCategory(MPTTModel, Ordered, Described, ApiModel):
+class ServiceCategory(Ordered, Described, ApiModel):
     """ Service category """
 
     class Meta:
@@ -79,14 +78,10 @@ class ServiceCategory(MPTTModel, Ordered, Described, ApiModel):
         verbose_name_plural = "Categories"
         verbose_name = "Category"
 
-    class MPTTMeta:
-        level_attr = 'mptt_level'
-        order_insertion_by = ['name']
-
     name = models.CharField('Category Name', null=False, blank=False, max_length=255, help_text='Category name')
     ref = models.URLField('Reference', null=True, blank=True, help_text='Category online reference')
-    parent = TreeForeignKey('self', null=True, blank=True, help_text='Parent category',
-                            related_name='children_category', db_index=True)
+    parent = models.ForeignKey('self', null=True, blank=True, help_text='Parent category',
+                               related_name='children_category', db_index=True)
 
     def __str__(self):
         return self.name
@@ -136,7 +131,8 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, DTOMixin, HasRu
                                  help_text='Service category')
     status = models.IntegerField(choices=SRV_STATUS_LIST, default=SRV_DRAFT,
                                  help_text='Service online status')
-    api_on = models.BooleanField('Available on API', default=True, help_text='Service is available for waves:api_v2 calls')
+    api_on = models.BooleanField('Available on API', default=True,
+                                 help_text='Service is available for waves:api_v2 calls')
     web_on = models.BooleanField('Available on WEB', default=True, help_text='Service is available for web front')
     email_on = models.BooleanField('Notify results', default=True,
                                    help_text='This service sends notification email')
@@ -280,5 +276,3 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, DTOMixin, HasRu
     @property
     def running_jobs(self):
         return self.jobs.filter(status__in=[JOB_CREATED, JOB_COMPLETED])
-
-

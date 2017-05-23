@@ -6,10 +6,8 @@ django-admin-sortable2==0.6.11
 django-constance==2.0.0
 django-crispy-forms==1.6.1
 django-mail-templated==2.6.5
-django-mptt==0.8.7
 django-picklefield==0.3.2
 django-polymorphic==1.2
-django-polymorphic-tree==1.4
 django-tag-parser==3.1
 djangorestframework==3.6.2
 docutils==0.13.1

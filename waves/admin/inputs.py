@@ -9,16 +9,16 @@ from django.contrib import messages
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
 from django.template.response import SimpleTemplateResponse
 from django.utils import six
-from polymorphic.admin import PolymorphicChildModelFilter
-from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, PolymorphicMPTTChildModelAdmin
-from waves.admin.submissions import FileInputSampleInline, SampleDependentInputInline
+from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
+
+from waves.admin.submissions import FileInputSampleInline
 from waves.models.inputs import *
 from waves.models.submissions import Submission
 
 __all__ = ['AllParamModelAdmin']
 
 
-class AParamAdmin(PolymorphicMPTTChildModelAdmin):
+class AParamAdmin(PolymorphicChildModelAdmin):
     """ Base Input admin """
     base_model = AParam
     exclude = ['order', 'repeat_group']
@@ -204,7 +204,7 @@ class DecimalParamAdmin(AParamAdmin):
 
 
 @admin.register(AParam)
-class AllParamModelAdmin(PolymorphicMPTTParentModelAdmin):
+class AllParamModelAdmin(PolymorphicParentModelAdmin):
     """ Main polymorphic params Admin """
     base_model = AParam
 

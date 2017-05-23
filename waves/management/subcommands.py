@@ -207,7 +207,6 @@ class DumpConfigCommand(BaseCommand):
         from django.conf import settings
         from waves.compat import config
         var_dict = dir(config)
-        print var_dict, vars(config)
         self.stdout.write("************************************************")
         self.stdout.write('Current Django default database: %s' % settings.DATABASES['default']['ENGINE'])
         self.stdout.write('Current Django static dir: %s' % settings.STATICFILES_DIRS)
@@ -216,6 +215,6 @@ class DumpConfigCommand(BaseCommand):
         self.stdout.write('Current Django allowed hosts: %s' % settings.ALLOWED_HOSTS)
         self.stdout.write("************************************************")
         self.stdout.write("****  WAVES current setup *****")
-        for key in sorted(config.defaults.keys()):
-            self.stdout.write('%s: %s' % (key, getattr(config, key, 'not Set')))
+        for key, val in config.dump_config():
+            self.stdout.write('%s: %s' % (key, val))
         self.stdout.write("************************************************")

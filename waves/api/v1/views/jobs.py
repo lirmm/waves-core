@@ -12,13 +12,13 @@ from waves.api.v1.serializers.jobs import JobSerializer, JobHistoryDetailSeriali
     JobOutputDetailSerializer
 from waves.exceptions import WavesException
 from waves.models import Job
-from . import WavesBaseView
+from waves.api.views.base import WavesAuthenticatedView
 
 logger = logging.getLogger(__name__)
 
 
 class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
-                 viewsets.GenericViewSet, WavesBaseView):
+                 viewsets.GenericViewSet, WavesAuthenticatedView):
     """
     API entry point for ServiceJobs
     """

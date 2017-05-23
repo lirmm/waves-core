@@ -6,11 +6,12 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import mark_safe
-from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicTreeForeignKey
+from polymorphic.manager import PolymorphicManager
+from polymorphic.models import PolymorphicModel
 
-from waves.settings import waves_settings
 from waves.models.adaptors import DTOMixin
 from waves.models.base import Ordered, ApiModel
+from waves.settings import waves_settings
 from waves.utils.validators import validate_list_comma, validate_list_param
 
 __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam', 'NumberParam',
@@ -32,14 +33,15 @@ class RepeatedGroup(DTOMixin, Ordered):
     default = models.IntegerField('Default repeat', default=0)
 
     def __str__(self):
-        return '[%s]' % (self.name)
+        return '[%s]' % self.name
 
 
-class AParam(PolymorphicMPTTModel, ApiModel):
+class AParam(PolymorphicModel, ApiModel):
     class Meta:
         ordering = ['order']
         verbose_name_plural = "Params"
         verbose_name = "Param"
+        base_manager_name = 'base_objects'
 
     OPT_TYPE_NONE = 0
     OPT_TYPE_VALUATED = 1
@@ -98,8 +100,8 @@ class AParam(PolymorphicMPTTModel, ApiModel):
     # Submission params dependency
     when_value = models.CharField('When value', max_length=255, null=True, blank=True,
                                   help_text='Input is treated only for this parent value')
-    parent = PolymorphicTreeForeignKey('self', related_name="dependents_inputs", on_delete=models.CASCADE,
-                                       null=True, blank=True, help_text='Input is associated to')
+    parent = models.ForeignKey('self', related_name="dependents_inputs", on_delete=models.CASCADE,
+                               null=True, blank=True, help_text='Input is associated to')
     regexp = models.CharField('Validation Regexp', max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):

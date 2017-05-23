@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/1.11/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
-
+from __future__ import unicode_literals
 import os
 import logging.config
 
@@ -27,13 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
-INSTALLED_APPS = [
-    'polymorphic_tree',
+INSTALLED_APPS = (
     'polymorphic',
-    'mptt',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,11 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'waves',
     'adminsortable2',
-    # 'mail_templated',
     'crispy_forms',
     'rest_framework',
-    'django_render_partial'
-]
+)
 
 
 MIDDLEWARE = [

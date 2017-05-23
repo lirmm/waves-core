@@ -7,22 +7,23 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework import viewsets, generics
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.exceptions import ValidationError as DRFValidationError
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from waves.api.views.base import WavesAuthenticatedView
 from waves.api.v1.serializers import ServiceSerializer, JobSerializer, ServiceFormSerializer, ServiceMetaSerializer, \
     ServiceSubmissionSerializer
 from waves.exceptions.jobs import JobException
 from waves.models.jobs import Job, JobManager as ServiceJobManager
 from waves.models.services import Service
 from waves.models.submissions import Submission as ServiceSubmission
-from . import WavesBaseView
 
 logger = logging.getLogger(__name__)
 
 
-class ServiceViewSet(viewsets.ReadOnlyModelViewSet, WavesBaseView):
+class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API entry point to Services (Retrieve, job submission)
     """
@@ -33,7 +34,8 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet, WavesBaseView):
         """ retrieve available services for current request user """
         return Service.objects.get_api_services(user=self.request.user)
 
-    def list(self, request):
+    @list_route(methods=['get'], permission_classes=[AllowAny])
+    def list_services(self, request):
         """ List all available services """
         serializer = ServiceSerializer(self.get_queryset(), many=True, context={'request': request},
                                        fields=('url', 'name', 'short_description', 'version', 'created', 'updated',
@@ -85,7 +87,7 @@ class MultipleFieldLookupMixin(object):
 
 
 class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIView, generics.CreateAPIView,
-                               WavesBaseView):
+                               WavesAuthenticatedView):
     """ Service job Submission view """
     queryset = ServiceSubmission.objects.all()
     serializer_class = ServiceSubmissionSerializer

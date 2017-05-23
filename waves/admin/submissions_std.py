@@ -27,6 +27,8 @@ extra_base_fields = ['help_text', 'required', 'api_name', 'default', 'parent', '
 
 
 class AParamInline(StackedPolymorphicInline.Child):
+    classes = ['collapse',]
+    model = AParam
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'parent':
@@ -37,6 +39,7 @@ class AParamInline(StackedPolymorphicInline.Child):
 class FileInputInline(AParamInline):
     fields = required_base_fields + ['max_size', 'allowed_extensions'] + extra_base_fields
     exclude = ['order']
+    classes = ['collapse']
     model = FileInput
     form = OrganizeInputForm
 

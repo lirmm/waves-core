@@ -7,15 +7,15 @@ from rest_framework.decorators import detail_route
 from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.response import Response
 
-from ..serializers.jobs import JobSerializer, JobHistoryDetailSerializer, JobInputDetailSerializer, \
-    JobOutputDetailSerializer
+from waves.api.views.base import WavesAuthenticatedView
 from waves.exceptions import WavesException
 from waves.models import Job
-from .base import WavesBaseView
+from waves.api.v2.serializers.jobs import JobSerializer, JobHistoryDetailSerializer, JobInputDetailSerializer, \
+    JobOutputDetailSerializer
 
 
 class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
-                 viewsets.GenericViewSet, WavesBaseView):
+                 viewsets.GenericViewSet, WavesAuthenticatedView):
     """
     API entry point for ServiceJobs
     """

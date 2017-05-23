@@ -169,7 +169,7 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
         model = Job
         fields = ('url', 'title', 'status_code', 'status_txt', 'created', 'updated', 'inputs', 'outputs',
                   'history', 'client', 'service', 'slug')
-        readonly_fields = (
+        read_only_fields = (
             'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history')
         extra_kwargs = {
             'url': {'view_name': 'waves:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}

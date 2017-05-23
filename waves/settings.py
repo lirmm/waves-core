@@ -4,13 +4,13 @@ These settings may be overridden in your Django main configuration file
 """
 from __future__ import unicode_literals
 
+import socket
 from importlib import import_module
 from os.path import join
 
 from django.conf import settings
 from django.test.signals import setting_changed
 from django.utils import six
-import socket
 
 try:
     HOSTNAME = socket.gethostname()
@@ -37,7 +37,6 @@ def import_from_string(val, setting_name):
     Attempt to import a class from a string representation.
     """
     try:
-        # Nod to tastypie's use of importlib.
         parts = val.split('.')
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
         module = import_module(module_path)
@@ -121,6 +120,9 @@ class WavesSettings(object):
         setattr(self, attr, val)
         return val
 
+    def dump_config(self):
+        return sorted([(key, getattr(self, key, self.defaults[key])) for key in self.defaults.keys()])
+
 
 waves_settings = WavesSettings(None, DEFAULTS, IMPORT_STRINGS)
 
@@ -130,6 +132,5 @@ def reload_waves_settings(*args, **kwargs):
     setting, value = kwargs['setting'], kwargs['value']
     if setting == 'WAVES_CONFIG':
         waves_settings = WavesSettings(value, DEFAULTS, IMPORT_STRINGS)
-
 
 setting_changed.connect(reload_waves_settings)

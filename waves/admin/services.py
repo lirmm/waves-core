@@ -2,19 +2,16 @@ from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model
 from django.template.defaultfilters import truncatechars
-from mptt.admin import MPTTModelAdmin
-from django.utils.safestring import mark_safe
 
-from base import ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, DynamicInlinesAdmin
+from base import ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin
 from waves.admin.adaptors import ServiceRunnerParamInLine
 from waves.admin.forms.services import ServiceForm, SubmissionInlineForm, ServiceMetaForm
 from waves.admin.submissions import *
 from waves.compat import CompactInline
 from waves.models.metas import *
-from waves.utils import url_to_edit_object
 from waves.models.services import *
 from waves.models.submissions import *
-
+from waves.utils import url_to_edit_object
 
 User = get_user_model()
 
@@ -144,12 +141,11 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
 
 @admin.register(ServiceCategory)
-class ServiceCategoryAdmin(MPTTModelAdmin):
+class ServiceCategoryAdmin(admin.ModelAdmin):
     """ Model admin for ServiceCategory model objects"""
     list_display = ('name', 'parent', 'api_name', 'short', 'count_serv')
     readonly_fields = ('count_serv', )
     sortable_field_name = 'order'
-    mptt_indent_field = 'name'
     fieldsets = [
         (None, {
             'fields': ['name', 'parent', 'api_name']
