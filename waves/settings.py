@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 import socket
 from importlib import import_module
 from os.path import join
-
 from django.conf import settings
 from django.test.signals import setting_changed
 from django.utils import six
@@ -64,6 +63,7 @@ DEFAULTS = {
     'REGISTRATION_ALLOWED': True,
     'SERVICES_EMAIL': 'waves@atgc-montpellier.fr',
     'TEMPLATE_PACK': 'bootstrap3',
+    'SECRET_KEY': settings.SECRET_KEY[0:32],
     'ADAPTORS_CLASSES': (
         'waves.adaptors.core.shell.SshShellAdaptor',
         'waves.adaptors.core.cluster.LocalClusterAdaptor',
@@ -98,7 +98,7 @@ class WavesSettings(object):
     @property
     def waves_settings(self):
         if not hasattr(self, '_waves_settings'):
-            self._waves_settings = getattr(settings, 'WAVES_CONFIG', {})
+            self._waves_settings = getattr(settings, 'WAVES_CORE', {})
         return self._waves_settings
 
     def __getattr__(self, attr):
@@ -130,7 +130,7 @@ waves_settings = WavesSettings(None, DEFAULTS, IMPORT_STRINGS)
 def reload_waves_settings(*args, **kwargs):
     global waves_settings
     setting, value = kwargs['setting'], kwargs['value']
-    if setting == 'WAVES_CONFIG':
+    if setting == 'WAVES_CORE':
         waves_settings = WavesSettings(value, DEFAULTS, IMPORT_STRINGS)
 
 setting_changed.connect(reload_waves_settings)
