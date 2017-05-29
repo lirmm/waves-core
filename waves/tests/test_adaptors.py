@@ -18,3 +18,5 @@ class TestLoadAddons(TestCase):
         list_adaptors = loader.get_adaptors()
         self.assertTrue(all([not inspect.isabstract(clazz) for clazz in list_adaptors]))
         [logger.debug(c) for c in list_adaptors]
+
+# TODO add more tests

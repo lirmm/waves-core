@@ -120,7 +120,7 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
                     messages.info(request, message)
 
     def connexion_string(self, obj):
-        concrete = obj.get_concrete_adaptor()
+        concrete = obj.adaptor
         if concrete:
             return obj.adaptor.connexion_string()
         else:
@@ -129,7 +129,7 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
     connexion_string.short_description = 'Connexion String'
 
     def get_runner_clazz(self, obj):
-        concrete = obj.get_concrete_adaptor()
+        concrete = obj.adaptor
         if concrete:
             return obj.clazz
         else:

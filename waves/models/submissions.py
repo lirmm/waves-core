@@ -33,11 +33,11 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, null=False, related_name='submissions')
 
     @property
-    def has_changed(self):
+    def config_changed(self):
         return self.runner != self.get_runner() or self._runner != self.runner
 
     def set_run_params_defaults(self):
-        if self.has_changed and self._runner:
+        if self.config_changed and self._runner:
             self.adaptor_params.all().delete()
         super(Submission, self).set_run_params_defaults()
 

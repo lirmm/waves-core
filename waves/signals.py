@@ -9,7 +9,7 @@ import shutil
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
-from waves.models.adaptors import AdaptorInitParam, HasAdaptorParamsMixin
+from waves.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
 from waves.models.base import ApiModel
 from waves.models.inputs import *
 from waves.models.jobs import Job, JobOutput
@@ -92,17 +92,17 @@ def service_input_post_delete_handler(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Runner)
 def runner_post_save_handler(sender, instance, created, **kwargs):
-    if created or instance.has_changed:
+    if created or instance.config_changed:
         instance.set_run_params_defaults()
 
 
-@receiver(post_save, sender=HasAdaptorParamsMixin)
+@receiver(post_save, sender=HasAdaptorClazzMixin)
 def adaptor_mixin_post_save_handler(sender, instance, created, **kwargs):
-    if not kwargs.get('raw', False) and (instance.has_changed or created):
+    if not kwargs.get('raw', False) and (instance.config_changed or created):
         instance.set_run_params_defaults()
 
 
-for subclass in get_all_subclasses(HasAdaptorParamsMixin):
+for subclass in get_all_subclasses(HasAdaptorClazzMixin):
     if not subclass._meta.abstract:
         post_save.connect(adaptor_mixin_post_save_handler, subclass)
 
@@ -110,7 +110,7 @@ for subclass in get_all_subclasses(HasAdaptorParamsMixin):
 @receiver(pre_save, sender=AdaptorInitParam)
 def adaptor_param_pre_save_handler(sender, instance, **kwargs):
     """ Runner param pre save handler """
-    if instance.has_changed and instance.crypt:
+    if instance.config_changed and instance.crypt and instance.value:
         from waves.utils.encrypt import Encrypt
         instance.value = Encrypt.encrypt(instance.value)
 

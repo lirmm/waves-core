@@ -1,11 +1,10 @@
 """ Base class for all JobRunnerAdaptor implementation, define main job workflow expected behaviour """
 from __future__ import unicode_literals
 
-import abc
-import waves.adaptors.core
-from waves.adaptors.exceptions.adaptors import AdaptorInitError, AdaptorNotReady, AdaptorJobStateException
 import logging
-import warnings
+from django.conf import settings
+import waves.adaptors.core
+from waves.adaptors.exceptions.adaptors import AdaptorNotReady, AdaptorJobStateException
 
 logger = logging.getLogger(__name__)
 
@@ -14,10 +13,7 @@ class JobAdaptor(object):
     """
     Abstract JobAdaptor class, declare expected behaviour from any WAVES's JobAdaptor dependent ?
     """
-    __metaclass__ = abc.ABCMeta
-
     NOT_AVAILABLE_MESSAGE = "Adaptor is currently not available on platform"
-
     name = 'Abstract Adaptor name'
     #: Remote command for Job execution
     command = None
@@ -25,47 +21,40 @@ class JobAdaptor(object):
     connector = None
     #: Some connector need to parse requested job in order to create a remote job
     parser = None
-
+    #: Each Adaptor need a 'protocol' to communicate with remote job execution
     protocol = 'http'
-    protocol_default = 'http'
-
     #: Host
     host = 'localhost'
     #: Remote status need to be mapped with WAVES expected job status
     _states_map = {}
-    _init_params = {}
 
     def __init__(self, *args, **kwargs):
         """ Initialize a adaptor
         Set _initialized value (True or False) if all non default expected params are set
         :raise: :class:`waves.adaptors.exceptions.adaptors.AdaptorInitError` if wrong parameter given as init values
-        :param init_params: a dictionnary with expected initialization params (retrieved from init_params property)
+        :param init_params: a dictionary with expected initialization params (retrieved from init_params property)
         :param kwargs: its possible to force connector and _parser attributes when initialize a Adaptor
         :return: a new JobAdaptor object
         """
-        self._initialized = False
         self._connected = False
-        self.connector = kwargs['connector'] if 'connector' in kwargs else None
-        self.parser = kwargs['parser'] if 'parser' in kwargs else None
-        if 'init_params' in kwargs and kwargs['init_params'] is not None:
-            try:
-                for name, value in kwargs['init_params'].items():
-                    getattr(self, name)
-                    setattr(self, name, value)
-            except AttributeError as e:
-                raise AdaptorInitError(e.message)
+        if 'connector' in kwargs:
+            self.connector = kwargs['connector']
+        if 'parser' in kwargs:
+            self.parser = kwargs['parser']
+        if 'command' in kwargs:
+            self.command = kwargs['command']
+        if 'protocol' in kwargs:
+            self.protocol = kwargs['protocol']
+        if 'host' in kwargs:
+            self.host = kwargs['host']
         self._initialized = all(init_param is not None for init_param in self.init_params)
 
     def __str__(self):
         return '.'.join([self.__class__.__module__, self.__class__.__name__])
 
     def init_value_editable(self, init_param):
+        """ By default all fields are editable, override this function for your specific needs in your adaptor """
         return True
-
-    @property
-    def name(self):
-        """ Return Adaptor displayed name """
-        return self.name
 
     @property
     def init_params(self):
@@ -185,10 +174,9 @@ class JobAdaptor(object):
         :return: JobRunDetails object
         """
         self.connect()
-        details = self._job_run_details(job)
-        return details
+        return self._job_run_details(job)
 
-    def dump_config(self):
+    def dump_config(self, to_file=settings.BASE_DIR):
         """ Create string representation of current adaptor config"""
         str_dump = 'Dump config for %s \n ' % self.__class__
         str_dump += 'Init params:'
@@ -201,20 +189,17 @@ class JobAdaptor(object):
         extra_dump = self._dump_config()
         return str_dump + extra_dump
 
-    @abc.abstractmethod
     def _connect(self):
         """ Actually do connect to concrete remote job runner platform,
          :raise: `waves.adaptors.exception.AdaptorConnectException` if error
          :return: an instance of concrete connector implementation """
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def _disconnect(self):
         """ Actually disconnect from remote job runner platform
         :raise: `waves.adaptors.exception.AdaptorConnectException` if error """
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def _prepare_job(self, job):
         """ Actually do preparation for job if needed by concrete adaptor.
         For example:
@@ -223,25 +208,21 @@ class JobAdaptor(object):
         :raise: `waves.adaptors.exception.AdaptorException` if error """
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def _run_job(self, job):
         """ Actually launch job on concrete adaptor
         :raise: `waves.adaptors.exception.AdaptorException` if error """
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def _cancel_job(self, job):
         """ Try to cancel job on concrete adaptor
         :raise: `waves.adaptors.exception.AdaptorException` if error """
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def _job_status(self, job):
         """ Actually retrieve job states on concrete adaptor, return raw value to be mapped with defined in _states_map
         :raise: `waves.adaptors.exception.AdaptorException` if error """
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def _job_results(self, job):
         """ Retrieve job results from concrete adaptor, may include some file download from remote hosts
         Set attribute result_available for job if success
@@ -250,7 +231,6 @@ class JobAdaptor(object):
         """
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def _job_run_details(self, job):
         """ Retrieve job run details if possible from concrete adaptor
         :raise: `waves.adaptors.exception.AdaptorException` if error """
@@ -271,172 +251,3 @@ class JobAdaptor(object):
     @property
     def importer(self):
         return None
-
-
-class AdaptorImporter(object):
-    """Base AdaptorImporter class, define process which must be implemented in concrete sub-classes """
-    __metaclass__ = abc.ABCMeta
-    _update = False
-    _service = None
-    _runner = None
-    _formatter = None
-    _tool_client = None
-    _order_input = 0
-    _submission = None
-    _exit_codes = None
-    #: Some fields on remote connectors need a mapping for type between standard WAVES and theirs
-    _type_map = {}
-    _warnings = []
-    _errors = []
-
-    def __init__(self, adaptor, formatter=None):
-        """
-        Initialize a Import from it's source adaptor
-        :param adaptor: a JobAdaptor object, providing connection support
-        """
-        self._formatter = InputFormat() if formatter is None else formatter
-        self._adaptor = adaptor
-
-    def __str__(self):
-        return self.__class__.__name__
-
-    @property
-    def connected(self):
-        return self._adaptor.connected
-
-    def import_service(self, tool_id):
-        """
-        For specified Adaptor remote tool identifier, try to import submission params
-        :param tool_id: Adaptors provider remote tool identifier
-        :return: Update service with new submission according to retrieved parameters
-        :rtype: :class:`waves.adaptors.models.services.Service`
-        """
-        self.connect()
-        self._warnings = []
-        self._errors = []
-        service_details, inputs, outputs, exit_codes = self.load_tool_details(tool_id)
-        if service_details:
-            logger.debug('Import Service %s', tool_id)
-            self._service = service_details
-            logger.debug('Service %s', service_details.name)
-            self._service.inputs = self.import_service_params(inputs)
-            self._service.outputs = self.import_service_outputs(outputs)
-            self._service.exit_codes = self.import_exit_codes(exit_codes)
-        else:
-            logger.warn('No service retrieved (%s)', tool_id)
-            return None
-        # TODO manage exit codes
-        logger_import = logging.getLogger('import_tool_logger')
-        logger_import.setLevel(logging.INFO)
-        logger_import.info('------------------------------------')
-        logger_import.info(self._service.info())
-        logger_import.info('------------------------------------')
-        if self.warnings or self.errors:
-            logger_import.warn('*** // WARNINGS // ***')
-            for warn in self.warnings:
-                logger_import.warn('=> %s', warn.message)
-        if self.errors:
-            logger_import.warn('*** // ERRORS // ***')
-            for error in self.errors:
-                logger_import.error('=> %s', error.message)
-        logger_import.info('------------')
-        logger_import.info('-- Inputs --')
-        logger_import.info('------------')
-        for service_input in self._service.inputs:
-            logger_import.info(service_input.info())
-        logger_import.info('-------------')
-        logger_import.info('-- Outputs --')
-        logger_import.info('-------------')
-        for service_output in self._service.outputs:
-            logger_import.info(service_output.info())
-        logger_import.info('------------------------------------')
-        return self._service
-
-    def list_services(self):
-        """ Get and return a list of tuple ('Category, ['Service Objects' list])  """
-        if not self.connected:
-            self.connect()
-        return self._list_services()
-
-    def connect(self):
-        return self._adaptor.connect()
-
-    @property
-    def warnings(self):
-        return self._warnings
-
-    def warn(self, base_warn):
-        self._warnings.append(base_warn)
-
-    @property
-    def errors(self):
-        return self._errors
-
-    def error(self, base_error):
-        if base_error is None:
-            return self._errors
-        self._errors.append(base_error)
-
-    @abc.abstractmethod
-    def import_service_params(self, data):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def import_service_outputs(self, data):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def import_exit_codes(self, tool_id):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def load_tool_details(self, tool_id):
-        """ Return a Service Object instance with added information if possible """
-        return NotImplementedError()
-
-    @abc.abstractmethod
-    def _list_services(self):
-        raise NotImplementedError()
-
-    def map_type(self, type_value):
-        """ Map remote adaptor types to JobInput/JobOutput WAVES TYPE"""
-        return self._type_map.get(type_value, 'text')
-
-
-class InputFormat(object):
-    """
-    ServiceInput format validation
-    """
-
-    @staticmethod
-    def format_number(number):
-        return number
-
-    @staticmethod
-    def format_boolean(truevalue, falsevalue):
-        return '{}|{}'.format(truevalue, falsevalue)
-
-    @staticmethod
-    def format_interval(minimum, maximum):
-        return '{}|{}'.format(minimum, maximum)
-
-    @staticmethod
-    def format_list(values):
-        import os
-        return os.linesep.join([x.strip(' ') for x in values])
-
-    @staticmethod
-    def choice_list(value):
-        list_choice = []
-        param = ''
-        if value:
-            try:
-                for param in value.splitlines(False):
-                    if '|' in param:
-                        val = param.split('|')
-                        list_choice.append((val[1], val[0]))
-                    else:
-                        list_choice.append((param, param))
-            except ValueError as e:
-                warnings.warn('Error Parsing list values %s - value:%s - param:%s', e.message, value, param)
-        return list_choice

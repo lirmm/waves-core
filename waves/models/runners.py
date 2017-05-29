@@ -15,8 +15,10 @@ __all__ = ['Runner']
 class RunnerManager(models.Manager):
 
     def create_default(self, **kwargs):
-
         return super(RunnerManager, self).create(**kwargs)
+
+    def create(self, *args, **kwargs):
+        return super(RunnerManager, self).create(*args, **kwargs)
 
 
 class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):

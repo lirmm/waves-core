@@ -32,12 +32,9 @@ class AdaptorInitParamInline(GenericTabularInline):
 
     def default_value(self, obj):
         """ Get default values from related adaptor concrete class instance """
-        if obj.crypt:
-            init_value = obj.content_object.adaptor_defaults['crypt_%s' % obj.name]
-            if init_value is not None:
-                return "*" * len(init_value) if init_value is not None else '-'
-        else:
-            init_value = obj.content_object.adaptor_defaults[obj.name]
+        init_value = getattr(obj.content_object, 'crypt_%s' % obj.name)
+        if init_value is not None:
+            return "*" * len(init_value) if init_value is not None else '-'
         if hasattr(init_value, '__iter__'):
             return 'list'
         return init_value if init_value is not None else '-'

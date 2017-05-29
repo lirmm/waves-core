@@ -23,7 +23,7 @@ class AdaptorInitParamForm(ModelForm):
             try:
                 from django.utils.module_loading import import_string
                 from ast import literal_eval
-                concrete = instance.content_object.get_concrete_adaptor()
+                concrete = instance.content_object.adaptor
                 if concrete is not None:
                     assert isinstance(concrete, JobAdaptor)
                     default_value = None

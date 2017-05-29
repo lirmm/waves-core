@@ -6,21 +6,23 @@ import os
 
 from django.test import TestCase
 from django.utils.module_loading import import_string
-
-from waves.adaptors.core.base import JobAdaptor
+from waves.adaptors.loader import AdaptorLoader
+from waves.adaptors.core.adaptor import JobAdaptor
 from waves.models import Job, Service, Runner
 from waves.models.submissions import Submission
 from waves.tests.base import WavesBaseTestCase
+from waves.settings import waves_settings
 
 logger = logging.getLogger(__name__)
 
 
 def create_runners():
     """ Create base models from all Current implementation parameters """
-    from admin.runners import get_runners_list
     runners = []
-    for clazz in get_runners_list():
-        runners.append(Runner.objects.create(name="%s Runner" % clazz[1], clazz=clazz[0]))
+    loader = AdaptorLoader()
+    for adaptor in loader.get_adaptors():
+        runners.append(Runner.objects.create(name="%s Runner" % adaptor.name,
+                                             clazz='.'.join([adaptor.__module__, adaptor.__class__.__name__])))
     return runners
 
 

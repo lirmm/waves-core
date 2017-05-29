@@ -35,7 +35,6 @@ class LocalShellAdaptor(JobAdaptor):
 
     def __init__(self, **kwargs):
         super(LocalShellAdaptor, self).__init__(**kwargs)
-
         self._states_map = {
             saga.job.UNKNOWN: waves.adaptors.core.JOB_UNDEFINED,
             saga.job.NEW: waves.adaptors.core.JOB_QUEUED,
@@ -176,7 +175,11 @@ class SshShellAdaptor(LocalShellAdaptor):
         del self._session
 
     def __init__(self, **kwargs):
-        super(LocalShellAdaptor, self).__init__(**kwargs)
+        super(SshShellAdaptor, self).__init__(**kwargs)
+        self.user_id = kwargs.get('user_id', SshKeyShellAdaptor.user_id)
+        self.crypt_user_pass = kwargs.get('crypt_user_pass')
+        self.port = kwargs.get('port', SshShellAdaptor.port)
+        self.basedir = kwargs.get('basedir', SshKeyShellAdaptor.basedir)
         self._context = None
         self._session = None
 
@@ -279,12 +282,19 @@ class SshKeyShellAdaptor(SshShellAdaptor):
     public_key = '$HOME/.ssh/id_rsa.pub'
     crypt_pass_phrase = None
 
+    def __init__(self, **kwargs):
+        super(SshKeyShellAdaptor, self).__init__(**kwargs)
+        self.private_key = kwargs.get('public_key', SshKeyShellAdaptor.private_key)
+        self.public_key = kwargs.get('public_key', SshKeyShellAdaptor.public_key)
+        self.crypt_pass_phrase = kwargs.get('crypt_pass_phrase', SshKeyShellAdaptor.crypt_pass_phrase)
+
     @property
     def init_params(self):
         """ Update init params with expected ones from SSH private/public key login """
         params = super(SshKeyShellAdaptor, self).init_params
         params.update(dict(private_key=self.private_key,
-                           public_key=self.public_key))
+                           public_key=self.public_key,
+                           crypt_pass_phrase=self.crypt_pass_phrase))
         return params
 
     @property

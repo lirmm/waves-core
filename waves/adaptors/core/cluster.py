@@ -25,6 +25,8 @@ class LocalClusterAdaptor(LocalShellAdaptor):
     )
     protocol_default = "sge"
 
+
+
     @property
     def init_params(self):
         """ Base init_params for Cluster JobAdaptor """
