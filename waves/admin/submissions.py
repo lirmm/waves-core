@@ -105,7 +105,6 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     current_obj = None
     form = SubmissionForm
     exclude = ['order']
-    save_on_top = True
     list_display = ['get_name', 'service_link', 'runner_link', 'available_online', 'available_api', 'runner']
     readonly_fields = ['available_online', 'available_api']
     list_filter = (

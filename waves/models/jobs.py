@@ -797,7 +797,6 @@ class JobInput(Ordered, Slugged, ApiModel):
         super(JobInput, self).save(*args, **kwargs)
 
     def __str__(self):
-        print self.name, self.value
         return u'%s' % self.name
 
     @property

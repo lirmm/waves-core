@@ -129,7 +129,6 @@ class HasAdaptorClazzMixin(models.Model):
 
     def __init__(self, *args, **kwargs):
         super(HasAdaptorClazzMixin, self).__init__(*args, **kwargs)
-        self._clazz = self.clazz
 
     @classmethod
     def from_db(cls, db, field_names, values):
@@ -149,7 +148,7 @@ class HasAdaptorClazzMixin(models.Model):
         :return: a subclass JobAdaptor object instance
         :rtype: JobAdaptor
         """
-        if self.clazz and self._adaptor is None or self.config_changed:
+        if self.clazz is not '' and (self._adaptor is None or self.config_changed):
             self._adaptor = import_string(self.clazz)(**self.run_params)
         return self._adaptor
 
@@ -206,7 +205,7 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
 
     @property
     def clazz(self):
-        return self.get_runner().clazz
+        return self.get_runner().clazz if self.get_runner() else None
 
     @property
     def config_changed(self):
@@ -227,7 +226,7 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
     @property
     def adaptor_defaults(self):
         """ Retrieve init params defined associated concrete class (from runner attribute) """
-        return self.get_runner().run_params
+        return self.get_runner().run_params if self.get_runner() else {}
 
     def get_runner(self):
         """ Return effective runner (could be overridden is any subclasses) """

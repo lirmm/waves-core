@@ -18,12 +18,10 @@ def get_runners_list():
     adaptors = AdaptorLoader().get_adaptors()
     grp_impls = {'': 'Select a environment...'}
     for adaptor in adaptors:
-        parts = adaptor.__class__.__module__.split('.')
-        module_path = parts[-1] # get module path
-        grp_name = module_path.capitalize()
+        grp_name = adaptor.__class__.__module__.split('.')[-1].capitalize()
         if grp_name not in grp_impls:
             grp_impls[grp_name] = []
-        grp_impls[grp_name].append((str(adaptor), adaptor.__class__.__name__))
+        grp_impls[grp_name].append((adaptor.__module__ + '.' + adaptor.__class__.__name__, adaptor.__class__.__name__))
     return sorted((grp_key, grp_val) for grp_key, grp_val in grp_impls.items())
 
 
@@ -44,7 +42,7 @@ class RunnerForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(RunnerForm, self).__init__(*args, **kwargs)
-        self.fields['clazz'] = ChoiceField(label="Run on", choices=get_runners_list())
+        self.fields['clazz'] = ChoiceField(label="Run on", choices=get_runners_list)
         if self.instance.pk is None:
             self.fields['update_init_params'].widget = HiddenInput()
             self.fields['update_init_params'].initial = False

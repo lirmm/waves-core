@@ -7,7 +7,6 @@ from waves.adaptors.core.adaptor import JobAdaptor
 
 class RemoteApiAdaptor(JobAdaptor):
     """ Base Class for remote API calls"""
-    __metaclass__ = abc.ABCMeta
     #: remote host port
     port = ''
     #: base remote api path
@@ -17,11 +16,11 @@ class RemoteApiAdaptor(JobAdaptor):
 
     @property
     def init_params(self):
-        base_params = super(RemoteApiAdaptor, self).init_params
-        base_params.update(dict(port=self.port,
-                                api_base_path=self.api_base_path,
-                                api_endpoint=self.api_endpoint))
-        return base_params
+        base = super(RemoteApiAdaptor, self).init_params
+        base.update(dict(port=self.port,
+                         api_base_path=self.api_base_path,
+                         api_endpoint=self.api_endpoint))
+        return base
 
     @property
     def complete_url(self):

@@ -37,20 +37,17 @@ class JobAdaptor(object):
         :return: a new JobAdaptor object
         """
         self._connected = False
-        if 'connector' in kwargs:
-            self.connector = kwargs['connector']
-        if 'parser' in kwargs:
-            self.parser = kwargs['parser']
-        if 'command' in kwargs:
-            self.command = kwargs['command']
-        if 'protocol' in kwargs:
-            self.protocol = kwargs['protocol']
-        if 'host' in kwargs:
-            self.host = kwargs['host']
+        self.connector = kwargs.get('connector', None)
+        self.parser = kwargs.get('parser', None)
+        self.command = kwargs.get('command', None)
+        self.protocol = kwargs.get('protocol', self.protocol)
+        self.host = kwargs.get('host', self.host)
         self._initialized = all(init_param is not None for init_param in self.init_params)
 
+    """
     def __str__(self):
         return '.'.join([self.__class__.__module__, self.__class__.__name__])
+    """
 
     def init_value_editable(self, init_param):
         """ By default all fields are editable, override this function for your specific needs in your adaptor """

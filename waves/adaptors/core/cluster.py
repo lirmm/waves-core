@@ -13,7 +13,7 @@ class LocalClusterAdaptor(LocalShellAdaptor):
     #: For cluster based remote runners, set up default cluster job queue (if any)
     queue = ''
     #: List of currently implemented remote cluster schemes
-    protocol = ''
+    protocol = 'sge'
     protocol_choices = (
         ('sge', 'Sun Grid Engine'),
         ('slurm', 'SLURM'),
@@ -24,8 +24,6 @@ class LocalClusterAdaptor(LocalShellAdaptor):
         ('torque', 'TORQUE')
     )
     protocol_default = "sge"
-
-
 
     @property
     def init_params(self):

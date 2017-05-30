@@ -1,22 +1,33 @@
 from __future__ import unicode_literals
 
-import inspect
 import logging
 
 from django.test import TestCase
 
 from waves.adaptors.loader import AdaptorLoader
+from waves.settings import waves_settings
 
 logger = logging.getLogger(__name__)
 
 
-class TestLoadAddons(TestCase):
+class TestAdaptors(TestCase):
+    loader = AdaptorLoader()
 
-    def test_load_actions(self):
-
-        loader = AdaptorLoader()
-        list_adaptors = loader.get_adaptors()
-        self.assertTrue(all([not inspect.isabstract(clazz) for clazz in list_adaptors]))
+    def test_loader(self):
+        list_adaptors = self.loader.get_adaptors()
+        self.assertTrue(all([clazz.__class__ in waves_settings.ADAPTORS_CLASSES for clazz in list_adaptors]))
         [logger.debug(c) for c in list_adaptors]
+        # TODO add more tests ?
 
-# TODO add more tests
+    def test_init(self):
+        for adaptor in waves_settings.ADAPTORS_CLASSES:
+            new_instance = self.loader.load(adaptor, dict(host="localTestHost", protocol="httpTest",
+                                                          command="CommandTest"))
+            self.assertEqual(new_instance.host, "localTestHost")
+            self.assertEqual(new_instance.command, "CommandTest")
+            self.assertEqual(new_instance.protocol, "httpTest")
+
+
+
+
+
