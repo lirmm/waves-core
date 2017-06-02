@@ -32,7 +32,7 @@ class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
 
     def get_queryset(self, request):
         # TODO order fields according to related also (display first level items just followed by their dependents)
-        return super(OrganizeInputInline, self).get_queryset(request).order_by('-required', 'tree_id', 'lft', 'order')
+        return super(OrganizeInputInline, self).get_queryset(request).order_by('-required', 'order')
 
     def step(self, obj):
         if hasattr(obj, 'step'):

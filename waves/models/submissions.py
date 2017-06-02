@@ -150,8 +150,6 @@ class SubmissionOutput(TimeStamped, ApiModel):
         cleaned_data = super(SubmissionOutput, self).clean()
         if self.from_input and not self.file_pattern:
             raise ValidationError({'file_pattern': 'If valuated from input, you must set a file pattern'})
-        if not self.from_input and not self.name:
-            raise ValidationError({'name': 'If not valuated from input, you must set a file name'})
         return cleaned_data
 
     def save(self, *args, **kwargs):
@@ -165,7 +163,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     def ext(self):
         """ return expected file output extension """
         file_name = "fake.txt"
-        if '%s' in self.name and self.from_input.default:
+        if '%s' in self.name and self.from_input and self.from_input.default:
             file_name = self.name % self.from_input.default
         elif '%s' not in self.name and self.name:
             file_name = self.name

@@ -8,17 +8,16 @@ from crispy_forms.layout import Layout, Field
 from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
-from waves.compat import config
-from waves.settings import waves_settings
-from waves.models.inputs import *
-from waves.models.submissions import Submission
-from waves.models.services import Service, ServiceCategory
-from waves.models.runners import Runner
-from waves.models.metas import ServiceMeta
 
+from waves.compat import config
+from waves.models.inputs import *
+from waves.models.metas import ServiceMeta
+from waves.models.runners import Runner
+from waves.models.services import Service, ServiceCategory
+from waves.models.submissions import Submission, SubmissionOutput, SubmissionExitCode
 
 __all__ = ['ServiceForm', 'ImportForm', 'ServiceMetaForm', 'SubmissionInlineForm',
-           'SubmissionForm']
+           'SubmissionForm', 'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm']
 
 
 class SubmissionInlineForm(forms.ModelForm):
@@ -150,3 +149,22 @@ class ServiceMetaForm(forms.ModelForm):
             if self.instance.type in (self.instance.META_WEBSITE, self.instance.META_DOC, self.instance.META_DOWNLOAD):
                 raise e
 
+
+class SubmissionOutputForm(forms.ModelForm):
+    class Meta:
+        model = SubmissionOutput
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super(SubmissionOutputForm, self).clean()
+        pattern = cleaned_data.get('file_pattern', None)
+        from_input = cleaned_data.get('from_input', None)
+        if pattern and '%s' in pattern:
+            if from_input is None:
+                raise forms.ValidationError('If setting a file pattern, you must choose a source input')
+
+
+class SubmissionExitCodeForm(forms.ModelForm):
+    class Meta:
+        model = SubmissionExitCode
+        fields = '__all__'

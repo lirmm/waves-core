@@ -40,9 +40,10 @@ waves_front_url = [
     url(r'^jobs/$', login_required(JobListView.as_view()), name="job_list"),
 ]
 
+
 waves_api_url = [
-    url(r'^api/v1/', include('waves.api.v1.urls', namespace='api_v1')),
-    url(r'^api/v2/', include('waves.api.v2.urls', namespace='api_v2')),
+    url(r'api/v1/', include('waves.api.v1.urls', namespace='api_v1')),
+    url(r'api/', include('waves.api.v2.urls', namespace='api_v2')),
 ]
 
 urlpatterns = waves_admin_url + waves_api_url + waves_front_url

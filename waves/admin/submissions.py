@@ -8,7 +8,7 @@ from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from waves.admin.adaptors import SubmissionRunnerParamInLine
 from waves.admin.base import WavesModelAdmin, DynamicInlinesAdmin
-from waves.admin.forms.services import SampleDepForm, InputSampleForm, SubmissionForm
+from waves.admin.forms.services import *
 from waves.compat import CompactInline
 from waves.models.inputs import *
 from waves.models.samples import *
@@ -26,7 +26,7 @@ else:
 class SubmissionOutputInline(CompactInline):
     """ Service Submission Outputs Inlines """
     model = SubmissionOutput
-    # form = ServiceOutputForm
+    form = SubmissionOutputForm
     show_change_link = False
     extra = 0
     sortable_field_name = "order"
@@ -40,6 +40,7 @@ class SubmissionOutputInline(CompactInline):
         if db_field.name == "from_input":
             kwargs['queryset'] = AParam.objects.filter(submission=request.current_obj)
         return super(SubmissionOutputInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 
 class SampleDependentInputInline(CompactInline):

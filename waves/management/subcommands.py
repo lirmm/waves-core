@@ -9,21 +9,23 @@ import uuid
 from shutil import rmtree
 
 from django.conf import settings
+from django.conf.urls import RegexURLPattern, RegexURLResolver
+from django.core import urlresolvers
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.management import BaseCommand, CommandError
+from django.core.management import BaseCommand
+from django.core.management import CommandError
 from django.core.urlresolvers import reverse
 from django.db import (
     DEFAULT_DB_ALIAS, transaction,
 )
 from rest_framework.exceptions import ValidationError
 
-import waves.exceptions
-from waves.settings import waves_settings
 from waves.compat import config
 from waves.models import Job
 from waves.models.serializers.services import ServiceSerializer
+from waves.settings import waves_settings
 
-__all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand']
+__all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand', 'ShowUrlsCommand']
 
 logger = logging.getLogger(__name__)
 
@@ -106,7 +108,8 @@ class CleanUpCommand(BaseCommand):
                 pass
         if len(removed) > 0:
             while True:
-                choice = choice_input("%i directory(ies) to be deleted, this operation is not reversible" % len(removed), choices=[
+                choice = choice_input(
+                    "%i directory(ies) to be deleted, this operation is not reversible" % len(removed), choices=[
                         "List directories to delete",
                         "Perform delete",
                         "Exit"
@@ -218,3 +221,37 @@ class DumpConfigCommand(BaseCommand):
         for key, val in config.dump_config():
             self.stdout.write('%s: %s' % (key, val))
         self.stdout.write("************************************************")
+
+
+class ShowUrlsCommand(BaseCommand):
+    def add_arguments(self, parser):
+
+        pass
+
+    def handle(self, *args, **kwargs):
+
+        urls = urlresolvers.get_resolver()
+        all_urls = list()
+
+        def func_for_sorting(i):
+            if i.name is None:
+                i.name = ''
+            return i.name
+
+        def show_urls(urls):
+            for url in urls.url_patterns:
+                if isinstance(url, RegexURLResolver):
+                    show_urls(url)
+                elif isinstance(url, RegexURLPattern):
+                    all_urls.append(url)
+
+        show_urls(urls)
+
+        all_urls.sort(key=func_for_sorting, reverse=False)
+
+        print('-' * 100)
+        for url in all_urls:
+            if 'waves.api' in url.lookup_str:
+                # print('| {0.regex.pattern:20} | {0.name:20} | {0.lookup_str:20} | {0.default_args} |'.format(url))
+                print url
+        print('-' * 100)

@@ -21,8 +21,7 @@ class TestAdaptors(TestCase):
 
     def test_init(self):
         for adaptor in waves_settings.ADAPTORS_CLASSES:
-            new_instance = self.loader.load(adaptor, dict(host="localTestHost", protocol="httpTest",
-                                                          command="CommandTest"))
+            new_instance = self.loader.load(adaptor, host="localTestHost", protocol="httpTest", command="CommandTest")
             self.assertEqual(new_instance.host, "localTestHost")
             self.assertEqual(new_instance.command, "CommandTest")
             self.assertEqual(new_instance.protocol, "httpTest")
