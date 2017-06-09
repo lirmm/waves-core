@@ -70,6 +70,7 @@ class ServiceTests(WavesAPITestCase):
 
     def test_list_categories(self):
         for api_version in ('api_v1', 'api_v2'):
+        for api_version in ('api_v1', 'api_v2'):
             logger.debug('Testing %s ', api_version)
             category_list = self.client.get(
                 reverse('waves:' + api_version + ':waves-services-category-list'))

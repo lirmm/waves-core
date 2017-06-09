@@ -1,0 +1,435 @@
+[
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 1,
+    "fields": {
+      "name": "queue",
+      "value": "local",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 2,
+    "fields": {
+      "name": "protocol",
+      "value": "sge",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 3,
+    "fields": {
+      "name": "host",
+      "value": "localhost",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 4,
+    "fields": {
+      "name": "command",
+      "value": null,
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 15,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 5,
+    "fields": {
+      "name": "protocol",
+      "value": "fork",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 2
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 6,
+    "fields": {
+      "name": "host",
+      "value": "localhost",
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 15,
+      "object_id": 2
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 7,
+    "fields": {
+      "name": "command",
+      "value": null,
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 15,
+      "object_id": 2
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 8,
+    "fields": {
+      "name": "queue",
+      "value": "all.q",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 9,
+    "fields": {
+      "name": "host",
+      "value": "wilkins.lirmm.fr",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 10,
+    "fields": {
+      "name": "protocol",
+      "value": "sge",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 11,
+    "fields": {
+      "name": "user_id",
+      "value": "phylo",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 12,
+    "fields": {
+      "name": "command",
+      "value": null,
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 15,
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 13,
+    "fields": {
+      "name": "basedir",
+      "value": "$HOME/",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 15,
+    "fields": {
+      "name": "port",
+      "value": "22",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 16,
+    "fields": {
+      "name": "user_pass",
+      "value": "lo@fi_76",
+      "crypt": true,
+      "prevent_override": true,
+      "content_type": 15,
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 17,
+    "fields": {
+      "name": "command",
+      "value": null,
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 9,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 18,
+    "fields": {
+      "name": "host",
+      "value": "localhost",
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 9,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 1,
+    "fields": {
+      "description": "",
+      "short_description": "",
+      "clazz": "waves.adaptors.core.cluster.LocalClusterAdaptor",
+      "name": "LocalClusterAdaptor",
+      "importer_clazz": null
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 2,
+    "fields": {
+      "description": "",
+      "short_description": "",
+      "clazz": "waves.adaptors.core.shell.LocalShellAdaptor",
+      "name": "LocalShellAdaptor",
+      "importer_clazz": null
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 3,
+    "fields": {
+      "description": "",
+      "short_description": "",
+      "clazz": "waves.adaptors.core.cluster.SshClusterAdaptor",
+      "name": "SshClusterAdaptor",
+      "importer_clazz": null
+    }
+  },
+  {
+    "model": "waves.servicecategory",
+    "pk": 1,
+    "fields": {
+      "order": 0,
+      "description": "",
+      "short_description": "",
+      "api_name": "cat_1",
+      "name": "Category 1",
+      "ref": null,
+      "parent": null
+    }
+  },
+  {
+    "model": "waves.servicecategory",
+    "pk": 2,
+    "fields": {
+      "order": 0,
+      "description": "",
+      "short_description": "",
+      "api_name": "cat_2",
+      "name": "Category 2",
+      "ref": null,
+      "parent": null
+    }
+  },
+  {
+    "model": "waves.servicecategory",
+    "pk": 3,
+    "fields": {
+      "order": 0,
+      "description": "",
+      "short_description": "",
+      "api_name": "subcat_1",
+      "name": "SubCategory 1",
+      "ref": null,
+      "parent": 1
+    }
+  },
+  {
+    "model": "waves.servicecategory",
+    "pk": 4,
+    "fields": {
+      "order": 0,
+      "description": "",
+      "short_description": "",
+      "api_name": "subcat_2",
+      "name": "SubCategory 2",
+      "ref": null,
+      "parent": 2
+    }
+  },
+  {
+    "model": "waves.service",
+    "pk": 1,
+    "fields": {
+      "created": "2017-05-23T12:02:16.849Z",
+      "updated": "2017-05-23T12:05:59.868Z",
+      "description": "",
+      "short_description": "",
+      "api_name": "service_1",
+      "runner": 2,
+      "name": "Service 1",
+      "version": "1.0",
+      "category": 1,
+      "status": 0,
+      "api_on": true,
+      "web_on": true,
+      "email_on": true,
+      "partial": false,
+      "created_by": 1,
+      "remote_service_id": null,
+      "edam_topics": "",
+      "edam_operations": "",
+      "restricted_client": []
+    }
+  },
+  {
+    "model": "waves.aparam",
+    "pk": 3,
+    "fields": {
+      "polymorphic_ctype": 27,
+      "api_name": "file_input",
+      "order": 0,
+      "label": "File Input",
+      "name": "file_input",
+      "multiple": false,
+      "help_text": "",
+      "submission": 2,
+      "required": true,
+      "default": null,
+      "cmd_format": 4,
+      "edam_formats": null,
+      "edam_datas": null,
+      "repeat_group": null,
+      "when_value": null,
+      "parent": null,
+      "regexp": null
+    }
+  },
+  {
+    "model": "waves.aparam",
+    "pk": 4,
+    "fields": {
+      "polymorphic_ctype": 11,
+      "api_name": "output",
+      "order": 0,
+      "label": "Output file Name",
+      "name": "output",
+      "multiple": false,
+      "help_text": "",
+      "submission": 2,
+      "required": true,
+      "default": null,
+      "cmd_format": 4,
+      "edam_formats": null,
+      "edam_datas": null,
+      "repeat_group": null,
+      "when_value": null,
+      "parent": null,
+      "regexp": null
+    }
+  },
+  {
+    "model": "waves.fileinput",
+    "pk": 3,
+    "fields": {
+      "max_size": 20480,
+      "allowed_extensions": "*"
+    }
+  },
+  {
+    "model": "waves.submission",
+    "pk": 2,
+    "fields": {
+      "created": "2017-05-23T12:05:59.871Z",
+      "updated": "2017-05-23T12:13:12.441Z",
+      "order": 0,
+      "slug": "30779f51-143d-45fe-96c5-929ec687da27",
+      "api_name": "simple",
+      "runner": null,
+      "availability": 3,
+      "name": "simple",
+      "service": 1
+    }
+  },
+  {
+    "model": "waves.submissionoutput",
+    "pk": 1,
+    "fields": {
+      "created": "2017-05-23T12:12:06.611Z",
+      "updated": "2017-05-23T12:12:06.611Z",
+      "api_name": "copied_file",
+      "label": "Copied File",
+      "submission": 2,
+      "from_input": 4,
+      "file_pattern": "%s",
+      "edam_format": null,
+      "edam_data": null,
+      "help_text": ""
+    }
+  },
+  {
+    "model": "waves.submissionexitcode",
+    "pk": 3,
+    "fields": {
+      "exit_code": 0,
+      "message": "Process exit normally",
+      "submission": 2,
+      "is_error": false
+    }
+  },
+  {
+    "model": "waves.submissionexitcode",
+    "pk": 4,
+    "fields": {
+      "exit_code": 1,
+      "message": "Process exit error",
+      "submission": 2,
+      "is_error": true
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 1,
+    "fields": {
+      "order": 0,
+      "description": "Copy sh fonction",
+      "short_description": null,
+      "type": "cmd",
+      "title": "Commande Line",
+      "value": "cp [from] [to]",
+      "is_url": false,
+      "service": 1
+    }
+  }
+]
