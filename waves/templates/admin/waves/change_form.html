@@ -1,7 +1,10 @@
 {% extends "admin/change_form.html" %}
 {% load i18n waves_tags admin_static %}
 
+{% block extrahead %}
+    {{ block.super }}
 
+{% endblock %}
 {% block footer %}
     {{ block.super }}
     <div id="popup_modal" class="modal fade" style="display: none" role="dialog"

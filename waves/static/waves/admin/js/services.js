@@ -27,10 +27,8 @@
         });
 
         $('#open_import_form').click(function (e) {
-            console.log('Launch an import ' + $(this).attr('href'));
             e.preventDefault();
             $('#popup_modal_content').load($(this).attr('href'), function () {
-                console.log('loaded');
                 $('#popup_modal').modal('toggle');
             });
         });

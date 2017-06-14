@@ -34,6 +34,12 @@
             Online
         </a>
     </li>
+    <li>
+        <a type="button" href="{% url 'waves:service_submission_preview' original.pk %}"
+           class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
+            Preview
+        </a>
+    </li>
     {% if original.runner %}
         <li>
             <a type="button" href="{% url 'waves:service_test_connection' original.pk %}"

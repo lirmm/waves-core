@@ -51,7 +51,7 @@ class ServiceSubmissionInline(admin.TabularInline):
 class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
     """ Service model objects Admin"""
 
-    class Media(WavesModelAdmin):
+    class Media:
         js = ('waves/admin/js/services.js',
               'waves/admin/js/connect.js')
 

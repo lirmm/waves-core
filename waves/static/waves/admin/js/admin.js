@@ -90,14 +90,12 @@ var RelatedInlinePopup = function () {
         $('.js-popup-link').click(function (e) {
             e.preventDefault();
             console.log('Js-pop-up-modal called');
-            $('#popup_modal').dialog({
-                modal: true,
-                position: {my: 'top', at: 'top+100', of: window},
-                minWidth: 500,
-                resizable: true,
-                dialogClass: "tool_import_modal",
-                title: this.title,
-            }).dialog('open').load(this.href)
+            if ($(this).attr('modal-title') != null) {
+                $('#popup_modal_content .modal-header').html("<h4>" + $(this).attr('modal-title') +"</h4>");
+            }
+            $('#popup_modal_content .modal-body').load($(this).attr('href'), function () {
+                $('#popup_modal').modal('toggle');
+            });
         });
         var $loading = $('#loading').hide();
         $(document)

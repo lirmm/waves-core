@@ -77,8 +77,11 @@ class CategoryListView(generic.ListView):
 
 class JobSubmissionView(ServiceDetailView, generic.FormView):
     model = Service
-    template_name = 'services/service_form.html'
+    template_name = 'waves/service_form.html'
     form_class = ServiceSubmissionForm
+
+    def get_template_names(self):
+        return super(JobSubmissionView, self).get_template_names()
 
     def __init__(self, *args, **kwargs):
         super(JobSubmissionView, self).__init__(*args, **kwargs)
