@@ -95,15 +95,14 @@ ENV/
 # Rope project settings
 .ropeproject
 
-/logs/
+/logs/*
 !/logs/.gitkeep
-/data/
+/data/*
 !/data/.gitkeep
 *.sqlite3
-migrations
-!waves/migrations/.gitkeep
-!waves/migrations/__init__.py
-
-
+migrations/*
+!/waves/migrations/.gitkeep
+!/waves/migrations/__init__.py
+!/waves/migrations/0001_initial.py
 
 !/waves/forms/lib/
