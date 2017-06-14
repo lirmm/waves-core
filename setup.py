@@ -25,6 +25,7 @@ setup(
         'django-crispy-forms==1.6.1',
         'django-mail-templated==2.6.5',
         'djangorestframework==3.5.4',
+        'django-polymorphic==1.2',
         'inflection==0.3.1',
         'pycrypto==2.6.1',
         'python-magic==0.4.13',
