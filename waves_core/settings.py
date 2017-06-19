@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 from __future__ import unicode_literals
 import os
 import logging.config
+from django.contrib import messages
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -125,6 +126,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
+
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media')
 MEDIA_URL = "/media/"
 
@@ -184,5 +194,9 @@ LOGGING = {
     }
 }
 logging.config.dictConfig(LOGGING)
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger'
+}
 
 INTERNAL_IPS = ("127.0.0.1", )

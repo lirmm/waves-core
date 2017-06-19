@@ -1,4 +1,4 @@
-{% extends "services/base.html" %}
+{% extends "waves/services/base.html" %}
 
 {% block navbar-left %}
     {% include "_navbar.html" with active_link="jobs" %}
@@ -21,7 +21,8 @@
                     <div align="center">
                         <ul class="pagination">
                             {% if page_obj.has_previous %}
-                                <li><a href="{% url 'waves:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                                <li>
+                                    <a href="{% url 'waves:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
                                 </li>
                             {% else %}
                                 <li class="disabled"><a href="#">previous</a></li>
@@ -42,27 +43,7 @@
                     </div>
                 {% endif %}
                 {% for job in job_list %}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <div class="panel-title">
-                                <h3>
-                                    <span class="label label-{{ job.label_class }} pull-right">{{ job.get_status_display }}</span>
-                                    {{ job.title }}
-                                </h3>
-                            </div>
-                        </div>
-                        <div class="panel-body">
-                            <ul class="list-group">
-                                <li class="list-group-item"><a href="{% url 'waves:job_details' job.slug %}"> &gt; See
-                                    Details</a></li>
-                                <li class="list-group-item"><em>Submitted :</em> {{ job.created }}</li>
-                                <li class="list-group-item"><em>Updated :</em> {{ job.updated }}</li>
-                                {% if request.user.is_staff %}
-                                    <li class="list-group-item">User: {{ job.client }}</li>
-                                {% endif %}
-                            </ul>
-                        </div>
-                    </div>
+                    {% include "waves/parts/job_list_element.html" with job=job %}
                 {% endfor %}
                 {% if is_paginated %}
                     <div align="center">

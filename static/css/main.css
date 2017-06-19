@@ -59,7 +59,7 @@ body > .navbar-transparent {
 /* Home page styling */
 .corporate-jumbo {
     background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)),
-    url("/static/waves/img/banner.png");
+    url("/static/img/banner.png");
     background-repeat: no-repeat;
     background-position: 80% center;
     background-attachment: fixed;

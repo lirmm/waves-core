@@ -19,7 +19,6 @@ eggs/
 .eggs/
 lib/
 lib64/
-parts/
 sdist/
 var/
 wheels/
@@ -100,9 +99,4 @@ ENV/
 /data/*
 !/data/.gitkeep
 *.sqlite3
-migrations/*
-!/waves/migrations/.gitkeep
-!/waves/migrations/__init__.py
-!/waves/migrations/0001_initial.py
-
-!/waves/forms/lib/
+!/waves/templates/waves/parts/

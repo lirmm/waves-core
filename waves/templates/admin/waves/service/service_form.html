@@ -6,11 +6,10 @@
           crossorigin="anonymous">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-toggle/2.2.2/css/bootstrap-toggle.css"/>
-    <link rel="stylesheet" href="{% static 'waves/css/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'waves/css/../../../../static/waves/admin/css/forms.css' %}">
 {% endblock %}
 
 {% block scripts %}
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous"></script>
@@ -21,28 +20,7 @@
 {% block form_main %}
     <div class="panel panel-info">
         <div class="panel-body">
-            {% if service.submissions_web.count > 1 %}
-                <ul class="nav nav-tabs">
-                    {% for possible_submission in service.submissions_web.all %}
-                        <li role="presentation"
-                            class="{% if selected_submission == possible_submission %}active{% endif %}">
-                            <a href="#{{ possible_submission.api_name }}" data-toggle="tab">
-                                {{ possible_submission.name }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-            <div id="my-tab-content" class="tab-content">
-                {% for form_sub in forms %}
-                    <div class="tab-pane {% if selected_submission == form_sub.instance %}active{% endif %}"
-                         id="{{ form_sub.instance.api_name }}">
-                        <h1>{{ form_sub.label }}</h1>
-                        <p>{{ form_sub.api_name }}</p>
-                        {% crispy form_sub %}
-                    </div>
-                {% endfor %}
-            </div>
+            {% include "waves/parts/submission_form.html" with service=service %}
         </div>
     </div>
 {% endblock %}
