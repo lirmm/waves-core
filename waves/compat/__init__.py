@@ -6,9 +6,16 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.contrib.admin import StackedInline
 
+__all__ = ['config', "available_themes", "list_themes", "RichTextField", "CompactInline", 'constance',
+           'organize_input_class']
+
+
 if 'jet' in settings.INSTALLED_APPS:
     from compat_jet import CompactInline
+    organize_input_class = 'waves.compat.submissions_jet.OrganizeInputInline'
 else:
+    organize_input_class = 'waves.compat.submissions_std.OrganizeInputInline'
+
     class CompactInline(StackedInline):
         """ Inherit base class """
         pass
@@ -23,7 +30,7 @@ else:
         pass
 
 if 'bootstrap_themes' in settings.INSTALLED_APPS:
-    from compat_bootstrap_themes import list_themes, available_themes
+    from compat_bootstrap_themes import available_themes
 else:
     available_themes = (
         ('default', 'Default'),
@@ -41,4 +48,3 @@ else:
     import constance
     from constance import config
 
-__all__ = ['config', "available_themes", "list_themes", "RichTextField", "CompactInline", 'constance']

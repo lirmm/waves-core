@@ -5,12 +5,10 @@ import re
 import uuid
 
 import inflection
-from waves.compat import config
 from django.db import models
 
-from waves.settings import waves_settings
 from waves.compat import RichTextField
-
+from waves.compat import config
 
 __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 'ApiModel',
            'UrlMixin']
@@ -154,5 +152,3 @@ class ExportAbleMixin(object):
     def export_file_name(self):
         """ Create export file name, based on concrete class name"""
         return '%s_%s.json' % (self.__class__.__name__.lower(), str(self.pk))
-
-
