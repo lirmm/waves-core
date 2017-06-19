@@ -28,7 +28,7 @@ waves_admin_url = [
         name="runner_export_form"),
     url(r'^admin/runner/(?P<pk>\d+)/check$', staff_member_required(RunnerTestConnectionView.as_view()),
         name="runner_test_connection"),
-    url(r'^admin/service/form/(?P<pk>\d+)/preview$', staff_member_required(JobSubmissionView.as_view()),
+    url(r'^admin/service/form/(?P<pk>\d+)/preview$', staff_member_required(SubmissionPreview.as_view()),
         name="service_submission_preview"),
 ]
 waves_front_url = [

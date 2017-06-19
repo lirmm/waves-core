@@ -11,6 +11,7 @@ from django.db import models
 from waves.settings import waves_settings
 from waves.compat import RichTextField
 
+
 __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 'ApiModel',
            'UrlMixin']
 
@@ -109,7 +110,7 @@ class UrlMixin(object):
         """ short cut to :func:`get_url()`
         :return: current absolute uri for Job
         """
-        return "%s%s" % (waves_settings.HOST, self.get_absolute_url())
+        return "%s%s" % (config.HOST, self.get_absolute_url())
 
     def get_url(self):
         """ Calculate and return absolute 'front-office' url for a model object

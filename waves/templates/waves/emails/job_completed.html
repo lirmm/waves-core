@@ -1,4 +1,4 @@
-{% extends 'emails/base.html' %}
+{% extends 'waves/emails/base.html' %}
 
 {% block subject_content %}Job completed for '{{ job.service.name }}' - your job is {{ job.get_status_display|lower }}{% endblock %}
 

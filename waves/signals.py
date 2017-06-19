@@ -24,7 +24,7 @@ from waves.utils import get_all_subclasses
 def job_pre_save_handler(sender, instance, **kwargs):
     """ job presave handler """
     if not instance.title:
-        instance.title = '%s_%s' % (instance.service.api_name, instance.slug)
+        instance.title = '%s %s' % (instance.service.name, instance.slug)
 
 
 @receiver(post_save, sender=Job)
