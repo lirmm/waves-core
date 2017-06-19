@@ -26,7 +26,7 @@ def get_context_meta_service(context, service):
 
 class ServiceDetailView(generic.DetailView):
     model = Service
-    template_name = 'services/service_details.html'
+    template_name = 'waves/services/service_details.html'
     context_object_name = 'service'
     queryset = Service.objects.all().prefetch_related("metas").prefetch_related('submissions')
     object = None
@@ -49,7 +49,7 @@ class ServiceDetailView(generic.DetailView):
 class CategoryDetailView(generic.DetailView):
     context_object_name = 'category'
     model = ServiceCategory
-    template_name = 'services/category_details.html'
+    template_name = 'waves/category/category_details.html'
     context_object_name = 'category'
 
     def get_queryset(self):
@@ -62,7 +62,7 @@ class CategoryDetailView(generic.DetailView):
 
 
 class CategoryListView(generic.ListView):
-    template_name = "services/categories_list.html"
+    template_name = "waves/category/categories_list.html"
     model = ServiceCategory
     context_object_name = 'online_categories'
 
@@ -77,7 +77,7 @@ class CategoryListView(generic.ListView):
 
 class JobSubmissionView(ServiceDetailView, generic.FormView):
     model = Service
-    template_name = 'waves/service_form.html'
+    template_name = 'waves/services/service_form.html'
     form_class = ServiceSubmissionForm
 
     def get_template_names(self):
@@ -175,3 +175,11 @@ class JobSubmissionView(ServiceDetailView, generic.FormView):
             "Your job could not be submitted, check errors"
         )
         return self.render_to_response(self.get_context_data(**kwargs))
+
+
+class SubmissionPreview(JobSubmissionView):
+    template_name = 'admin/waves/service/service_form.html'
+    def get_context_data(self, **kwargs):
+        context = super(SubmissionPreview, self).get_context_data(**kwargs)
+        context['preview'] = True
+        return context

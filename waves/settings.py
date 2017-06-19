@@ -72,9 +72,7 @@ DEFAULTS = {
         'waves.adaptors.core.cluster.SshClusterAdaptor',
         'waves.adaptors.core.cluster.SshKeyClusterAdaptor',
     ),
-    'PERMISSION_CLASSES': (
-        'waves.api.'
-    ),
+    'PERMISSION_CLASSES': (),
     'MAILER_CLASS': 'waves.mails.JobMailer'
 }
 

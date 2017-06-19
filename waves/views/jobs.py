@@ -11,14 +11,14 @@ class JobView(generic.DetailView):
     """ Job Detail view """
     model = Job
     slug_field = 'slug'
-    template_name = 'services/job_detail.html'
+    template_name = 'waves/jobs/job_detail.html'
     context_object_name = 'job'
 
 
 class JobListView(generic.ListView):
     """ Job List view (for user) """
     model = Job
-    template_name = 'services/job_list.html'
+    template_name = 'waves/jobs/job_list.html'
     context_object_name = 'job_list'
     paginate_by = 10
 

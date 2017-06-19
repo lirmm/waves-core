@@ -12,7 +12,7 @@ from django.views import generic
 
 class DownloadFileView(generic.DetailView):
     """ Dedicated view for file, add ?export=1 param to force download """
-    template_name = 'services/file.html'
+    template_name = 'waves/services/file.html'
     context_object_name = 'file'
     slug_field = 'slug'
     http_method_names = ['get', ]
