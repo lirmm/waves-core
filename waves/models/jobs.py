@@ -280,6 +280,8 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
     remote_job_id = models.CharField('Remote job ID', max_length=255, editable=False, null=True)
     #: Jobs sometime can gain access to a remote history, store the adaptor history identifier
     remote_history_id = models.CharField('Remote history ID', max_length=255, editable=False, null=True)
+    #: Final generated command line
+    _command_line = models.CharField('Final generated command line', max_length=255, editable=False, null=True)
 
     @property
     def service(self):
@@ -413,7 +415,13 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         :return: string representation of command line
         :rtype: unicode
         """
-        return "%s" % self.command.create_command_line(job_inputs=self.job_inputs.all())
+        if self._command_line is None:
+            self.command_line = "%s" % self.command.create_command_line(job_inputs=self.job_inputs.all())
+        return self._command_line
+
+    @command_line.setter
+    def command_line(self, command_line):
+        self._command_line = command_line
 
     @property
     def label_class(self):
