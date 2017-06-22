@@ -306,7 +306,6 @@
       "web_on": true,
       "email_on": true,
       "partial": false,
-      "created_by": 1,
       "remote_service_id": null,
       "edam_topics": "",
       "edam_operations": "",

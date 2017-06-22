@@ -13,6 +13,7 @@ from django.db.models import Q
 from waves.compat import config
 from waves.models.adaptors import *
 from waves.models.base import *
+import waves.adaptors.const
 
 __all__ = ['ServiceRunParam', 'ServiceCategory', 'Service']
 
@@ -269,10 +270,11 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, DTOMixin, HasRu
         """ Short cut method to access runner importer (if any)"""
         return self.runner.importer
 
-    def publishUnPublish(self):
+    def activate_deactivate(self):
+        """ Published or unpublished Service """
         self.status = Service.SRV_DRAFT if self.status is Service.SRV_PUBLIC else Service.SRV_PUBLIC
         self.save()
 
     @property
     def running_jobs(self):
-        return self.jobs.filter(status__in=[JOB_CREATED, JOB_COMPLETED])
+        return self.jobs.filter(status__in=[waves.adaptors.const.JOB_CREATED, waves.adaptors.const.JOB_COMPLETED])

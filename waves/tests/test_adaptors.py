@@ -25,8 +25,3 @@ class TestAdaptors(TestCase):
             self.assertEqual(new_instance.host, "localTestHost")
             self.assertEqual(new_instance.command, "CommandTest")
             self.assertEqual(new_instance.protocol, "httpTest")
-
-
-
-
-

@@ -37,7 +37,7 @@ def mark_public_in_mass(modeladmin, request, queryset):
     """ Allow status 'public' to be set in mass for objects implementing 'publish' method """
     for obj in queryset.all():
         try:
-            obj.publishUnPublish()
+            obj.activate_deactivate()
             messages.add_message(request, level=messages.SUCCESS, message="Object %s successfully published" % obj)
         except StandardError as e:
             messages.add_message(request, level=messages.ERROR, message="Object %s error %s " % (obj, e.message))

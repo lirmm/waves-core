@@ -109,7 +109,8 @@ class JobSubmissionView(ServiceDetailView, generic.FormView):
             if form is not None and str(submission.slug) == form.cleaned_data['slug']:
                 context['forms'].append(form)
             else:
-                context['forms'].append(self.form_class(instance=submission, parent=self.object))
+                context['forms'].append(self.form_class(instance=submission, parent=self.object,
+                                                        user=self.request.user))
         return context
 
     def get_form(self, form_class=None):

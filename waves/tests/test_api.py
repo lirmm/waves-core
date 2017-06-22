@@ -28,7 +28,7 @@ def _create_test_file(path, index):
 
 
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):
-    fixtures = ['waves/tests/fixtures/users.json', 'waves/tests/fixtures/services.json']
+    fixtures = ['waves/tests/fixtures/services.json']
 
     def setUp(self):
         super(WavesAPITestCase, self).setUp()
@@ -92,14 +92,15 @@ class JobTests(WavesAPITestCase):
         import random
         import string
         logger.debug('Retrieving service-list from ' + reverse('waves:api_v2:waves-services-list'))
-        tool_list = self.client.get(reverse('waves:api_v2:waves-services-list'), data=self._dataUser())
+        tool_list = self.client.get(reverse('waves:api_v2:waves-services-list'), format="json")
         self.assertEqual(tool_list.status_code, status.HTTP_200_OK)
-        self.assertGreater(len(tool_list.data), 0)
+        self.assertIsNotNone(tool_list)
+        logger.debug(tool_list.data)
         for servicetool in tool_list.data:
             logger.debug('Creating job submission for %s %s', servicetool['name'], str(servicetool['version']))
             # for each servicetool retrieve inputs
             self.assertIsNotNone(servicetool['url'])
-            detail = self.client.get(servicetool['url'], data=self._dataUser())
+            detail = self.client.get(servicetool['url'])
             # logger.debug('Details data: %s', detail)
             tool_data = detail.data
             self.assertTrue('submissions' in tool_data)

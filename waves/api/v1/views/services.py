@@ -113,11 +113,6 @@ class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIVie
         ass_email = request.data.pop('email', None)
         try:
             request.data.pop('api_key')
-            submitted_data = {
-                'submission': service_submission,
-                'client': request.user.pk,
-                'job_inputs': request.data
-            }
             from ..serializers.jobs import JobCreateSerializer
             from django.db.models import Q
             job = ServiceJobManager.create_new_job(submission=service_submission, email_to=ass_email,

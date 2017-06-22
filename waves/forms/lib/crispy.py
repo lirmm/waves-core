@@ -4,9 +4,9 @@ from crispy_forms.bootstrap import *
 from crispy_forms.helper import FormHelper as BaseFormHelper
 from crispy_forms.layout import *
 
-from . import BaseHelper
 from waves.models.inputs import *
 from waves.models.samples import FileInputSample
+from . import BaseHelper
 
 __all__ = ['FormHelper', 'FormLayout']
 
@@ -34,16 +34,9 @@ class FormHelper(BaseFormHelper, BaseHelper):
 
     def set_layout(self, service_input, form):
         """
-
-        Args:
-            service_input:
-            hidden:
-
-        Returns:
-
+        Setup layout for displaying a form for a Service, append extra fields for forms if needed
         """
         css_class = ""
-        wrapper_class = ""
         field_id = "id_" + service_input.name
         dependent_on = ""
         dependent_4_value = ""
@@ -62,10 +55,8 @@ class FormHelper(BaseFormHelper, BaseHelper):
                                    dependent_4_value=service_input.when_value))
             when_value = form.data.get(service_input.parent.name, service_input.parent.default)
             if service_input.when_value != when_value:
-                wrapper_class = "hid_dep_parameter"
                 field_dict.update(dict(wrapper_class="hid_dep_parameter", disabled="disabled"))
             else:
-                wrapper_class = "dis_dep_parameter"
                 field_dict.update(dict(wrapper_class="dis_dep_parameter"))
         input_field = Field(service_input.name, **field_dict)
         if isinstance(service_input, FileInput) and not service_input.multiple:
@@ -107,15 +98,8 @@ class FormHelper(BaseFormHelper, BaseHelper):
         l_fields = []
         for field in fields:
             l_fields.append(Field(field))
-
         self.layout = Layout()
         self.layout.extend(l_fields)
-        """self.layout = Layout(
-            Field('title'),
-            Field('email', ),
-            HTML('<HR/>')
-        )
-        """
         return self.layout
 
     def end_layout(self):

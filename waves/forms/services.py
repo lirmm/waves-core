@@ -6,7 +6,6 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 
-from waves.compat import config
 from waves.forms.lib.crispy import FormHelper
 from waves.models.inputs import *
 from waves.models.samples import *
@@ -30,7 +29,8 @@ class ServiceSubmissionForm(forms.ModelForm):
     email = forms.EmailField(label="Mail me results", required=False)
 
     def __init__(self, *args, **kwargs):
-        parent_form = kwargs.pop('parent', None)
+        parent = kwargs.pop('parent', None)
+        user = kwargs.pop('user', None)
         super(ServiceSubmissionForm, self).__init__(*args, **kwargs)
         self.helper = self.get_helper(form_tag=True)
         self.helper.init_layout(fields=('title', 'email', 'slug'))
