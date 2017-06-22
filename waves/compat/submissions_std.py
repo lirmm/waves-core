@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 
-from polymorphic.admin import StackedPolymorphicInline, PolymorphicInlineModelAdmin
 from django import forms
+from polymorphic.admin import StackedPolymorphicInline
+
 from waves.admin.submissions import *
 
 

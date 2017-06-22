@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.admin import StackedInline
 
 __all__ = ['config', "available_themes", "list_themes", "RichTextField", "CompactInline", 'constance',
-           'organize_input_class']
+           'organize_input_class', "SortableInlineAdminMixin"]
 
 
 if 'jet' in settings.INSTALLED_APPS:
@@ -48,3 +48,8 @@ else:
     import constance
     from constance import config
 
+if 'adminsortable2' not in settings.INSTALLED_APPS:
+    class SortableInlineAdminMixin(object):
+        pass
+else:
+    from adminsortable2 import SortableInlineAdminMixin

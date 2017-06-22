@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from adminsortable2.admin import SortableInlineAdminMixin
+from waves.compat import SortableInlineAdminMixin
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
