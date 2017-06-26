@@ -194,6 +194,13 @@ LOGGING = {
 }
 logging.config.dictConfig(LOGGING)
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
+
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'
 }

@@ -86,7 +86,7 @@ class MultipleFieldLookupMixin(object):
         return get_object_or_404(queryset, **filters)  # Lookup the object
 
 
-class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIView, generics.CreateAPIView,
+class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.CreateAPIView,
                                WavesAuthenticatedView):
     """ Service job Submission view """
     queryset = ServiceSubmission.objects.all()
@@ -112,11 +112,11 @@ class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIVie
         service_submission = self.get_object()
         ass_email = request.data.pop('email', None)
         try:
-            request.data.pop('api_key')
+            request.data.pop('api_key', None)
             from ..serializers.jobs import JobCreateSerializer
             from django.db.models import Q
-            job = ServiceJobManager.create_new_job(submission=service_submission, email_to=ass_email,
-                                                   submitted_inputs=request.data, user=request.user)
+            job = Job.objects.create_from_submission(submission=service_submission, email_to=ass_email,
+                                                     submitted_inputs=request.data, user=request.user)
             # Now job is created (or raise an exception),
             serializer = JobSerializer(job, many=False, context={'request': request},
                                        fields=('slug', 'url', 'created', 'status',))

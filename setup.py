@@ -21,6 +21,7 @@ setup(
     author_email='marc.chakiachvili@lirmm.fr, marc@archi-logic.fr',
     install_requires=[
         'saga-python==0.45.1',
+        'django==1.11.1',
         'django-admin-sortable2==0.6.10',
         'django-crispy-forms==1.6.1',
         'django-mail-templated==2.6.5',
