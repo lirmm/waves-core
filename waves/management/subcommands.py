@@ -169,6 +169,8 @@ class ImportCommand(BaseCommand):
                     raise NotImplementedError('Currently only services can be imported')
                 try:
                     db_version = json_srv.pop('db_version', None)
+                    if db_version != waves_settings.DB_VERSION:
+                        raise ValidationError('Uncompatible db versions')
                     if serializer.is_valid(raise_exception=True):
                         self.stdout.write("Service import from file %s ...." % exported_file)
                         serializer.validated_data['name'] += ' (Import)'

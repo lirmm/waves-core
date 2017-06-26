@@ -47,6 +47,7 @@ def import_from_string(val, setting_name):
 
 DEFAULTS = {
     'VERSION': __import__('waves').__version__,
+    'DB_VERSION': __import__('waves').__db_version__,
     'DATA_ROOT': join(settings.BASE_DIR, 'data'),
     'JOB_DIR': join(settings.BASE_DIR, 'data', 'jobs'),
     'SAMPLE_DIR': join(settings.MEDIA_ROOT, 'sample'),

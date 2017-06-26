@@ -28,7 +28,7 @@ def _create_test_file(path, index):
 
 
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):
-    fixtures = ['waves/tests/fixtures/services.json']
+    fixtures = ['waves/tests/fixtures/services.json', 'waves/tests/fixtures/srv_physic_ist.json']
 
     def setUp(self):
         super(WavesAPITestCase, self).setUp()
@@ -180,8 +180,7 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
 
     def testMissingParam(self):
         response = self.client.get(reverse('waves:api_v2:waves-services-detail',
-                                           kwargs={'api_name': 'physic_ist'}),
-                                   data=self._dataUser())
+                                           kwargs={'api_name': 'physic_ist'}))
         if response.status_code == status.HTTP_200_OK:
             jobs_params = self._loadServiceJobsParams(api_name='physic_ist')
             submitted_input = jobs_params[0]
@@ -189,8 +188,9 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
             logger.debug('Data posted %s', submitted_input)
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.client.login(username="api_user", password="api_user1234")
             response = self.client.post(response.data['default_submission_uri'],
-                                        data=self._dataUser(initial=submitted_input),
+                                        data=submitted_input,
                                         format='multipart')
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             logger.info(response)

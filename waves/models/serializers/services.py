@@ -57,8 +57,8 @@ class ServiceSubmissionSerializer(BaseServiceSubmissionSerializer, RelatedSerial
 
     class Meta:
         model = Submission
-        fields = ('api_name', 'order', 'name', 'available_online', 'available_api', 'all_inputs',
-                  'submission_inputs')
+        fields = ('api_name', 'order', 'name', 'available_online', 'available_api',
+                  'submission_inputs', 'export_submission_inputs')
 
     export_submission_inputs = ServiceInputSerializer(many=True, required=False)
     submission_inputs = ServiceInputSerializer(many=True, required=False, write_only=True, source="all_inputs")
@@ -196,3 +196,7 @@ class ServiceSerializer(BaseServiceSerializer, RelatedSerializerMixin):
         srv_object.exit_codes = self.create_related(foreign={'service': srv_object},
                                                     serializer=ExitCodeSerializer, datas=ext_codes)
         return srv_object
+
+
+    def get_db_version(self, obj):
+        return waves_settings.DB_VERSION

@@ -19,7 +19,7 @@ class RunnerSerializer(serializers.ModelSerializer, RelatedSerializerMixin):
         model = Runner
         fields = ('name', 'clazz', 'runner_params')
 
-    runner_params = RunnerParamSerializer(many=True, source='clazz_params')
+    runner_params = RunnerParamSerializer(many=True, source='adaptor_params')
 
     @transaction.atomic
     def create(self, validated_data):
