@@ -4,14 +4,11 @@ Base Test class for Runner's adaptors
 from __future__ import unicode_literals
 
 import logging
-import os
-import time
 
 from django.contrib.contenttypes.models import ContentType
-from django.utils.timezone import localtime
 
-from waves.adaptors.core.base import JobAdaptor
-from waves.adaptors.exceptions.adaptors import AdaptorInitError
+from waves.adaptors.core.adaptor import JobAdaptor
+from waves.adaptors.exceptions.adaptors import *
 from waves.adaptors.mocks import MockJobRunnerAdaptor
 from waves.exceptions.jobs import *
 from waves.models import *
@@ -36,7 +33,7 @@ def sample_runner(runner_impl):
     object_ctype = ContentType.objects.get_for_model(runner_model)
     for name, value in runner_impl.init_params.items():
         AdaptorInitParam.objects.update_or_create(name=name, content_type=object_ctype, object_id=runner_model.pk,
-                                                  defaults={'default': value})
+                                                  defaults={'value': value})
     return runner_model
 
 
@@ -100,7 +97,7 @@ class TestJobRunner(WavesBaseTestCase):
         # Only run for sub classes
         self.adaptor.connect()
         self.assertTrue(self.adaptor.connected)
-        self.assertIsNotNone(self.adaptor._connector)
+        self.assertIsNotNone(self.adaptor.connector)
         self.adaptor.disconnect()
         self.assertFalse(self.adaptor.connected)
 
@@ -110,9 +107,9 @@ class TestJobRunner(WavesBaseTestCase):
         if not self.__class__.__name__ == 'TestJobRunner':
             self.skipTest("Only run with mock adaptor, just check job states consistency")
         self.current_job = sample_job(self.service)
-
-        with self.assertRaises(AdaptorInitError):
-            self.adaptor = JobAdaptor(init_params=dict(unexpected_param='unexpected value'))
+        self.adaptor = JobAdaptor(unexpected_param='unexpected value')
+        with self.assertRaises(AdaptorNotReady):
+            self.adaptor.connect()
 
         self.jobs.append(self.current_job)
         self._debug_job_state()
@@ -138,55 +135,7 @@ class TestJobRunner(WavesBaseTestCase):
         self.assertEqual(self.current_job.status, Job.JOB_COMPLETED)
         logger.debug('%i => %s', len(self.current_job.job_history.values()), self.current_job.job_history.values())
         # assert that no history element has been added
-        self.assertEqual(length1, self.current_job.job_history.count())
         self.current_job.status = Job.JOB_RUNNING
         self.current_job.run_cancel()
         self.assertTrue(self.current_job.status == Job.JOB_CANCELLED)
 
-    def runJobWorkflow(self, job=None):
-        if job is not None:
-            self.current_job = job
-        if self.current_job is None:
-            self.current_job = sample_job(self.service)
-        if self.current_job not in self.jobs:
-            self.jobs.append(self.current_job)
-        assert isinstance(self.current_job, Job)
-        logger.info('Starting workflow process for job %s', self.current_job)
-        self.assertGreaterEqual(self.current_job.job_history.count(), 1)
-        # self.adaptor.prepare_job(self.current_job)
-        self.current_job.run_prepare()
-        self.assertEqual(self.current_job.status, Job.JOB_PREPARED)
-        self.current_job.run_launch()
-        logger.debug('Remote Job ID %s', self.current_job.remote_job_id)
-        self.assertEqual(self.current_job.status, Job.JOB_QUEUED)
-        for ix in range(100):
-            # job_state = self.adaptor.job_status(self.current_job)
-            job_state = self.current_job.run_status()
-            logger.info(u'Current job state (%i) : %s ', ix, self.current_job.get_status_display())
-            if job_state >= Job.JOB_COMPLETED:
-                logger.info('Job state ended to %s ', self.current_job.get_status_display())
-                break
-            else:
-                time.sleep(3)
-        if self.current_job.status in (Job.JOB_COMPLETED, Job.JOB_TERMINATED):
-            # Get job run details
-            # self.adaptor.job_run_details(self.current_job)
-            self.current_job.run_details()
-            history = self.current_job.job_history.first()
-            logger.debug("History timestamp %s", localtime(history.timestamp))
-            logger.debug("Job status timestamp %s", self.current_job.status_time)
-            self.assertTrue(self.current_job.results_available)
-            for output_job in self.current_job.outputs.all():
-                # TODO reactivate job output verification as soon as possible
-                if not os.path.isfile(output_job.file_path):
-                    logger.warning("Job <<%s>> did not output expected %s (test_data/jobs/%s/) ",
-                                   self.current_job.title, output_job.value, self.current_job.slug)
-
-                self.assertTrue(os.path.isfile(output_job.file_path),
-                                msg="Job <<%s>> did not output expected %s (test_data/jobs/%s/) " %
-                                    (self.current_job.title, output_job.value, self.current_job.slug))
-                logger.info("Expected output file: %s ", output_job.file_path)
-            self.assertGreaterEqual(self.current_job.status, Job.JOB_COMPLETED)
-        else:
-            logger.warn('problem with job status %s', self.current_job.get_status_display())
-        return True

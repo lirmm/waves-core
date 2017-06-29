@@ -23,8 +23,8 @@ from waves.utils import get_all_subclasses
 @receiver(pre_save, sender=Job)
 def job_pre_save_handler(sender, instance, **kwargs):
     """ job presave handler """
-    if not instance.title:
-        instance.title = '%s %s' % (instance.service.name, instance.slug)
+    if not instance.message:
+        instance.message = instance.get_status_display()
 
 
 @receiver(post_save, sender=Job)
@@ -34,7 +34,8 @@ def job_post_save_handler(sender, instance, created, **kwargs):
         if created:
             # create job working dirs locally
             instance.make_job_dirs()
-            instance.job_history.create(message="Job Created", status=instance.status)
+            instance.create_default_outputs()
+            instance.job_history.create(message="Job Defaults created", status=instance.status)
 
 
 @receiver(post_delete, sender=Job)

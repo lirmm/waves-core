@@ -67,9 +67,7 @@ class AdaptorJobStateException(AdaptorJobException):
 
 class AdaptorNotReady(Exception):
     """ Adaptor is not properly initialized to be used """
-
-    def __init__(self):
-        super(AdaptorNotReady, self).__init__('Adaptor is not ready')
+    pass
 
 
 class AdaptorInitError(AttributeError):

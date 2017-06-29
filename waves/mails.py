@@ -42,7 +42,7 @@ class JobMailer(object):
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        if self.mail_activated and job.service.email_on:
+        if self.mail_activated and job.notify:
             context = self.get_context_data()
             context['job'] = job
             mail_subject = "Waves Job [%s]" % job.title if subject is None else subject

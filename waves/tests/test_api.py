@@ -10,25 +10,15 @@ from rest_framework.test import APITestCase
 
 from waves.models import Job
 from waves.models.inputs import AParam
-from waves.settings import waves_settings
 from waves.tests.base import WavesBaseTestCase
+from waves.tests.utils import create_test_file
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
-def _create_test_file(path, index):
-    import os
-    full_path = os.path.join(waves_settings.JOB_DIR, '_' + str(index) + '_' + path)
-    f = open(full_path, 'w')
-    f.write('sample content for input file %s' % ('_' + str(index) + '_' + path))
-    f.close()
-    f = open(full_path, 'rb')
-    return f
-
-
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):
-    fixtures = ['waves/tests/fixtures/services.json', 'waves/tests/fixtures/srv_physic_ist.json']
+    fixtures = ['waves/tests/fixtures/services.json']
 
     def setUp(self):
         super(WavesAPITestCase, self).setUp()
@@ -106,7 +96,7 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                     for job_input in submission['inputs']:
                         if job_input['type'] == AParam.TYPE_FILE:
                             i += 1
-                            input_data = _create_test_file(job_input['name'], i)
+                            input_data = create_test_file(job_input['name'], i)
                             # input_datas[job_input['name']] = input_data.name
                             logger.debug('file input %s', input_data)
                         elif job_input['type'] == AParam.TYPE_INT:
@@ -155,8 +145,7 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
 
     def testPhysicIST(self):
         url_post = self.client.get(reverse('waves:api_v2:waves-services-detail',
-                                           kwargs={'api_name': 'physic_ist'}),
-                                   data=self._dataUser())
+                                           kwargs={'api_name': 'physic_ist'}))
         if url_post.status_code == status.HTTP_200_OK:
 
             jobs_params = self._loadServiceJobsParams(api_name='physic_ist')
@@ -164,13 +153,13 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
             for submitted_input in jobs_params:
                 logger.debug('Data posted %s', submitted_input)
                 response = self.client.post(url_post.data['default_submission_uri'],
-                                            data=self._dataUser(initial=submitted_input),
+                                            data=submitted_input,
                                             format='multipart')
                 logger.debug(response)
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 job_details = self.client.get(reverse('waves:api_v2:waves-jobs-detail',
-                                                      kwargs={'slug': response.data['slug']}),
-                                              data=self._dataUser())
+                                                      kwargs={'slug': response.data['slug']}))
+
                 self.assertEqual(job_details.status_code, status.HTTP_200_OK)
                 job = Job.objects.get(slug=response.data['slug'])
                 self.assertIsInstance(job, Job)

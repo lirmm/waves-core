@@ -2,8 +2,9 @@ from __future__ import unicode_literals
 
 
 class BaseCommand(object):
-    def __init__(self, service):
-        self.service = service
+    def __init__(self):
+        # type: () -> object
+        pass
 
     def create_command_line(self, job_inputs):
         """

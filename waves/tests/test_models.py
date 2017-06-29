@@ -6,33 +6,14 @@ import os
 
 from django.test import TestCase
 from django.utils.module_loading import import_string
-from waves.adaptors.loader import AdaptorLoader
+
 from waves.adaptors.core.adaptor import JobAdaptor
-from waves.models import Job, Service, Runner
+from waves.models import Job, Service
 from waves.models.submissions import Submission
 from waves.tests.base import WavesBaseTestCase
-from waves.settings import waves_settings
+from waves.tests.utils import create_runners, create_service_for_runners
 
 logger = logging.getLogger(__name__)
-
-
-def create_runners():
-    """ Create base models from all Current implementation parameters """
-    runners = []
-    loader = AdaptorLoader()
-    for adaptor in loader.get_adaptors():
-        runners.append(Runner.objects.create(name="%s Runner" % adaptor.name,
-                                             clazz='.'.join([adaptor.__module__, adaptor.__class__.__name__])))
-    return runners
-
-
-def create_service_for_runners():
-    """ initialize a empty service for each defined runner """
-    services = []
-    for runner in create_runners():
-        srv = Service.objects.create(name="Service %s " % runner.name, runner=runner)
-        services.append(srv)
-    return services
 
 
 class TestRunner(TestCase):
@@ -80,23 +61,24 @@ class TestJobs(WavesBaseTestCase):
     def tearDown(self):
         super(TestJobs, self).tearDown()
 
-    def test_basic_jobs_signals(self):
+    def test_jobs_signals(self):
         job = Job.objects.create(submission=Submission.objects.create(name="Sample Sub", service=Service.objects.create(
             name='SubmissionSample Service')))
         self.assertIsNotNone(job.title)
+        self.assertEqual(job.outputs.count(), 2)
         self.assertTrue(os.path.isdir(job.working_dir))
         logger.debug('Job directories has been created %s ', job.working_dir)
         self.assertEqual(job.status, Job.JOB_CREATED)
         self.assertEqual(job.job_history.count(), 1)
         job.message = "Test job Message"
-        job.save_status_history(Job.JOB_PREPARED)
+        job.status = Job.JOB_PREPARED
         job.save()
         self.assertGreaterEqual(job.job_history.filter(message__contains=job.message).all(), 0)
         job.delete()
         self.assertFalse(os.path.isdir(job.working_dir))
         logger.debug('Job directories has been deleted')
 
-    def test_basic_job_history(self):
+    def test_job_history(self):
         job = Job.objects.create(submission=Submission.objects.create(name="Sample Sub", service=Service.objects.create(
             name='SubmissionSample Service')))
         job.job_history.create(message="Test Admin message", status=job.status, is_admin=True)

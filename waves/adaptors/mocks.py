@@ -18,6 +18,7 @@ class MockConnector(object):
 
 
 class MockJobRunnerAdaptor(JobAdaptor):
+    command = "fake"
     _states_map = {
         waves.adaptors.const.JOB_UNDEFINED: waves.adaptors.const.JOB_UNDEFINED,
         waves.adaptors.const.JOB_CREATED: waves.adaptors.const.JOB_CREATED,
@@ -29,22 +30,6 @@ class MockJobRunnerAdaptor(JobAdaptor):
         waves.adaptors.const.JOB_TERMINATED: waves.adaptors.const.JOB_TERMINATED,
         waves.adaptors.const.JOB_ERROR: waves.adaptors.const.JOB_ERROR,
     }
-
-    def __init__(self, *args, **kwargs):
-        """ Initialize a adaptor
-            Set _initialized value (True or False) if all non default expected params are set
-            :raise: :class:`waves.adaptors.exceptions.adaptors.AdaptorInitError` if wrong parameter given as init values
-            :param init_params: a dictionnary with expected initialization params (retrieved from init_params property)
-            :param kwargs: its possible to force connector and _parser attributes when initialize a Adaptor
-            :return: a new JobAdaptor object
-        """
-        init_params = kwargs.pop('init_params', None)
-        super(MockJobRunnerAdaptor, self).__init__(*args, **kwargs)
-        self._initialized = True
-        self._connected = True
-        if init_params is not None:
-            for name, value in init_params.items():
-                setattr(self, name, value)
 
     def _job_status(self, job):
         time.sleep(2)

@@ -28,19 +28,18 @@ class JobMailTest(WavesBaseTestCase):
             submission=Submission.objects.create(name='Default',
                                                  service=Service.objects.create(name='SubmissionSample Service')),
             email_to='marc@fake.com')
-        print "Test job title", job.title
         job.job_inputs.add(JobInput.objects.create(name="param1", value="Value1", job=job))
         job.job_inputs.add(JobInput.objects.create(name="param2", value="Value2", job=job))
         job.job_inputs.add(JobInput.objects.create(name="param3", value="Value3", job=job))
         job.outputs.add(JobOutput.objects.create(_name="out1", value="out1", job=job))
         job.outputs.add(JobOutput.objects.create(_name="out2", value="out2", job=job))
         job.status_time = timezone.datetime.now()
-        job.check_send_mail()
         logger.debug("Job link: %s", job.link)
+        logger.debug("Job notify: %s", job.notify)
+        job.check_send_mail()
         self.assertEqual(len(mail.outbox), 1)
         sent_mail = mail.outbox[-1]
-        print sent_mail.subject
-        self.assertTrue(job.service.name in sent_mail.subject)
+        self.assertTrue(job.service in sent_mail.subject)
         self.assertEqual(job.email_to, sent_mail.to[0])
         self.assertEqual(config.SERVICES_EMAIL, sent_mail.from_email)
         logger.debug('Mail subject: %s', sent_mail.subject)

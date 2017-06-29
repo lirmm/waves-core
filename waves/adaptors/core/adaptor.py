@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 import logging
-from django.conf import settings
+
 import waves.adaptors.core
-from waves.adaptors.exceptions.adaptors import AdaptorNotReady, AdaptorJobStateException
+from waves.adaptors.exceptions.adaptors import *
 
 logger = logging.getLogger(__name__)
 
@@ -37,12 +37,12 @@ class JobAdaptor(object):
         :return: a new JobAdaptor object
         """
         self._connected = False
-        self.connector = kwargs.get('connector', None)
-        self.parser = kwargs.get('parser', None)
-        self.command = kwargs.get('command', None)
+        self.connector = kwargs.get('connector', self.connector)
+        self.parser = kwargs.get('parser', self.parser)
+        self.command = kwargs.get('command', self.command)
         self.protocol = kwargs.get('protocol', self.protocol)
         self.host = kwargs.get('host', self.host)
-        self._initialized = all(init_param is not None for init_param in self.init_params)
+        self._initialized = all(value is not None for init_param, value in self.init_params.items())
 
     """
     def __str__(self):
@@ -55,7 +55,7 @@ class JobAdaptor(object):
 
     @property
     def init_params(self):
-        """ Returns expected 'init_params', with default if set at class level
+        """ Returns expected (required) 'init_params', with default if set at class level
         :return: A dictionary containing expected init params
         :rtype: dict
         """
@@ -80,7 +80,10 @@ class JobAdaptor(object):
         :return: connector reference or raise an
         """
         if not self._initialized:
-            raise AdaptorNotReady()
+            # search missing values
+            raise AdaptorNotReady(
+                "Missing required parameter(s) for initialization: %s " % [init_param for init_param, value in
+                                                                           self.init_params.items() if value is None])
         if not self.connected:
             self._connect()
         return self.connector
@@ -173,7 +176,7 @@ class JobAdaptor(object):
         self.connect()
         return self._job_run_details(job)
 
-    def dump_config(self, to_file=settings.BASE_DIR):
+    def dump_config(self):
         """ Create string representation of current adaptor config"""
         str_dump = 'Dump config for %s \n ' % self.__class__
         str_dump += 'Init params:'

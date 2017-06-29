@@ -20,10 +20,8 @@ from django.utils.translation import ugettext as _
 import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.exceptions.adaptors
-from waves.settings import waves_settings
 from waves.compat import config
-from waves.exceptions import WavesException
-from waves.exceptions.jobs import JobInconsistentStateError, JobMissingMandatoryParam
+from waves.exceptions.jobs import *
 from waves.mails import JobMailer
 from waves.models.adaptors import DTOMixin
 from waves.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
@@ -140,7 +138,9 @@ class JobManager(models.Manager):
             for key in submitted_inputs:
                 logger.debug('Param %s: %s', key, submitted_inputs[key])
         client = user if user is not None and not user.is_anonymous() else None
-        job = self.create(email_to=email_to, client=client, title=job_title, submission=submission)
+        job = self.create(email_to=email_to, client=client, title=job_title,
+                          submission=submission, service=submission.service.name,
+                          notify=submission.service.email_on)
         job.create_non_editable_inputs(submission)
         mandatory_params = submission.expected_inputs.filter(required=True)
         missings = {}
@@ -173,9 +173,6 @@ class JobManager(models.Manager):
         for service_output in submission.outputs.all():
             job.outputs.add(
                 JobOutput.objects.create_from_submission(job, service_output, submitted_inputs))
-        # initiate default outputs
-        job.create_default_outputs()
-
         logger.debug('Job %s created with %i inputs', job.slug, job.job_inputs.count())
         if logger.isEnabledFor(logging.DEBUG):
             # LOG full command line
@@ -256,13 +253,10 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
     objects = JobManager()
     #: Job Title, automatic or set by user upon submission
     title = models.CharField('Job title', max_length=255, null=True, blank=True)
-    #: Job related Service - see :ref:`service-label`.
-    submission = models.ForeignKey(Submission, related_name='service_jobs', null=False,
-                                   on_delete=models.CASCADE)
-    #: Job last known status - see :ref:`waves-jobconst-label`.
-    status = models.IntegerField('Job status', choices=STATUS_LIST,
-                                 default=JOB_CREATED,
-                                 help_text='Job current run status')
+    #: Job related Service
+    submission = models.ForeignKey(Submission, related_name='service_jobs', null=True, on_delete=models.SET_NULL)
+    #: Job last known status
+    _status = models.IntegerField('Job status', choices=STATUS_LIST, default=JOB_CREATED)
     #: Job last status for which we sent a notification email
     status_mail = models.IntegerField(editable=False, default=9999)
     #: Job associated client, may be null for anonymous submission
@@ -282,15 +276,20 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
     remote_history_id = models.CharField('Remote history ID', max_length=255, editable=False, null=True)
     #: Final generated command line
     _command_line = models.CharField('Final generated command line', max_length=255, editable=False, null=True)
+    service = models.CharField('Issued from service', max_length=255, editable=False, null=True, default="")
+    notify = models.BooleanField("Notify this result", default=False, editable=False)
 
     @property
-    def service(self):
-        """ Retrieve service """
-        return self.submission.service
+    def status(self):
+        return self._status
 
-    def natural_key(self):
-        """ Job natural keys """
-        return self.slug, self.service.natural_key()
+    @status.setter
+    def status(self, value):
+        if value != self._status:
+            message = self.message.decode('utf8', errors='replace')
+            logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
+            self.job_history.create(message=message, status=value)
+        self._status = value
 
     def colored_status(self):
         """
@@ -303,7 +302,19 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
 
     def save(self, *args, **kwargs):
         """ Overriden save, set _status to current job status """
+        if self.submission:
+            if not self.service:
+                self.service = self.submission.service.name
+            if not self.notify:
+                self.notify = self.submission.service.email_on
+            if not self.title:
+                self.title = "%s %s" % (self.service, self.slug)
+
+        if not self.title:
+            self.title = '%s' % self.slug
+
         super(Job, self).save(*args, **kwargs)
+
         self._status = self.status
 
     def make_job_dirs(self):
@@ -388,7 +399,7 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         :return: working dir
         :rtype: unicode
         """
-        return os.path.join(waves_settings.JOB_DIR, str(self.slug))
+        return os.path.join(settings.JOB_DIR, str(self.slug))
 
     @property
     def adaptor(self):
@@ -396,10 +407,13 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         :return: a child class of `JobRunnerAdaptor`
         :rtype: `waves.adaptors.runner.JobRunnerAdaptor`
         """
-        return self.submission.adaptor
+        if self.submission:
+            return self.submission.adaptor
+        else:
+            raise JobException('Missing adaptor to execute job')
 
     def __str__(self):
-        return '[%s][%s]' % (self.slug, self.service.api_name)
+        return '[%s][%s]' % (self.slug, self.service)
 
     @property
     def command(self):
@@ -407,7 +421,8 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         :return: a BaseCommand object (or one of its child)
         :rtype: `BaseCommand`
         """
-        return self.service.command
+        from waves.commands.command import BaseCommand
+        return BaseCommand()
 
     @property
     def command_line(self):
@@ -446,7 +461,7 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         mailer = JobMailer()
         if self.status != self.status_mail and self.status == self.JOB_ERROR:
             mailer.send_job_admin_error(self)
-        if config.NOTIFY_RESULTS and self.service.email_on:
+        if config.NOTIFY_RESULTS and self.notify:
             if self.email_to is not None and self.status != self.status_mail:
                 # should send a email
                 try:
@@ -461,6 +476,7 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
                         nb_sent = mailer.send_job_cancel_email(self)
                     # Avoid resending emails when last status mail already sent
                     self.status_mail = self.status
+                    logger.debug("Sending email to %s ", self.email_to)
                     if nb_sent > 0:
                         self.job_history.create(message='Sent notification email', status=self.status, is_admin=True)
                     else:
@@ -550,34 +566,23 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         """ Add a new try for job execution, save retry reason in JobAdminHistory, save job """
         if self.nb_retry <= config.JOBS_MAX_RETRY:
             self.nb_retry += 1
-            self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status, is_admin=True)
+            self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status)
             self.save()
         else:
             self.error(message)
 
     def error(self, message):
         """ Set job Status to ERROR, save error reason in JobAdminHistory, save job"""
-        self.save_status_history(Job.JOB_ERROR, message='[Error]%s' % message, is_admin=True)
+        self.message = '[Error]%s' % message
+        self.status = self.JOB_ERROR
+        self.save()
 
     def fatal_error(self, exception):
         logger.exception(exception)
         self.error(exception.message)
 
-    def save_status_history(self, state, message=None, is_admin=False):
-        """ Save new state in DB, add history message id needed """
-        if message is not None:
-            h_message = message
-        elif self.message is not None:
-            h_message = self.message
-        else:
-            h_message = ""
-        self.status = state or 'Job %s' % self.get_status_display().lower()
-        if self.changed_status:
-            self.job_history.create(message=h_message.decode('utf8', errors='replace'), status=self.status,
-                                    is_admin=is_admin)
-            self.message = ""
-        self.save()
-        logger.debug('Job and history saved [%d] status: %s', self.id, self.get_status_display())
+    def get_status_display(self):
+        return self.get__status_display()
 
     def _run_action(self, action):
         """ Check if current job status is coherent with requested action """
@@ -587,7 +592,7 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
             status_allowed = self.STATUS_LIST[2:3]
         elif action == 'cancel_job':
             # Report fails to a AdaptorException raise during cancel process
-            status_allowed = self.STATUS_LIST
+            status_allowed = self.STATUS_LIST[1:6]
             if getattr(self.adaptor, 'state_allow_cancel', None):
                 status_allowed = self.adaptor.state_allow_cancel
         elif action == 'job_results':
@@ -602,7 +607,6 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         try:
             returned = getattr(self.adaptor, action)(self)
             self.nb_retry = 0
-            # self.save_status_history(self.next_status)
             return returned
         except waves.adaptors.exceptions.adaptors.AdaptorException as exc:
             self.retry(exc.message)
@@ -613,37 +617,36 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
     def next_status(self):
         """ Automatically retrieve next expected status """
         if self.status in self.NEXT_STATUS:
-            return Job.NEXT_STATUS[self.status]
+            return self.NEXT_STATUS[self.status]
         else:
-            return Job.JOB_UNDEFINED
+            return self.JOB_UNDEFINED
 
     def run_prepare(self):
         """ Ask job adaptor to prepare run (manage input files essentially) """
         self._run_action('prepare_job')
-        self.save_status_history(Job.JOB_PREPARED)
+        self.status = self.JOB_PREPARED
 
     def run_launch(self):
         """ Ask job adaptor to actually launch job """
         self._run_action('run_job')
-        self.save_status_history(Job.JOB_QUEUED)
+        self.status = self.JOB_QUEUED
 
     def run_status(self):
         """ Ask job adaptor current job status """
         self._run_action('job_status')
         logger.debug('job current state :%s', self.status)
-        self.save()
         if self.status == self.JOB_COMPLETED:
             self.run_results()
         if self.status == self.JOB_UNDEFINED and self.nb_retry > config.JOBS_MAX_RETRY:
             self.run_cancel()
-        self.save_status_history(self.status)
+        self.save()
         return self.status
 
     def run_cancel(self):
         """ Ask job adaptor to cancel job if possible """
         self._run_action('cancel_job')
         self.message = 'Job cancelled'
-        self.save_status_history(Job.JOB_CANCELLED)
+        self.status = Job.JOB_CANCELLED
 
     def run_results(self):
         """ Ask job adaptor to get results files (dowload files if needed) """
@@ -653,11 +656,11 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
                      os.stat(join(self.working_dir, self.stderr)).st_size)
         if self.exit_code != 0 or os.stat(join(self.working_dir, self.stderr)).st_size > 0:
             logger.error('Error found %s %s ', self.exit_code, self.stderr_txt.decode('ascii', errors="replace"))
-            self.save_status_history(state=Job.JOB_ERROR, message="Error detected in job.stderr")
-            self.job_history.create(status=Job.JOB_ERROR, message=self.stderr_txt.decode('ascii', errors="replace"),
-                                    is_admin=True)
+            self.message = "Error detected in job.stderr"
+            self.status = Job.JOB_ERROR
         else:
-            self.save_status_history(state=self.JOB_TERMINATED, message="Data retrieved")
+            self.message = "Data retrieved"
+            self.status = self.JOB_TERMINATED
 
     def run_details(self):
         """ Ask job adaptor to get JobRunDetails information (started, finished, exit_code ...)"""
@@ -698,8 +701,8 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         # self.job_history.all().delete()
         self.nb_retry = 0
         self.job_history.all().update(is_admin=True)
-        self.status = self.JOB_CREATED
         self.job_history.create(message='Marked for re-run', status=self.status)
+        self.status = self.JOB_CREATED
         for job_out in self.outputs.all():
             open(job_out.file_path, 'w').close()
         self.save()
@@ -975,6 +978,10 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
         elif self.value == self.job.stderr:
             return "Standard error"
         return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
 
     def get_api_name(self):
         if self.value == self.job.stdout:

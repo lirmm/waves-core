@@ -197,6 +197,5 @@ class ServiceSerializer(BaseServiceSerializer, RelatedSerializerMixin):
                                                     serializer=ExitCodeSerializer, datas=ext_codes)
         return srv_object
 
-
     def get_db_version(self, obj):
         return waves_settings.DB_VERSION
