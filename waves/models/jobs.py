@@ -143,12 +143,10 @@ class JobManager(models.Manager):
                           notify=submission.service.email_on)
         job.create_non_editable_inputs(submission)
         mandatory_params = submission.expected_inputs.filter(required=True)
-        missings = {}
-        for m in mandatory_params:
-            if m.name not in submitted_inputs.keys():
-                missings[m.name] = '%s (:%s:) is required field' % (m.label, m.name)
-        if len(missings) > 0:
-            raise ValidationError(missings)
+        missing = {m.name: '%s (:%s:) is required field' % (m.label, m.name) for m in mandatory_params if
+                   m.name not in submitted_inputs.keys()}
+        if len(missing) > 0:
+            raise ValidationError(missing)
         # First create inputs
         submission_inputs = submission.submission_inputs.filter(name__in=submitted_inputs.keys()).exclude(required=None)
         for service_input in submission_inputs:
