@@ -101,3 +101,4 @@ ENV/
 *.sqlite3
 !/waves/templates/waves/parts/
 !/waves/forms/lib/
+/waves/tests/settings.ini

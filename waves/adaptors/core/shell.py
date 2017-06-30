@@ -267,7 +267,7 @@ class SshShellAdaptor(LocalShellAdaptor):
             work_dir = self.job_work_dir(job)
             for remote_file in work_dir.list('*'):
                 work_dir.copy(remote_file, 'file://localhost/%s/' % job.working_dir)
-                logger.debug("Retrieved file from %s/%s to %s", work_dir, remote_file,
+                logger.debug("Retrieved file from %s/%s to %s", work_dir.name, remote_file,
                              'file://localhost/%s/' % job.working_dir)
             return super(SshShellAdaptor, self)._job_results(job)
         except saga.SagaException as exc:
