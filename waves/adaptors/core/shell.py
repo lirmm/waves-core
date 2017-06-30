@@ -6,7 +6,7 @@ from os.path import join
 
 import waves.adaptors.const
 from waves.adaptors.core.adaptor import JobAdaptor, JobRunDetails
-from waves.adaptors.exceptions import AdaptorConnectException, AdaptorJobException
+from waves.adaptors.exceptions import *
 from waves.utils.encrypt import Encrypt
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ class LocalShellAdaptor(JobAdaptor):
         try:
             service = self._init_service()
         except saga.NoSuccess as e:
-            return False
+            raise AdaptorNotAvailableException(e.message)
         return service.valid
 
     def init_value_editable(self, init_param):

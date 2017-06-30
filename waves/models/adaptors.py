@@ -12,26 +12,7 @@ from waves.utils.encrypt import Encrypt
 import logging
 
 logger = logging.getLogger(__name__)
-__all__ = ['DTOMixin', 'AdaptorInitParam', 'HasRunnerParamsMixin', 'HasAdaptorClazzMixin']
-
-
-class DTOMixin(object):
-    """ Some models (Service / Inputs / Outputs / ExitCodes / Jobs) need to be able to be loaded from Adaptors
-    """
-
-    def from_dto(self, dto):
-        """ Copy attributes from dto to current object, do not override current objects attributes with no
-        correspondence """
-        for var in dir(dto):
-            if not var.startswith('_'):
-                setattr(self, var, getattr(dto, var))
-
-    def to_dto(self, dto):
-        # TODO check if really needed
-        """ Copy object attributes to a DTO """
-        for var in dir(self):
-            if not var.startswith('_'):
-                setattr(dto, var, getattr(self, var))
+__all__ = ['AdaptorInitParam', 'HasRunnerParamsMixin', 'HasAdaptorClazzMixin']
 
 
 class AdaptorInitParam(models.Model):

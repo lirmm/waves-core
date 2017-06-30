@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import os
 import unittest
 
-from django.conf import settings
 from django.test import TestCase
 
 import test_settings
@@ -57,9 +56,12 @@ class RunnerTestCase(TestCase):
     def testProtocol(self):
         for adaptor in self.adaptors:
             logger.info("Testing availability for %s ", adaptor.name)
-            if adaptor.available:
-                logger.debug("Saga host %s, protocol %s", adaptor.saga_host, adaptor.host)
-                self.assertTrue(adaptor.saga_host.startswith(adaptor.protocol))
+            try:
+                if adaptor.available:
+                    logger.debug("Saga host %s, protocol %s", adaptor.saga_host, adaptor.host)
+                    self.assertTrue(adaptor.saga_host.startswith(adaptor.protocol))
+            except AdaptorException as e:
+                pass
             else:
                 logger.info("Adaptor not available for testing protocol %s " % adaptor.name)
 
@@ -79,20 +81,15 @@ class RunnerTestCase(TestCase):
         for adaptor in self.adaptors:
             logger.debug('Connecting to %s', adaptor.name)
             logger.debug('With init params %s', adaptor.init_params)
-
-            if adaptor.available:
-                try:
+            try:
+                if adaptor.available:
                     self.adaptor = adaptor
                     self.adaptor.connect()
                     self.assertTrue(self.adaptor.connected)
                     logger.debug('Connected to %s ', self.adaptor.connexion_string())
                     self.adaptor.disconnect()
-                except AdaptorConnectException as e:
-                    self.fail('Connexion error: %s ' % e.message)
-                except AdaptorException as e:
-                    logger.exception(e.get_full_message())
-            else:
-                logger.info('Adaptor %s is not locally available' % adaptor)
+            except AdaptorException as e:
+                pass
 
     def testCpLocalJob(self):
         adaptor = self.adaptors[0]
@@ -111,8 +108,8 @@ class RunnerTestCase(TestCase):
 
     def testAllCpJob(self):
         for adaptor in self.adaptors:
-            if adaptor.available:
-                try:
+            try:
+                if adaptor.available:
                     logger.debug('Connecting to %s', adaptor.name)
                     sample_file = join(self.tests_dir, 'data', 'sample', 'test_copy.txt')
                     job = create_cp_job(source_file=sample_file)
@@ -125,7 +122,6 @@ class RunnerTestCase(TestCase):
                         self.assertEqual(source.read(), copy.read())
                     self.assertTrue(job.results_available)
                     self.assertEqual(job.status, waves.adaptors.const.JOB_TERMINATED)
-                except AdaptorException as e:
-                    logger.exception(e.get_full_message())
-            else:
+            except AdaptorException as e:
                 logger.info('Adaptor %s is not locally available' % adaptor)
+                logger.exception(e.get_full_message())

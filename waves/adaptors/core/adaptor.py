@@ -5,7 +5,8 @@ import logging
 from collections import namedtuple
 
 import waves.adaptors.const
-from waves.adaptors.exceptions.adaptors import *
+from waves.adaptors.exceptions import AdaptorJobStateException, AdaptorNotReady
+from waves.utils.exception_logging_decorator import exception
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ class JobAdaptor(object):
     #: Remote status need to be mapped with WAVES expected job status
     _states_map = {}
 
-    def __init__(self, command=None, protocol='http', host="localhost", **kwargs):
+    def __init__(self, command='', protocol='http', host="localhost", **kwargs):
         """ Initialize a adaptor
         Set _initialized value (True or False) if all non default expected params are set
         :param kwargs: its possible to force connector and parser attributes when initialize a Adaptor
@@ -60,6 +61,7 @@ class JobAdaptor(object):
     def available(self):
         return True
 
+    @exception(logger)
     def connect(self):
         """
         Connect to remote platform adaptor
@@ -75,6 +77,7 @@ class JobAdaptor(object):
             self._connect()
         return self.connector
 
+    @exception(logger)
     def disconnect(self):
         """ Shut down connection to adaptor. Called after job adaptor execution to disconnect from remote
         :raise: :class:`waves.adaptors.exceptions.adaptors.AdaptorConnectException`
@@ -85,6 +88,7 @@ class JobAdaptor(object):
         self.connector = None
         self._connected = False
 
+    @exception(logger)
     def prepare_job(self, job):
         """ Job execution preparation process, may store prepared data in a pickled object
         :param job: The job to prepare execution for
@@ -101,6 +105,7 @@ class JobAdaptor(object):
         job.status = waves.adaptors.const.JOB_PREPARED
         return job
 
+    @exception(logger)
     def run_job(self, job):
         """ Launch a previously 'prepared' job on the remote adaptor class
         :param job: The job to launch execution
@@ -117,6 +122,7 @@ class JobAdaptor(object):
         job.status = waves.adaptors.const.JOB_QUEUED
         return job
 
+    @exception(logger)
     def cancel_job(self, job):
         """ Cancel a running job on adaptor class, if possible
         :param job: The job to cancel
@@ -134,6 +140,7 @@ class JobAdaptor(object):
         job.status = waves.adaptors.const.JOB_CANCELLED
         return job
 
+    @exception(logger)
     def job_status(self, job):
         """ Return current WAVES Job status
         :param job: current job
@@ -146,6 +153,7 @@ class JobAdaptor(object):
         job.status = status
         return job
 
+    @exception(logger)
     def job_results(self, job):
         """ If job is done, return results
         :param job: current Job
@@ -155,6 +163,7 @@ class JobAdaptor(object):
         self._job_results(job)
         return job
 
+    @exception(logger)
     def job_run_details(self, job):
         """ Retrive job run details for job
         :param job: current Job

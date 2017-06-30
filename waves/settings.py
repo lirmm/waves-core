@@ -48,9 +48,9 @@ def import_from_string(val, setting_name):
 DEFAULTS = {
     'VERSION': __import__('waves').__version__,
     'DB_VERSION': __import__('waves').__db_version__,
-    'DATA_ROOT': join(settings.BASE_DIR, 'data'),
-    'JOB_BASE_DIR': join(settings.BASE_DIR, 'data', 'jobs'),
-    'SAMPLE_DIR': join(settings.MEDIA_ROOT, 'sample'),
+    'DATA_ROOT': join(getattr(settings, 'BASE_DIR', '/tmp'), 'data'),
+    'JOB_BASE_DIR': join(getattr(settings, 'BASE_DIR', '/tmp'), 'data', 'jobs'),
+    'SAMPLE_DIR': join(getattr(settings, 'MEDIA_ROOT', '/tmp'), 'sample'),
     'UPLOAD_MAX_SIZE': 20 * 1024 * 1024,
     'HOST': HOSTNAME,
     'ACCOUNT_ACTIVATION_DAYS': 7,
@@ -64,7 +64,7 @@ DEFAULTS = {
     'REGISTRATION_ALLOWED': True,
     'SERVICES_EMAIL': 'waves@atgc-montpellier.fr',
     'TEMPLATE_PACK': 'bootstrap3',
-    'SECRET_KEY': settings.SECRET_KEY[0:32],
+    'SECRET_KEY': getattr(settings, 'SECRET_KEY', '')[0:32],
     'ADAPTORS_CLASSES': (
         'waves.adaptors.core.shell.SshShellAdaptor',
         'waves.adaptors.core.cluster.LocalClusterAdaptor',

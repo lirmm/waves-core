@@ -11,7 +11,7 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.views.generic import FormView
 from json_view import JSONDetailView
-from waves.adaptors.exceptions.adaptors import AdaptorConnectException
+from waves.adaptors.exceptions import AdaptorConnectException
 from waves.exceptions import *
 from waves.admin.forms.services import ImportForm
 from waves.models import Runner

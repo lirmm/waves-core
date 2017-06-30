@@ -95,7 +95,7 @@ class ServiceRunParam(AdaptorInitParam):
         proxy = True
 
 
-class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, DTOMixin, HasRunnerParamsMixin):
+class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
     """
     Represents a service on the platform
     """

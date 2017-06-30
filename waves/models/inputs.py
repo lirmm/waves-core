@@ -6,10 +6,8 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import mark_safe
-from polymorphic.manager import PolymorphicManager
 from polymorphic.models import PolymorphicModel
 
-from waves.models.adaptors import DTOMixin
 from waves.models.base import Ordered, ApiModel
 from waves.settings import waves_settings
 from waves.utils.validators import validate_list_comma, validate_list_param
@@ -18,7 +16,7 @@ __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam
            'ListParam', 'RelatedParam', 'IntegerParam', 'TextParam']
 
 
-class RepeatedGroup(DTOMixin, Ordered):
+class RepeatedGroup(Ordered):
     """ Some input may be grouped, and group could be repeated"""
 
     class Meta:

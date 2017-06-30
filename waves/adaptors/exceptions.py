@@ -1,17 +1,4 @@
-"""
-Adaptor specific exceptions
-"""
-from __future__ import unicode_literals
-
-import waves.adaptors.const
-
-__all__ = ['AdaptorException',
-           'AdaptorConnectException',
-           'AdaptorExecException',
-           'AdaptorJobException',
-           'AdaptorInitError',
-           'AdaptorNotReady',
-           'AdaptorJobStateException']
+import waves.adaptors
 
 
 class AdaptorException(Exception):
@@ -49,6 +36,10 @@ class AdaptorExecException(AdaptorException):
     pass
 
 
+class AdaptorNotAvailableException(AdaptorExecException):
+    pass
+
+
 class AdaptorJobException(AdaptorException):
     """
     Adaptor JobRun Exception
@@ -75,3 +66,36 @@ class AdaptorInitError(AttributeError):
     parameters are missing
     """
     pass
+
+
+class ImporterException(BaseException):
+    pass
+
+
+class UnmanagedException(ImporterException):
+    base_msg = ''
+
+    def __init__(self, *args, **kwargs):
+        super(UnmanagedException, self).__init__(*args, **kwargs)
+        self.message = self.base_msg + self.message
+
+
+class UnManagedAttributeException(UnmanagedException):
+    base_msg = "Unmanaged Attribute: "
+
+    def __init__(self, *args, **kwargs):
+        super(UnManagedAttributeException, self).__init__(*args, **kwargs)
+
+
+class UnManagedAttributeTypeException(UnmanagedException):
+    base_msg = "Unmanaged Attribute type: "
+
+    def __init__(self, *args, **kwargs):
+        super(UnManagedAttributeTypeException, self).__init__(*args, **kwargs)
+
+
+class UnmanagedInputTypeException(UnmanagedException):
+    base_msg = "Unmanaged Input type: "
+
+    def __init__(self, *args, **kwargs):
+        super(UnmanagedInputTypeException, self).__init__(*args, **kwargs)

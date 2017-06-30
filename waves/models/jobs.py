@@ -16,19 +16,18 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.utils.html import format_html
 
-
 import waves.adaptors.const
 import waves.adaptors.core
+import waves.adaptors.exceptions
+
 from waves.adaptors.core.adaptor import JobRunDetails
-import waves.adaptors.exceptions.adaptors
-from waves.settings import waves_settings
 from waves.compat import config
 from waves.exceptions.jobs import *
 from waves.mails import JobMailer
-from waves.models.adaptors import DTOMixin
 from waves.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
 from waves.models.inputs import AParam
 from waves.models.submissions import Submission, SubmissionOutput
+from waves.settings import waves_settings
 from waves.utils import normalize_value
 from waves.utils.jobs import default_run_details
 from waves.utils.storage import allow_display_online
@@ -184,7 +183,7 @@ class JobManager(models.Manager):
         return job
 
 
-class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
+class Job(TimeStamped, Slugged, UrlMixin):
     """
     A job represent a request for executing a service, it requires values from specified required input from related
     service
@@ -570,7 +569,7 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
             returned = getattr(self.adaptor, action)(self)
             self.nb_retry = 0
             return returned
-        except waves.adaptors.exceptions.adaptors.AdaptorException as exc:
+        except waves.adaptors.exceptions.AdaptorException as exc:
             self.retry(exc.message)
         except (WavesException, Exception) as exc:
             self.error(exc.message)
@@ -636,7 +635,7 @@ class Job(TimeStamped, Slugged, UrlMixin, DTOMixin):
         else:
             try:
                 remote_details = self._run_action('job_run_details')
-            except waves.adaptors.exceptions.adaptors.AdaptorException:
+            except waves.adaptors.exceptions.AdaptorException:
                 remote_details = default_run_details(self)
             with open(file_run_details, 'w') as fp:
                 json.dump(obj=remote_details, fp=fp, ensure_ascii=False)

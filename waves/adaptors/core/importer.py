@@ -1,7 +1,10 @@
 import logging
 import warnings
 
-from adaptors.core.adaptor import logger
+from waves.adaptors.exceptions import *
+from waves.utils.exception_logging_decorator import exception
+
+logger = logging.getLogger(__name__)
 
 
 class AdaptorImporter(object):
@@ -34,6 +37,7 @@ class AdaptorImporter(object):
     def connected(self):
         return self._adaptor.connected
 
+    @exception(logger)
     def import_service(self, tool_id):
         """
         For specified Adaptor remote tool identifier, try to import submission params
@@ -41,46 +45,50 @@ class AdaptorImporter(object):
         :return: Update service with new submission according to retrieved parameters
         :rtype: :class:`waves.adaptors.models.services.Service`
         """
-        self.connect()
-        self._warnings = []
-        self._errors = []
-        service_details, inputs, outputs, exit_codes = self.load_tool_details(tool_id)
-        if service_details:
-            logger.debug('Import Service %s', tool_id)
-            self._service = service_details
-            logger.debug('Service %s', service_details.name)
-            self._service.inputs = self.import_service_params(inputs)
-            self._service.outputs = self.import_service_outputs(outputs)
-            self._service.exit_codes = self.import_exit_codes(exit_codes)
-        else:
-            logger.warn('No service retrieved (%s)', tool_id)
+        try:
+            self.connect()
+            self._warnings = []
+            self._errors = []
+            service_details, inputs, outputs, exit_codes = self.load_tool_details(tool_id)
+            if service_details:
+                logger.debug('Import Service %s', tool_id)
+                self._service = service_details
+                logger.debug('Service %s', service_details.name)
+                self._service.inputs = self.import_service_params(inputs)
+                self._service.outputs = self.import_service_outputs(outputs)
+                self._service.exit_codes = self.import_exit_codes(exit_codes)
+            else:
+                logger.warn('No service retrieved (%s)', tool_id)
+                return None
+            # TODO manage exit codes
+            logger_import = logging.getLogger('import_tool_logger')
+            logger_import.setLevel(logging.INFO)
+            logger_import.info('------------------------------------')
+            logger_import.info(self._service.info())
+            logger_import.info('------------------------------------')
+            if self.warnings or self.errors:
+                logger_import.warn('*** // WARNINGS // ***')
+                for warn in self.warnings:
+                    logger_import.warn('=> %s', warn.message)
+            if self.errors:
+                logger_import.warn('*** // ERRORS // ***')
+                for error in self.errors:
+                    logger_import.error('=> %s', error.message)
+            logger_import.info('------------')
+            logger_import.info('-- Inputs --')
+            logger_import.info('------------')
+            for service_input in self._service.inputs:
+                logger_import.info(service_input.info())
+            logger_import.info('-------------')
+            logger_import.info('-- Outputs --')
+            logger_import.info('-------------')
+            for service_output in self._service.outputs:
+                logger_import.info(service_output.info())
+            logger_import.info('------------------------------------')
+            return self._service
+        except ImporterException as e:
+
             return None
-        # TODO manage exit codes
-        logger_import = logging.getLogger('import_tool_logger')
-        logger_import.setLevel(logging.INFO)
-        logger_import.info('------------------------------------')
-        logger_import.info(self._service.info())
-        logger_import.info('------------------------------------')
-        if self.warnings or self.errors:
-            logger_import.warn('*** // WARNINGS // ***')
-            for warn in self.warnings:
-                logger_import.warn('=> %s', warn.message)
-        if self.errors:
-            logger_import.warn('*** // ERRORS // ***')
-            for error in self.errors:
-                logger_import.error('=> %s', error.message)
-        logger_import.info('------------')
-        logger_import.info('-- Inputs --')
-        logger_import.info('------------')
-        for service_input in self._service.inputs:
-            logger_import.info(service_input.info())
-        logger_import.info('-------------')
-        logger_import.info('-- Outputs --')
-        logger_import.info('-------------')
-        for service_output in self._service.outputs:
-            logger_import.info(service_output.info())
-        logger_import.info('------------------------------------')
-        return self._service
 
     def list_services(self):
         """ Get and return a list of tuple ('Category, ['Service Objects' list])  """
