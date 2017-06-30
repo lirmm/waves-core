@@ -10,10 +10,6 @@ class LocalClusterAdaptor(LocalShellAdaptor):
     NOT_AVAILABLE_MESSAGE = "A valid local %s cluster is needed to run this tests"
 
     name = 'Local cluster'
-    #: For cluster based remote runners, set up default cluster job queue (if any)
-    queue = ''
-    #: List of currently implemented remote cluster schemes
-    protocol = 'sge'
     protocol_choices = (
         ('sge', 'Sun Grid Engine'),
         ('slurm', 'SLURM'),
@@ -24,6 +20,10 @@ class LocalClusterAdaptor(LocalShellAdaptor):
         ('torque', 'TORQUE')
     )
     protocol_default = "sge"
+
+    def __init__(self, command=None, protocol='sge', host="localhost", queue='', **kwargs):
+        super(LocalClusterAdaptor, self).__init__(command, protocol, host, **kwargs)
+        self.queue = queue
 
     @property
     def init_params(self):

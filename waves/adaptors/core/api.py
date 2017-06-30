@@ -1,22 +1,20 @@
 from __future__ import unicode_literals
 
-import abc
-
 from waves.adaptors.core.adaptor import JobAdaptor
 
 
-class RemoteApiAdaptor(JobAdaptor):
-    """ Base Class for remote API calls"""
-    #: remote host port
-    port = ''
-    #: base remote api path
-    api_base_path = ''
-    #: remote endpoint
-    api_endpoint = ''
+class PublicApiAdaptor(JobAdaptor):
+    """ Base Class for remote public API calls"""
+    def __init__(self, command=None, protocol='http', host="localhost", port='', api_base_path='', api_endpoint='',
+                 **kwargs):
+        super(PublicApiAdaptor, self).__init__(command, protocol, host, **kwargs)
+        self.port = port
+        self.api_endpoint = api_endpoint
+        self.api_base_path = api_base_path
 
     @property
     def init_params(self):
-        base = super(RemoteApiAdaptor, self).init_params
+        base = super(PublicApiAdaptor, self).init_params
         base.update(dict(port=self.port,
                          api_base_path=self.api_base_path,
                          api_endpoint=self.api_endpoint))
@@ -36,3 +34,21 @@ class RemoteApiAdaptor(JobAdaptor):
 
     def connexion_string(self):
         return self.complete_url
+
+
+class ApiKeyAdaptor(PublicApiAdaptor):
+    """
+    Authenticated api calls
+    """
+    _api_get_key = 'app_key'
+
+    def __init__(self, command=None, protocol='http', host="localhost", port='', api_base_path='', api_endpoint='',
+                 app_key=None, **kwargs):
+        super(ApiKeyAdaptor, self).__init__(command, protocol, host, port, api_base_path, api_endpoint, **kwargs)
+        self.app_key = app_key
+
+    @property
+    def complete_url(self):
+        url = super(ApiKeyAdaptor, self).complete_url()
+        url += '?%s=%s' % (self._api_get_key, self.app_key)
+        return url

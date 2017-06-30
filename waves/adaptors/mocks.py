@@ -10,7 +10,7 @@ import time
 import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.utils
-from waves.adaptors.core.adaptor import JobAdaptor
+from waves.adaptors.core.adaptor import JobAdaptor, JobRunDetails
 
 
 class MockConnector(object):
@@ -18,7 +18,6 @@ class MockConnector(object):
 
 
 class MockJobRunnerAdaptor(JobAdaptor):
-    command = "fake"
     _states_map = {
         waves.adaptors.const.JOB_UNDEFINED: waves.adaptors.const.JOB_UNDEFINED,
         waves.adaptors.const.JOB_CREATED: waves.adaptors.const.JOB_CREATED,
@@ -30,6 +29,10 @@ class MockJobRunnerAdaptor(JobAdaptor):
         waves.adaptors.const.JOB_TERMINATED: waves.adaptors.const.JOB_TERMINATED,
         waves.adaptors.const.JOB_ERROR: waves.adaptors.const.JOB_ERROR,
     }
+
+    def __init__(self, command=None, protocol='http', host="localhost", **kwargs):
+        super(MockJobRunnerAdaptor, self).__init__(command, protocol, host, **kwargs)
+        self.command = 'mock_command'
 
     def _job_status(self, job):
         time.sleep(2)
@@ -58,8 +61,8 @@ class MockJobRunnerAdaptor(JobAdaptor):
         return True
 
     def _job_run_details(self, job):
-        return waves.adaptors.utils.JobRunDetails(job.id, str(job.slug), job.remote_job_id, job.title, job.exit_code,
-                                                  job.created, job.started, job.updated, '')
+        return JobRunDetails(job.id, str(job.slug), job.remote_job_id, job.title, job.exit_code,
+                             job.created, job.started, job.updated, '')
 
     def _prepare_job(self, job):
         time.sleep(2)

@@ -5,63 +5,18 @@ from __future__ import unicode_literals
 
 import logging
 
-from django.contrib.contenttypes.models import ContentType
-
 from waves.adaptors.core.adaptor import JobAdaptor
 from waves.adaptors.exceptions.adaptors import *
 from waves.adaptors.mocks import MockJobRunnerAdaptor
 from waves.exceptions.jobs import *
+import waves.adaptors.const
 from waves.models import *
 from waves.tests.base import WavesBaseTestCase
+from waves.tests.utils import sample_runner, sample_job
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['TestJobRunner', 'sample_runner']
-
-
-def sample_runner(runner_impl):
-    """
-    Return a new adaptor model instance from adaptor class object
-    Args:
-        runner_impl: a JobRunnerAdaptor object
-    Returns:
-        Runner model instance
-    """
-    runner_model = Runner.objects.create(name=runner_impl.__class__.__name__,
-                                         description='SubmissionSample Runner %s' % runner_impl.__class__.__name__,
-                                         clazz='%s.%s' % (runner_impl.__module__, runner_impl.__class__.__name__))
-    object_ctype = ContentType.objects.get_for_model(runner_model)
-    for name, value in runner_impl.init_params.items():
-        AdaptorInitParam.objects.update_or_create(name=name, content_type=object_ctype, object_id=runner_model.pk,
-                                                  defaults={'value': value})
-    return runner_model
-
-
-def sample_job(service):
-    """
-    Return a new Job model instance for service
-    Args:
-        service: a Service model instance
-    Returns:
-        Job model instance
-    """
-    job = Job.objects.create(title='SubmissionSample Job', submission=service.submissions.first())
-    srv_submission = service.default_submission
-    for srv_input in srv_submission.submission_inputs.all():
-        job.job_inputs.add(JobInput.objects.create(srv_input=srv_input, job=job, value="fake_value"))
-    return job
-
-
-def sample_service(runner, init_params=None):
-    """ Create a sample service for this runner """
-    service = Service.objects.create(name='Sample Service', runner=runner)
-    if init_params:
-        for name, value in init_params:
-            service.run_params.add(ServiceRunParam.objects.create(name=name, value=value))
-    sub = Submission.objects.create(name="Default Submission", service=service)
-    service.submissions.add(sub)
-
-    return service
+__all__ = ['TestJobRunner']
 
 
 class TestJobRunner(WavesBaseTestCase):
@@ -113,7 +68,7 @@ class TestJobRunner(WavesBaseTestCase):
 
         self.jobs.append(self.current_job)
         self._debug_job_state()
-        self.current_job.status = Job.JOB_RUNNING
+        self.current_job.status = waves.adaptors.const.JOB_RUNNING
         length1 = self.current_job.job_history.count()
         logger.debug('Test Prepare')
         self._debug_job_state()
@@ -121,21 +76,21 @@ class TestJobRunner(WavesBaseTestCase):
             self.current_job.run_prepare()
         self._debug_job_state()
         logger.debug('Test Run')
-        self.current_job.status = Job.JOB_UNDEFINED
+        self.current_job.status = waves.adaptors.const.JOB_UNDEFINED
         with self.assertRaises(JobInconsistentStateError):
             self.current_job.run_launch()
         self._debug_job_state()
         logger.debug('Test Cancel')
-        self.current_job.status = Job.JOB_COMPLETED
+        self.current_job.status = waves.adaptors.const.JOB_COMPLETED
         with self.assertRaises(JobInconsistentStateError):
             self.current_job.run_cancel()
             # self.adaptor.cancel_job(self.current_job)
         logger.debug('Internal state %s, current %s', self.current_job._status, self.current_job.status)
         # status hasn't changed
-        self.assertEqual(self.current_job.status, Job.JOB_COMPLETED)
+        self.assertEqual(self.current_job.status, waves.adaptors.const.JOB_COMPLETED)
         logger.debug('%i => %s', len(self.current_job.job_history.values()), self.current_job.job_history.values())
         # assert that no history element has been added
-        self.current_job.status = Job.JOB_RUNNING
+        self.current_job.status = waves.adaptors.const.JOB_RUNNING
         self.current_job.run_cancel()
-        self.assertTrue(self.current_job.status == Job.JOB_CANCELLED)
+        self.assertTrue(self.current_job.status == waves.adaptors.const.JOB_CANCELLED)
 

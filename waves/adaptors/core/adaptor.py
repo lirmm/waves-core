@@ -2,11 +2,16 @@
 from __future__ import unicode_literals
 
 import logging
+from collections import namedtuple
 
-import waves.adaptors.core
+import waves.adaptors.const
 from waves.adaptors.exceptions.adaptors import *
 
 logger = logging.getLogger(__name__)
+
+JobRunDetails = namedtuple("JobRunDetails",
+                           ['id', 'slug', 'job_remote_id', 'name', 'exit_code', 'created', 'started',
+                            'finished', 'extra'])
 
 
 class JobAdaptor(object):
@@ -15,39 +20,21 @@ class JobAdaptor(object):
     """
     NOT_AVAILABLE_MESSAGE = "Adaptor is currently not available on platform"
     name = 'Abstract Adaptor name'
-    #: Remote command for Job execution
-    command = None
-    #: Defined remote connector, depending on subclass implementation
-    connector = None
-    #: Some connector need to parse requested job in order to create a remote job
-    parser = None
-    #: Each Adaptor need a 'protocol' to communicate with remote job execution
-    protocol = 'http'
-    #: Host
-    host = 'localhost'
     #: Remote status need to be mapped with WAVES expected job status
     _states_map = {}
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, command=None, protocol='http', host="localhost", **kwargs):
         """ Initialize a adaptor
         Set _initialized value (True or False) if all non default expected params are set
-        :raise: :class:`waves.adaptors.exceptions.adaptors.AdaptorInitError` if wrong parameter given as init values
-        :param init_params: a dictionary with expected initialization params (retrieved from init_params property)
-        :param kwargs: its possible to force connector and _parser attributes when initialize a Adaptor
+        :param kwargs: its possible to force connector and parser attributes when initialize a Adaptor
         :return: a new JobAdaptor object
         """
+        self.command = command
+        self.protocol = protocol
+        self.host = host
+        self.connector = kwargs.get('connector', None)
+        self.parser = kwargs.get('parser', None)
         self._connected = False
-        self.connector = kwargs.get('connector', self.connector)
-        self.parser = kwargs.get('parser', self.parser)
-        self.command = kwargs.get('command', self.command)
-        self.protocol = kwargs.get('protocol', self.protocol)
-        self.host = kwargs.get('host', self.host)
-        self._initialized = all(value is not None for init_param, value in self.init_params.items())
-
-    """
-    def __str__(self):
-        return '.'.join([self.__class__.__module__, self.__class__.__name__])
-    """
 
     def init_value_editable(self, init_param):
         """ By default all fields are editable, override this function for your specific needs in your adaptor """
@@ -79,7 +66,7 @@ class JobAdaptor(object):
         :raise: :class:`waves.adaptors.exceptions.adaptors.AdaptorConnectException`
         :return: connector reference or raise an
         """
-        if not self._initialized:
+        if not all([value is not None for init_param, value in self.init_params.items()]):
             # search missing values
             raise AdaptorNotReady(
                 "Missing required parameter(s) for initialization: %s " % [init_param for init_param, value in
@@ -106,12 +93,12 @@ class JobAdaptor(object):
         :raise: :class:`waves.adaptors.exceptions.JobInconsistentStateError` if job status is not 'created'
         """
         try:
-            assert (job.status <= waves.adaptors.core.JOB_CREATED)
+            assert (job.status <= waves.adaptors.const.JOB_CREATED)
         except AssertionError:
-            raise AdaptorJobStateException(job.status, waves.adaptors.core.JOB_CREATED)
+            raise AdaptorJobStateException(job.status, waves.adaptors.const.JOB_CREATED)
         self.connect()
         self._prepare_job(job)
-        job.status = waves.adaptors.core.JOB_PREPARED
+        job.status = waves.adaptors.const.JOB_PREPARED
         return job
 
     def run_job(self, job):
@@ -122,12 +109,12 @@ class JobAdaptor(object):
         :raise: :class:`waves.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
         try:
-            assert (job.status == waves.adaptors.core.JOB_PREPARED)
+            assert (job.status == waves.adaptors.const.JOB_PREPARED)
         except AssertionError:
-            raise AdaptorJobStateException(job.status, waves.adaptors.core.JOB_PREPARED)
+            raise AdaptorJobStateException(job.status, waves.adaptors.const.JOB_PREPARED)
         self.connect()
         self._run_job(job)
-        job.status = waves.adaptors.core.JOB_QUEUED
+        job.status = waves.adaptors.const.JOB_QUEUED
         return job
 
     def cancel_job(self, job):
@@ -139,12 +126,12 @@ class JobAdaptor(object):
         :raise: :class:`waves.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
         try:
-            assert (job.status <= waves.adaptors.core.JOB_SUSPENDED)
+            assert (job.status <= waves.adaptors.const.JOB_SUSPENDED)
         except AssertionError:
-            raise AdaptorJobStateException(job.status, waves.adaptors.core.STATUS_MAP[0:5])
+            raise AdaptorJobStateException(job.status, waves.adaptors.const.STATUS_MAP[0:5])
         self.connect()
         self._cancel_job(job)
-        job.status = waves.adaptors.core.JOB_CANCELLED
+        job.status = waves.adaptors.const.JOB_CANCELLED
         return job
 
     def job_status(self, job):
@@ -155,7 +142,7 @@ class JobAdaptor(object):
         self.connect()
         status = self._states_map[self._job_status(job)]
         logger.debug('Current remote state %s mapped to %s', self._job_status(job),
-                     waves.adaptors.core.STATUS_MAP.get(status, 'Undefined'))
+                     waves.adaptors.const.STATUS_MAP.get(status, 'Undefined'))
         job.status = status
         return job
 

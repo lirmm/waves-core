@@ -172,7 +172,7 @@ LOGGING = {
     'root': {
         'handlers': ['console'],
         'propagate': True,
-        'level': 'WARNING',
+        'level': 'DEBUG',
     },
     'loggers': {
         'django': {
@@ -183,7 +183,7 @@ LOGGING = {
         'waves': {
             'handlers': ['console'],
             'level': 'DEBUG',
-            'propagage': False,
+            'propagate': False,
         },
         'waves.management': {
             'handlers': ['waves_daemon'],

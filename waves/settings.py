@@ -49,7 +49,7 @@ DEFAULTS = {
     'VERSION': __import__('waves').__version__,
     'DB_VERSION': __import__('waves').__db_version__,
     'DATA_ROOT': join(settings.BASE_DIR, 'data'),
-    'JOB_DIR': join(settings.BASE_DIR, 'data', 'jobs'),
+    'JOB_BASE_DIR': join(settings.BASE_DIR, 'data', 'jobs'),
     'SAMPLE_DIR': join(settings.MEDIA_ROOT, 'sample'),
     'UPLOAD_MAX_SIZE': 20 * 1024 * 1024,
     'HOST': HOSTNAME,

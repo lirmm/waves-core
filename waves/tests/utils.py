@@ -1,14 +1,19 @@
 from __future__ import unicode_literals
 
 import logging
+import random
+import shutil
 import time
-from os.path import join, dirname, realpath, isfile
+import uuid
+from os import makedirs
+from os.path import join, dirname, realpath, isfile, basename
 
+from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import localtime
 
 import waves.adaptors.const
 from waves.adaptors.loader import AdaptorLoader
-from waves.models import Runner, Service
+from waves.models import *
 from waves.settings import waves_settings
 
 logger = logging.getLogger(__name__)
@@ -29,6 +34,22 @@ def assertion_tracker(func):
 
 def get_sample_dir():
     return join(dirname(dirname(realpath(__file__))), 'data', 'sample')
+
+
+def create_base_job(title="Sample Empty Job -- Test", working_dir='/tmp'):
+    job = Job.objects.create(title=title)
+    return job
+
+
+def create_cp_job(source_file):
+    job = create_base_job('Sample CP job')
+    shutil.copy(source_file, job.working_dir)
+    job.inputs = [JobInput.objects.create(label="File To copy", name='source',
+                                          value=basename(source_file), type='file', job=job),
+                  JobInput.objects.create(label="Destination Dir", name="dest",
+                                          value='dest_copy.txt', type='text', job=job)]
+    job.outputs = [JobOutput.objects.create(_name='Copied File', name='dest', value=job.inputs[1].value, job=job)]
+    return job
 
 
 def run_job_workflow(job):
@@ -67,7 +88,7 @@ def run_job_workflow(job):
                 logger.warning("Job <<%s>> did not output expected %s (test_data/jobs/%s/) ",
                                job.title, output_job.value, job.slug)
 
-            assert (isfile(output_job.file_path)), "Job outut file does not exists %s"  % output_job.file_path
+            assert (isfile(output_job.file_path)), "Job outut file does not exists %s" % output_job.file_path
             logger.info("Expected output file: %s ", output_job.file_path)
         assert (job.status >= waves.adaptors.const.JOB_COMPLETED)
     else:
@@ -78,7 +99,7 @@ def run_job_workflow(job):
 
 def create_test_file(path, index):
     import os
-    full_path = os.path.join(waves_settings.JOB_DIR, '_' + str(index) + '_' + path)
+    full_path = os.path.join(waves_settings.JOB_BASE_DIR, '_' + str(index) + '_' + path)
     f = open(full_path, 'w')
     f.write('sample content for input file %s' % ('_' + str(index) + '_' + path))
     f.close()
@@ -103,3 +124,56 @@ def create_service_for_runners():
         srv = Service.objects.create(name="Service %s " % runner.name, runner=runner)
         services.append(srv)
     return services
+
+
+def get_sample():
+    return join(dirname(__file__), 'samples', 'test_copy.txt')
+
+
+def get_copy():
+    return 'dest_copy.txt'
+
+
+def sample_runner(runner_impl):
+    """
+    Return a new adaptor model instance from adaptor class object
+    Args:
+        runner_impl: a JobRunnerAdaptor object
+    Returns:
+        Runner model instance
+    """
+    runner_model = Runner.objects.create(name=runner_impl.__class__.__name__,
+                                         description='SubmissionSample Runner %s' % runner_impl.__class__.__name__,
+                                         clazz='%s.%s' % (runner_impl.__module__, runner_impl.__class__.__name__))
+    object_ctype = ContentType.objects.get_for_model(runner_model)
+    for name, value in runner_impl.init_params.items():
+        AdaptorInitParam.objects.update_or_create(name=name, content_type=object_ctype, object_id=runner_model.pk,
+                                                  defaults={'value': value})
+    return runner_model
+
+
+def sample_job(service):
+    """
+    Return a new Job model instance for service
+    Args:
+        service: a Service model instance
+    Returns:
+        Job model instance
+    """
+    job = Job.objects.create(title='SubmissionSample Job', submission=service.submissions.first())
+    srv_submission = service.default_submission
+    for srv_input in srv_submission.submission_inputs.all():
+        job.job_inputs.add(JobInput.objects.create(srv_input=srv_input, job=job, value="fake_value"))
+    return job
+
+
+def sample_service(runner, init_params=None):
+    """ Create a sample service for this runner """
+    service = Service.objects.create(name='Sample Service', runner=runner)
+    if init_params:
+        for name, value in init_params:
+            service.run_params.add(ServiceRunParam.objects.create(name=name, value=value))
+    sub = Submission.objects.create(name="Default Submission", service=service)
+    service.submissions.add(sub)
+
+    return service

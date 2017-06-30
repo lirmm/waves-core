@@ -3,7 +3,7 @@ Adaptor specific exceptions
 """
 from __future__ import unicode_literals
 
-import waves.adaptors.core
+import waves.adaptors.const
 
 __all__ = ['AdaptorException',
            'AdaptorConnectException',
@@ -60,8 +60,8 @@ class AdaptorJobStateException(AdaptorJobException):
     def __init__(self, status, expected, parent=None):
         if expected is not list:
             expected = [expected]
-        msg = "Wrong job state, excepted %s, got %s" % ([waves.adaptors.core.STATUS_MAP[state] for state in expected],
-                                                        waves.adaptors.core.STATUS_MAP[status])
+        msg = "Wrong job state, excepted %s, got %s" % ([waves.adaptors.const.STATUS_MAP[state] for state in expected],
+                                                        waves.adaptors.const.STATUS_MAP[status])
         super(AdaptorJobStateException, self).__init__(msg, parent=parent)
 
 

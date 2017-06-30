@@ -4,9 +4,10 @@ import saga
 import logging
 from os.path import join
 
-import waves.adaptors.core
-from waves.adaptors.core.adaptor import JobAdaptor
+import waves.adaptors.const
+from waves.adaptors.core.adaptor import JobAdaptor, JobRunDetails
 from waves.adaptors.exceptions import AdaptorConnectException, AdaptorJobException
+from waves.utils.encrypt import Encrypt
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,30 @@ class LocalShellAdaptor(JobAdaptor):
     protocol = 'fork'
     protocol_default = 'fork'
 
+    _states_map = {
+        saga.job.UNKNOWN: waves.adaptors.const.JOB_UNDEFINED,
+        saga.job.NEW: waves.adaptors.const.JOB_QUEUED,
+        saga.job.PENDING: waves.adaptors.const.JOB_QUEUED,
+        saga.job.RUNNING: waves.adaptors.const.JOB_RUNNING,
+        saga.job.SUSPENDED: waves.adaptors.const.JOB_SUSPENDED,
+        saga.job.CANCELED: waves.adaptors.const.JOB_CANCELLED,
+        saga.job.DONE: waves.adaptors.const.JOB_COMPLETED,
+        saga.job.FAILED: waves.adaptors.const.JOB_ERROR,
+    }
+
+    def __init__(self, command=None, protocol='fork', host="localhost", **kwargs):
+        super(LocalShellAdaptor, self).__init__(command, protocol, host, **kwargs)
+        self._session = None
+
+    @property
+    def session(self):
+        if not self._session:
+            session = saga.Session()
+            session.add_context(self.context)
+            logger.info("New session [--%s--]" % session)
+            self._session = session
+        return self._session
+
     @property
     def available(self):
         try:
@@ -32,19 +57,6 @@ class LocalShellAdaptor(JobAdaptor):
         if init_param == 'protocol':
             return False
         return super(LocalShellAdaptor, self).init_value_editable(init_param)
-
-    def __init__(self, **kwargs):
-        super(LocalShellAdaptor, self).__init__(**kwargs)
-        self._states_map = {
-            saga.job.UNKNOWN: waves.adaptors.core.JOB_UNDEFINED,
-            saga.job.NEW: waves.adaptors.core.JOB_QUEUED,
-            saga.job.PENDING: waves.adaptors.core.JOB_QUEUED,
-            saga.job.RUNNING: waves.adaptors.core.JOB_RUNNING,
-            saga.job.SUSPENDED: waves.adaptors.core.JOB_SUSPENDED,
-            saga.job.CANCELED: waves.adaptors.core.JOB_CANCELLED,
-            saga.job.DONE: waves.adaptors.core.JOB_COMPLETED,
-            saga.job.FAILED: waves.adaptors.core.JOB_ERROR,
-        }
 
     def connexion_string(self):
         return self.saga_host
@@ -80,8 +92,7 @@ class LocalShellAdaptor(JobAdaptor):
                     executable=self.command,
                     arguments=job.command_line,
                     output=job.stdout,
-                    error=job.stderr
-                    )
+                    error=job.stderr)
         return desc
 
     def _disconnect(self):
@@ -146,10 +157,10 @@ class LocalShellAdaptor(JobAdaptor):
 
     def _job_run_details(self, job):
         remote_job = self.connector.get_job(str(job.remote_job_id))
-        details = waves.adaptors.core.JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
-                                                    remote_job.exit_code,
-                                                    remote_job.created, remote_job.started, remote_job.finished,
-                                                    remote_job.execution_hosts)
+        details = JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
+                                remote_job.exit_code,
+                                remote_job.created, remote_job.started, remote_job.finished,
+                                remote_job.execution_hosts)
         return details
 
 
@@ -159,35 +170,25 @@ class SshShellAdaptor(LocalShellAdaptor):
     Run locally on remote host job command
     """
     name = 'Shell script over SSH (user/pass)'
-    #: remote user_id for ssh connexion
-    user_id = ''
-    #: saga protocol
-    protocol = 'ssh'
-    #: remote ssh port
-    port = '22'
-    #: Remote absolute basedir
-    basedir = '$HOME/'
-    crypt_user_pass = None
+
     _session = None
 
     def _disconnect(self):
         super(SshShellAdaptor, self)._disconnect()
         del self._session
 
-    def __init__(self, **kwargs):
-        super(SshShellAdaptor, self).__init__(**kwargs)
-        self.user_id = kwargs.get('user_id', SshKeyShellAdaptor.user_id)
-        self.crypt_user_pass = kwargs.get('crypt_user_pass')
-        self.port = kwargs.get('port', SshShellAdaptor.port)
-        self.basedir = kwargs.get('basedir', SshKeyShellAdaptor.basedir)
+    def __init__(self, command=None, protocol='ssh', host="localhost", port=22, password=None, user_id=None,
+                 basedir="$HOME/", **kwargs):
+        super(SshShellAdaptor, self).__init__(command=command, protocol=protocol, host=host, **kwargs)
+        self.user_id = user_id
+        self.password = password
+        self.port = port
+        self.basedir = basedir
         self._context = None
         self._session = None
 
     def _init_service(self):
-        session = saga.Session()
-        session.add_context(self.context)
-        logger.info("New session [--%s--]" % session)
-        return saga.job.Service(self.saga_host, session)
+        return saga.job.Service(self.saga_host, self.session)
 
     @property
     def saga_host(self):
@@ -205,7 +206,7 @@ class SshShellAdaptor(LocalShellAdaptor):
         params.update(dict(user_id=self.user_id,
                            port=self.port,
                            basedir=self.basedir,
-                           crypt_user_pass=self.crypt_user_pass))
+                           password=self.password))
         return params
 
     def _job_description(self, job):
@@ -229,7 +230,7 @@ class SshShellAdaptor(LocalShellAdaptor):
         if self._context is None:
             self._context = saga.Context('UserPass')
             self._context.user_id = self.user_id
-            self._context.user_pass = self.crypt_user_pass
+            self._context.user_pass = Encrypt.decrypt(self.password)
             self._context.remote_port = self.port
             self._context.life_time = 0
         return self._context
@@ -266,7 +267,7 @@ class SshShellAdaptor(LocalShellAdaptor):
             work_dir = self.job_work_dir(job)
             for remote_file in work_dir.list('*'):
                 work_dir.copy(remote_file, 'file://localhost/%s/' % job.working_dir)
-                logger.debug("Retrieved file from %s to %s", remote_file,
+                logger.debug("Retrieved file from %s/%s to %s", work_dir, remote_file,
                              'file://localhost/%s/' % job.working_dir)
             return super(SshShellAdaptor, self)._job_results(job)
         except saga.SagaException as exc:
@@ -280,21 +281,19 @@ class SshKeyShellAdaptor(SshShellAdaptor):
     name = 'Shell script over SSH (private key)'
     private_key = '$HOME/.ssh/id_rsa'
     public_key = '$HOME/.ssh/id_rsa.pub'
-    crypt_pass_phrase = None
 
-    def __init__(self, **kwargs):
-        super(SshKeyShellAdaptor, self).__init__(**kwargs)
+    def __init__(self, command=None, protocol='ssh', host="localhost", port=22, password=None, user_id=None,
+                 basedir="$HOME/", **kwargs):
+        super(SshKeyShellAdaptor, self).__init__(command, protocol, host, port, password, user_id, basedir, **kwargs)
         self.private_key = kwargs.get('public_key', SshKeyShellAdaptor.private_key)
         self.public_key = kwargs.get('public_key', SshKeyShellAdaptor.public_key)
-        self.crypt_pass_phrase = kwargs.get('crypt_pass_phrase', SshKeyShellAdaptor.crypt_pass_phrase)
 
     @property
     def init_params(self):
         """ Update init params with expected ones from SSH private/public key login """
         params = super(SshKeyShellAdaptor, self).init_params
         params.update(dict(private_key=self.private_key,
-                           public_key=self.public_key,
-                           crypt_pass_phrase=self.crypt_pass_phrase))
+                           public_key=self.public_key))
         return params
 
     @property

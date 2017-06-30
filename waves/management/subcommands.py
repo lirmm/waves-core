@@ -98,7 +98,7 @@ class CleanUpCommand(BaseCommand):
 
     def handle(self, *args, **options):
         removed = []
-        for dir_name in os.listdir(settings.JOB_DIR):
+        for dir_name in os.listdir(settings.JOB_BASE_DIR):
             try:
                 # DO nothing, job exists in DB
                 Job.objects.get(slug=uuid.UUID('{%s}' % dir_name))
@@ -117,12 +117,12 @@ class CleanUpCommand(BaseCommand):
                 if choice == 1:
                     self.stdout.write("Directories to delete: ")
                     for dir_name in removed:
-                        self.stdout.write(os.path.join(waves_settings.JOB_DIR, dir_name))
+                        self.stdout.write(os.path.join(waves_settings.JOB_BASE_DIR, dir_name))
                 elif choice == 2:
                     for dir_name in removed:
                         self.stdout.write('Removed directory: %s' % dir_name)
                         # onerror(os.path.islink, path, sys.exc_info())
-                        rmtree(os.path.join(waves_settings.JOB_DIR, dir_name),
+                        rmtree(os.path.join(waves_settings.JOB_BASE_DIR, dir_name),
                                onerror=self.print_file_error)
                     removed = []
                 else:

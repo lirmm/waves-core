@@ -17,7 +17,7 @@ WAVES_CONSTANCE_CONFIG = {
     'ALLOW_JOB_SUBMISSION': (True, 'Disable job submission (globally)'),
     'APP_NAME': ('WAVES', 'Application name'),
     'DATA_ROOT': (waves_settings.DATA_ROOT, 'Data root dir'),
-    'JOB_DIR': (join(waves_settings.JOB_DIR, 'jobs'), 'Job working base dir'),
+    'JOB_BASE_DIR': (join(waves_settings.JOB_BASE_DIR, 'jobs'), 'Job working base dir'),
     'SAMPLE_DIR': (join(dirname(waves_settings.SAMPLE_DIR), 'sample'), 'Sample directory'),
 
     'JOBS_MAX_RETRY': (5, 'Default retry for failing jobs', int),

@@ -37,8 +37,3 @@ def import_string(dotted_path):
         msg = 'Module "%s" does not define a "%s" attribute/class' % (
             module_path, class_name)
         raise ImportError(msg)
-
-
-JobRunDetails = namedtuple("JobRunDetails",
-                           ['id', 'slug', 'job_remote_id', 'name', 'exit_code', 'created', 'started',
-                            'finished', 'extra'])

@@ -8,7 +8,7 @@ from rest_framework import authentication, exceptions
 User = get_user_model()
 
 
-class WavesAPiKeyAuthentication(authentication.BaseAuthentication):
+class WavesApiKeyAuthentication(authentication.BaseAuthentication):
 
     """ WAVES API authentication backend, api_key added to URI """
     def authenticate(self, request):
@@ -23,3 +23,4 @@ class WavesAPiKeyAuthentication(authentication.BaseAuthentication):
         except User.DoesNotExists:
             raise exceptions.AuthenticationFailed("No Such User")
         return user, None
+
