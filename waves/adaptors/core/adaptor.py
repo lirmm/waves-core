@@ -2,17 +2,12 @@
 from __future__ import unicode_literals
 
 import logging
-from collections import namedtuple
 
 import waves.adaptors.const
 from waves.adaptors.exceptions import AdaptorJobStateException, AdaptorNotReady
 from waves.utils.exception_logging_decorator import exception
 
 logger = logging.getLogger(__name__)
-
-JobRunDetails = namedtuple("JobRunDetails",
-                           ['id', 'slug', 'job_remote_id', 'name', 'exit_code', 'created', 'started',
-                            'finished', 'extra'])
 
 
 class JobAdaptor(object):
@@ -230,7 +225,7 @@ class JobAdaptor(object):
     def _job_run_details(self, job):
         """ Retrieve job run details if possible from concrete adaptor
         :raise: `waves.adaptors.exception.AdaptorException` if error """
-        raise NotImplementedError()
+        return job.default_run_details()
 
     def _dump_config(self):
         """ Return string representation of concrete adaptor configuration
@@ -247,3 +242,5 @@ class JobAdaptor(object):
     @property
     def importer(self):
         return None
+
+

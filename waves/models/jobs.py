@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
+from collections import namedtuple
 from os import path as path
 from os.path import join
 
@@ -20,7 +21,6 @@ import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.exceptions
 
-from waves.adaptors.core.adaptor import JobRunDetails
 from waves.compat import config
 from waves.exceptions.jobs import *
 from waves.mails import JobMailer
@@ -29,12 +29,15 @@ from waves.models.inputs import AParam
 from waves.models.submissions import Submission, SubmissionOutput
 from waves.settings import waves_settings
 from waves.utils import normalize_value
-from waves.utils.jobs import default_run_details
 from waves.utils.storage import allow_display_online
 
 logger = logging.getLogger(__name__)
 
 __all__ = ['Job', 'JobInput', 'JobOutput']
+
+JobRunDetails = namedtuple("JobRunDetails",
+                           ['id', 'slug', 'job_remote_id', 'name', 'exit_code', 'created', 'started',
+                            'finished', 'extra'])
 
 
 class JobManager(models.Manager):
@@ -568,6 +571,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         try:
             returned = getattr(self.adaptor, action)(self)
             self.nb_retry = 0
+            self.save()
             return returned
         except waves.adaptors.exceptions.AdaptorException as exc:
             self.retry(exc.message)
@@ -667,6 +671,15 @@ class Job(TimeStamped, Slugged, UrlMixin):
         for job_out in self.outputs.all():
             open(job_out.file_path, 'w').close()
         self.save()
+
+    def default_run_details(self):
+        """ Get and retriver a JobRunDetails namedtuple with defaults values"""
+        prepared = self.job_history.filter(status=waves.adaptors.const.JOB_PREPARED).first()
+        finished = self.job_history.filter(status__gte=waves.adaptors.const.JOB_COMPLETED).first()
+        prepared_date = prepared.timestamp.isoformat() if prepared is not None else ""
+        finished_date = finished.timestamp.isoformat() if finished is not None else ""
+        return JobRunDetails(self.id, str(self.slug), self.remote_job_id, self.title, self.exit_code,
+                             self.created.isoformat(), prepared_date, finished_date, '')
 
 
 class JobInputManager(models.Manager):
@@ -990,3 +1003,6 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     @property
     def available(self):
         return os.path.isfile(self.file_path) and os.path.getsize(self.file_path) > 0
+
+
+

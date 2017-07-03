@@ -10,7 +10,8 @@ import time
 import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.utils
-from waves.adaptors.core.adaptor import JobAdaptor, JobRunDetails
+from waves.adaptors.core.adaptor import JobAdaptor
+from waves.models.jobs import JobRunDetails
 
 
 class MockConnector(object):
@@ -59,10 +60,6 @@ class MockJobRunnerAdaptor(JobAdaptor):
     def _job_results(self, job):
         time.sleep(2)
         return True
-
-    def _job_run_details(self, job):
-        return JobRunDetails(job.id, str(job.slug), job.remote_job_id, job.title, job.exit_code,
-                             job.created, job.started, job.updated, '')
 
     def _prepare_job(self, job):
         time.sleep(2)

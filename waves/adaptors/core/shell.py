@@ -2,10 +2,12 @@ from __future__ import unicode_literals
 
 import saga
 import logging
+import datetime
 from os.path import join
 
 import waves.adaptors.const
-from waves.adaptors.core.adaptor import JobAdaptor, JobRunDetails
+from waves.adaptors.core.adaptor import JobAdaptor
+from waves.models.jobs import JobRunDetails
 from waves.adaptors.exceptions import *
 from waves.utils.encrypt import Encrypt
 
@@ -157,9 +159,14 @@ class LocalShellAdaptor(JobAdaptor):
 
     def _job_run_details(self, job):
         remote_job = self.connector.get_job(str(job.remote_job_id))
+        date_created = datetime.datetime.fromtimestamp(float(remote_job.created)).isoformat() if remote_job.created else ""
+        date_started = datetime.datetime.fromtimestamp(float(remote_job.started)).isoformat() if remote_job.started else ""
+        date_finished = datetime.datetime.fromtimestamp(float(remote_job.finished)).isoformat() if remote_job.finished else ""
         details = JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
                                 remote_job.exit_code,
-                                remote_job.created, remote_job.started, remote_job.finished,
+                                date_created,
+                                date_started,
+                                date_finished,
                                 remote_job.execution_hosts)
         return details
 
@@ -267,8 +274,7 @@ class SshShellAdaptor(LocalShellAdaptor):
             work_dir = self.job_work_dir(job)
             for remote_file in work_dir.list('*'):
                 work_dir.copy(remote_file, 'file://localhost/%s/' % job.working_dir)
-                logger.debug("Retrieved file from %s/%s to %s", work_dir.name, remote_file,
-                             'file://localhost/%s/' % job.working_dir)
+                logger.debug("Retrieved file from %s to %s", remote_file, job.working_dir)
             return super(SshShellAdaptor, self)._job_results(job)
         except saga.SagaException as exc:
             raise AdaptorJobException(msg='%s: %s' % (exc.type, exc.message.split(':')[0]), parent=exc)

@@ -48,12 +48,6 @@ class ApiKeyAdaptor(PublicApiAdaptor):
         self.app_key = app_key
 
     @property
-    def complete_url(self):
-        url = super(ApiKeyAdaptor, self).complete_url
-        url += '?%s=%s' % (self._api_get_key, self.app_key)
-        return url
-
-    @property
     def init_params(self):
         base = super(PublicApiAdaptor, self).init_params
         base.update(dict(app_key=self.app_key))
