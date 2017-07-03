@@ -114,12 +114,6 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     ]
     show_full_result_count = True
 
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}
-
     def get_inlines(self, request, obj=None):
         OrganizeInputInline = import_string(organize_input_class)
         _inlines = [

@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Q
 
-from waves.compat import config
+from waves.settings import waves_settings as config
 from waves.models.adaptors import *
 from waves.models.base import *
 import waves.adaptors.const

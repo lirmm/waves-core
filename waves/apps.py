@@ -4,12 +4,9 @@ WAVES app Django application descriptor
 """
 from __future__ import unicode_literals
 
-from django.conf import settings
 from os.path import dirname
 from django.apps import AppConfig
 from django.core.checks import Error, Warning, register
-# DO NOT REMOVE !
-from waves.compat import constance
 
 
 class WavesConfig(AppConfig):

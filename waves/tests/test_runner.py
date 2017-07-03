@@ -5,11 +5,12 @@ from __future__ import unicode_literals
 
 import logging
 
+from waves.adaptors.exceptions import *
+
+import waves.adaptors.const
 from waves.adaptors.core.adaptor import JobAdaptor
-from waves.adaptors.exceptions.adaptors import *
 from waves.adaptors.mocks import MockJobRunnerAdaptor
 from waves.exceptions.jobs import *
-import waves.adaptors.const
 from waves.models import *
 from waves.tests.base import WavesBaseTestCase
 from waves.tests.utils import sample_runner, sample_job
@@ -62,10 +63,7 @@ class TestJobRunner(WavesBaseTestCase):
         if not self.__class__.__name__ == 'TestJobRunner':
             self.skipTest("Only run with mock adaptor, just check job states consistency")
         self.current_job = sample_job(self.service)
-        self.adaptor = JobAdaptor(unexpected_param='unexpected value')
-        with self.assertRaises(AdaptorNotReady):
-            self.adaptor.connect()
-
+        self.adaptor = MockJobRunnerAdaptor(unexpected_param='unexpected value')
         self.jobs.append(self.current_job)
         self._debug_job_state()
         self.current_job.status = waves.adaptors.const.JOB_RUNNING

@@ -9,7 +9,7 @@ from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
 
-from waves.compat import config
+from waves.settings import waves_settings as config
 from waves.models.inputs import *
 from waves.models.metas import ServiceMeta
 from waves.models.runners import Runner

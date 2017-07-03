@@ -20,7 +20,7 @@ from django.db import (
 )
 from rest_framework.exceptions import ValidationError
 
-from waves.compat import config
+from waves.settings import waves_settings as config
 from waves.models import Job
 from waves.models.serializers.services import ServiceSerializer
 from waves.settings import waves_settings

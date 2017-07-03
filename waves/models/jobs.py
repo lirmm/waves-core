@@ -20,8 +20,7 @@ from django.utils.html import format_html
 import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.exceptions
-
-from waves.compat import config
+from waves.settings import waves_settings as config
 from waves.exceptions.jobs import *
 from waves.mails import JobMailer
 from waves.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel

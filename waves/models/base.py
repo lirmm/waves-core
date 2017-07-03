@@ -8,7 +8,7 @@ import inflection
 from django.db import models
 
 from waves.compat import RichTextField
-from waves.compat import config
+from waves.settings import waves_settings as config
 
 __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 'ApiModel',
            'UrlMixin']

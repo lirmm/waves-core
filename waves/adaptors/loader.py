@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from waves.settings import waves_settings, import_from_string
+from waves.settings import waves_settings
 
 __all__ = ['AdaptorLoader']
 

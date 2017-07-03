@@ -29,6 +29,8 @@ class AdaptorImporter(object):
         """
         self._formatter = InputFormat() if formatter is None else formatter
         self._adaptor = adaptor
+        self._service = None
+        self._submission = None
 
     def __str__(self):
         return self.__class__.__name__
@@ -49,11 +51,10 @@ class AdaptorImporter(object):
             self.connect()
             self._warnings = []
             self._errors = []
-            service_details, inputs, outputs, exit_codes = self.load_tool_details(tool_id)
-            if service_details:
+            inputs, outputs, exit_codes = self.load_tool_details(tool_id)
+            if self._service:
                 logger.debug('Import Service %s', tool_id)
-                self._service = service_details
-                logger.debug('Service %s', service_details.name)
+                logger.debug('Service %s', self._service.name)
                 self._service.inputs = self.import_service_params(inputs)
                 self._service.outputs = self.import_service_outputs(outputs)
                 self._service.exit_codes = self.import_exit_codes(exit_codes)
