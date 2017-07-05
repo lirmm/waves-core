@@ -3,15 +3,12 @@ from __future__ import unicode_literals
 from django.conf.urls import url, include
 from rest_framework import routers
 
-from views import jobs, services, categories
+from views import jobs, services
 from waves.views.jobs import JobOutputView, JobInputView
 
 # API router setup
 router = routers.DefaultRouter()
 # Services URIs configuration
-router.register(prefix=r'categories',
-                viewset=categories.CategoryViewSet,
-                base_name='waves-services-category')
 router.register(prefix=r'services',
                 viewset=services.ServiceViewSet,
                 base_name='waves-services')

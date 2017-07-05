@@ -141,8 +141,6 @@ class ImportCommand(BaseCommand):
                             choices=('service', 'runner'),
                             help="Type of data to import (service, runner)")
         parser.add_argument('args', metavar='export_id', nargs='+', help='Previously exported data.')
-        parser.add_argument('--skip_category', action='store_true', dest="skip_cat", default=False,
-                            help="Skip import service category")
         parser.add_argument('--skip_runner', action='store_true', dest="skip_run", default=False,
                             help="Skip import service runner")
         parser.add_argument('--database', action='store', dest='database',

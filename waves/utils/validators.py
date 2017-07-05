@@ -23,7 +23,7 @@ TYPE_TEXT = 'text'
 
 class ServiceInputValidator(object):
     """
-    Dynamic validation class for SubmissionParam objects, according to SubmissionParam type and format
+    Dynamic validation class for SubmissionParam objects, according to SubmissionParam param_type and format
     """
     invalid_message = '%s is not valid %s (%s) got: %s'
     specific_message = ''
@@ -45,7 +45,7 @@ class ServiceInputValidator(object):
         except AssertionError as e:
             form.add_error(the_input.name, 'Wrong input "%s": %s' % (the_input, e.message))
         except AttributeError as e:
-            form.add_error(the_input.name, 'Unknown type for input: %s - type: %s' % (the_input, the_input.type))
+            form.add_error(the_input.name, 'Unknown param_type for input: %s - param_type: %s' % (the_input, the_input.type))
 
     def _validate_input_boolean(self, the_input, value):
         from waves.models.inputs import AParam

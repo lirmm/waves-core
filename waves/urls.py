@@ -32,8 +32,7 @@ waves_admin_url = [
         name="service_submission_preview"),
 ]
 waves_front_url = [
-    url(r'^categories/$', CategoryListView.as_view(), name='services_list'),
-    url(r'^category/(?P<pk>[0-9]+)/$', CategoryDetailView.as_view(), name='category_details'),
+    url(r'^services/$', ServiceListView.as_view(), name='services_list'),
     url(r'^service/(?P<pk>[0-9]+)/$', ServiceDetailView.as_view(), name='service_details'),
     url(r'^service/(?P<pk>[0-9]+)/create$', JobSubmissionView.as_view(), name='job_submission'),
     url(r'^jobs/(?P<slug>[\w-]+)/$', JobView.as_view(), name="job_details"),

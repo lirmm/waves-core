@@ -18,7 +18,7 @@ User = get_user_model()
 
 
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):
-    fixtures = ['waves/tests/fixtures/services.json']
+    # fixtures = ['waves/tests/fixtures/services.json']
 
     def setUp(self):
         super(WavesAPITestCase, self).setUp()
@@ -40,7 +40,6 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
             api_root = self.client.get(reverse('waves:' + api_version + ':api-root'))
             self.assertEqual(api_root.status_code, status.HTTP_200_OK)
             logger.debug('Results: %s ', api_root.data)
-            self.assertIn('categories', api_root.data.keys())
             self.assertIn('services', api_root.data.keys())
             self.assertIn('jobs', api_root.data.keys())
             tool_list = self.client.get(api_root.data['services'], format='json')
@@ -49,21 +48,9 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
             for service in tool_list.data:
                 self.assertIn('url', service.keys())
                 logger.debug('ServiceTool url: %s', service['url'])
-                self.assertIn('category', service.keys())
                 tool_details = self.client.get(service['url'], format='json')
                 logger.debug('ServiceTool: %s', tool_details.data['name'])
                 self.assertIsNotNone(tool_details.data['default_submission_uri'])
-
-    def test_list_categories(self):
-        for api_version in ('api_v1', 'api_v2'):
-            logger.debug('Testing %s ', api_version)
-            category_list = self.client.get(
-                reverse('waves:' + api_version + ':waves-services-category-list'))
-            self.assertEqual(category_list.status_code, status.HTTP_200_OK)
-            self.assertGreaterEqual(len(category_list.data), 0)
-            for category in category_list.data:
-                self.assertGreaterEqual(category['tools'], 1)
-            logger.debug('Ended %s ', api_version)
 
     def testHTTPMethods(self):
         # TODO test authorization
@@ -94,26 +81,26 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                 submissions = tool_data.get('submissions')
                 for submission in submissions:
                     for job_input in submission['inputs']:
-                        if job_input['type'] == AParam.TYPE_FILE:
+                        if job_input['param_type'] == AParam.TYPE_FILE:
                             i += 1
                             input_data = create_test_file(job_input['name'], i)
                             # input_datas[job_input['name']] = input_data.name
                             logger.debug('file input %s', input_data)
-                        elif job_input['type'] == AParam.TYPE_INT:
+                        elif job_input['param_type'] == AParam.TYPE_INT:
                             input_data = int(random.randint(0, 199))
                             logger.debug('number input%s', input_data)
-                        elif job_input['type'] == AParam.TYPE_DECIMAL:
+                        elif job_input['param_type'] == AParam.TYPE_DECIMAL:
                             input_data = int(random.randint(0, 199))
                             logger.debug('number input%s', input_data)
-                        elif job_input['type'] == AParam.TYPE_BOOLEAN:
+                        elif job_input['param_type'] == AParam.TYPE_BOOLEAN:
                             input_data = random.randrange(100) < 50
-                        elif job_input['type'] == 'text':
+                        elif job_input['param_type'] == 'text':
                             input_data = ''.join(random.sample(string.letters, 15))
                             # input_datas[job_input['name']] = input_data
                             logger.debug('text input %s', input_data)
                         else:
                             input_data = ''.join(random.sample(string.letters, 15))
-                            logger.warn('default ???? %s %s', input_data, job_input['type'])
+                            logger.warn('default ???? %s %s', input_data, job_input['param_type'])
                         input_datas[job_input['name']] = input_data
 
                     logger.debug('Data posted %s', input_datas)

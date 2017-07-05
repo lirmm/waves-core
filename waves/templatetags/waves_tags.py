@@ -3,16 +3,8 @@ from __future__ import unicode_literals
 from django import template
 
 from waves.settings import waves_settings
-from waves.models import ServiceCategory
 
 register = template.Library()
-
-
-@register.inclusion_tag('waves/category/_category_menu.html')
-def categories_menu(current):
-    """ Setup nodes for left-hand categories menu"""
-    categories = ServiceCategory.objects.all()
-    return {'nodes': categories, 'current': current}
 
 
 @register.inclusion_tag('waves/services/_online_execution.html', takes_context=True)

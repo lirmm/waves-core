@@ -13,7 +13,7 @@ from waves.settings import waves_settings
 from waves.utils.validators import validate_list_comma, validate_list_param
 
 __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam', 'NumberParam',
-           'ListParam', 'RelatedParam', 'IntegerParam', 'TextParam']
+           'ListParam', 'IntegerParam', 'TextParam']
 
 
 class RepeatedGroup(Ordered):
@@ -37,8 +37,8 @@ class RepeatedGroup(Ordered):
 class AParam(PolymorphicModel, ApiModel):
     class Meta:
         ordering = ['order']
-        verbose_name_plural = "Params"
-        verbose_name = "Param"
+        verbose_name_plural = "Service params"
+        verbose_name = "Service param"
         base_manager_name = 'base_objects'
 
     OPT_TYPE_NONE = 0
@@ -89,8 +89,7 @@ class AParam(PolymorphicModel, ApiModel):
     edam_formats = models.CharField('Edam format(s)', max_length=255, null=True, blank=True,
                                     help_text="comma separated list of supported edam format")
     edam_datas = models.CharField('Edam data(s)', max_length=255, null=True, blank=True,
-                                  help_text="comma separated list of supported edam data type")
-    # TODO remote multiple from base class, only needed for list / file inputs
+                                  help_text="comma separated list of supported edam data param_type")
     repeat_group = models.ForeignKey(RepeatedGroup, null=True, blank=True, on_delete=models.SET_NULL,
                                      help_text="Group and repeat items")
     """ Main class for Basic data related to Service submissions inputs """
@@ -138,7 +137,7 @@ class AParam(PolymorphicModel, ApiModel):
                 raise ValidationError('Input "%s" depends on missing value: \'%s\'  ' % (dep.label, dep.when_value))
 
     def __str__(self):
-        return self.label + ' (' + self.param_type + ')'
+        return self.label + ' (' + self.__class__.__name__ + ')'
 
     @property
     def mandatory(self):
@@ -151,9 +150,14 @@ class AParam(PolymorphicModel, ApiModel):
 
 class TextParam(AParam):
     class Meta:
-        proxy = True
-        verbose_name = "Text"
-        verbose_name_plural = "Text"
+        verbose_name = "Text Input"
+        verbose_name_plural = "Text Input"
+
+    max_length = models.CharField('Max length (<255)', max_length=255, default=255)
+
+    @property
+    def param_type(self):
+        return AParam.TYPE_TEXT
 
 
 class BooleanParam(AParam):
@@ -279,15 +283,6 @@ class IntegerParam(NumberParam, AParam):
     @property
     def param_type(self):
         return AParam.TYPE_INT
-
-
-class RelatedParam(AParam):
-    """ Proxy class for related params (dependents on other params) """
-
-    class Meta:
-        proxy = True
-        verbose_name = "Related Param"
-        verbose_name_plural = "Related params"
 
 
 class ListParam(AParam):

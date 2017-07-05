@@ -28,13 +28,21 @@ extra_base_fields = ['help_text', 'required', 'api_name', 'default', 'parent', '
 
 
 class AParamInline(StackedPolymorphicInline.Child):
-    classes = ['collapse',]
+    classes = ['collapse', ]
     model = AParam
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'parent':
             kwargs['queryset'] = AParam.objects.filter(submission=request.current_obj)
         return super(AParamInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class TextParamInline(AParamInline):
+    fields = required_base_fields + ['max_length'] + extra_base_fields
+    exclude = ['order']
+    classes = ['collapse']
+    model = TextParam
+    form = OrganizeInputForm
 
 
 class FileInputInline(AParamInline):
@@ -61,7 +69,7 @@ class BooleanFielInline(AParamInline):
 
 class TextFieldInline(AParamInline):
     fields = required_base_fields + extra_base_fields
-    model = AParam
+    model = TextParam
     exclude = ['order']
     form = TextParamForm
 
@@ -90,6 +98,7 @@ class OrganizeInputInline(StackedPolymorphicInline):
 
     model = AParam
     child_inlines = (
+        TextParamInline,
         FileInputInline,
         DecimalFieldInline,
         IntegerFieldInline,

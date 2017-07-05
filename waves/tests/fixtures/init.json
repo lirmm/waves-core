@@ -1,1 +1,3024 @@
-[{"model": "waves.wavesprofile", "pk": 1, "fields": {"slug": "d2f47205-0294-4ab7-bdcf-0d8982a1d68f", "picture": "", "registered_for_api": true, "api_key": "8a3689b4-acda-11e6-a24d-3417ebccd2cf", "institution": null, "country": "", "phone": null, "comment": null, "ip": "127.0.0.1", "banned": false}}, {"model": "waves.runner", "pk": 49, "fields": {"description": "Runner Adaptor: waves_adaptors.api.galaxy.tool.GalaxyJobAdaptor", "short_description": null, "name": "GalaxyJobAdaptor", "available": true, "clazz": "waves_adaptors.api.galaxy.tool.GalaxyJobAdaptor"}}, {"model": "waves.runner", "pk": 50, "fields": {"description": "<p>Runner Adaptor: waves_adaptors.api.compphy.CompPhyApiAdaptor</p>", "short_description": null, "name": "CompPhyApiAdaptor", "available": true, "clazz": "waves_adaptors.api.compphy.CompPhyApiAdaptor"}}, {"model": "waves.runner", "pk": 51, "fields": {"description": "<p>Runner Adaptor: waves_adaptors.saga.shell.local.ShellJobAdaptor</p>", "short_description": null, "name": "ShellJobAdaptor", "available": true, "clazz": "waves_adaptors.saga.shell.local.ShellJobAdaptor"}}, {"model": "waves.runner", "pk": 52, "fields": {"description": "Runner Adaptor: waves_adaptors.saga.shell.ssh.SshUserPassJobAdaptor", "short_description": null, "name": "SshUserPassJobAdaptor", "available": true, "clazz": "waves_adaptors.saga.shell.ssh.SshUserPassJobAdaptor"}}, {"model": "waves.runner", "pk": 53, "fields": {"description": "Runner Adaptor: waves_adaptors.saga.shell.ssh.SshKeyJobAdaptor", "short_description": null, "name": "SshKeyJobAdaptor", "available": false, "clazz": "waves_adaptors.saga.shell.ssh.SshKeyJobAdaptor"}}, {"model": "waves.runner", "pk": 54, "fields": {"description": "<p>Runner Adaptor: waves_adaptors.saga.cluster.local.ClusterJobAdaptor</p>", "short_description": null, "name": "ClusterJobAdaptor", "available": true, "clazz": "waves_adaptors.saga.cluster.local.ClusterJobAdaptor"}}, {"model": "waves.runner", "pk": 55, "fields": {"description": "<p>Runner Adaptor: waves_adaptors.saga.cluster.ssh.SshUserPassClusterJobAdaptor</p>", "short_description": null, "name": "SshUserPassClusterJobAdaptor", "available": true, "clazz": "waves_adaptors.saga.cluster.ssh.SshUserPassClusterJobAdaptor"}}, {"model": "waves.runner", "pk": 56, "fields": {"description": "<p>Runner Adaptor: waves_adaptors.saga.cluster.ssh.SshKeyClusterJobAdaptor</p>", "short_description": null, "name": "SshKeyClusterJobAdaptor", "available": false, "clazz": "waves_adaptors.saga.cluster.ssh.SshKeyClusterJobAdaptor"}}, {"model": "waves.runnerparam", "pk": 286, "fields": {"name": "host", "default": null, "runner": 49, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 287, "fields": {"name": "port", "default": "80", "runner": 49, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 288, "fields": {"name": "app_key", "default": null, "runner": 49, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 289, "fields": {"name": "remote_tool_id", "default": null, "runner": 49, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 290, "fields": {"name": "api_endpoint", "default": "projects/", "runner": 50, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 291, "fields": {"name": "origin", "default": "waves", "runner": 50, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 292, "fields": {"name": "host", "default": "http://www.atgc-montpellier.fr/compphy/", "runner": 50, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 293, "fields": {"name": "api_base_path", "default": "api/", "runner": 50, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 294, "fields": {"name": "port", "default": "80", "runner": 50, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 295, "fields": {"name": "app_key", "default": "I5p79pjwvwY274rmpBtH13qOucbKQFsxc8Zo7LJL", "runner": 50, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 296, "fields": {"name": "command", "default": null, "runner": 51, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 297, "fields": {"name": "host", "default": "localhost", "runner": 52, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 298, "fields": {"name": "command", "default": null, "runner": 52, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 299, "fields": {"name": "user_id", "default": "", "runner": 52, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 300, "fields": {"name": "protocol", "default": "ssh", "runner": 52, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 301, "fields": {"name": "basedir", "default": "/tmp", "runner": 52, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 302, "fields": {"name": "port", "default": "22", "runner": 52, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 303, "fields": {"name": "crypt_user_pass", "default": null, "runner": 52, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 304, "fields": {"name": "private_key", "default": "$HOME/.ssh/id_rsa", "runner": 53, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 305, "fields": {"name": "public_key", "default": "$HOME/.ssh/id_rsa.pub", "runner": 53, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 306, "fields": {"name": "host", "default": "localhost", "runner": 53, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 307, "fields": {"name": "command", "default": null, "runner": 53, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 308, "fields": {"name": "crypt_pass_phrase", "default": null, "runner": 53, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 309, "fields": {"name": "user_id", "default": "", "runner": 53, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 310, "fields": {"name": "protocol", "default": "ssh", "runner": 53, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 311, "fields": {"name": "basedir", "default": "/tmp", "runner": 53, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 312, "fields": {"name": "port", "default": "22", "runner": 53, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 313, "fields": {"name": "queue", "default": "all.q", "runner": 54, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 314, "fields": {"name": "protocol", "default": "sge", "runner": 54, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 315, "fields": {"name": "command", "default": null, "runner": 54, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 316, "fields": {"name": "queue", "default": "all.q", "runner": 55, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 317, "fields": {"name": "host", "default": "wilkins.lirmm.fr", "runner": 55, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 318, "fields": {"name": "command", "default": null, "runner": 55, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 319, "fields": {"name": "user_id", "default": "phylo", "runner": 55, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 320, "fields": {"name": "protocol", "default": "sge", "runner": 55, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 321, "fields": {"name": "basedir", "default": "/data/http/www/exec/waves/", "runner": 55, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 322, "fields": {"name": "port", "default": "22", "runner": 55, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 323, "fields": {"name": "crypt_user_pass", "default": "CDhmDFBlc3M=", "runner": 55, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 324, "fields": {"name": "public_key", "default": "$HOME/.ssh/id_rsa.pub", "runner": 56, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 325, "fields": {"name": "private_key", "default": "$HOME/.ssh/id_rsa", "runner": 56, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 326, "fields": {"name": "user_id", "default": "marc.chakiachvili@lirmm.fr", "runner": 56, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 327, "fields": {"name": "crypt_pass_phrase", "default": "FCVJAFxOdnAeRQ==", "runner": 56, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 328, "fields": {"name": "basedir", "default": "/tmp", "runner": 56, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 329, "fields": {"name": "queue", "default": "", "runner": 56, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 330, "fields": {"name": "host", "default": "localhost", "runner": 56, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 331, "fields": {"name": "command", "default": null, "runner": 56, "prevent_override": false}}, {"model": "waves.runnerparam", "pk": 332, "fields": {"name": "protocol", "default": "sge", "runner": 56, "prevent_override": true}}, {"model": "waves.runnerparam", "pk": 333, "fields": {"name": "port", "default": "22", "runner": 56, "prevent_override": false}}, {"model": "waves.servicecategory", "pk": 1, "fields": {"order": 0, "description": "", "short_description": "", "api_name": "phylogenetics", "name": "Phylogenetics", "ref": "", "parent": null, "lft": 1, "rght": 4, "tree_id": 1, "level": 0}}, {"model": "waves.servicecategory", "pk": 2, "fields": {"order": 0, "description": "", "short_description": "", "api_name": "tree_reconstruction", "name": "Tree reconstruction", "ref": "", "parent": 1, "lft": 2, "rght": 3, "tree_id": 1, "level": 1}}, {"model": "waves.service", "pk": 89, "fields": {"created": "2016-11-22T15:46:15.076Z", "updated": "2016-11-23T14:15:55.345Z", "description": "<p>FastME provides distance algorithms to infer phylogenies. FastME is based on balanced minimum evolution, which is the very principle of NJ. FastME improves over NJ by performing topological moves using fast, sophisticated algorithms. The first version of FastME only included Nearest Neighbor Interchange (NNI). The new 2.0 version also includes Subtree Pruning and Regrafting (SPR), while remaining as fast as NJ and providing a number of facilities: distance estimation for DNA and proteins with various models and options, bootstrapping, and parallel computations.</p>", "short_description": "FastME provides distance algorithms to infer phylogenies. FastME is based on balanced minimum evolution, which is the very principle of NJ.", "api_name": "fast_me", "name": "FastME", "version": "2.1.4", "run_on": 55, "clazz": null, "category": 2, "status": 3, "api_on": true, "web_on": true, "email_on": true, "partial": false, "created_by": 1, "remote_service_id": null, "restricted_client": []}}, {"model": "waves.service", "pk": 90, "fields": {"created": "2016-11-22T15:46:15.469Z", "updated": "2016-11-23T14:16:28.356Z", "description": "<h3>Options</h3>\r\n\r\n<p><a name=\"source\"></a>Source tree file<br />\r\nThe input source tree file contains source trees encoded in standard Newick format, possibly containing edge lengths and bootstrap values.<br />\r\nBelow is an example of the Newick format for a tree containing bootstrap values and edge lengths:<br />\r\n<img alt=\"PhySIC_IST source tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_source.png\" title=\"PhySIC_IST source tree\" /></p>\r\n\r\n<p><a name=\"backbone\"></a>Backbone tree (optional)<br />\r\nYou have the possibility to input a starting backbone tree in which missing taxa of the source trees are inserted. This file contains the backbone tree you proposed. This backbone tree is possibly simplified if not satisfying the PC property.</p>\r\n\r\n<p><a name=\"outgroup\"></a>Outgroups for tree rooting (optional)<br />\r\nWhen PhySIC_IST is provided with unrooted source trees, it first has to root them. To that purpose, the software incorporates a rooting tool that automates the procedure. This tool accepts as input different outgroup levels, specified in the outgroup file. Each level is a list of comma-separated taxa. Each level of outgroup must be divided from the next one by a line break.<br />\r\nThe rooting procedure considers each unrooted source tree separately. For a given source tree T, it determines the first level of outgroup that contains one or more taxa of T. Then the tree is rooted on the branch leading to the smallest subtree hosting all outgroup taxa of this level present in the tree. In other words, unrooted source trees are rooted on the branch leading to the outgroup that is the farthest from the ingroup. If the proposed outgroup is not monophyletic, the tree T is discarded from the analysis. This procedure does not alter the resolution inside the ingroup nor in the different outgroup levels that can be present in the tree.<br />\r\nBelow is an example of the format suitable for outgroup_File:</p>\r\n\r\n<pre>\r\nMonodelphis\r\nEchinops, Loxodonta, Dasypus\r\n     </pre>\r\n\r\n<p>Using the specified outgroup levels, the unrooted tree:<br />\r\n<img alt=\"PhySIC_IST unrooted tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_outgroup_1.png\" title=\"PhySIC_IST unrooted tree\" /><br />\r\nwill become:<br />\r\n<img alt=\"PhySIC_IST unrooted tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_outgroup_2.png\" title=\"PhySIC_IST unrooted tree\" /><br />\r\n<br />\r\nThe unrooted tree:<br />\r\n<img alt=\"PhySIC_IST unrooted tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_outgroup_3.png\" title=\"PhySIC_IST unrooted tree\" /><br />\r\nis discarded from the analysis because none of the outgroups taxa are present in the tree.<br />\r\n<br />\r\nThe unrooted tree:<br />\r\n<img alt=\"PhySIC_IST unrooted tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_outgroup_4.png\" title=\"PhySIC_IST unrooted tree\" /><br />\r\nis discarded from the analysis because the outgroup (Dasypus, Echinops) is not monophyletic.</p>\r\n\r\n<p><a name=\"bootstrap\"></a>Bootstrap threshold for source clade selection<br />\r\nBefore computing the supertree, the program first collapses source tree branches having a bootstrap proportion (bp) lower than the indicated threshold. Hence, only significantly supported clades are considered for supertree building (this is especially important with veto supertree methods). For instance, if bps range from 1 to 100 in the source trees (as in the above example), you can typically use 70 as a clade selection threshold.<br />\r\nSource trees that do not contain bp are not affected by this collapsing step. Thus, the input file can contain a mix of trees with bps and trees without. Note that trees with only some bp missing, are not considered by the collapsing step. If you do not want the program to collapse branches at all, just set the treshold value to 0.</p>\r\n\r\n<p><a name=\"correction\"></a>Correction threshold for anomalies detection<br />\r\nThe correction threshold is the threshold used by the STC (Source Tree Correction) preprocess, aiming to detect anomalies in the source trees (e.g., resulting from paralogy, HGT events or long branch attraction).<br />\r\nThe STC preprocess detects incongruences in the source trees on the basis of triplets of taxa present in the source trees. When conflicting resolutions are observed among source trees for the same three taxa, STC drops the resolutions that are statistically less supported. This is achieved by a Chi-Square test comparing the frequencies with which the conflicting resolutions respectively appear. The correction threshold is a real value between 0 and 1. The higher it is, the larger the difference between frequencies of conflicting resolutions has to be in order for STC to drop the least frequent alternatives. In other words, setting the correction threshold to 1 impedes STC to drop any input triplet, hence leaves the source trees as they are, while setting it to 0 implies removing from the source trees any contradicted triplet (e.g. ab|c) that is globally less frequent that an alternative resolution (e.g. ac|b). In the former case, PhySIC_IST behaves as a pure veto method, while in the latter case it mimics a voting (i.e., liberal) supertree method.<br />\r\nWhen STC drops some triplets, the source trees are modified in order that those triplets are not displayed anymore.</p>\r\n\r\n<hr />\r\n<h3>Results</h3>\r\n\r\n<p>With the above example input file you will obtain the following supertree in setting the bootstrap threshold to 60:<br />\r\n<img alt=\"PhySIC_IST supertree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_supertree.png\" title=\"PhySIC_IST supertree\" /><br />\r\n<br />\r\nThe supertree inferred by PhySIC_IST is outputted in Newick format. It can be visualized with usual tree viewing/editing softwares such as <a href=\"http://www.treedyn.org\" target=\"_blank\">TreeDyn</a>, <a href=\"http://darwin.zoology.gla.ac.uk/%7Erpage/treeviewx/download.html\" target=\"_blank\">Treeview X</a> or <a href=\"http://www-ab.informatik.uni-tuebingen.de/software/dendroscope/welcome.html\" target=\"_blank\">DendroScope</a>.</p>\r\n\r\n<p>PhySIC_IST also outputs the list of input taxa not inserted in the supertree (if any) and the value of the CIC for the proposed supertree. The CIC value measures the informativeness of the supertree (see the <a href=\"http://www.atgc-montpellier.fr/physic_ist/paper.php\">paper</a> for details).</p>\r\n\r\n<p>PhySIC_IST also outputs a &quot;newForest&quot; file. This file will contain the modified source trees.</p>", "short_description": "PhySIC_IST: cleaning source trees to infer more informative supertrees.\r\nScornavacca C., Berry V., Lefort V., Douzery E.J.P., Ranwez V.\r\nBMC Bioinformatics. 2008, Oct 4;9:413.", "api_name": "physic_ist", "name": "Physic_IST", "version": "1.0", "run_on": 55, "clazz": null, "category": 2, "status": 3, "api_on": true, "web_on": true, "email_on": true, "partial": false, "created_by": 1, "remote_service_id": null, "restricted_client": []}}, {"model": "waves.service", "pk": 91, "fields": {"created": "2016-11-22T15:46:15.770Z", "updated": "2016-11-23T14:16:13.313Z", "description": "<p>PhyML is a phylogeny software based on the maximum-likelihood principle. Early PhyML versions used a fast algorithm to perform Nearest Neighbor Interchanges (NNIs), in order to improve a reasonable starting tree topology. Since the original publication (<a href=\"http://www.atgc-montpellier.fr/phyml/paper.php\" style=\"text-decoration: none; color: #006699; font-weight: bold; font-family: Verdana, Arial, Helvetica, FreeSans, sans-serif; font-size: 12px; text-align: justify;\">Guindon and Gascuel 2003</a>), PhyML has been widely used (&gt;1,250 citations in ISI Web of Science), due to its simplicity and a fair accuracy/speed compromise. In the mean time research around PhyML has continued. We designed an efficient algorithm to search the tree space using Subtree Pruning and Regrafting (SPR) topological moves (<a href=\"http://www.atgc-montpellier.fr/phyml/paper.php\" style=\"text-decoration: none; color: #006699; font-weight: bold; font-family: Verdana, Arial, Helvetica, FreeSans, sans-serif; font-size: 12px; text-align: justify;\">Hordijk and Gascuel 2005</a>), and proposed a fast branch test based on an approximate likelihood ratio test (<a href=\"http://www.atgc-montpellier.fr/phyml/paper.php\" style=\"text-decoration: none; color: #006699; font-weight: bold; font-family: Verdana, Arial, Helvetica, FreeSans, sans-serif; font-size: 12px; text-align: justify;\">Anisimova and Gascuel 2006</a>). However, these novelties were not included in the official version of PhyML, and we found that improvements were still needed in order to make them effective in some practical cases. PhyML 3.0 achieves this task. It implements new algorithms to search the space of tree topologies with user-defined intensity. A non-parametric, Shimodaira-Hasegawa-like branch test is also available. The program provides a number of new evolutionary models and its interface was entirely re-designed. We tested PhyML 3.0 on a large collection of real data sets to ensure that the new version is stable, ready-to-use and still reasonably fast and accurate.</p>", "short_description": "PhyML is a phylogeny software based on the maximum-likelihood principle.", "api_name": "phy_ml", "name": "PhyML", "version": "1.0", "run_on": 55, "clazz": null, "category": 2, "status": 3, "api_on": true, "web_on": true, "email_on": true, "partial": false, "created_by": 1, "remote_service_id": null, "restricted_client": []}}, {"model": "waves.service", "pk": 92, "fields": {"created": "2016-11-22T15:46:16.166Z", "updated": "2016-11-23T14:16:42.272Z", "description": "", "short_description": "", "api_name": "supertree_mrp", "name": "Supertree MRP", "version": "1.0", "run_on": 55, "clazz": null, "category": 2, "status": 3, "api_on": true, "web_on": true, "email_on": true, "partial": false, "created_by": 1, "remote_service_id": null, "restricted_client": []}}, {"model": "waves.service", "pk": 93, "fields": {"created": "2016-11-22T15:46:16.391Z", "updated": "2016-11-22T15:52:33.645Z", "description": "<p>Create a new project on CompPhy, given a file of trees (and eventually a file of annotations).</p>", "short_description": "Create a new project on CompPhy", "api_name": "compphy-project-creator-10", "name": "Compphy Project Creator", "version": "1.0", "run_on": 50, "clazz": null, "category": 1, "status": 3, "api_on": true, "web_on": false, "email_on": false, "partial": false, "created_by": 1, "remote_service_id": null, "restricted_client": []}}, {"model": "waves.servicesubmission", "pk": 119, "fields": {"created": "2016-11-22T15:46:15.087Z", "updated": "2016-11-22T15:55:17.586Z", "order": 0, "slug": "193b9993-180c-47b7-b76c-766e3da2b057", "api_name": "default", "label": "complete", "available_online": true, "available_api": true, "service": 89}}, {"model": "waves.servicesubmission", "pk": 120, "fields": {"created": "2016-11-22T15:46:15.480Z", "updated": "2016-11-22T16:01:11.052Z", "order": 0, "slug": "a23ad582-9c06-4289-8b9a-30714bf3aa64", "api_name": "complete", "label": "complete", "available_online": true, "available_api": true, "service": 90}}, {"model": "waves.servicesubmission", "pk": 121, "fields": {"created": "2016-11-22T15:46:15.782Z", "updated": "2016-11-22T15:46:15.782Z", "order": 0, "slug": "f65df4fd-4d5e-4d28-8ff8-d801ffb90c7f", "api_name": "default", "label": "default", "available_online": true, "available_api": true, "service": 91}}, {"model": "waves.servicesubmission", "pk": 122, "fields": {"created": "2016-11-22T15:46:16.169Z", "updated": "2016-11-22T16:03:14.152Z", "order": 0, "slug": "22db3eb5-d431-455e-8d07-43a95afdf39b", "api_name": "calcul", "label": "MRP API Submission", "available_online": true, "available_api": true, "service": 92}}, {"model": "waves.servicesubmission", "pk": 123, "fields": {"created": "2016-11-22T15:46:16.396Z", "updated": "2016-11-22T15:51:32.169Z", "order": 0, "slug": "ec01ada7-3ad4-4617-b3a5-c07b1751703f", "api_name": "compphy_project_creator", "label": "Compphy Project Creator", "available_online": false, "available_api": true, "service": 93}}, {"model": "waves.serviceinput", "pk": 797, "fields": {"created": "2016-11-22T15:46:15.088Z", "updated": "2016-11-22T15:46:15.088Z", "order": 0, "description": "<p>The input data file contains sequence alignment(s) or a distance matrix(ces).</p>", "short_description": "The input data file contains sequence alignment(s) or a distance matrix(ces).", "label": "Input data file", "name": "input_data", "default": "", "type": "file", "param_type": 1, "format": "Phylip|.phy\r\nMatrix|.mat", "mandatory": true, "multiple": false, "editable": true, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 798, "fields": {"created": "2016-11-22T15:46:15.090Z", "updated": "2016-11-22T15:46:15.090Z", "order": 1, "description": "<p>FastME will write the infered tree into the output tree file.</p>", "short_description": "FastME will write the infered tree into the output tree file.", "label": "Output tree", "name": "output_tree", "default": "output_tree.txt", "type": "text", "param_type": 1, "format": "", "mandatory": true, "multiple": false, "editable": false, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 799, "fields": {"created": "2016-11-22T15:46:15.093Z", "updated": "2016-11-22T15:46:15.093Z", "order": 2, "description": "<p>Type of data in the input file. It can be either DNA or amino-acid MSA in PHYLIP format, or a distance matrix in PHYLIP format. If the input data type is a MSA, the menu will update to display evolutionary model options required to compute a distance matrix.</p>", "short_description": "Type of data in the input file. It can be either DNA or amino-acid MSA in PHYLIP format, or a distance matrix in PHYLIP format. If the input data type is a MSA, the menu will update to display evolutionary model options required to compute a distance matrix.", "label": "Data type", "name": "typeChoice", "default": "d", "type": "select", "param_type": 0, "format": "DNA|d\r\nProtein|p\r\nMatrix|m", "mandatory": true, "multiple": false, "editable": true, "display": null, "service": 119}}, {"model": "waves.serviceinput", "pk": 800, "fields": {"created": "2016-11-22T15:46:15.097Z", "updated": "2016-11-22T15:46:15.097Z", "order": 3, "description": "<p>By default, frequencies are globally counted from the nucleotides alignment or defined by the proteic substitution model. By checking the box, frequencies are pairwise estimated by counting the nucleotides or estimated by counting the amino-acids in the alignment.</p>", "short_description": "By default, frequencies are globally counted from the nucleotides alignment or defined by the proteic substitution model. By checking the box, frequencies are pairwise estimated by counting the nucleotides or estimated by counting the amino-acids in the alignment.", "label": "Equilibrium frequencies", "name": "equilibrium", "default": "False", "type": "boolean", "param_type": 5, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 801, "fields": {"created": "2016-11-22T15:46:15.099Z", "updated": "2016-11-22T15:46:15.099Z", "order": 4, "description": "<p>Rates of evolution often vary from site to site. This heterogeneity is modelled using a gamma distribution.</p>", "short_description": "Rates of evolution often vary from site to site. This heterogeneity is modelled using a gamma distribution.", "label": "Gamma distributed rates across sites", "name": "gamma", "default": "1.0", "type": "float", "param_type": 1, "format": "", "mandatory": true, "multiple": false, "editable": true, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 802, "fields": {"created": "2016-11-22T15:46:15.101Z", "updated": "2016-11-22T15:46:15.101Z", "order": 5, "description": "<p>Use this option to completely remove any site which has a gap in any sequence. By default, FastME is doing pairwise deletion of gaps.</p>", "short_description": "Use this option to completely remove any site which has a gap in any sequence. By default, FastME is doing pairwise deletion of gaps.", "label": "Remove gap strategy", "name": "remove_gap", "default": "False", "type": "boolean", "param_type": 5, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 803, "fields": {"created": "2016-11-22T15:46:15.102Z", "updated": "2016-11-22T15:46:15.102Z", "order": 6, "description": "", "short_description": null, "label": "Distance algorithm", "name": "method", "default": "I", "type": "select", "param_type": 1, "format": "BIONJ|I\r\nTaxAdd BalME|B\r\nTaxAdd OLSME|O\r\nNJ|N\r\nUNJ|U", "mandatory": true, "multiple": false, "editable": true, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 804, "fields": {"created": "2016-11-22T15:46:15.104Z", "updated": "2016-11-22T15:46:15.104Z", "order": 7, "description": "<p>Use this option to do [NNI] tree topology improvement.<br />\r\nYou may choose the [NNI] type from: NNI_BalME or NNI_OLS</p>", "short_description": "Use this option to do [NNI] tree topology improvement.\r\nYou may choose the [NNI] type from: NNI_BalME or NNI_OLS", "label": "Topology improvment", "name": "nni", "default": "B", "type": "select", "param_type": 1, "format": "BalME NNI|B\r\nOLS NNI|O", "mandatory": false, "multiple": false, "editable": true, "display": "radio", "service": 119}}, {"model": "waves.serviceinput", "pk": 805, "fields": {"created": "2016-11-22T15:46:15.106Z", "updated": "2016-11-22T15:46:15.106Z", "order": 8, "description": "", "short_description": null, "label": "Bootstrap", "name": "use_bootstrap", "default": "", "type": "boolean", "param_type": 0, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 806, "fields": {"created": "2016-11-22T15:46:15.110Z", "updated": "2016-11-22T15:46:15.110Z", "order": 9, "description": "<p>Use this option to do SPR tree topology improvement</p>", "short_description": "Use this option to do SPR tree topology improvement", "label": "SPR Pruning", "name": "spr", "default": "False", "type": "boolean", "param_type": 5, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 807, "fields": {"created": "2016-11-22T15:46:15.111Z", "updated": "2016-11-22T15:46:15.111Z", "order": 10, "description": "<p>FastME may use an existing topology available in the input user tree file which corresponds to the input dataset.</p>", "short_description": "FastME may use an existing topology available in the input user tree file which corresponds to the input dataset.", "label": "Existing topology", "name": "user_tree", "default": "", "type": "file", "param_type": 1, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 808, "fields": {"created": "2016-11-22T15:46:15.113Z", "updated": "2016-11-22T15:46:15.113Z", "order": 11, "description": "<p>Use this option if you want FastME to write information about its execution in the output information file.</p>", "short_description": "Use this option if you want FastME to write information about its execution in the output information file.", "label": "Output information file", "name": "output_info", "default": "output_info.txt", "type": "text", "param_type": 1, "format": "", "mandatory": true, "multiple": false, "editable": false, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 809, "fields": {"created": "2016-11-22T15:46:15.115Z", "updated": "2016-11-22T15:46:15.115Z", "order": 12, "description": "<p>Use this option if you want FastME to write the distances matrix computed from the input alignment in the output matrix file.</p>", "short_description": "Use this option if you want FastME to write the distances matrix computed from the input alignment in the output matrix file.", "label": "Output matrix file", "name": "output_matrix", "default": "output_matrix.mat", "type": "text", "param_type": 1, "format": "", "mandatory": true, "multiple": false, "editable": false, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 810, "fields": {"created": "2016-11-22T15:46:15.117Z", "updated": "2016-11-22T15:46:15.117Z", "order": 13, "description": "<p>Use this option if you want FastME to write bootstrap trees in the bootstrap trees file.</p>", "short_description": "Use this option if you want FastME to write bootstrap trees in the bootstrap trees file.", "label": "Output bootstrap tree", "name": "output_boot", "default": "output_bootstrap.txt", "type": "text", "param_type": 4, "format": "", "mandatory": true, "multiple": false, "editable": false, "display": "select", "service": 119}}, {"model": "waves.serviceinput", "pk": 811, "fields": {"created": "2016-11-22T15:46:15.482Z", "updated": "2016-11-22T15:46:15.482Z", "order": 0, "description": "<p>The source trees have to be contained in a text file (e.g., named &quot;sourceTreeFile&quot;) with trees written in the Newick format.</p>", "short_description": "The source trees have to be contained in a text file (e.g., named &quot;sourceTreeFile&quot;) with trees written in the Newick format.", "label": "Source Tree File", "name": "s", "default": "", "type": "file", "param_type": 2, "format": "", "mandatory": true, "multiple": false, "editable": true, "display": "select", "service": 120}}, {"model": "waves.serviceinput", "pk": 812, "fields": {"created": "2016-11-22T15:46:15.484Z", "updated": "2016-11-22T15:46:15.484Z", "order": 1, "description": "<p>The user has the possibility to input a starting backbone tree in which missing taxa of the source trees are inserted. The file myTreeFile contains the backbone tree proposed by the user. This backbone tree is possibly simplified if not satisfying the PC property.</p>", "short_description": "The user has the possibility to input a starting backbone tree in which missing taxa of the source trees are inserted. The file myTreeFile contains the backbone tree proposed by the user. This backbone tree is possibly simplified if not satisfying the PC property.", "label": "Backbone Tree File", "name": "t", "default": "", "type": "file", "param_type": 2, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 120}}, {"model": "waves.serviceinput", "pk": 813, "fields": {"created": "2016-11-22T15:46:15.488Z", "updated": "2016-11-22T15:46:15.488Z", "order": 2, "description": "<p>The boostrap_threshold is an unbounded positive number. Before running the actual algorithm, PhySIC_IST collapses the branches with a bootstrap value smaller than the indicated boostrap_threshold (if your bootstrap values are numbers between A and B, I suggest to set your treshold value in this range!). Branches of the source trees without bootstrap value are not collapsed.</p>", "short_description": "The boostrap_threshold is an unbounded positive number. Before running the actual algorithm, PhySIC_IST collapses the branches with a bootstrap value smaller than the indicated boostrap_threshold (if your bootstrap values are numbers between A and B, I suggest to set your treshold value in this range!). Branches of the source trees without bootstrap value are not collapsed.", "label": "Use bootstrap threshold ?", "name": "boostrap_select", "default": "False", "type": "boolean", "param_type": 0, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 120}}, {"model": "waves.serviceinput", "pk": 814, "fields": {"created": "2016-11-22T15:46:15.492Z", "updated": "2016-11-22T15:46:15.492Z", "order": 3, "description": "<p>The correction_threshold is the threshold used by the STC (Source Tree Correction) preprocess, aiming to detect anomalies in the source trees (e.g., resulting from paralogy, HGT events or long branch attraction). The STC preprocess detects incongruences in the source trees on the basis of triplets of taxa present in the source trees. When conflicting resolutions are observed among source trees for the same three taxa, STC drops the resolutions that are statistically less supported. This is achieved by a Chi-Square test comparing the frequencies with which the conflicting resolutions respectively appear. The correction_threshold is a real value between 0 and 1. The higher it is, the smaller the difference between frequencies of conflicting resolutions has to be in order for STC to drop the least frequent alternatives. In other words, setting correction_threshold to 1 impedes STC to drop any input triplet, while setting it to 0 implies dropping any contradicted triplet that is less frequent that another triplet contradicting it. In the former case, PhySIC_IST behaves as a pure veto method, while in the latter case it mimics a voting (i.e., liberal) supertree method.</p>", "short_description": "The correction_threshold is the threshold used by the STC (Source Tree Correction) preprocess, aiming to detect anomalies in the source trees (e.g., resulting from paralogy, HGT events or long branch attraction). The STC preprocess detects incongruences in the source trees on the basis of triplets of taxa present in the source trees. When conflicting resolutions are observed among source trees for the same three taxa, STC drops the resolutions that are statistically less supported. This is achieved by a Chi-Square test comparing the frequencies with which the conflicting resolutions respectively appear. The correction_threshold is a real value between 0 and 1. The higher it is, the smaller the difference between frequencies of conflicting resolutions has to be in order for STC to drop the least frequent alternatives. In other words, setting correction_threshold to 1 impedes STC to drop any input triplet, while setting it to 0 implies dropping any contradicted triplet that is less frequent that another triplet contradicting it. In the former case, PhySIC_IST behaves as a pure veto method, while in the latter case it mimics a voting (i.e., liberal) supertree method.", "label": "Use correction threshold ?", "name": "correction_threshold", "default": "False", "type": "boolean", "param_type": 0, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 120}}, {"model": "waves.serviceinput", "pk": 815, "fields": {"created": "2016-11-22T15:46:15.495Z", "updated": "2016-11-22T15:46:15.495Z", "order": 4, "description": "<p>newForestFile is the name of the file where the method outputs the modified source trees. This option is relevant only with -b and -c options.</p>", "short_description": "newForestFile is the name of the file where the method outputs the modified source trees. This option is relevant only with -b and -c options.", "label": "New Forest File", "name": "f", "default": "newForest.txt", "type": "text", "param_type": 2, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 120}}, {"model": "waves.serviceinput", "pk": 816, "fields": {"created": "2016-11-22T15:46:15.497Z", "updated": "2016-11-22T15:46:15.497Z", "order": 5, "description": "<p>When PhySIC_IST is provided with unrooted source trees, it first has to root them. To that purpose, the software incorporates a rooting tool that automates the procedure. This tool accepts as input different outgroup levels, specified in the file named outgroup_File. Each level is a list of comma-separated taxa. Each level of outgroup must be divided from the next one by a line break. The rooting procedure considers each unrooted source tree separately. For a given source tree T, it determines the first level of outgroup that contains one or more taxa of T. Then the tree is rooted on the branch leading to the smallest subtree hosting all outgroup taxa of this level present in the tree. In other words, unrooted source trees are rooted on the branch leading to the outgroup that is the farthest from the ingroup. If the proposed outgroup is not monophyletic, the tree T is discarded from the analysis. This procedure does not alter the resolution inside the ingroup nor in the different outgroup levels that can be present in the tree.</p>", "short_description": "When PhySIC_IST is provided with unrooted source trees, it first has to root them. To that purpose, the software incorporates a rooting tool that automates the procedure. This tool accepts as input different outgroup levels, specified in the file named outgroup_File. Each level is a list of comma-separated taxa. Each level of outgroup must be divided from the next one by a line break. The rooting procedure considers each unrooted source tree separately. For a given source tree T, it determines the first level of outgroup that contains one or more taxa of T. Then the tree is rooted on the branch leading to the smallest subtree hosting all outgroup taxa of this level present in the tree. In other words, unrooted source trees are rooted on the branch leading to the outgroup that is the farthest from the ingroup. If the proposed outgroup is not monophyletic, the tree T is discarded from the analysis. This procedure does not alter the resolution inside the ingroup nor in the different outgroup levels that can be present in the tree.", "label": "Outgroup File", "name": "r", "default": "", "type": "file", "param_type": 2, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 120}}, {"model": "waves.serviceinput", "pk": 817, "fields": {"created": "2016-11-22T15:46:15.498Z", "updated": "2016-11-22T15:46:15.498Z", "order": 6, "description": "<p>This is the file which contains the PhySIC_IST supertree</p>", "short_description": "This is the file which contains the PhySIC_IST supertree", "label": "Output file name", "name": "o", "default": "physic_ist_tree.txt", "type": "text", "param_type": 2, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 120}}, {"model": "waves.serviceinput", "pk": 818, "fields": {"created": "2016-11-22T15:46:15.784Z", "updated": "2016-11-22T15:46:15.784Z", "order": 0, "description": "<p>The nucleotide or amino-acid sequence file in PHYLIP format</p>", "short_description": "The nucleotide or amino-acid sequence file in PHYLIP format", "label": "Sequences", "name": "input", "default": "", "type": "file", "param_type": 1, "format": ".phy\r\n.txt", "mandatory": true, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 819, "fields": {"created": "2016-11-22T15:46:15.786Z", "updated": "2016-11-22T15:46:15.786Z", "order": 1, "description": "", "short_description": null, "label": "Data type", "name": "datatype", "default": "nt", "type": "select", "param_type": 1, "format": "Nucleotides|nt\r\nAmino-Acid|aa", "mandatory": false, "multiple": false, "editable": true, "display": "radio", "service": 121}}, {"model": "waves.serviceinput", "pk": 820, "fields": {"created": "2016-11-22T15:46:15.787Z", "updated": "2016-11-22T15:46:15.788Z", "order": 2, "description": "<p>Changes interleaved format (default) to sequential format.</p>", "short_description": "Changes interleaved format (default) to sequential format.", "label": "Sequential format", "name": "sequential", "default": "False", "type": "boolean", "param_type": 5, "format": "Sequential", "mandatory": false, "multiple": false, "editable": true, "display": "checkbox", "service": 121}}, {"model": "waves.serviceinput", "pk": 821, "fields": {"created": "2016-11-22T15:46:15.789Z", "updated": "2016-11-22T15:46:15.789Z", "order": 3, "description": "<p>An integer corresponding to the number of data sets to analyse</p>", "short_description": "An integer corresponding to the number of data sets to analyse", "label": "Number of datasets", "name": "multiple", "default": "1", "type": "number", "param_type": 1, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 822, "fields": {"created": "2016-11-22T15:46:15.792Z", "updated": "2016-11-22T15:46:15.792Z", "order": 4, "description": "<p>Use a minimum parsimony starting tree. This option is taken into account when No user tree is provided and when tree topology modifications are to be done</p>", "short_description": "Use a minimum parsimony starting tree. This option is taken into account when No user tree is provided and when tree topology modifications are to be done", "label": "Minimum parsimony starting tree", "name": "pars", "default": "", "type": "boolean", "param_type": 5, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 823, "fields": {"created": "2016-11-22T15:46:15.794Z", "updated": "2016-11-22T15:46:15.794Z", "order": 5, "description": "<p>int &gt; 0: int is the number of bootstrap replicates.<br />\r\nint = 0: neither approximate likelihood ratio test nor bootstrap values are computed.<br />\r\nint = -1: approximate likelihood ratio test returning aLRT statistics.<br />\r\nint = -2: approximate likelihood ratio test returning Chi2-based parametric branch supports.<br />\r\nint = -4: (default) SH-like branch supports alone.<br />\r\nint = -5: approximate Bayes branch supports.</p>", "short_description": "int &gt; 0: int is the number of bootstrap replicates.\r\nint = 0: neither approximate likelihood ratio test nor bootstrap values are computed.\r\nint = -1: approximate likelihood ratio test returning aLRT statistics.\r\nint = -2: approximate likelihood ratio test returning Chi2-based parametric branch supports.\r\nint = -4: (default) SH-like branch supports alone.\r\nint = -5: approximate Bayes branch supports.", "label": "Bootstrap", "name": "bootstrap", "default": "-4", "type": "number", "param_type": 5, "format": "-5|", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 824, "fields": {"created": "2016-11-22T15:46:15.797Z", "updated": "2016-11-22T15:46:15.797Z", "order": 6, "description": "<p>model : substitution model name. - Nucleotide-based models : HKY85 (default) | JC69 | K80 | F81 | F84 | TN93 | GTR - Amino-acid based models : LG (default) | WAG | JTT | MtREV | Dayhoff | DCMut | RtREV | CpREV | VT | Blosum62 | MtMam | MtArt | HIVw | HIVb | custom</p>", "short_description": "model : substitution model name. - Nucleotide-based models : HKY85 (default) | JC69 | K80 | F81 | F84 | TN93 | GTR - Amino-acid based models : LG (default) | WAG | JTT | MtREV | Dayhoff | DCMut | RtREV | CpREV | VT | Blosum62 | MtMam | MtArt | HIVw | HIVb | custom", "label": "Substitution model", "name": "model", "default": "dna", "type": "select", "param_type": 0, "format": "DNA|dna\r\nAmino Acid|aa", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 825, "fields": {"created": "2016-11-22T15:46:15.802Z", "updated": "2016-11-22T15:46:15.802Z", "order": 7, "description": "<p>e : the character frequencies are determined as follows : - Nucleotide sequences: (Empirical) the equilibrium base frequencies are estimated by counting the occurence of the different bases in the alignment. - Amino-acid sequences: (Empirical) the equilibrium amino-acid frequencies are estimated by counting the occurence of the different amino-acids in the alignment. m : the character frequencies are determined as follows : - Nucleotide sequences: (ML) the equilibrium base frequencies are estimated using maximum likelihood - Amino-acid sequences: (Model) the equilibrium amino-acid frequencies are estimated using the frequencies defined by the substitution model. &quot;fA,fC,fG,fT&quot; : only valid for nucleotide-based models. fA, fC, fG and fT are floating numbers that correspond to the frequencies of A, C, G and T respectively (WARNING: do not use any blank space between your values of nucleotide frequencies, only commas!)</p>", "short_description": "e : the character frequencies are determined as follows : - Nucleotide sequences: (Empirical) the equilibrium base frequencies are estimated by counting the occurence of the different bases in the alignment. - Amino-acid sequences: (Empirical) the equilibrium amino-acid frequencies are estimated by counting the occurence of the different amino-acids in the alignment. m : the character frequencies are determined as follows : - Nucleotide sequences: (ML) the equilibrium base frequencies are estimated using maximum likelihood - Amino-acid sequences: (Model) the equilibrium amino-acid frequencies are estimated using the frequencies defined by the substitution model. &quot;fA,fC,fG,fT&quot; : only valid for nucleotide-based models. fA, fC, fG and fT are floating numbers that correspond to the frequencies of A, C, G and T respectively (WARNING: do not use any blank space between your values of nucleotide frequencies, only commas!)", "label": "Character frequencies", "name": "f", "default": "e", "type": "select", "param_type": 2, "format": "Empirical|e\r\nEquilibrium|m\r\nCustom|custom", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 826, "fields": {"created": "2016-11-22T15:46:15.806Z", "updated": "2016-11-22T15:46:15.806Z", "order": 8, "description": "<p>Transition/transversion ratio. DNA sequences only. Can be a fixed positive value (ex:4.0) or e to get the maximum likelihood estimate.</p>", "short_description": "Transition/transversion ratio. DNA sequences only. Can be a fixed positive value (ex:4.0) or e to get the maximum likelihood estimate.", "label": "Transversion ratio", "name": "ts/tv", "default": "e", "type": "text", "param_type": 1, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 827, "fields": {"created": "2016-11-22T15:46:15.807Z", "updated": "2016-11-22T15:46:15.807Z", "order": 9, "description": "", "short_description": null, "label": "Proportion of invariable sites", "name": "pinv", "default": "e", "type": "text", "param_type": 1, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 828, "fields": {"created": "2016-11-22T15:46:15.809Z", "updated": "2016-11-22T15:46:15.809Z", "order": 10, "description": "<p>Number of relative substitution rate categories. Default : nb_subst_cat=4.</p>", "short_description": "Number of relative substitution rate categories. Default : nb_subst_cat=4.", "label": "Number of relative substitution", "name": "nclasses", "default": "4", "type": "number", "param_type": 1, "format": "0|", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 829, "fields": {"created": "2016-11-22T15:46:15.810Z", "updated": "2016-11-22T15:46:15.810Z", "order": 11, "description": "<p>Distribution of the gamma distribution shape parameter. Can be a fixed positive value or e to get the maximum likelihood estimate.</p>", "short_description": "Distribution of the gamma distribution shape parameter. Can be a fixed positive value or e to get the maximum likelihood estimate.", "label": "Gamma distribution", "name": "alpha", "default": "e", "type": "text", "param_type": 1, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 830, "fields": {"created": "2016-11-22T15:46:15.812Z", "updated": "2016-11-22T15:46:15.812Z", "order": 12, "description": "<p>Tree topology search operation option</p>", "short_description": "Tree topology search operation option", "label": "Tree topology search", "name": "search", "default": "NNI", "type": "select", "param_type": 1, "format": "NNI|NNI\r\nSPR|SPR\r\nBest of NNI and SPR|BEST", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 831, "fields": {"created": "2016-11-22T15:46:15.813Z", "updated": "2016-11-22T15:46:15.813Z", "order": 13, "description": "<p>Starting tree. The tree must be in Newick format.</p>", "short_description": "Starting tree. The tree must be in Newick format.", "label": "Starting tree", "name": "inputtree", "default": "", "type": "file", "param_type": 1, "format": ".nwk\r\n.txt", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 832, "fields": {"created": "2016-11-22T15:46:15.815Z", "updated": "2016-11-22T15:46:15.815Z", "order": 14, "description": "<p>This option focuses on specific parameter optimisation</p>", "short_description": "This option focuses on specific parameter optimisation", "label": "Parameter optimization", "name": "o", "default": "n", "type": "select", "param_type": 2, "format": "Topology, branch length, rate|tlr\r\nTopology, branch length|tl\r\nBranch length, rate|lr\r\nBranch length|l\r\nRate|r\r\nNone|n", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 833, "fields": {"created": "2016-11-22T15:46:15.818Z", "updated": "2016-11-22T15:46:15.818Z", "order": 15, "description": "<p>This option sets the initial tree to random. It is only valid if SPR searches are to be performed.</p>", "short_description": "This option sets the initial tree to random. It is only valid if SPR searches are to be performed.", "label": "Initial tree to random", "name": "rand_start", "default": "", "type": "boolean", "param_type": 5, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 834, "fields": {"created": "2016-11-22T15:46:15.821Z", "updated": "2016-11-22T15:46:15.821Z", "order": 16, "description": "", "short_description": null, "label": "Seed to initiate", "name": "r_seed", "default": "", "type": "number", "param_type": 1, "format": "0|", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 835, "fields": {"created": "2016-11-22T15:46:15.822Z", "updated": "2016-11-22T15:46:15.822Z", "order": 17, "description": "", "short_description": null, "label": "Likehood log", "name": "print_site_lnl", "default": "True", "type": "boolean", "param_type": 5, "format": "", "mandatory": false, "multiple": false, "editable": false, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 836, "fields": {"created": "2016-11-22T15:46:15.824Z", "updated": "2016-11-22T15:46:15.824Z", "order": 18, "description": "", "short_description": null, "label": "Print trace", "name": "print_trace", "default": "True", "type": "boolean", "param_type": 5, "format": "", "mandatory": false, "multiple": false, "editable": false, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 837, "fields": {"created": "2016-11-22T15:46:15.826Z", "updated": "2016-11-22T15:46:15.826Z", "order": 19, "description": "", "short_description": null, "label": "Quiet Mode", "name": "quiet", "default": "True", "type": "boolean", "param_type": 5, "format": "", "mandatory": false, "multiple": false, "editable": false, "display": "select", "service": 121}}, {"model": "waves.serviceinput", "pk": 838, "fields": {"created": "2016-11-22T15:46:16.171Z", "updated": "2016-11-22T15:46:16.171Z", "order": 0, "description": "<p>File containing source trees</p>", "short_description": "File containing source trees", "label": "Input File", "name": "file", "default": "", "type": "file", "param_type": 4, "format": "", "mandatory": true, "multiple": false, "editable": true, "display": "select", "service": 122}}, {"model": "waves.serviceinput", "pk": 839, "fields": {"created": "2016-11-22T15:46:16.173Z", "updated": "2016-11-22T15:46:16.173Z", "order": 1, "description": "", "short_description": "", "label": "out_file", "name": "ouput_name", "default": "ratchet", "type": "text", "param_type": 0, "format": "", "mandatory": false, "multiple": false, "editable": false, "display": "select", "service": 122}}, {"model": "waves.serviceinput", "pk": 840, "fields": {"created": "2016-11-22T15:46:16.398Z", "updated": "2016-11-22T15:46:16.398Z", "order": 0, "description": "", "short_description": "", "label": "Input trees", "name": "trees", "default": "", "type": "file", "param_type": 4, "format": "", "mandatory": true, "multiple": false, "editable": true, "display": "select", "service": 123}}, {"model": "waves.serviceinput", "pk": 841, "fields": {"created": "2016-11-22T15:46:16.400Z", "updated": "2016-11-22T15:46:16.400Z", "order": 1, "description": "", "short_description": "", "label": "Description", "name": "description", "default": "", "type": "text", "param_type": 4, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 123}}, {"model": "waves.serviceinput", "pk": 842, "fields": {"created": "2016-11-22T15:46:16.401Z", "updated": "2016-11-22T15:46:16.401Z", "order": 2, "description": "", "short_description": "", "label": "Format of trees file", "name": "format", "default": "auto", "type": "select", "param_type": 4, "format": "Auto|auto\r\nNewick|newick\r\nNHX|nhx\r\nNexus|nexus\r\nCompPhyz(cmpz)|cmpz", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 123}}, {"model": "waves.serviceinput", "pk": 843, "fields": {"created": "2016-11-22T15:46:16.404Z", "updated": "2016-11-22T15:46:16.404Z", "order": 3, "description": "", "short_description": "", "label": "Add annotations", "name": "use_side_annotations", "default": "False", "type": "boolean", "param_type": 4, "format": "true|false", "mandatory": false, "multiple": false, "editable": true, "display": "select", "service": 123}}, {"model": "waves.relatedinput", "pk": 204, "fields": {"created": "2016-11-22T15:46:15.094Z", "updated": "2016-11-22T15:46:15.094Z", "order": 0, "description": "<p>FastME implements a wide range of substitution models for DNA : p-distance, RY symmetric, RY, JC69, K2P, F81, F84, TN93, LogDet. F84 is the default option and is recommended in most cases.</p>", "short_description": "FastME implements a wide range of substitution models for DNA : p-distance, RY symmetric, RY, JC69, K2P, F81, F84, TN93, LogDet. F84 is the default option and is recommended in most cases.", "label": "Evolutionary model", "name": "dna", "default": "4", "type": "select", "param_type": 1, "format": "F84|4\r\nRY|R\r\nF81|1\r\nJC69|J\r\nK2P|K\r\nTN93|T\r\np-distance|p\r\nLogDet|L", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "d", "related_to": 799}}, {"model": "waves.relatedinput", "pk": 205, "fields": {"created": "2016-11-22T15:46:15.096Z", "updated": "2016-11-22T15:46:15.096Z", "order": 1, "description": "<p>FastME implements a wide range of substitution models for proteins : p-distance, F81-like, LG, WAG, JTT, Dayhoff, DCMut, CpREV, MtREV, RtREV, HIVb, HIVw and FLU. LG is the default option and is recommended in most cases.</p>", "short_description": "FastME implements a wide range of substitution models for proteins : p-distance, F81-like, LG, WAG, JTT, Dayhoff, DCMut, CpREV, MtREV, RtREV, HIVb, HIVw and FLU. LG is the default option and is recommended in most cases.", "label": "Evolutionary model", "name": "protein", "default": "L", "type": "select", "param_type": 1, "format": "LG|L\r\nWAG|W\r\nJTT|J\r\nDay off|h\r\nCpRev|C\r\nDCMut|D\r\nHIVb|b\r\nHIVw|I\r\nMtREV|M\r\nRtREV|R\r\np-distance|p", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "p", "related_to": 799}}, {"model": "waves.relatedinput", "pk": 206, "fields": {"created": "2016-11-22T15:46:15.108Z", "updated": "2016-11-22T15:46:15.108Z", "order": 12, "description": "", "short_description": null, "label": "Bootstrap count", "name": "bootstrap", "default": "1000", "type": "number", "param_type": 1, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "True", "related_to": 805}}, {"model": "waves.relatedinput", "pk": 207, "fields": {"created": "2016-11-22T15:46:15.489Z", "updated": "2016-11-22T15:46:15.489Z", "order": 6, "description": "", "short_description": null, "label": "Bootstrap Threshold", "name": "b", "default": "100", "type": "number", "param_type": 2, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "True", "related_to": 813}}, {"model": "waves.relatedinput", "pk": 208, "fields": {"created": "2016-11-22T15:46:15.494Z", "updated": "2016-11-22T15:46:15.494Z", "order": 7, "description": "", "short_description": null, "label": "Correction threshold", "name": "c", "default": "0", "type": "float", "param_type": 2, "format": "0|1", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "True", "related_to": 814}}, {"model": "waves.relatedinput", "pk": 209, "fields": {"created": "2016-11-22T15:46:15.798Z", "updated": "2016-11-22T15:46:15.798Z", "order": 7, "description": "", "short_description": null, "label": "Nucleotide-based models", "name": "model_dna", "default": "HKY85", "type": "select", "param_type": 0, "format": "HKY85|HKY85\r\nJC69|JC69\r\nK80|K80\r\nF81|F81\r\nF84|F84\r\nTN93|TN93\r\nGTR|GTR", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "dna", "related_to": 824}}, {"model": "waves.relatedinput", "pk": 210, "fields": {"created": "2016-11-22T15:46:15.800Z", "updated": "2016-11-22T15:46:15.800Z", "order": 8, "description": "", "short_description": null, "label": "Amino-acid based model", "name": "model_aa", "default": "LG", "type": "select", "param_type": 0, "format": "LG|LG\r\nWAG|WAG\r\nJTT|JTT\r\nMtREV|MtREV\r\nDayhoff|Dayhoff\r\nDCMut|DcMut\r\nRtREV|RtREV\r\nCpREV|CpREV\r\nVT|VT\r\n\t\t Blosum62 | MtMam | MtArt | HIVw |  HIVb |", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "aa", "related_to": 824}}, {"model": "waves.relatedinput", "pk": 211, "fields": {"created": "2016-11-22T15:46:15.804Z", "updated": "2016-11-22T15:46:15.804Z", "order": 10, "description": "<p>fA, fC, fG and fT are floating numbers that correspond to the frequencies of A, C, G and T respectively (WARNING: do not use any blank space between your values of nucleotide frequencies, only commas!)</p>", "short_description": "fA, fC, fG and fT are floating numbers that correspond to the frequencies of A, C, G and T respectively (WARNING: do not use any blank space between your values of nucleotide frequencies, only commas!)", "label": "Custom frequencies", "name": "f_custom", "default": "", "type": "text", "param_type": 0, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "custom", "related_to": 825}}, {"model": "waves.relatedinput", "pk": 212, "fields": {"created": "2016-11-22T15:46:15.819Z", "updated": "2016-11-22T15:46:15.819Z", "order": 19, "description": "<p>The number of initial random trees to be used. It is only valid if SPR searches are to be performed.</p>", "short_description": "The number of initial random trees to be used. It is only valid if SPR searches are to be performed.", "label": "Number of initial random trees", "name": "n_rand_starts", "default": "1", "type": "number", "param_type": 1, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "True", "related_to": 833}}, {"model": "waves.relatedinput", "pk": 213, "fields": {"created": "2016-11-22T15:46:16.406Z", "updated": "2016-11-22T15:46:16.406Z", "order": 0, "description": "", "short_description": "", "label": "Annotation file", "name": "annotations", "default": "", "type": "file", "param_type": 4, "format": "", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "True", "related_to": 843}}, {"model": "waves.relatedinput", "pk": 214, "fields": {"created": "2016-11-22T15:46:16.408Z", "updated": "2016-11-22T15:46:16.408Z", "order": 0, "description": "", "short_description": "", "label": "Delimiter", "name": "delimiter", "default": ",", "type": "select", "param_type": 4, "format": "semicolon|;\r\ncoma|,\r\ntabultation|tabulation", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "True", "related_to": 843}}, {"model": "waves.relatedinput", "pk": 215, "fields": {"created": "2016-11-22T15:46:16.409Z", "updated": "2016-11-22T15:46:16.409Z", "order": 0, "description": "", "short_description": "", "label": "Text delimiter", "name": "text_delimiter", "default": "\"", "type": "select", "param_type": 4, "format": "double quotes|\"\r\nsimple quotes|'\r\nnone|none", "mandatory": false, "multiple": false, "editable": true, "display": "select", "when_value": "True", "related_to": 843}}, {"model": "waves.serviceoutput", "pk": 280, "fields": {"created": "2016-11-22T15:46:15.121Z", "updated": "2016-11-22T15:46:15.121Z", "order": 0, "description": null, "short_description": "", "name": "Infered Tree", "service": 89, "related_from_input": null, "from_input": true, "ext": "txt", "may_be_empty": false, "file_pattern": ""}}, {"model": "waves.serviceoutput", "pk": 281, "fields": {"created": "2016-11-22T15:46:15.128Z", "updated": "2016-11-22T15:46:15.128Z", "order": 1, "description": null, "short_description": "", "name": "Execution Information", "service": 89, "related_from_input": null, "from_input": true, "ext": "txt", "may_be_empty": false, "file_pattern": ""}}, {"model": "waves.serviceoutput", "pk": 282, "fields": {"created": "2016-11-22T15:46:15.133Z", "updated": "2016-11-22T15:46:15.133Z", "order": 2, "description": null, "short_description": "", "name": "Boostrap trees", "service": 89, "related_from_input": null, "from_input": true, "ext": "txt", "may_be_empty": false, "file_pattern": ""}}, {"model": "waves.serviceoutput", "pk": 283, "fields": {"created": "2016-11-22T15:46:15.138Z", "updated": "2016-11-22T15:46:15.138Z", "order": 3, "description": null, "short_description": "", "name": "Computed Matrix", "service": 89, "related_from_input": null, "from_input": true, "ext": "txt", "may_be_empty": false, "file_pattern": ""}}, {"model": "waves.serviceoutput", "pk": 284, "fields": {"created": "2016-11-22T15:46:15.500Z", "updated": "2016-11-22T15:46:15.500Z", "order": 0, "description": null, "short_description": null, "name": "Inferred supertree", "service": 90, "related_from_input": null, "from_input": false, "ext": "txt", "may_be_empty": false, "file_pattern": "%s"}}, {"model": "waves.serviceoutput", "pk": 285, "fields": {"created": "2016-11-22T15:46:15.501Z", "updated": "2016-11-22T15:46:15.502Z", "order": 1, "description": null, "short_description": "", "name": "New source trees", "service": 90, "related_from_input": null, "from_input": false, "ext": "txt", "may_be_empty": false, "file_pattern": "%s"}}, {"model": "waves.serviceoutput", "pk": 286, "fields": {"created": "2016-11-22T15:46:15.829Z", "updated": "2016-11-22T15:46:15.829Z", "order": 0, "description": null, "short_description": "", "name": "Likehood steps", "service": 91, "related_from_input": null, "from_input": true, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s_phyml_lk.txt"}}, {"model": "waves.serviceoutput", "pk": 287, "fields": {"created": "2016-11-22T15:46:15.834Z", "updated": "2016-11-22T15:46:15.834Z", "order": 1, "description": null, "short_description": "", "name": "Run stats", "service": 91, "related_from_input": null, "from_input": true, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s_phyml_stats.txt"}}, {"model": "waves.serviceoutput", "pk": 288, "fields": {"created": "2016-11-22T15:46:15.839Z", "updated": "2016-11-22T15:46:15.840Z", "order": 2, "description": null, "short_description": "", "name": "Run trace", "service": 91, "related_from_input": null, "from_input": true, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s_phyml_trace.txt"}}, {"model": "waves.serviceoutput", "pk": 289, "fields": {"created": "2016-11-22T15:46:15.845Z", "updated": "2016-11-22T15:46:15.845Z", "order": 3, "description": null, "short_description": "", "name": "Best likehood tree", "service": 91, "related_from_input": null, "from_input": true, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s_phyml_tree.txt"}}, {"model": "waves.serviceoutput", "pk": 290, "fields": {"created": "2016-11-22T15:46:16.174Z", "updated": "2016-11-22T15:46:16.174Z", "order": 0, "description": null, "short_description": null, "name": "GMRP", "service": 92, "related_from_input": null, "from_input": false, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s.gmrp"}}, {"model": "waves.serviceoutput", "pk": 291, "fields": {"created": "2016-11-22T15:46:16.177Z", "updated": "2016-11-22T15:46:16.177Z", "order": 1, "description": null, "short_description": "", "name": "LOG", "service": 92, "related_from_input": null, "from_input": false, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s.log"}}, {"model": "waves.serviceoutput", "pk": 292, "fields": {"created": "2016-11-22T15:46:16.178Z", "updated": "2016-11-22T15:46:16.178Z", "order": 2, "description": null, "short_description": "", "name": "MMRP", "service": 92, "related_from_input": null, "from_input": false, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s.mmrp"}}, {"model": "waves.serviceoutput", "pk": 293, "fields": {"created": "2016-11-22T15:46:16.179Z", "updated": "2016-11-22T15:46:16.179Z", "order": 3, "description": null, "short_description": "", "name": "SMRP", "service": 92, "related_from_input": null, "from_input": false, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s.smrp"}}, {"model": "waves.serviceoutput", "pk": 294, "fields": {"created": "2016-11-22T15:46:16.180Z", "updated": "2016-11-22T15:46:16.181Z", "order": 4, "description": null, "short_description": "", "name": "TRE", "service": 92, "related_from_input": null, "from_input": false, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s.tre"}}, {"model": "waves.serviceoutput", "pk": 295, "fields": {"created": "2016-11-22T15:46:16.182Z", "updated": "2016-11-22T15:46:16.182Z", "order": 5, "description": null, "short_description": "", "name": "NEX", "service": 92, "related_from_input": null, "from_input": false, "ext": ".txt", "may_be_empty": false, "file_pattern": "%s.tre.nex"}}, {"model": "waves.serviceoutput", "pk": 296, "fields": {"created": "2016-11-22T15:46:16.412Z", "updated": "2016-11-22T15:46:16.412Z", "order": 0, "description": null, "short_description": null, "name": "Project URL", "service": 93, "related_from_input": null, "from_input": false, "ext": ".txt", "may_be_empty": false, "file_pattern": "project_url.txt"}}, {"model": "waves.serviceoutputfrominputsubmission", "pk": 137, "fields": {"srv_output": 280, "submission": 119, "srv_input": 798}}, {"model": "waves.serviceoutputfrominputsubmission", "pk": 138, "fields": {"srv_output": 281, "submission": 119, "srv_input": 808}}, {"model": "waves.serviceoutputfrominputsubmission", "pk": 139, "fields": {"srv_output": 282, "submission": 119, "srv_input": 810}}, {"model": "waves.serviceoutputfrominputsubmission", "pk": 140, "fields": {"srv_output": 283, "submission": 119, "srv_input": 809}}, {"model": "waves.serviceoutputfrominputsubmission", "pk": 141, "fields": {"srv_output": 286, "submission": 121, "srv_input": 818}}, {"model": "waves.serviceoutputfrominputsubmission", "pk": 142, "fields": {"srv_output": 287, "submission": 121, "srv_input": 818}}, {"model": "waves.serviceoutputfrominputsubmission", "pk": 143, "fields": {"srv_output": 288, "submission": 121, "srv_input": 818}}, {"model": "waves.serviceoutputfrominputsubmission", "pk": 144, "fields": {"srv_output": 289, "submission": 121, "srv_input": 818}}, {"model": "waves.servicemeta", "pk": 245, "fields": {"order": 0, "description": null, "short_description": null, "type": "website", "title": "Paper and Supplementary material", "value": "http://www.atgc-montpellier.fr/fastme/paper.php", "is_url": false, "service": 89}}, {"model": "waves.servicemeta", "pk": 246, "fields": {"order": 1, "description": null, "short_description": null, "type": "doc", "title": "User guide", "value": "http://www.atgc-montpellier.fr/fastme/usersguide.php", "is_url": false, "service": 89}}, {"model": "waves.servicemeta", "pk": 247, "fields": {"order": 2, "description": null, "short_description": null, "type": "download", "title": "Downloads", "value": "http://www.atgc-montpellier.fr/download/datasets/fastme/FastME-2.0_SupMat.zip", "is_url": false, "service": 89}}, {"model": "waves.servicemeta", "pk": 248, "fields": {"order": 3, "description": null, "short_description": null, "type": "cite", "title": "Please cite", "value": "", "is_url": false, "service": 89}}, {"model": "waves.servicemeta", "pk": 249, "fields": {"order": 4, "description": null, "short_description": null, "type": "cmd", "title": "Synopsis", "value": "", "is_url": false, "service": 89}}, {"model": "waves.servicemeta", "pk": 250, "fields": {"order": 0, "description": null, "short_description": null, "type": "cmd", "title": "Usage", "value": "Command line", "is_url": false, "service": 90}}, {"model": "waves.servicemeta", "pk": 251, "fields": {"order": 1, "description": null, "short_description": null, "type": "cite", "title": "Please cite", "value": "http://mbe.oxfordjournals.org/content/early/2015/06/29/molbev.msv150.abstract?keytype=ref&ijkey=nzj33seASld27Gs", "is_url": false, "service": 90}}, {"model": "waves.servicemeta", "pk": 252, "fields": {"order": 2, "description": null, "short_description": null, "type": "website", "title": "Papers and contact", "value": "http://www.atgc-montpellier.fr/physic_ist/paper.php", "is_url": false, "service": 90}}, {"model": "waves.servicemeta", "pk": 253, "fields": {"order": 3, "description": null, "short_description": null, "type": "download", "title": "Download program", "value": "http://www.atgc-montpellier.fr/physic_ist/binaries.php", "is_url": false, "service": 90}}, {"model": "waves.servicemeta", "pk": 254, "fields": {"order": 0, "description": null, "short_description": null, "type": "doc", "title": "", "value": "http://www.atgc-montpellier.fr/phyml/usersguide.php", "is_url": false, "service": 91}}, {"model": "waves.servicemeta", "pk": 255, "fields": {"order": 1, "description": null, "short_description": null, "type": "misc", "title": "", "value": "http://www.atgc-montpellier.fr/phyml/datasets.php", "is_url": false, "service": 91}}, {"model": "waves.servicemeta", "pk": 256, "fields": {"order": 2, "description": null, "short_description": null, "type": "download", "title": "", "value": "http://www.atgc-montpellier.fr/phyml/binaries.php", "is_url": false, "service": 91}}, {"model": "waves.servicemeta", "pk": 257, "fields": {"order": 3, "description": null, "short_description": null, "type": "misc", "title": "", "value": "http://www.atgc-montpellier.fr/phyml/faq.php", "is_url": false, "service": 91}}, {"model": "waves.servicemeta", "pk": 258, "fields": {"order": 4, "description": null, "short_description": null, "type": "paper", "title": "", "value": "http://www.atgc-montpellier.fr/phyml/paper.php", "is_url": false, "service": 91}}, {"model": "waves.servicemeta", "pk": 259, "fields": {"order": 5, "description": null, "short_description": null, "type": "misc", "title": "", "value": "http://www.atgc-montpellier.fr/phyml/versions.php", "is_url": false, "service": 91}}, {"model": "waves.wavessite", "pk": 9, "fields": {"site": 1, "theme": "flatly"}}, {"model": "waves.servicerunnerparam", "pk": 28, "fields": {"service": 93, "param": 290, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 29, "fields": {"service": 93, "param": 291, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 30, "fields": {"service": 93, "param": 292, "_value": "http://wilkins.lirmm.fr/atgc/compphy/"}}, {"model": "waves.servicerunnerparam", "pk": 31, "fields": {"service": 93, "param": 293, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 32, "fields": {"service": 93, "param": 294, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 33, "fields": {"service": 93, "param": 295, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 237, "fields": {"service": 89, "param": 316, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 238, "fields": {"service": 89, "param": 317, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 239, "fields": {"service": 89, "param": 318, "_value": "/data/http/www/binaries/fastme/fastme"}}, {"model": "waves.servicerunnerparam", "pk": 240, "fields": {"service": 89, "param": 319, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 241, "fields": {"service": 89, "param": 320, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 242, "fields": {"service": 89, "param": 321, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 243, "fields": {"service": 89, "param": 322, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 244, "fields": {"service": 89, "param": 323, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 245, "fields": {"service": 91, "param": 316, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 246, "fields": {"service": 91, "param": 317, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 247, "fields": {"service": 91, "param": 318, "_value": "/data/http/www/binaries/phyml/phyml-3.1"}}, {"model": "waves.servicerunnerparam", "pk": 248, "fields": {"service": 91, "param": 319, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 249, "fields": {"service": 91, "param": 320, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 250, "fields": {"service": 91, "param": 321, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 251, "fields": {"service": 91, "param": 322, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 252, "fields": {"service": 91, "param": 323, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 253, "fields": {"service": 90, "param": 316, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 254, "fields": {"service": 90, "param": 317, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 255, "fields": {"service": 90, "param": 318, "_value": "/data/http/www/binaries/physic_ist/physic_ist"}}, {"model": "waves.servicerunnerparam", "pk": 256, "fields": {"service": 90, "param": 319, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 257, "fields": {"service": 90, "param": 320, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 258, "fields": {"service": 90, "param": 321, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 259, "fields": {"service": 90, "param": 322, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 260, "fields": {"service": 90, "param": 323, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 261, "fields": {"service": 92, "param": 316, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 262, "fields": {"service": 92, "param": 317, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 263, "fields": {"service": 92, "param": 318, "_value": "/data/http/www/binaries/compphy/mrp.sh"}}, {"model": "waves.servicerunnerparam", "pk": 264, "fields": {"service": 92, "param": 319, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 265, "fields": {"service": 92, "param": 320, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 266, "fields": {"service": 92, "param": 321, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 267, "fields": {"service": 92, "param": 322, "_value": null}}, {"model": "waves.servicerunnerparam", "pk": 268, "fields": {"service": 92, "param": 323, "_value": null}}]
+[
+  {
+    "model": "waves.wavesprofile",
+    "pk": 1,
+    "fields": {
+      "slug": "d2f47205-0294-4ab7-bdcf-0d8982a1d68f",
+      "picture": "",
+      "registered_for_api": true,
+      "api_key": "8a3689b4-acda-11e6-a24d-3417ebccd2cf",
+      "institution": null,
+      "country": "",
+      "phone": null,
+      "comment": null,
+      "ip": "127.0.0.1",
+      "banned": false
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 49,
+    "fields": {
+      "description": "Runner Adaptor: waves_adaptors.api.galaxy.tool.GalaxyJobAdaptor",
+      "short_description": null,
+      "name": "GalaxyJobAdaptor",
+      "available": true,
+      "clazz": "waves_adaptors.api.galaxy.tool.GalaxyJobAdaptor"
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 50,
+    "fields": {
+      "description": "<p>Runner Adaptor: waves_adaptors.api.compphy.CompPhyApiAdaptor</p>",
+      "short_description": null,
+      "name": "CompPhyApiAdaptor",
+      "available": true,
+      "clazz": "waves_adaptors.api.compphy.CompPhyApiAdaptor"
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 51,
+    "fields": {
+      "description": "<p>Runner Adaptor: waves_adaptors.saga.shell.local.ShellJobAdaptor</p>",
+      "short_description": null,
+      "name": "ShellJobAdaptor",
+      "available": true,
+      "clazz": "waves_adaptors.saga.shell.local.ShellJobAdaptor"
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 52,
+    "fields": {
+      "description": "Runner Adaptor: waves_adaptors.saga.shell.ssh.SshUserPassJobAdaptor",
+      "short_description": null,
+      "name": "SshUserPassJobAdaptor",
+      "available": true,
+      "clazz": "waves_adaptors.saga.shell.ssh.SshUserPassJobAdaptor"
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 53,
+    "fields": {
+      "description": "Runner Adaptor: waves_adaptors.saga.shell.ssh.SshKeyJobAdaptor",
+      "short_description": null,
+      "name": "SshKeyJobAdaptor",
+      "available": false,
+      "clazz": "waves_adaptors.saga.shell.ssh.SshKeyJobAdaptor"
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 54,
+    "fields": {
+      "description": "<p>Runner Adaptor: waves_adaptors.saga.cluster.local.ClusterJobAdaptor</p>",
+      "short_description": null,
+      "name": "ClusterJobAdaptor",
+      "available": true,
+      "clazz": "waves_adaptors.saga.cluster.local.ClusterJobAdaptor"
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 55,
+    "fields": {
+      "description": "<p>Runner Adaptor: waves_adaptors.saga.cluster.ssh.SshUserPassClusterJobAdaptor</p>",
+      "short_description": null,
+      "name": "SshUserPassClusterJobAdaptor",
+      "available": true,
+      "clazz": "waves_adaptors.saga.cluster.ssh.SshUserPassClusterJobAdaptor"
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 56,
+    "fields": {
+      "description": "<p>Runner Adaptor: waves_adaptors.saga.cluster.ssh.SshKeyClusterJobAdaptor</p>",
+      "short_description": null,
+      "name": "SshKeyClusterJobAdaptor",
+      "available": false,
+      "clazz": "waves_adaptors.saga.cluster.ssh.SshKeyClusterJobAdaptor"
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 286,
+    "fields": {
+      "name": "host",
+      "default": null,
+      "runner": 49,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 287,
+    "fields": {
+      "name": "port",
+      "default": "80",
+      "runner": 49,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 288,
+    "fields": {
+      "name": "app_key",
+      "default": null,
+      "runner": 49,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 289,
+    "fields": {
+      "name": "remote_tool_id",
+      "default": null,
+      "runner": 49,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 290,
+    "fields": {
+      "name": "api_endpoint",
+      "default": "projects/",
+      "runner": 50,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 291,
+    "fields": {
+      "name": "origin",
+      "default": "waves",
+      "runner": 50,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 292,
+    "fields": {
+      "name": "host",
+      "default": "http://www.atgc-montpellier.fr/compphy/",
+      "runner": 50,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 293,
+    "fields": {
+      "name": "api_base_path",
+      "default": "api/",
+      "runner": 50,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 294,
+    "fields": {
+      "name": "port",
+      "default": "80",
+      "runner": 50,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 295,
+    "fields": {
+      "name": "app_key",
+      "default": "I5p79pjwvwY274rmpBtH13qOucbKQFsxc8Zo7LJL",
+      "runner": 50,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 296,
+    "fields": {
+      "name": "command",
+      "default": null,
+      "runner": 51,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 297,
+    "fields": {
+      "name": "host",
+      "default": "localhost",
+      "runner": 52,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 298,
+    "fields": {
+      "name": "command",
+      "default": null,
+      "runner": 52,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 299,
+    "fields": {
+      "name": "user_id",
+      "default": "",
+      "runner": 52,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 300,
+    "fields": {
+      "name": "protocol",
+      "default": "ssh",
+      "runner": 52,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 301,
+    "fields": {
+      "name": "basedir",
+      "default": "/tmp",
+      "runner": 52,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 302,
+    "fields": {
+      "name": "port",
+      "default": "22",
+      "runner": 52,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 303,
+    "fields": {
+      "name": "crypt_user_pass",
+      "default": null,
+      "runner": 52,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 304,
+    "fields": {
+      "name": "private_key",
+      "default": "$HOME/.ssh/id_rsa",
+      "runner": 53,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 305,
+    "fields": {
+      "name": "public_key",
+      "default": "$HOME/.ssh/id_rsa.pub",
+      "runner": 53,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 306,
+    "fields": {
+      "name": "host",
+      "default": "localhost",
+      "runner": 53,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 307,
+    "fields": {
+      "name": "command",
+      "default": null,
+      "runner": 53,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 308,
+    "fields": {
+      "name": "crypt_pass_phrase",
+      "default": null,
+      "runner": 53,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 309,
+    "fields": {
+      "name": "user_id",
+      "default": "",
+      "runner": 53,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 310,
+    "fields": {
+      "name": "protocol",
+      "default": "ssh",
+      "runner": 53,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 311,
+    "fields": {
+      "name": "basedir",
+      "default": "/tmp",
+      "runner": 53,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 312,
+    "fields": {
+      "name": "port",
+      "default": "22",
+      "runner": 53,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 313,
+    "fields": {
+      "name": "queue",
+      "default": "all.q",
+      "runner": 54,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 314,
+    "fields": {
+      "name": "protocol",
+      "default": "sge",
+      "runner": 54,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 315,
+    "fields": {
+      "name": "command",
+      "default": null,
+      "runner": 54,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 316,
+    "fields": {
+      "name": "queue",
+      "default": "all.q",
+      "runner": 55,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 317,
+    "fields": {
+      "name": "host",
+      "default": "wilkins.lirmm.fr",
+      "runner": 55,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 318,
+    "fields": {
+      "name": "command",
+      "default": null,
+      "runner": 55,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 319,
+    "fields": {
+      "name": "user_id",
+      "default": "phylo",
+      "runner": 55,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 320,
+    "fields": {
+      "name": "protocol",
+      "default": "sge",
+      "runner": 55,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 321,
+    "fields": {
+      "name": "basedir",
+      "default": "/data/http/www/exec/waves/",
+      "runner": 55,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 322,
+    "fields": {
+      "name": "port",
+      "default": "22",
+      "runner": 55,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 323,
+    "fields": {
+      "name": "crypt_user_pass",
+      "default": "CDhmDFBlc3M=",
+      "runner": 55,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 324,
+    "fields": {
+      "name": "public_key",
+      "default": "$HOME/.ssh/id_rsa.pub",
+      "runner": 56,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 325,
+    "fields": {
+      "name": "private_key",
+      "default": "$HOME/.ssh/id_rsa",
+      "runner": 56,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 326,
+    "fields": {
+      "name": "user_id",
+      "default": "marc.chakiachvili@lirmm.fr",
+      "runner": 56,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 327,
+    "fields": {
+      "name": "crypt_pass_phrase",
+      "default": "FCVJAFxOdnAeRQ==",
+      "runner": 56,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 328,
+    "fields": {
+      "name": "basedir",
+      "default": "/tmp",
+      "runner": 56,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 329,
+    "fields": {
+      "name": "queue",
+      "default": "",
+      "runner": 56,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 330,
+    "fields": {
+      "name": "host",
+      "default": "localhost",
+      "runner": 56,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 331,
+    "fields": {
+      "name": "command",
+      "default": null,
+      "runner": 56,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 332,
+    "fields": {
+      "name": "protocol",
+      "default": "sge",
+      "runner": 56,
+      "prevent_override": true
+    }
+  },
+  {
+    "model": "waves.runnerparam",
+    "pk": 333,
+    "fields": {
+      "name": "port",
+      "default": "22",
+      "runner": 56,
+      "prevent_override": false
+    }
+  },
+  {
+    "model": "waves.service",
+    "pk": 89,
+    "fields": {
+      "created": "2016-11-22T15:46:15.076Z",
+      "updated": "2016-11-23T14:15:55.345Z",
+      "description": "<p>FastME provides distance algorithms to infer phylogenies. FastME is based on balanced minimum evolution, which is the very principle of NJ. FastME improves over NJ by performing topological moves using fast, sophisticated algorithms. The first version of FastME only included Nearest Neighbor Interchange (NNI). The new 2.0 version also includes Subtree Pruning and Regrafting (SPR), while remaining as fast as NJ and providing a number of facilities: distance estimation for DNA and proteins with various models and options, bootstrapping, and parallel computations.</p>",
+      "short_description": "FastME provides distance algorithms to infer phylogenies. FastME is based on balanced minimum evolution, which is the very principle of NJ.",
+      "api_name": "fast_me",
+      "name": "FastME",
+      "version": "2.1.4",
+      "run_on": 55,
+      "clazz": null,
+      "status": 3,
+      "api_on": true,
+      "web_on": true,
+      "email_on": true,
+      "partial": false,
+      "created_by": 1,
+      "remote_service_id": null,
+      "restricted_client": []
+    }
+  },
+  {
+    "model": "waves.service",
+    "pk": 90,
+    "fields": {
+      "created": "2016-11-22T15:46:15.469Z",
+      "updated": "2016-11-23T14:16:28.356Z",
+      "description": "<h3>Options</h3>\r\n\r\n<p><a name=\"source\"></a>Source tree file<br />\r\nThe input source tree file contains source trees encoded in standard Newick format, possibly containing edge lengths and bootstrap values.<br />\r\nBelow is an example of the Newick format for a tree containing bootstrap values and edge lengths:<br />\r\n<img alt=\"PhySIC_IST source tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_source.png\" title=\"PhySIC_IST source tree\" /></p>\r\n\r\n<p><a name=\"backbone\"></a>Backbone tree (optional)<br />\r\nYou have the possibility to input a starting backbone tree in which missing taxa of the source trees are inserted. This file contains the backbone tree you proposed. This backbone tree is possibly simplified if not satisfying the PC property.</p>\r\n\r\n<p><a name=\"outgroup\"></a>Outgroups for tree rooting (optional)<br />\r\nWhen PhySIC_IST is provided with unrooted source trees, it first has to root them. To that purpose, the software incorporates a rooting tool that automates the procedure. This tool accepts as input different outgroup levels, specified in the outgroup file. Each level is a list of comma-separated taxa. Each level of outgroup must be divided from the next one by a line break.<br />\r\nThe rooting procedure considers each unrooted source tree separately. For a given source tree T, it determines the first level of outgroup that contains one or more taxa of T. Then the tree is rooted on the branch leading to the smallest subtree hosting all outgroup taxa of this level present in the tree. In other words, unrooted source trees are rooted on the branch leading to the outgroup that is the farthest from the ingroup. If the proposed outgroup is not monophyletic, the tree T is discarded from the analysis. This procedure does not alter the resolution inside the ingroup nor in the different outgroup levels that can be present in the tree.<br />\r\nBelow is an example of the format suitable for outgroup_File:</p>\r\n\r\n<pre>\r\nMonodelphis\r\nEchinops, Loxodonta, Dasypus\r\n     </pre>\r\n\r\n<p>Using the specified outgroup levels, the unrooted tree:<br />\r\n<img alt=\"PhySIC_IST unrooted tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_outgroup_1.png\" title=\"PhySIC_IST unrooted tree\" /><br />\r\nwill become:<br />\r\n<img alt=\"PhySIC_IST unrooted tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_outgroup_2.png\" title=\"PhySIC_IST unrooted tree\" /><br />\r\n<br />\r\nThe unrooted tree:<br />\r\n<img alt=\"PhySIC_IST unrooted tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_outgroup_3.png\" title=\"PhySIC_IST unrooted tree\" /><br />\r\nis discarded from the analysis because none of the outgroups taxa are present in the tree.<br />\r\n<br />\r\nThe unrooted tree:<br />\r\n<img alt=\"PhySIC_IST unrooted tree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_outgroup_4.png\" title=\"PhySIC_IST unrooted tree\" /><br />\r\nis discarded from the analysis because the outgroup (Dasypus, Echinops) is not monophyletic.</p>\r\n\r\n<p><a name=\"bootstrap\"></a>Bootstrap threshold for source clade selection<br />\r\nBefore computing the supertree, the program first collapses source tree branches having a bootstrap proportion (bp) lower than the indicated threshold. Hence, only significantly supported clades are considered for supertree building (this is especially important with veto supertree methods). For instance, if bps range from 1 to 100 in the source trees (as in the above example), you can typically use 70 as a clade selection threshold.<br />\r\nSource trees that do not contain bp are not affected by this collapsing step. Thus, the input file can contain a mix of trees with bps and trees without. Note that trees with only some bp missing, are not considered by the collapsing step. If you do not want the program to collapse branches at all, just set the treshold value to 0.</p>\r\n\r\n<p><a name=\"correction\"></a>Correction threshold for anomalies detection<br />\r\nThe correction threshold is the threshold used by the STC (Source Tree Correction) preprocess, aiming to detect anomalies in the source trees (e.g., resulting from paralogy, HGT events or long branch attraction).<br />\r\nThe STC preprocess detects incongruences in the source trees on the basis of triplets of taxa present in the source trees. When conflicting resolutions are observed among source trees for the same three taxa, STC drops the resolutions that are statistically less supported. This is achieved by a Chi-Square test comparing the frequencies with which the conflicting resolutions respectively appear. The correction threshold is a real value between 0 and 1. The higher it is, the larger the difference between frequencies of conflicting resolutions has to be in order for STC to drop the least frequent alternatives. In other words, setting the correction threshold to 1 impedes STC to drop any input triplet, hence leaves the source trees as they are, while setting it to 0 implies removing from the source trees any contradicted triplet (e.g. ab|c) that is globally less frequent that an alternative resolution (e.g. ac|b). In the former case, PhySIC_IST behaves as a pure veto method, while in the latter case it mimics a voting (i.e., liberal) supertree method.<br />\r\nWhen STC drops some triplets, the source trees are modified in order that those triplets are not displayed anymore.</p>\r\n\r\n<hr />\r\n<h3>Results</h3>\r\n\r\n<p>With the above example input file you will obtain the following supertree in setting the bootstrap threshold to 60:<br />\r\n<img alt=\"PhySIC_IST supertree\" src=\"http://www.atgc-montpellier.fr/pictures/img_physic_ist_supertree.png\" title=\"PhySIC_IST supertree\" /><br />\r\n<br />\r\nThe supertree inferred by PhySIC_IST is outputted in Newick format. It can be visualized with usual tree viewing/editing softwares such as <a href=\"http://www.treedyn.org\" target=\"_blank\">TreeDyn</a>, <a href=\"http://darwin.zoology.gla.ac.uk/%7Erpage/treeviewx/download.html\" target=\"_blank\">Treeview X</a> or <a href=\"http://www-ab.informatik.uni-tuebingen.de/software/dendroscope/welcome.html\" target=\"_blank\">DendroScope</a>.</p>\r\n\r\n<p>PhySIC_IST also outputs the list of input taxa not inserted in the supertree (if any) and the value of the CIC for the proposed supertree. The CIC value measures the informativeness of the supertree (see the <a href=\"http://www.atgc-montpellier.fr/physic_ist/paper.php\">paper</a> for details).</p>\r\n\r\n<p>PhySIC_IST also outputs a &quot;newForest&quot; file. This file will contain the modified source trees.</p>",
+      "short_description": "PhySIC_IST: cleaning source trees to infer more informative supertrees.\r\nScornavacca C., Berry V., Lefort V., Douzery E.J.P., Ranwez V.\r\nBMC Bioinformatics. 2008, Oct 4;9:413.",
+      "api_name": "physic_ist",
+      "name": "Physic_IST",
+      "version": "1.0",
+      "run_on": 55,
+      "clazz": null,
+      "status": 3,
+      "api_on": true,
+      "web_on": true,
+      "email_on": true,
+      "partial": false,
+      "created_by": 1,
+      "remote_service_id": null,
+      "restricted_client": []
+    }
+  },
+  {
+    "model": "waves.service",
+    "pk": 91,
+    "fields": {
+      "created": "2016-11-22T15:46:15.770Z",
+      "updated": "2016-11-23T14:16:13.313Z",
+      "description": "<p>PhyML is a phylogeny software based on the maximum-likelihood principle. Early PhyML versions used a fast algorithm to perform Nearest Neighbor Interchanges (NNIs), in order to improve a reasonable starting tree topology. Since the original publication (<a href=\"http://www.atgc-montpellier.fr/phyml/paper.php\" style=\"text-decoration: none; color: #006699; font-weight: bold; font-family: Verdana, Arial, Helvetica, FreeSans, sans-serif; font-size: 12px; text-align: justify;\">Guindon and Gascuel 2003</a>), PhyML has been widely used (&gt;1,250 citations in ISI Web of Science), due to its simplicity and a fair accuracy/speed compromise. In the mean time research around PhyML has continued. We designed an efficient algorithm to search the tree space using Subtree Pruning and Regrafting (SPR) topological moves (<a href=\"http://www.atgc-montpellier.fr/phyml/paper.php\" style=\"text-decoration: none; color: #006699; font-weight: bold; font-family: Verdana, Arial, Helvetica, FreeSans, sans-serif; font-size: 12px; text-align: justify;\">Hordijk and Gascuel 2005</a>), and proposed a fast branch test based on an approximate likelihood ratio test (<a href=\"http://www.atgc-montpellier.fr/phyml/paper.php\" style=\"text-decoration: none; color: #006699; font-weight: bold; font-family: Verdana, Arial, Helvetica, FreeSans, sans-serif; font-size: 12px; text-align: justify;\">Anisimova and Gascuel 2006</a>). However, these novelties were not included in the official version of PhyML, and we found that improvements were still needed in order to make them effective in some practical cases. PhyML 3.0 achieves this task. It implements new algorithms to search the space of tree topologies with user-defined intensity. A non-parametric, Shimodaira-Hasegawa-like branch test is also available. The program provides a number of new evolutionary models and its interface was entirely re-designed. We tested PhyML 3.0 on a large collection of real data sets to ensure that the new version is stable, ready-to-use and still reasonably fast and accurate.</p>",
+      "short_description": "PhyML is a phylogeny software based on the maximum-likelihood principle.",
+      "api_name": "phy_ml",
+      "name": "PhyML",
+      "version": "1.0",
+      "run_on": 55,
+      "clazz": null,
+      "status": 3,
+      "api_on": true,
+      "web_on": true,
+      "email_on": true,
+      "partial": false,
+      "created_by": 1,
+      "remote_service_id": null,
+      "restricted_client": []
+    }
+  },
+  {
+    "model": "waves.service",
+    "pk": 92,
+    "fields": {
+      "created": "2016-11-22T15:46:16.166Z",
+      "updated": "2016-11-23T14:16:42.272Z",
+      "description": "",
+      "short_description": "",
+      "api_name": "supertree_mrp",
+      "name": "Supertree MRP",
+      "version": "1.0",
+      "run_on": 55,
+      "clazz": null,
+      "status": 3,
+      "api_on": true,
+      "web_on": true,
+      "email_on": true,
+      "partial": false,
+      "created_by": 1,
+      "remote_service_id": null,
+      "restricted_client": []
+    }
+  },
+  {
+    "model": "waves.service",
+    "pk": 93,
+    "fields": {
+      "created": "2016-11-22T15:46:16.391Z",
+      "updated": "2016-11-22T15:52:33.645Z",
+      "description": "<p>Create a new project on CompPhy, given a file of trees (and eventually a file of annotations).</p>",
+      "short_description": "Create a new project on CompPhy",
+      "api_name": "compphy-project-creator-10",
+      "name": "Compphy Project Creator",
+      "version": "1.0",
+      "run_on": 50,
+      "clazz": null,
+      "status": 3,
+      "api_on": true,
+      "web_on": false,
+      "email_on": false,
+      "partial": false,
+      "created_by": 1,
+      "remote_service_id": null,
+      "restricted_client": []
+    }
+  },
+  {
+    "model": "waves.servicesubmission",
+    "pk": 119,
+    "fields": {
+      "created": "2016-11-22T15:46:15.087Z",
+      "updated": "2016-11-22T15:55:17.586Z",
+      "order": 0,
+      "slug": "193b9993-180c-47b7-b76c-766e3da2b057",
+      "api_name": "default",
+      "label": "complete",
+      "available_online": true,
+      "available_api": true,
+      "service": 89
+    }
+  },
+  {
+    "model": "waves.servicesubmission",
+    "pk": 120,
+    "fields": {
+      "created": "2016-11-22T15:46:15.480Z",
+      "updated": "2016-11-22T16:01:11.052Z",
+      "order": 0,
+      "slug": "a23ad582-9c06-4289-8b9a-30714bf3aa64",
+      "api_name": "complete",
+      "label": "complete",
+      "available_online": true,
+      "available_api": true,
+      "service": 90
+    }
+  },
+  {
+    "model": "waves.servicesubmission",
+    "pk": 121,
+    "fields": {
+      "created": "2016-11-22T15:46:15.782Z",
+      "updated": "2016-11-22T15:46:15.782Z",
+      "order": 0,
+      "slug": "f65df4fd-4d5e-4d28-8ff8-d801ffb90c7f",
+      "api_name": "default",
+      "label": "default",
+      "available_online": true,
+      "available_api": true,
+      "service": 91
+    }
+  },
+  {
+    "model": "waves.servicesubmission",
+    "pk": 122,
+    "fields": {
+      "created": "2016-11-22T15:46:16.169Z",
+      "updated": "2016-11-22T16:03:14.152Z",
+      "order": 0,
+      "slug": "22db3eb5-d431-455e-8d07-43a95afdf39b",
+      "api_name": "calcul",
+      "label": "MRP API Submission",
+      "available_online": true,
+      "available_api": true,
+      "service": 92
+    }
+  },
+  {
+    "model": "waves.servicesubmission",
+    "pk": 123,
+    "fields": {
+      "created": "2016-11-22T15:46:16.396Z",
+      "updated": "2016-11-22T15:51:32.169Z",
+      "order": 0,
+      "slug": "ec01ada7-3ad4-4617-b3a5-c07b1751703f",
+      "api_name": "compphy_project_creator",
+      "label": "Compphy Project Creator",
+      "available_online": false,
+      "available_api": true,
+      "service": 93
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 797,
+    "fields": {
+      "created": "2016-11-22T15:46:15.088Z",
+      "updated": "2016-11-22T15:46:15.088Z",
+      "order": 0,
+      "description": "<p>The input data file contains sequence alignment(s) or a distance matrix(ces).</p>",
+      "short_description": "The input data file contains sequence alignment(s) or a distance matrix(ces).",
+      "label": "Input data file",
+      "name": "input_data",
+      "default": "",
+      "type": "file",
+      "param_type": 1,
+      "format": "Phylip|.phy\r\nMatrix|.mat",
+      "mandatory": true,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 798,
+    "fields": {
+      "created": "2016-11-22T15:46:15.090Z",
+      "updated": "2016-11-22T15:46:15.090Z",
+      "order": 1,
+      "description": "<p>FastME will write the infered tree into the output tree file.</p>",
+      "short_description": "FastME will write the infered tree into the output tree file.",
+      "label": "Output tree",
+      "name": "output_tree",
+      "default": "output_tree.txt",
+      "type": "text",
+      "param_type": 1,
+      "format": "",
+      "mandatory": true,
+      "multiple": false,
+      "editable": false,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 799,
+    "fields": {
+      "created": "2016-11-22T15:46:15.093Z",
+      "updated": "2016-11-22T15:46:15.093Z",
+      "order": 2,
+      "description": "<p>Type of data in the input file. It can be either DNA or amino-acid MSA in PHYLIP format, or a distance matrix in PHYLIP format. If the input data type is a MSA, the menu will update to display evolutionary model options required to compute a distance matrix.</p>",
+      "short_description": "Type of data in the input file. It can be either DNA or amino-acid MSA in PHYLIP format, or a distance matrix in PHYLIP format. If the input data type is a MSA, the menu will update to display evolutionary model options required to compute a distance matrix.",
+      "label": "Data type",
+      "name": "typeChoice",
+      "default": "d",
+      "type": "select",
+      "param_type": 0,
+      "format": "DNA|d\r\nProtein|p\r\nMatrix|m",
+      "mandatory": true,
+      "multiple": false,
+      "editable": true,
+      "display": null,
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 800,
+    "fields": {
+      "created": "2016-11-22T15:46:15.097Z",
+      "updated": "2016-11-22T15:46:15.097Z",
+      "order": 3,
+      "description": "<p>By default, frequencies are globally counted from the nucleotides alignment or defined by the proteic substitution model. By checking the box, frequencies are pairwise estimated by counting the nucleotides or estimated by counting the amino-acids in the alignment.</p>",
+      "short_description": "By default, frequencies are globally counted from the nucleotides alignment or defined by the proteic substitution model. By checking the box, frequencies are pairwise estimated by counting the nucleotides or estimated by counting the amino-acids in the alignment.",
+      "label": "Equilibrium frequencies",
+      "name": "equilibrium",
+      "default": "False",
+      "type": "boolean",
+      "param_type": 5,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 801,
+    "fields": {
+      "created": "2016-11-22T15:46:15.099Z",
+      "updated": "2016-11-22T15:46:15.099Z",
+      "order": 4,
+      "description": "<p>Rates of evolution often vary from site to site. This heterogeneity is modelled using a gamma distribution.</p>",
+      "short_description": "Rates of evolution often vary from site to site. This heterogeneity is modelled using a gamma distribution.",
+      "label": "Gamma distributed rates across sites",
+      "name": "gamma",
+      "default": "1.0",
+      "type": "float",
+      "param_type": 1,
+      "format": "",
+      "mandatory": true,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 802,
+    "fields": {
+      "created": "2016-11-22T15:46:15.101Z",
+      "updated": "2016-11-22T15:46:15.101Z",
+      "order": 5,
+      "description": "<p>Use this option to completely remove any site which has a gap in any sequence. By default, FastME is doing pairwise deletion of gaps.</p>",
+      "short_description": "Use this option to completely remove any site which has a gap in any sequence. By default, FastME is doing pairwise deletion of gaps.",
+      "label": "Remove gap strategy",
+      "name": "remove_gap",
+      "default": "False",
+      "type": "boolean",
+      "param_type": 5,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 803,
+    "fields": {
+      "created": "2016-11-22T15:46:15.102Z",
+      "updated": "2016-11-22T15:46:15.102Z",
+      "order": 6,
+      "description": "",
+      "short_description": null,
+      "label": "Distance algorithm",
+      "name": "method",
+      "default": "I",
+      "type": "select",
+      "param_type": 1,
+      "format": "BIONJ|I\r\nTaxAdd BalME|B\r\nTaxAdd OLSME|O\r\nNJ|N\r\nUNJ|U",
+      "mandatory": true,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 804,
+    "fields": {
+      "created": "2016-11-22T15:46:15.104Z",
+      "updated": "2016-11-22T15:46:15.104Z",
+      "order": 7,
+      "description": "<p>Use this option to do [NNI] tree topology improvement.<br />\r\nYou may choose the [NNI] type from: NNI_BalME or NNI_OLS</p>",
+      "short_description": "Use this option to do [NNI] tree topology improvement.\r\nYou may choose the [NNI] type from: NNI_BalME or NNI_OLS",
+      "label": "Topology improvment",
+      "name": "nni",
+      "default": "B",
+      "type": "select",
+      "param_type": 1,
+      "format": "BalME NNI|B\r\nOLS NNI|O",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "radio",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 805,
+    "fields": {
+      "created": "2016-11-22T15:46:15.106Z",
+      "updated": "2016-11-22T15:46:15.106Z",
+      "order": 8,
+      "description": "",
+      "short_description": null,
+      "label": "Bootstrap",
+      "name": "use_bootstrap",
+      "default": "",
+      "type": "boolean",
+      "param_type": 0,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 806,
+    "fields": {
+      "created": "2016-11-22T15:46:15.110Z",
+      "updated": "2016-11-22T15:46:15.110Z",
+      "order": 9,
+      "description": "<p>Use this option to do SPR tree topology improvement</p>",
+      "short_description": "Use this option to do SPR tree topology improvement",
+      "label": "SPR Pruning",
+      "name": "spr",
+      "default": "False",
+      "type": "boolean",
+      "param_type": 5,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 807,
+    "fields": {
+      "created": "2016-11-22T15:46:15.111Z",
+      "updated": "2016-11-22T15:46:15.111Z",
+      "order": 10,
+      "description": "<p>FastME may use an existing topology available in the input user tree file which corresponds to the input dataset.</p>",
+      "short_description": "FastME may use an existing topology available in the input user tree file which corresponds to the input dataset.",
+      "label": "Existing topology",
+      "name": "user_tree",
+      "default": "",
+      "type": "file",
+      "param_type": 1,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 808,
+    "fields": {
+      "created": "2016-11-22T15:46:15.113Z",
+      "updated": "2016-11-22T15:46:15.113Z",
+      "order": 11,
+      "description": "<p>Use this option if you want FastME to write information about its execution in the output information file.</p>",
+      "short_description": "Use this option if you want FastME to write information about its execution in the output information file.",
+      "label": "Output information file",
+      "name": "output_info",
+      "default": "output_info.txt",
+      "type": "text",
+      "param_type": 1,
+      "format": "",
+      "mandatory": true,
+      "multiple": false,
+      "editable": false,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 809,
+    "fields": {
+      "created": "2016-11-22T15:46:15.115Z",
+      "updated": "2016-11-22T15:46:15.115Z",
+      "order": 12,
+      "description": "<p>Use this option if you want FastME to write the distances matrix computed from the input alignment in the output matrix file.</p>",
+      "short_description": "Use this option if you want FastME to write the distances matrix computed from the input alignment in the output matrix file.",
+      "label": "Output matrix file",
+      "name": "output_matrix",
+      "default": "output_matrix.mat",
+      "type": "text",
+      "param_type": 1,
+      "format": "",
+      "mandatory": true,
+      "multiple": false,
+      "editable": false,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 810,
+    "fields": {
+      "created": "2016-11-22T15:46:15.117Z",
+      "updated": "2016-11-22T15:46:15.117Z",
+      "order": 13,
+      "description": "<p>Use this option if you want FastME to write bootstrap trees in the bootstrap trees file.</p>",
+      "short_description": "Use this option if you want FastME to write bootstrap trees in the bootstrap trees file.",
+      "label": "Output bootstrap tree",
+      "name": "output_boot",
+      "default": "output_bootstrap.txt",
+      "type": "text",
+      "param_type": 4,
+      "format": "",
+      "mandatory": true,
+      "multiple": false,
+      "editable": false,
+      "display": "select",
+      "service": 119
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 811,
+    "fields": {
+      "created": "2016-11-22T15:46:15.482Z",
+      "updated": "2016-11-22T15:46:15.482Z",
+      "order": 0,
+      "description": "<p>The source trees have to be contained in a text file (e.g., named &quot;sourceTreeFile&quot;) with trees written in the Newick format.</p>",
+      "short_description": "The source trees have to be contained in a text file (e.g., named &quot;sourceTreeFile&quot;) with trees written in the Newick format.",
+      "label": "Source Tree File",
+      "name": "s",
+      "default": "",
+      "type": "file",
+      "param_type": 2,
+      "format": "",
+      "mandatory": true,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 120
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 812,
+    "fields": {
+      "created": "2016-11-22T15:46:15.484Z",
+      "updated": "2016-11-22T15:46:15.484Z",
+      "order": 1,
+      "description": "<p>The user has the possibility to input a starting backbone tree in which missing taxa of the source trees are inserted. The file myTreeFile contains the backbone tree proposed by the user. This backbone tree is possibly simplified if not satisfying the PC property.</p>",
+      "short_description": "The user has the possibility to input a starting backbone tree in which missing taxa of the source trees are inserted. The file myTreeFile contains the backbone tree proposed by the user. This backbone tree is possibly simplified if not satisfying the PC property.",
+      "label": "Backbone Tree File",
+      "name": "t",
+      "default": "",
+      "type": "file",
+      "param_type": 2,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 120
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 813,
+    "fields": {
+      "created": "2016-11-22T15:46:15.488Z",
+      "updated": "2016-11-22T15:46:15.488Z",
+      "order": 2,
+      "description": "<p>The boostrap_threshold is an unbounded positive number. Before running the actual algorithm, PhySIC_IST collapses the branches with a bootstrap value smaller than the indicated boostrap_threshold (if your bootstrap values are numbers between A and B, I suggest to set your treshold value in this range!). Branches of the source trees without bootstrap value are not collapsed.</p>",
+      "short_description": "The boostrap_threshold is an unbounded positive number. Before running the actual algorithm, PhySIC_IST collapses the branches with a bootstrap value smaller than the indicated boostrap_threshold (if your bootstrap values are numbers between A and B, I suggest to set your treshold value in this range!). Branches of the source trees without bootstrap value are not collapsed.",
+      "label": "Use bootstrap threshold ?",
+      "name": "boostrap_select",
+      "default": "False",
+      "type": "boolean",
+      "param_type": 0,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 120
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 814,
+    "fields": {
+      "created": "2016-11-22T15:46:15.492Z",
+      "updated": "2016-11-22T15:46:15.492Z",
+      "order": 3,
+      "description": "<p>The correction_threshold is the threshold used by the STC (Source Tree Correction) preprocess, aiming to detect anomalies in the source trees (e.g., resulting from paralogy, HGT events or long branch attraction). The STC preprocess detects incongruences in the source trees on the basis of triplets of taxa present in the source trees. When conflicting resolutions are observed among source trees for the same three taxa, STC drops the resolutions that are statistically less supported. This is achieved by a Chi-Square test comparing the frequencies with which the conflicting resolutions respectively appear. The correction_threshold is a real value between 0 and 1. The higher it is, the smaller the difference between frequencies of conflicting resolutions has to be in order for STC to drop the least frequent alternatives. In other words, setting correction_threshold to 1 impedes STC to drop any input triplet, while setting it to 0 implies dropping any contradicted triplet that is less frequent that another triplet contradicting it. In the former case, PhySIC_IST behaves as a pure veto method, while in the latter case it mimics a voting (i.e., liberal) supertree method.</p>",
+      "short_description": "The correction_threshold is the threshold used by the STC (Source Tree Correction) preprocess, aiming to detect anomalies in the source trees (e.g., resulting from paralogy, HGT events or long branch attraction). The STC preprocess detects incongruences in the source trees on the basis of triplets of taxa present in the source trees. When conflicting resolutions are observed among source trees for the same three taxa, STC drops the resolutions that are statistically less supported. This is achieved by a Chi-Square test comparing the frequencies with which the conflicting resolutions respectively appear. The correction_threshold is a real value between 0 and 1. The higher it is, the smaller the difference between frequencies of conflicting resolutions has to be in order for STC to drop the least frequent alternatives. In other words, setting correction_threshold to 1 impedes STC to drop any input triplet, while setting it to 0 implies dropping any contradicted triplet that is less frequent that another triplet contradicting it. In the former case, PhySIC_IST behaves as a pure veto method, while in the latter case it mimics a voting (i.e., liberal) supertree method.",
+      "label": "Use correction threshold ?",
+      "name": "correction_threshold",
+      "default": "False",
+      "type": "boolean",
+      "param_type": 0,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 120
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 815,
+    "fields": {
+      "created": "2016-11-22T15:46:15.495Z",
+      "updated": "2016-11-22T15:46:15.495Z",
+      "order": 4,
+      "description": "<p>newForestFile is the name of the file where the method outputs the modified source trees. This option is relevant only with -b and -c options.</p>",
+      "short_description": "newForestFile is the name of the file where the method outputs the modified source trees. This option is relevant only with -b and -c options.",
+      "label": "New Forest File",
+      "name": "f",
+      "default": "newForest.txt",
+      "type": "text",
+      "param_type": 2,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 120
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 816,
+    "fields": {
+      "created": "2016-11-22T15:46:15.497Z",
+      "updated": "2016-11-22T15:46:15.497Z",
+      "order": 5,
+      "description": "<p>When PhySIC_IST is provided with unrooted source trees, it first has to root them. To that purpose, the software incorporates a rooting tool that automates the procedure. This tool accepts as input different outgroup levels, specified in the file named outgroup_File. Each level is a list of comma-separated taxa. Each level of outgroup must be divided from the next one by a line break. The rooting procedure considers each unrooted source tree separately. For a given source tree T, it determines the first level of outgroup that contains one or more taxa of T. Then the tree is rooted on the branch leading to the smallest subtree hosting all outgroup taxa of this level present in the tree. In other words, unrooted source trees are rooted on the branch leading to the outgroup that is the farthest from the ingroup. If the proposed outgroup is not monophyletic, the tree T is discarded from the analysis. This procedure does not alter the resolution inside the ingroup nor in the different outgroup levels that can be present in the tree.</p>",
+      "short_description": "When PhySIC_IST is provided with unrooted source trees, it first has to root them. To that purpose, the software incorporates a rooting tool that automates the procedure. This tool accepts as input different outgroup levels, specified in the file named outgroup_File. Each level is a list of comma-separated taxa. Each level of outgroup must be divided from the next one by a line break. The rooting procedure considers each unrooted source tree separately. For a given source tree T, it determines the first level of outgroup that contains one or more taxa of T. Then the tree is rooted on the branch leading to the smallest subtree hosting all outgroup taxa of this level present in the tree. In other words, unrooted source trees are rooted on the branch leading to the outgroup that is the farthest from the ingroup. If the proposed outgroup is not monophyletic, the tree T is discarded from the analysis. This procedure does not alter the resolution inside the ingroup nor in the different outgroup levels that can be present in the tree.",
+      "label": "Outgroup File",
+      "name": "r",
+      "default": "",
+      "type": "file",
+      "param_type": 2,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 120
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 817,
+    "fields": {
+      "created": "2016-11-22T15:46:15.498Z",
+      "updated": "2016-11-22T15:46:15.498Z",
+      "order": 6,
+      "description": "<p>This is the file which contains the PhySIC_IST supertree</p>",
+      "short_description": "This is the file which contains the PhySIC_IST supertree",
+      "label": "Output file name",
+      "name": "o",
+      "default": "physic_ist_tree.txt",
+      "type": "text",
+      "param_type": 2,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 120
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 818,
+    "fields": {
+      "created": "2016-11-22T15:46:15.784Z",
+      "updated": "2016-11-22T15:46:15.784Z",
+      "order": 0,
+      "description": "<p>The nucleotide or amino-acid sequence file in PHYLIP format</p>",
+      "short_description": "The nucleotide or amino-acid sequence file in PHYLIP format",
+      "label": "Sequences",
+      "name": "input",
+      "default": "",
+      "type": "file",
+      "param_type": 1,
+      "format": ".phy\r\n.txt",
+      "mandatory": true,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 819,
+    "fields": {
+      "created": "2016-11-22T15:46:15.786Z",
+      "updated": "2016-11-22T15:46:15.786Z",
+      "order": 1,
+      "description": "",
+      "short_description": null,
+      "label": "Data type",
+      "name": "datatype",
+      "default": "nt",
+      "type": "select",
+      "param_type": 1,
+      "format": "Nucleotides|nt\r\nAmino-Acid|aa",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "radio",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 820,
+    "fields": {
+      "created": "2016-11-22T15:46:15.787Z",
+      "updated": "2016-11-22T15:46:15.788Z",
+      "order": 2,
+      "description": "<p>Changes interleaved format (default) to sequential format.</p>",
+      "short_description": "Changes interleaved format (default) to sequential format.",
+      "label": "Sequential format",
+      "name": "sequential",
+      "default": "False",
+      "type": "boolean",
+      "param_type": 5,
+      "format": "Sequential",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "checkbox",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 821,
+    "fields": {
+      "created": "2016-11-22T15:46:15.789Z",
+      "updated": "2016-11-22T15:46:15.789Z",
+      "order": 3,
+      "description": "<p>An integer corresponding to the number of data sets to analyse</p>",
+      "short_description": "An integer corresponding to the number of data sets to analyse",
+      "label": "Number of datasets",
+      "name": "multiple",
+      "default": "1",
+      "type": "number",
+      "param_type": 1,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 822,
+    "fields": {
+      "created": "2016-11-22T15:46:15.792Z",
+      "updated": "2016-11-22T15:46:15.792Z",
+      "order": 4,
+      "description": "<p>Use a minimum parsimony starting tree. This option is taken into account when No user tree is provided and when tree topology modifications are to be done</p>",
+      "short_description": "Use a minimum parsimony starting tree. This option is taken into account when No user tree is provided and when tree topology modifications are to be done",
+      "label": "Minimum parsimony starting tree",
+      "name": "pars",
+      "default": "",
+      "type": "boolean",
+      "param_type": 5,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 823,
+    "fields": {
+      "created": "2016-11-22T15:46:15.794Z",
+      "updated": "2016-11-22T15:46:15.794Z",
+      "order": 5,
+      "description": "<p>int &gt; 0: int is the number of bootstrap replicates.<br />\r\nint = 0: neither approximate likelihood ratio test nor bootstrap values are computed.<br />\r\nint = -1: approximate likelihood ratio test returning aLRT statistics.<br />\r\nint = -2: approximate likelihood ratio test returning Chi2-based parametric branch supports.<br />\r\nint = -4: (default) SH-like branch supports alone.<br />\r\nint = -5: approximate Bayes branch supports.</p>",
+      "short_description": "int &gt; 0: int is the number of bootstrap replicates.\r\nint = 0: neither approximate likelihood ratio test nor bootstrap values are computed.\r\nint = -1: approximate likelihood ratio test returning aLRT statistics.\r\nint = -2: approximate likelihood ratio test returning Chi2-based parametric branch supports.\r\nint = -4: (default) SH-like branch supports alone.\r\nint = -5: approximate Bayes branch supports.",
+      "label": "Bootstrap",
+      "name": "bootstrap",
+      "default": "-4",
+      "type": "number",
+      "param_type": 5,
+      "format": "-5|",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 824,
+    "fields": {
+      "created": "2016-11-22T15:46:15.797Z",
+      "updated": "2016-11-22T15:46:15.797Z",
+      "order": 6,
+      "description": "<p>model : substitution model name. - Nucleotide-based models : HKY85 (default) | JC69 | K80 | F81 | F84 | TN93 | GTR - Amino-acid based models : LG (default) | WAG | JTT | MtREV | Dayhoff | DCMut | RtREV | CpREV | VT | Blosum62 | MtMam | MtArt | HIVw | HIVb | custom</p>",
+      "short_description": "model : substitution model name. - Nucleotide-based models : HKY85 (default) | JC69 | K80 | F81 | F84 | TN93 | GTR - Amino-acid based models : LG (default) | WAG | JTT | MtREV | Dayhoff | DCMut | RtREV | CpREV | VT | Blosum62 | MtMam | MtArt | HIVw | HIVb | custom",
+      "label": "Substitution model",
+      "name": "model",
+      "default": "dna",
+      "type": "select",
+      "param_type": 0,
+      "format": "DNA|dna\r\nAmino Acid|aa",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 825,
+    "fields": {
+      "created": "2016-11-22T15:46:15.802Z",
+      "updated": "2016-11-22T15:46:15.802Z",
+      "order": 7,
+      "description": "<p>e : the character frequencies are determined as follows : - Nucleotide sequences: (Empirical) the equilibrium base frequencies are estimated by counting the occurence of the different bases in the alignment. - Amino-acid sequences: (Empirical) the equilibrium amino-acid frequencies are estimated by counting the occurence of the different amino-acids in the alignment. m : the character frequencies are determined as follows : - Nucleotide sequences: (ML) the equilibrium base frequencies are estimated using maximum likelihood - Amino-acid sequences: (Model) the equilibrium amino-acid frequencies are estimated using the frequencies defined by the substitution model. &quot;fA,fC,fG,fT&quot; : only valid for nucleotide-based models. fA, fC, fG and fT are floating numbers that correspond to the frequencies of A, C, G and T respectively (WARNING: do not use any blank space between your values of nucleotide frequencies, only commas!)</p>",
+      "short_description": "e : the character frequencies are determined as follows : - Nucleotide sequences: (Empirical) the equilibrium base frequencies are estimated by counting the occurence of the different bases in the alignment. - Amino-acid sequences: (Empirical) the equilibrium amino-acid frequencies are estimated by counting the occurence of the different amino-acids in the alignment. m : the character frequencies are determined as follows : - Nucleotide sequences: (ML) the equilibrium base frequencies are estimated using maximum likelihood - Amino-acid sequences: (Model) the equilibrium amino-acid frequencies are estimated using the frequencies defined by the substitution model. &quot;fA,fC,fG,fT&quot; : only valid for nucleotide-based models. fA, fC, fG and fT are floating numbers that correspond to the frequencies of A, C, G and T respectively (WARNING: do not use any blank space between your values of nucleotide frequencies, only commas!)",
+      "label": "Character frequencies",
+      "name": "f",
+      "default": "e",
+      "type": "select",
+      "param_type": 2,
+      "format": "Empirical|e\r\nEquilibrium|m\r\nCustom|custom",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 826,
+    "fields": {
+      "created": "2016-11-22T15:46:15.806Z",
+      "updated": "2016-11-22T15:46:15.806Z",
+      "order": 8,
+      "description": "<p>Transition/transversion ratio. DNA sequences only. Can be a fixed positive value (ex:4.0) or e to get the maximum likelihood estimate.</p>",
+      "short_description": "Transition/transversion ratio. DNA sequences only. Can be a fixed positive value (ex:4.0) or e to get the maximum likelihood estimate.",
+      "label": "Transversion ratio",
+      "name": "ts/tv",
+      "default": "e",
+      "type": "text",
+      "param_type": 1,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 827,
+    "fields": {
+      "created": "2016-11-22T15:46:15.807Z",
+      "updated": "2016-11-22T15:46:15.807Z",
+      "order": 9,
+      "description": "",
+      "short_description": null,
+      "label": "Proportion of invariable sites",
+      "name": "pinv",
+      "default": "e",
+      "type": "text",
+      "param_type": 1,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 828,
+    "fields": {
+      "created": "2016-11-22T15:46:15.809Z",
+      "updated": "2016-11-22T15:46:15.809Z",
+      "order": 10,
+      "description": "<p>Number of relative substitution rate categories. Default : nb_subst_cat=4.</p>",
+      "short_description": "Number of relative substitution rate categories. Default : nb_subst_cat=4.",
+      "label": "Number of relative substitution",
+      "name": "nclasses",
+      "default": "4",
+      "type": "number",
+      "param_type": 1,
+      "format": "0|",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 829,
+    "fields": {
+      "created": "2016-11-22T15:46:15.810Z",
+      "updated": "2016-11-22T15:46:15.810Z",
+      "order": 11,
+      "description": "<p>Distribution of the gamma distribution shape parameter. Can be a fixed positive value or e to get the maximum likelihood estimate.</p>",
+      "short_description": "Distribution of the gamma distribution shape parameter. Can be a fixed positive value or e to get the maximum likelihood estimate.",
+      "label": "Gamma distribution",
+      "name": "alpha",
+      "default": "e",
+      "type": "text",
+      "param_type": 1,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 830,
+    "fields": {
+      "created": "2016-11-22T15:46:15.812Z",
+      "updated": "2016-11-22T15:46:15.812Z",
+      "order": 12,
+      "description": "<p>Tree topology search operation option</p>",
+      "short_description": "Tree topology search operation option",
+      "label": "Tree topology search",
+      "name": "search",
+      "default": "NNI",
+      "type": "select",
+      "param_type": 1,
+      "format": "NNI|NNI\r\nSPR|SPR\r\nBest of NNI and SPR|BEST",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 831,
+    "fields": {
+      "created": "2016-11-22T15:46:15.813Z",
+      "updated": "2016-11-22T15:46:15.813Z",
+      "order": 13,
+      "description": "<p>Starting tree. The tree must be in Newick format.</p>",
+      "short_description": "Starting tree. The tree must be in Newick format.",
+      "label": "Starting tree",
+      "name": "inputtree",
+      "default": "",
+      "type": "file",
+      "param_type": 1,
+      "format": ".nwk\r\n.txt",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 832,
+    "fields": {
+      "created": "2016-11-22T15:46:15.815Z",
+      "updated": "2016-11-22T15:46:15.815Z",
+      "order": 14,
+      "description": "<p>This option focuses on specific parameter optimisation</p>",
+      "short_description": "This option focuses on specific parameter optimisation",
+      "label": "Parameter optimization",
+      "name": "o",
+      "default": "n",
+      "type": "select",
+      "param_type": 2,
+      "format": "Topology, branch length, rate|tlr\r\nTopology, branch length|tl\r\nBranch length, rate|lr\r\nBranch length|l\r\nRate|r\r\nNone|n",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 833,
+    "fields": {
+      "created": "2016-11-22T15:46:15.818Z",
+      "updated": "2016-11-22T15:46:15.818Z",
+      "order": 15,
+      "description": "<p>This option sets the initial tree to random. It is only valid if SPR searches are to be performed.</p>",
+      "short_description": "This option sets the initial tree to random. It is only valid if SPR searches are to be performed.",
+      "label": "Initial tree to random",
+      "name": "rand_start",
+      "default": "",
+      "type": "boolean",
+      "param_type": 5,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 834,
+    "fields": {
+      "created": "2016-11-22T15:46:15.821Z",
+      "updated": "2016-11-22T15:46:15.821Z",
+      "order": 16,
+      "description": "",
+      "short_description": null,
+      "label": "Seed to initiate",
+      "name": "r_seed",
+      "default": "",
+      "type": "number",
+      "param_type": 1,
+      "format": "0|",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 835,
+    "fields": {
+      "created": "2016-11-22T15:46:15.822Z",
+      "updated": "2016-11-22T15:46:15.822Z",
+      "order": 17,
+      "description": "",
+      "short_description": null,
+      "label": "Likehood log",
+      "name": "print_site_lnl",
+      "default": "True",
+      "type": "boolean",
+      "param_type": 5,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": false,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 836,
+    "fields": {
+      "created": "2016-11-22T15:46:15.824Z",
+      "updated": "2016-11-22T15:46:15.824Z",
+      "order": 18,
+      "description": "",
+      "short_description": null,
+      "label": "Print trace",
+      "name": "print_trace",
+      "default": "True",
+      "type": "boolean",
+      "param_type": 5,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": false,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 837,
+    "fields": {
+      "created": "2016-11-22T15:46:15.826Z",
+      "updated": "2016-11-22T15:46:15.826Z",
+      "order": 19,
+      "description": "",
+      "short_description": null,
+      "label": "Quiet Mode",
+      "name": "quiet",
+      "default": "True",
+      "type": "boolean",
+      "param_type": 5,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": false,
+      "display": "select",
+      "service": 121
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 838,
+    "fields": {
+      "created": "2016-11-22T15:46:16.171Z",
+      "updated": "2016-11-22T15:46:16.171Z",
+      "order": 0,
+      "description": "<p>File containing source trees</p>",
+      "short_description": "File containing source trees",
+      "label": "Input File",
+      "name": "file",
+      "default": "",
+      "type": "file",
+      "param_type": 4,
+      "format": "",
+      "mandatory": true,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 122
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 839,
+    "fields": {
+      "created": "2016-11-22T15:46:16.173Z",
+      "updated": "2016-11-22T15:46:16.173Z",
+      "order": 1,
+      "description": "",
+      "short_description": "",
+      "label": "out_file",
+      "name": "ouput_name",
+      "default": "ratchet",
+      "type": "text",
+      "param_type": 0,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": false,
+      "display": "select",
+      "service": 122
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 840,
+    "fields": {
+      "created": "2016-11-22T15:46:16.398Z",
+      "updated": "2016-11-22T15:46:16.398Z",
+      "order": 0,
+      "description": "",
+      "short_description": "",
+      "label": "Input trees",
+      "name": "trees",
+      "default": "",
+      "type": "file",
+      "param_type": 4,
+      "format": "",
+      "mandatory": true,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 123
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 841,
+    "fields": {
+      "created": "2016-11-22T15:46:16.400Z",
+      "updated": "2016-11-22T15:46:16.400Z",
+      "order": 1,
+      "description": "",
+      "short_description": "",
+      "label": "Description",
+      "name": "description",
+      "default": "",
+      "type": "text",
+      "param_type": 4,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 123
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 842,
+    "fields": {
+      "created": "2016-11-22T15:46:16.401Z",
+      "updated": "2016-11-22T15:46:16.401Z",
+      "order": 2,
+      "description": "",
+      "short_description": "",
+      "label": "Format of trees file",
+      "name": "format",
+      "default": "auto",
+      "type": "select",
+      "param_type": 4,
+      "format": "Auto|auto\r\nNewick|newick\r\nNHX|nhx\r\nNexus|nexus\r\nCompPhyz(cmpz)|cmpz",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 123
+    }
+  },
+  {
+    "model": "waves.serviceinput",
+    "pk": 843,
+    "fields": {
+      "created": "2016-11-22T15:46:16.404Z",
+      "updated": "2016-11-22T15:46:16.404Z",
+      "order": 3,
+      "description": "",
+      "short_description": "",
+      "label": "Add annotations",
+      "name": "use_side_annotations",
+      "default": "False",
+      "type": "boolean",
+      "param_type": 4,
+      "format": "true|false",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "service": 123
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 204,
+    "fields": {
+      "created": "2016-11-22T15:46:15.094Z",
+      "updated": "2016-11-22T15:46:15.094Z",
+      "order": 0,
+      "description": "<p>FastME implements a wide range of substitution models for DNA : p-distance, RY symmetric, RY, JC69, K2P, F81, F84, TN93, LogDet. F84 is the default option and is recommended in most cases.</p>",
+      "short_description": "FastME implements a wide range of substitution models for DNA : p-distance, RY symmetric, RY, JC69, K2P, F81, F84, TN93, LogDet. F84 is the default option and is recommended in most cases.",
+      "label": "Evolutionary model",
+      "name": "dna",
+      "default": "4",
+      "type": "select",
+      "param_type": 1,
+      "format": "F84|4\r\nRY|R\r\nF81|1\r\nJC69|J\r\nK2P|K\r\nTN93|T\r\np-distance|p\r\nLogDet|L",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "d",
+      "related_to": 799
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 205,
+    "fields": {
+      "created": "2016-11-22T15:46:15.096Z",
+      "updated": "2016-11-22T15:46:15.096Z",
+      "order": 1,
+      "description": "<p>FastME implements a wide range of substitution models for proteins : p-distance, F81-like, LG, WAG, JTT, Dayhoff, DCMut, CpREV, MtREV, RtREV, HIVb, HIVw and FLU. LG is the default option and is recommended in most cases.</p>",
+      "short_description": "FastME implements a wide range of substitution models for proteins : p-distance, F81-like, LG, WAG, JTT, Dayhoff, DCMut, CpREV, MtREV, RtREV, HIVb, HIVw and FLU. LG is the default option and is recommended in most cases.",
+      "label": "Evolutionary model",
+      "name": "protein",
+      "default": "L",
+      "type": "select",
+      "param_type": 1,
+      "format": "LG|L\r\nWAG|W\r\nJTT|J\r\nDay off|h\r\nCpRev|C\r\nDCMut|D\r\nHIVb|b\r\nHIVw|I\r\nMtREV|M\r\nRtREV|R\r\np-distance|p",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "p",
+      "related_to": 799
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 206,
+    "fields": {
+      "created": "2016-11-22T15:46:15.108Z",
+      "updated": "2016-11-22T15:46:15.108Z",
+      "order": 12,
+      "description": "",
+      "short_description": null,
+      "label": "Bootstrap count",
+      "name": "bootstrap",
+      "default": "1000",
+      "type": "number",
+      "param_type": 1,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "True",
+      "related_to": 805
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 207,
+    "fields": {
+      "created": "2016-11-22T15:46:15.489Z",
+      "updated": "2016-11-22T15:46:15.489Z",
+      "order": 6,
+      "description": "",
+      "short_description": null,
+      "label": "Bootstrap Threshold",
+      "name": "b",
+      "default": "100",
+      "type": "number",
+      "param_type": 2,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "True",
+      "related_to": 813
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 208,
+    "fields": {
+      "created": "2016-11-22T15:46:15.494Z",
+      "updated": "2016-11-22T15:46:15.494Z",
+      "order": 7,
+      "description": "",
+      "short_description": null,
+      "label": "Correction threshold",
+      "name": "c",
+      "default": "0",
+      "type": "float",
+      "param_type": 2,
+      "format": "0|1",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "True",
+      "related_to": 814
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 209,
+    "fields": {
+      "created": "2016-11-22T15:46:15.798Z",
+      "updated": "2016-11-22T15:46:15.798Z",
+      "order": 7,
+      "description": "",
+      "short_description": null,
+      "label": "Nucleotide-based models",
+      "name": "model_dna",
+      "default": "HKY85",
+      "type": "select",
+      "param_type": 0,
+      "format": "HKY85|HKY85\r\nJC69|JC69\r\nK80|K80\r\nF81|F81\r\nF84|F84\r\nTN93|TN93\r\nGTR|GTR",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "dna",
+      "related_to": 824
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 210,
+    "fields": {
+      "created": "2016-11-22T15:46:15.800Z",
+      "updated": "2016-11-22T15:46:15.800Z",
+      "order": 8,
+      "description": "",
+      "short_description": null,
+      "label": "Amino-acid based model",
+      "name": "model_aa",
+      "default": "LG",
+      "type": "select",
+      "param_type": 0,
+      "format": "LG|LG\r\nWAG|WAG\r\nJTT|JTT\r\nMtREV|MtREV\r\nDayhoff|Dayhoff\r\nDCMut|DcMut\r\nRtREV|RtREV\r\nCpREV|CpREV\r\nVT|VT\r\n\t\t Blosum62 | MtMam | MtArt | HIVw |  HIVb |",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "aa",
+      "related_to": 824
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 211,
+    "fields": {
+      "created": "2016-11-22T15:46:15.804Z",
+      "updated": "2016-11-22T15:46:15.804Z",
+      "order": 10,
+      "description": "<p>fA, fC, fG and fT are floating numbers that correspond to the frequencies of A, C, G and T respectively (WARNING: do not use any blank space between your values of nucleotide frequencies, only commas!)</p>",
+      "short_description": "fA, fC, fG and fT are floating numbers that correspond to the frequencies of A, C, G and T respectively (WARNING: do not use any blank space between your values of nucleotide frequencies, only commas!)",
+      "label": "Custom frequencies",
+      "name": "f_custom",
+      "default": "",
+      "type": "text",
+      "param_type": 0,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "custom",
+      "related_to": 825
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 212,
+    "fields": {
+      "created": "2016-11-22T15:46:15.819Z",
+      "updated": "2016-11-22T15:46:15.819Z",
+      "order": 19,
+      "description": "<p>The number of initial random trees to be used. It is only valid if SPR searches are to be performed.</p>",
+      "short_description": "The number of initial random trees to be used. It is only valid if SPR searches are to be performed.",
+      "label": "Number of initial random trees",
+      "name": "n_rand_starts",
+      "default": "1",
+      "type": "number",
+      "param_type": 1,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "True",
+      "related_to": 833
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 213,
+    "fields": {
+      "created": "2016-11-22T15:46:16.406Z",
+      "updated": "2016-11-22T15:46:16.406Z",
+      "order": 0,
+      "description": "",
+      "short_description": "",
+      "label": "Annotation file",
+      "name": "annotations",
+      "default": "",
+      "type": "file",
+      "param_type": 4,
+      "format": "",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "True",
+      "related_to": 843
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 214,
+    "fields": {
+      "created": "2016-11-22T15:46:16.408Z",
+      "updated": "2016-11-22T15:46:16.408Z",
+      "order": 0,
+      "description": "",
+      "short_description": "",
+      "label": "Delimiter",
+      "name": "delimiter",
+      "default": ",",
+      "type": "select",
+      "param_type": 4,
+      "format": "semicolon|;\r\ncoma|,\r\ntabultation|tabulation",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "True",
+      "related_to": 843
+    }
+  },
+  {
+    "model": "waves.relatedinput",
+    "pk": 215,
+    "fields": {
+      "created": "2016-11-22T15:46:16.409Z",
+      "updated": "2016-11-22T15:46:16.409Z",
+      "order": 0,
+      "description": "",
+      "short_description": "",
+      "label": "Text delimiter",
+      "name": "text_delimiter",
+      "default": "\"",
+      "type": "select",
+      "param_type": 4,
+      "format": "double quotes|\"\r\nsimple quotes|'\r\nnone|none",
+      "mandatory": false,
+      "multiple": false,
+      "editable": true,
+      "display": "select",
+      "when_value": "True",
+      "related_to": 843
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 280,
+    "fields": {
+      "created": "2016-11-22T15:46:15.121Z",
+      "updated": "2016-11-22T15:46:15.121Z",
+      "order": 0,
+      "description": null,
+      "short_description": "",
+      "name": "Infered Tree",
+      "service": 89,
+      "related_from_input": null,
+      "from_input": true,
+      "ext": "txt",
+      "may_be_empty": false,
+      "file_pattern": ""
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 281,
+    "fields": {
+      "created": "2016-11-22T15:46:15.128Z",
+      "updated": "2016-11-22T15:46:15.128Z",
+      "order": 1,
+      "description": null,
+      "short_description": "",
+      "name": "Execution Information",
+      "service": 89,
+      "related_from_input": null,
+      "from_input": true,
+      "ext": "txt",
+      "may_be_empty": false,
+      "file_pattern": ""
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 282,
+    "fields": {
+      "created": "2016-11-22T15:46:15.133Z",
+      "updated": "2016-11-22T15:46:15.133Z",
+      "order": 2,
+      "description": null,
+      "short_description": "",
+      "name": "Boostrap trees",
+      "service": 89,
+      "related_from_input": null,
+      "from_input": true,
+      "ext": "txt",
+      "may_be_empty": false,
+      "file_pattern": ""
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 283,
+    "fields": {
+      "created": "2016-11-22T15:46:15.138Z",
+      "updated": "2016-11-22T15:46:15.138Z",
+      "order": 3,
+      "description": null,
+      "short_description": "",
+      "name": "Computed Matrix",
+      "service": 89,
+      "related_from_input": null,
+      "from_input": true,
+      "ext": "txt",
+      "may_be_empty": false,
+      "file_pattern": ""
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 284,
+    "fields": {
+      "created": "2016-11-22T15:46:15.500Z",
+      "updated": "2016-11-22T15:46:15.500Z",
+      "order": 0,
+      "description": null,
+      "short_description": null,
+      "name": "Inferred supertree",
+      "service": 90,
+      "related_from_input": null,
+      "from_input": false,
+      "ext": "txt",
+      "may_be_empty": false,
+      "file_pattern": "%s"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 285,
+    "fields": {
+      "created": "2016-11-22T15:46:15.501Z",
+      "updated": "2016-11-22T15:46:15.502Z",
+      "order": 1,
+      "description": null,
+      "short_description": "",
+      "name": "New source trees",
+      "service": 90,
+      "related_from_input": null,
+      "from_input": false,
+      "ext": "txt",
+      "may_be_empty": false,
+      "file_pattern": "%s"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 286,
+    "fields": {
+      "created": "2016-11-22T15:46:15.829Z",
+      "updated": "2016-11-22T15:46:15.829Z",
+      "order": 0,
+      "description": null,
+      "short_description": "",
+      "name": "Likehood steps",
+      "service": 91,
+      "related_from_input": null,
+      "from_input": true,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s_phyml_lk.txt"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 287,
+    "fields": {
+      "created": "2016-11-22T15:46:15.834Z",
+      "updated": "2016-11-22T15:46:15.834Z",
+      "order": 1,
+      "description": null,
+      "short_description": "",
+      "name": "Run stats",
+      "service": 91,
+      "related_from_input": null,
+      "from_input": true,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s_phyml_stats.txt"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 288,
+    "fields": {
+      "created": "2016-11-22T15:46:15.839Z",
+      "updated": "2016-11-22T15:46:15.840Z",
+      "order": 2,
+      "description": null,
+      "short_description": "",
+      "name": "Run trace",
+      "service": 91,
+      "related_from_input": null,
+      "from_input": true,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s_phyml_trace.txt"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 289,
+    "fields": {
+      "created": "2016-11-22T15:46:15.845Z",
+      "updated": "2016-11-22T15:46:15.845Z",
+      "order": 3,
+      "description": null,
+      "short_description": "",
+      "name": "Best likehood tree",
+      "service": 91,
+      "related_from_input": null,
+      "from_input": true,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s_phyml_tree.txt"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 290,
+    "fields": {
+      "created": "2016-11-22T15:46:16.174Z",
+      "updated": "2016-11-22T15:46:16.174Z",
+      "order": 0,
+      "description": null,
+      "short_description": null,
+      "name": "GMRP",
+      "service": 92,
+      "related_from_input": null,
+      "from_input": false,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s.gmrp"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 291,
+    "fields": {
+      "created": "2016-11-22T15:46:16.177Z",
+      "updated": "2016-11-22T15:46:16.177Z",
+      "order": 1,
+      "description": null,
+      "short_description": "",
+      "name": "LOG",
+      "service": 92,
+      "related_from_input": null,
+      "from_input": false,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s.log"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 292,
+    "fields": {
+      "created": "2016-11-22T15:46:16.178Z",
+      "updated": "2016-11-22T15:46:16.178Z",
+      "order": 2,
+      "description": null,
+      "short_description": "",
+      "name": "MMRP",
+      "service": 92,
+      "related_from_input": null,
+      "from_input": false,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s.mmrp"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 293,
+    "fields": {
+      "created": "2016-11-22T15:46:16.179Z",
+      "updated": "2016-11-22T15:46:16.179Z",
+      "order": 3,
+      "description": null,
+      "short_description": "",
+      "name": "SMRP",
+      "service": 92,
+      "related_from_input": null,
+      "from_input": false,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s.smrp"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 294,
+    "fields": {
+      "created": "2016-11-22T15:46:16.180Z",
+      "updated": "2016-11-22T15:46:16.181Z",
+      "order": 4,
+      "description": null,
+      "short_description": "",
+      "name": "TRE",
+      "service": 92,
+      "related_from_input": null,
+      "from_input": false,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s.tre"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 295,
+    "fields": {
+      "created": "2016-11-22T15:46:16.182Z",
+      "updated": "2016-11-22T15:46:16.182Z",
+      "order": 5,
+      "description": null,
+      "short_description": "",
+      "name": "NEX",
+      "service": 92,
+      "related_from_input": null,
+      "from_input": false,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "%s.tre.nex"
+    }
+  },
+  {
+    "model": "waves.serviceoutput",
+    "pk": 296,
+    "fields": {
+      "created": "2016-11-22T15:46:16.412Z",
+      "updated": "2016-11-22T15:46:16.412Z",
+      "order": 0,
+      "description": null,
+      "short_description": null,
+      "name": "Project URL",
+      "service": 93,
+      "related_from_input": null,
+      "from_input": false,
+      "ext": ".txt",
+      "may_be_empty": false,
+      "file_pattern": "project_url.txt"
+    }
+  },
+  {
+    "model": "waves.serviceoutputfrominputsubmission",
+    "pk": 137,
+    "fields": {
+      "srv_output": 280,
+      "submission": 119,
+      "srv_input": 798
+    }
+  },
+  {
+    "model": "waves.serviceoutputfrominputsubmission",
+    "pk": 138,
+    "fields": {
+      "srv_output": 281,
+      "submission": 119,
+      "srv_input": 808
+    }
+  },
+  {
+    "model": "waves.serviceoutputfrominputsubmission",
+    "pk": 139,
+    "fields": {
+      "srv_output": 282,
+      "submission": 119,
+      "srv_input": 810
+    }
+  },
+  {
+    "model": "waves.serviceoutputfrominputsubmission",
+    "pk": 140,
+    "fields": {
+      "srv_output": 283,
+      "submission": 119,
+      "srv_input": 809
+    }
+  },
+  {
+    "model": "waves.serviceoutputfrominputsubmission",
+    "pk": 141,
+    "fields": {
+      "srv_output": 286,
+      "submission": 121,
+      "srv_input": 818
+    }
+  },
+  {
+    "model": "waves.serviceoutputfrominputsubmission",
+    "pk": 142,
+    "fields": {
+      "srv_output": 287,
+      "submission": 121,
+      "srv_input": 818
+    }
+  },
+  {
+    "model": "waves.serviceoutputfrominputsubmission",
+    "pk": 143,
+    "fields": {
+      "srv_output": 288,
+      "submission": 121,
+      "srv_input": 818
+    }
+  },
+  {
+    "model": "waves.serviceoutputfrominputsubmission",
+    "pk": 144,
+    "fields": {
+      "srv_output": 289,
+      "submission": 121,
+      "srv_input": 818
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 245,
+    "fields": {
+      "order": 0,
+      "description": null,
+      "short_description": null,
+      "type": "website",
+      "title": "Paper and Supplementary material",
+      "value": "http://www.atgc-montpellier.fr/fastme/paper.php",
+      "is_url": false,
+      "service": 89
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 246,
+    "fields": {
+      "order": 1,
+      "description": null,
+      "short_description": null,
+      "type": "doc",
+      "title": "User guide",
+      "value": "http://www.atgc-montpellier.fr/fastme/usersguide.php",
+      "is_url": false,
+      "service": 89
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 247,
+    "fields": {
+      "order": 2,
+      "description": null,
+      "short_description": null,
+      "type": "download",
+      "title": "Downloads",
+      "value": "http://www.atgc-montpellier.fr/download/datasets/fastme/FastME-2.0_SupMat.zip",
+      "is_url": false,
+      "service": 89
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 248,
+    "fields": {
+      "order": 3,
+      "description": null,
+      "short_description": null,
+      "type": "cite",
+      "title": "Please cite",
+      "value": "",
+      "is_url": false,
+      "service": 89
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 249,
+    "fields": {
+      "order": 4,
+      "description": null,
+      "short_description": null,
+      "type": "cmd",
+      "title": "Synopsis",
+      "value": "",
+      "is_url": false,
+      "service": 89
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 250,
+    "fields": {
+      "order": 0,
+      "description": null,
+      "short_description": null,
+      "type": "cmd",
+      "title": "Usage",
+      "value": "Command line",
+      "is_url": false,
+      "service": 90
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 251,
+    "fields": {
+      "order": 1,
+      "description": null,
+      "short_description": null,
+      "type": "cite",
+      "title": "Please cite",
+      "value": "http://mbe.oxfordjournals.org/content/early/2015/06/29/molbev.msv150.abstract?keytype=ref&ijkey=nzj33seASld27Gs",
+      "is_url": false,
+      "service": 90
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 252,
+    "fields": {
+      "order": 2,
+      "description": null,
+      "short_description": null,
+      "type": "website",
+      "title": "Papers and contact",
+      "value": "http://www.atgc-montpellier.fr/physic_ist/paper.php",
+      "is_url": false,
+      "service": 90
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 253,
+    "fields": {
+      "order": 3,
+      "description": null,
+      "short_description": null,
+      "type": "download",
+      "title": "Download program",
+      "value": "http://www.atgc-montpellier.fr/physic_ist/binaries.php",
+      "is_url": false,
+      "service": 90
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 254,
+    "fields": {
+      "order": 0,
+      "description": null,
+      "short_description": null,
+      "type": "doc",
+      "title": "",
+      "value": "http://www.atgc-montpellier.fr/phyml/usersguide.php",
+      "is_url": false,
+      "service": 91
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 255,
+    "fields": {
+      "order": 1,
+      "description": null,
+      "short_description": null,
+      "type": "misc",
+      "title": "",
+      "value": "http://www.atgc-montpellier.fr/phyml/datasets.php",
+      "is_url": false,
+      "service": 91
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 256,
+    "fields": {
+      "order": 2,
+      "description": null,
+      "short_description": null,
+      "type": "download",
+      "title": "",
+      "value": "http://www.atgc-montpellier.fr/phyml/binaries.php",
+      "is_url": false,
+      "service": 91
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 257,
+    "fields": {
+      "order": 3,
+      "description": null,
+      "short_description": null,
+      "type": "misc",
+      "title": "",
+      "value": "http://www.atgc-montpellier.fr/phyml/faq.php",
+      "is_url": false,
+      "service": 91
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 258,
+    "fields": {
+      "order": 4,
+      "description": null,
+      "short_description": null,
+      "type": "paper",
+      "title": "",
+      "value": "http://www.atgc-montpellier.fr/phyml/paper.php",
+      "is_url": false,
+      "service": 91
+    }
+  },
+  {
+    "model": "waves.servicemeta",
+    "pk": 259,
+    "fields": {
+      "order": 5,
+      "description": null,
+      "short_description": null,
+      "type": "misc",
+      "title": "",
+      "value": "http://www.atgc-montpellier.fr/phyml/versions.php",
+      "is_url": false,
+      "service": 91
+    }
+  },
+  {
+    "model": "waves.wavessite",
+    "pk": 9,
+    "fields": {
+      "site": 1,
+      "theme": "flatly"
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 28,
+    "fields": {
+      "service": 93,
+      "param": 290,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 29,
+    "fields": {
+      "service": 93,
+      "param": 291,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 30,
+    "fields": {
+      "service": 93,
+      "param": 292,
+      "_value": "http://wilkins.lirmm.fr/atgc/compphy/"
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 31,
+    "fields": {
+      "service": 93,
+      "param": 293,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 32,
+    "fields": {
+      "service": 93,
+      "param": 294,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 33,
+    "fields": {
+      "service": 93,
+      "param": 295,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 237,
+    "fields": {
+      "service": 89,
+      "param": 316,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 238,
+    "fields": {
+      "service": 89,
+      "param": 317,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 239,
+    "fields": {
+      "service": 89,
+      "param": 318,
+      "_value": "/data/http/www/binaries/fastme/fastme"
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 240,
+    "fields": {
+      "service": 89,
+      "param": 319,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 241,
+    "fields": {
+      "service": 89,
+      "param": 320,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 242,
+    "fields": {
+      "service": 89,
+      "param": 321,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 243,
+    "fields": {
+      "service": 89,
+      "param": 322,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 244,
+    "fields": {
+      "service": 89,
+      "param": 323,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 245,
+    "fields": {
+      "service": 91,
+      "param": 316,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 246,
+    "fields": {
+      "service": 91,
+      "param": 317,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 247,
+    "fields": {
+      "service": 91,
+      "param": 318,
+      "_value": "/data/http/www/binaries/phyml/phyml-3.1"
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 248,
+    "fields": {
+      "service": 91,
+      "param": 319,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 249,
+    "fields": {
+      "service": 91,
+      "param": 320,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 250,
+    "fields": {
+      "service": 91,
+      "param": 321,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 251,
+    "fields": {
+      "service": 91,
+      "param": 322,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 252,
+    "fields": {
+      "service": 91,
+      "param": 323,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 253,
+    "fields": {
+      "service": 90,
+      "param": 316,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 254,
+    "fields": {
+      "service": 90,
+      "param": 317,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 255,
+    "fields": {
+      "service": 90,
+      "param": 318,
+      "_value": "/data/http/www/binaries/physic_ist/physic_ist"
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 256,
+    "fields": {
+      "service": 90,
+      "param": 319,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 257,
+    "fields": {
+      "service": 90,
+      "param": 320,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 258,
+    "fields": {
+      "service": 90,
+      "param": 321,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 259,
+    "fields": {
+      "service": 90,
+      "param": 322,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 260,
+    "fields": {
+      "service": 90,
+      "param": 323,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 261,
+    "fields": {
+      "service": 92,
+      "param": 316,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 262,
+    "fields": {
+      "service": 92,
+      "param": 317,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 263,
+    "fields": {
+      "service": 92,
+      "param": 318,
+      "_value": "/data/http/www/binaries/compphy/mrp.sh"
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 264,
+    "fields": {
+      "service": 92,
+      "param": 319,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 265,
+    "fields": {
+      "service": 92,
+      "param": 320,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 266,
+    "fields": {
+      "service": 92,
+      "param": 321,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 267,
+    "fields": {
+      "service": 92,
+      "param": 322,
+      "_value": null
+    }
+  },
+  {
+    "model": "waves.servicerunnerparam",
+    "pk": 268,
+    "fields": {
+      "service": 92,
+      "param": 323,
+      "_value": null
+    }
+  }
+]

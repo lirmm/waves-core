@@ -104,7 +104,6 @@ class AParamAdmin(PolymorphicChildModelAdmin):
             request.submission = Submission.objects.get(pk=request.GET.get('for-submission'))
         else:
             request.submission = None
-        # TODO add error message, can't edit this object outside popup
         return super(AParamAdmin, self).add_view(request, form_url, extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
@@ -170,6 +169,7 @@ class FileInputAdmin(AParamAdmin):
 class TextParamAdmin(AParamAdmin):
     """ BaseParam subclass Admin """
     base_model = TextParam
+    extra_fieldset_title = 'Text input params'
 
 
 @admin.register(BooleanParam)
@@ -209,12 +209,12 @@ class AllParamModelAdmin(PolymorphicParentModelAdmin):
     base_model = AParam
 
     child_models = (
+        (TextParam, TextParamAdmin),
         (FileInput, FileInputAdmin),
         (BooleanParam, BooleanParamAdmin),
         (DecimalParam, DecimalParamAdmin),
         (IntegerParam, IntegerParamAdmin),
         (ListParam, ListParamAdmin),
-        (TextParam, TextParamAdmin)
     )
     list_filter = (PolymorphicChildModelFilter, 'submission', 'submission__service')
     list_display = ('get_class_label', 'label', 'name', 'submission')

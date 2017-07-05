@@ -709,9 +709,9 @@ class JobInputManager(models.Manager):
         input_dict = dict(job=job,
                           order=order,
                           name=service_input.name,
-                          type=service_input.param_type,
+                          param_type=service_input.param_type,
                           api_name=service_input.api_name,
-                          param_type=service_input.cmd_format if hasattr(service_input,
+                          command_type=service_input.cmd_format if hasattr(service_input,
                                                                          'cmd_format') else service_input.param_type,
                           label=service_input.label,
                           value=str(submitted_input))
@@ -733,9 +733,8 @@ class JobInputManager(models.Manager):
                 # Manage sample data
                 input_sample = FileInputSample.objects.get(pk=submitted_input)
                 filename = path.join(job.working_dir, path.basename(input_sample.file.name))
-                input_dict['param_type'] = input_sample.file_input.cmd_format
+                input_dict['command_type'] = input_sample.file_input.cmd_format
                 input_dict['value'] = path.basename(input_sample.file.name)
-                # TODO simply copy related file ?
                 with open(filename, 'wb+') as uploaded_file:
                     for chunk in input_sample.file.chunks():
                         uploaded_file.write(chunk)
@@ -768,10 +767,10 @@ class JobInput(Ordered, Slugged, ApiModel):
                              help_text='Input value (filename, boolean value, int value etc.)')
     #: Each input may have its own identifier on remote adaptor
     remote_input_id = models.CharField('Remote input ID (on adaptor)', max_length=255, editable=False, null=True)
-    type = models.CharField('Param type', choices=AParam.IN_TYPE, max_length=50, editable=False, null=True)
+    param_type = models.CharField('Param param_type', choices=AParam.IN_TYPE, max_length=50, editable=False, null=True)
     name = models.CharField('Param name', max_length=200, editable=False, null=True)
-    param_type = models.IntegerField('Parameter Type', choices=AParam.OPT_TYPE, editable=False, null=True,
-                                     default=AParam.OPT_TYPE_POSIX)
+    command_type = models.IntegerField('Parameter Type', choices=AParam.OPT_TYPE, editable=False, null=True,
+                                       default=AParam.OPT_TYPE_POSIX)
     label = models.CharField('Label', max_length=100, editable=False, null=True)
 
     def natural_key(self):
@@ -790,7 +789,7 @@ class JobInput(Ordered, Slugged, ApiModel):
         :return: path to file
         :rtype: unicode
         """
-        if self.type == AParam.TYPE_FILE:
+        if self.param_type == AParam.TYPE_FILE:
             return os.path.join(self.job.working_dir, str(self.value))
         else:
             return ""
@@ -801,17 +800,17 @@ class JobInput(Ordered, Slugged, ApiModel):
 
         :return: determined from related SubmissionParam type
         """
-        if self.type == AParam.TYPE_FILE:
+        if self.param_type == AParam.TYPE_FILE:
             return self.value
-        elif self.type == AParam.TYPE_BOOLEAN:
+        elif self.param_type == AParam.TYPE_BOOLEAN:
             return bool(self.value)
-        elif self.type == AParam.TYPE_TEXT:
+        elif self.param_type == AParam.TYPE_TEXT:
             return self.value
-        elif self.type == AParam.TYPE_INT:
+        elif self.param_type == AParam.TYPE_INT:
             return int(self.value)
-        elif self.type == AParam.TYPE_DECIMAL:
+        elif self.param_type == AParam.TYPE_DECIMAL:
             return float(self.value)
-        elif self.type == AParam.TYPE_LIST:
+        elif self.param_type == AParam.TYPE_LIST:
             if self.value == 'None':
                 return False
             return self.value
@@ -835,27 +834,27 @@ class JobInput(Ordered, Slugged, ApiModel):
         :return: depends on parameter type
         """
         value = self.validated_value if forced_value is None else forced_value
-        if self.param_type == AParam.OPT_TYPE_VALUATED:
+        if self.command_type == AParam.OPT_TYPE_VALUATED:
             return '--%s=%s' % (self.name, value)
-        elif self.param_type == AParam.OPT_TYPE_SIMPLE:
+        elif self.command_type == AParam.OPT_TYPE_SIMPLE:
             if value:
                 return '-%s %s' % (self.name, value)
             else:
                 return ''
-        elif self.param_type == AParam.OPT_TYPE_OPTION:
+        elif self.command_type == AParam.OPT_TYPE_OPTION:
             if value:
                 return '-%s' % self.name
             return ''
-        elif self.param_type == AParam.OPT_TYPE_NAMED_OPTION:
+        elif self.command_type == AParam.OPT_TYPE_NAMED_OPTION:
             if value:
                 return '--%s' % self.name
             return ''
-        elif self.param_type == AParam.OPT_TYPE_POSIX:
+        elif self.command_type == AParam.OPT_TYPE_POSIX:
             if value:
                 return '%s' % value
             else:
                 return ''
-        elif self.param_type == AParam.OPT_TYPE_NONE:
+        elif self.command_type == AParam.OPT_TYPE_NONE:
             return ''
         # By default it's OPT_TYPE_SIMPLE way
         return '-%s %s' % (self.name, self.value)
@@ -886,7 +885,7 @@ class JobInput(Ordered, Slugged, ApiModel):
 
     @property
     def available(self):
-        return self.type == AParam.TYPE_FILE and os.path.isfile(self.file_path) \
+        return self.param_type == AParam.TYPE_FILE and os.path.isfile(self.file_path) \
                and os.path.getsize(self.file_path) > 0
 
 

@@ -237,58 +237,6 @@
     }
   },
   {
-    "model": "waves.servicecategory",
-    "pk": 1,
-    "fields": {
-      "order": 0,
-      "description": "",
-      "short_description": "",
-      "api_name": "cat_1",
-      "name": "Category 1",
-      "ref": null,
-      "parent": null
-    }
-  },
-  {
-    "model": "waves.servicecategory",
-    "pk": 2,
-    "fields": {
-      "order": 0,
-      "description": "",
-      "short_description": "",
-      "api_name": "cat_2",
-      "name": "Category 2",
-      "ref": null,
-      "parent": null
-    }
-  },
-  {
-    "model": "waves.servicecategory",
-    "pk": 3,
-    "fields": {
-      "order": 0,
-      "description": "",
-      "short_description": "",
-      "api_name": "subcat_1",
-      "name": "SubCategory 1",
-      "ref": null,
-      "parent": 1
-    }
-  },
-  {
-    "model": "waves.servicecategory",
-    "pk": 4,
-    "fields": {
-      "order": 0,
-      "description": "",
-      "short_description": "",
-      "api_name": "subcat_2",
-      "name": "SubCategory 2",
-      "ref": null,
-      "parent": 2
-    }
-  },
-  {
     "model": "waves.service",
     "pk": 1,
     "fields": {
@@ -300,7 +248,6 @@
       "runner": 2,
       "name": "Service 1",
       "version": "1.0",
-      "category": 1,
       "status": 3,
       "api_on": true,
       "web_on": true,
@@ -415,20 +362,6 @@
       "message": "Process exit error",
       "submission": 2,
       "is_error": true
-    }
-  },
-  {
-    "model": "waves.servicemeta",
-    "pk": 1,
-    "fields": {
-      "order": 0,
-      "description": "Copy sh fonction",
-      "short_description": null,
-      "type": "cmd",
-      "title": "Commande Line",
-      "value": "cp [from] [to]",
-      "is_url": false,
-      "service": 1
     }
   }
 ]

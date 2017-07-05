@@ -4,37 +4,32 @@ from uuid import UUID
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.db.models import Prefetch
 from django.views import generic
 
 from waves.exceptions.jobs import JobException
 from waves.forms.services import ServiceSubmissionForm
-from waves.models import ServiceCategory, Service, ServiceMeta, Job
+from waves.models import Service, Job
 from waves.models.submissions import Submission
 
 
-def get_context_meta_service(context, service):
-    for meta_type, meta_label in ServiceMeta.SERVICE_META:
-        # context['service_' + meta_type] = []
-        context['service_meta_title_' + meta_type] = meta_label
-    for service_meta in service.metas.all():
-        meta_type = service_meta.type
-        if not 'service_' + meta_type in context:
-            context['service_' + meta_type] = []
-        context['service_' + meta_type].append(service_meta)
+class ServiceListView(generic.ListView):
+    template_name = "waves/services/services_list.html"
+    model = Service
+    context_object_name = 'available_services'
+
+    def get_queryset(self):
+        return Service.objects.all().prefetch_related('submissions')
 
 
 class ServiceDetailView(generic.DetailView):
     model = Service
     template_name = 'waves/services/service_details.html'
     context_object_name = 'service'
-    queryset = Service.objects.all().prefetch_related("metas").prefetch_related('submissions')
+    queryset = Service.objects.all().prefetch_related('submissions')
     object = None
 
     def get_context_data(self, **kwargs):
         context = super(ServiceDetailView, self).get_context_data(**kwargs)
-        get_context_meta_service(context, self.object)
-        context['categories'] = ServiceCategory.objects.all()
         return context
 
     def get_object(self, queryset=None):
@@ -44,35 +39,6 @@ class ServiceDetailView(generic.DetailView):
             from django.core.exceptions import PermissionDenied
             raise PermissionDenied()
         return obj
-
-
-class CategoryDetailView(generic.DetailView):
-    context_object_name = 'category'
-    model = ServiceCategory
-    template_name = 'waves/category/category_details.html'
-    context_object_name = 'category'
-
-    def get_queryset(self):
-        return ServiceCategory.objects.all().prefetch_related(
-            Prefetch('category_tools',
-                     queryset=Service.objects.get_web_services(user=self.request.user),
-                     to_attr="category_public_tools"
-                     )
-        )
-
-
-class CategoryListView(generic.ListView):
-    template_name = "waves/category/categories_list.html"
-    model = ServiceCategory
-    context_object_name = 'online_categories'
-
-    def get_queryset(self):
-        return ServiceCategory.objects.all().prefetch_related(
-            Prefetch('category_tools',
-                     queryset=Service.objects.get_web_services(user=self.request.user),
-                     to_attr="category_public_tools"
-                     )
-        )
 
 
 class JobSubmissionView(ServiceDetailView, generic.FormView):
@@ -180,6 +146,7 @@ class JobSubmissionView(ServiceDetailView, generic.FormView):
 
 class SubmissionPreview(JobSubmissionView):
     template_name = 'admin/waves/service/service_form.html'
+
     def get_context_data(self, **kwargs):
         context = super(SubmissionPreview, self).get_context_data(**kwargs)
         context['preview'] = True

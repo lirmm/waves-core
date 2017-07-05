@@ -72,7 +72,7 @@ class JobInputSerializer(DynamicFieldsModelSerializer):
             repres = {
                 'name': j_input.api_name,
                 "label": j_input.label,
-                'type': j_input.type,
+                'param_type': j_input.type,
                 "value": j_input.value,
             }
             if j_input.type == AParam.TYPE_FILE:

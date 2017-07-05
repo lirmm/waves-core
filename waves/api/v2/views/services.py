@@ -11,10 +11,9 @@ from rest_framework.decorators import detail_route
 from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework.response import Response
 
-from waves.api.views.base import WavesAuthenticatedView
 from waves.api.v2.serializers.jobs import JobSerializer
-from waves.api.v2.serializers.services import ServiceSerializer, ServiceFormSerializer, ServiceMetaSerializer, \
-    ServiceSubmissionSerializer
+from waves.api.v2.serializers.services import ServiceSerializer, ServiceFormSerializer, ServiceSubmissionSerializer
+from waves.api.views.base import WavesAuthenticatedView
 from waves.exceptions.jobs import JobException
 from waves.models import Service, Job
 from waves.models.submissions import Submission
@@ -36,8 +35,8 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request):
         """ List all available services """
         serializer = ServiceSerializer(self.get_queryset(), many=True, context={'request': request},
-                                       fields=('url', 'name', 'short_description', 'version', 'created', 'updated',
-                                               'category', 'jobs'))
+                                       fields=('url', 'name', 'short_description',
+                                               'version', 'created', 'updated', 'jobs'))
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
@@ -54,13 +53,6 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         queryset_jobs = Job.objects.get_service_job(user=request.user, service=service_tool)
         serializer = JobSerializer(queryset_jobs, many=True, context={'request': request},
                                    fields=('url', 'created', 'status', 'service'))
-        return Response(serializer.data)
-
-    @detail_route(methods=['get'], url_path="metas")
-    def service_metas(self, request, api_name=None):
-        """ Retrieve service metas """
-        service = get_object_or_404(self.get_queryset(), api_name=api_name)
-        serializer = ServiceMetaSerializer(service, many=False, context={'request': request})
         return Response(serializer.data)
 
     @detail_route(methods=['get'], url_path="form")

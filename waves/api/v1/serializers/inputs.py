@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from rest_framework import serializers
 from rest_framework.fields import empty
 
@@ -8,7 +10,7 @@ from .fields import ListElementField
 
 class AParamSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['label', 'name', 'default', 'format', 'type', 'mandatory', 'short_description', 'multiple']
+        fields = ['label', 'name', 'default', 'format', 'param_type', 'mandatory', 'short_description', 'multiple']
         model = AParam
 
     mandatory = serializers.NullBooleanField(source='required')
@@ -24,6 +26,14 @@ class AParamSerializer(serializers.ModelSerializer):
         elif param.type == AParam.TYPE_INT:
             return "number"
         return param.type
+
+
+class TextParamSerializer(AParamSerializer):
+    class Meta(AParamSerializer.Meta):
+        model = TextParam
+        fields = AParamSerializer.Meta.fields + ['max_length']
+
+    max_length = serializers.IntegerField()
 
 
 class IntegerSerializer(AParamSerializer):
@@ -70,7 +80,7 @@ class InputSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = AParam
         queryset = AParam.objects.all()
-        fields = ('label', 'name', 'default', 'type', 'mandatory', 'description', 'multiple')
+        fields = ('label', 'name', 'default', 'param_type', 'mandatory', 'description', 'multiple')
         extra_kwargs = {
             'url': {'view_name': 'waves:api_v2:waves-services-detail', 'lookup_field': 'api_name'}
         }
@@ -95,6 +105,8 @@ class InputSerializer(DynamicFieldsModelSerializer):
                 return DecimalSerializer(obj, context=self.context).to_representation(obj)
             elif isinstance(obj, IntegerParam):
                 return IntegerSerializer(obj, context=self.context).to_representation(obj)
+            elif isinstance(obj, TextParam):
+                return TextParamSerializer(obj, context=self.context).to_representation(obj)
             else:
                 return AParamSerializer(obj, context=self.context).to_representation(obj)
 
@@ -103,7 +115,6 @@ class RelatedInputSerializer(InputSerializer):
     """ Serialize a dependent Input (RelatedParam models) """
 
     class Meta:
-        model = RelatedParam
         fields = InputSerializer.Meta.fields
 
     def to_representation(self, instance):
@@ -117,14 +128,15 @@ class ConditionalInputSerializer(DynamicFieldsModelSerializer):
 
     class Meta:
         model = AParam
-        fields = ('label', 'name', 'default', 'type', 'cmd_format', 'mandatory', 'description', 'multiple', 'when')
+        fields = (
+            'label', 'name', 'default', 'param_type', 'cmd_format', 'mandatory', 'description', 'multiple', 'when')
 
     when = RelatedInputSerializer(source='dependents_inputs', many=True, read_only=True)
     description = serializers.CharField(source='help_text')
-    type = serializers.SerializerMethodField()
+    param_type = serializers.SerializerMethodField(source='param_type')
 
     @staticmethod
-    def get_type(param):
+    def get_param_type(param):
         if param.type == AParam.TYPE_LIST:
             return "select"
         elif param.type == AParam.TYPE_DECIMAL:

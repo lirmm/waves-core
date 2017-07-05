@@ -9,11 +9,11 @@ from rest_framework.reverse import reverse as reverse
 
 from waves.settings import waves_settings
 from waves.api.v1.serializers.inputs import *
-from waves.models import SubmissionOutput as ServiceOutput, ServiceMeta, Service, \
+from waves.models import SubmissionOutput as ServiceOutput, Service, \
     Submission as ServiceSubmission
 
-__all__ = ['InputSerializer', 'InputSerializer', 'MetaSerializer', 'OutputSerializer', 'ServiceSerializer',
-           'ServiceFormSerializer', 'ServiceSubmissionSerializer', 'ServiceMetaSerializer']
+__all__ = ['InputSerializer', 'InputSerializer', 'OutputSerializer', 'ServiceSerializer',
+           'ServiceFormSerializer', 'ServiceSubmissionSerializer']
 logger = logging.getLogger(__name__)
 
 
@@ -36,40 +36,6 @@ class OutputSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = ServiceOutput
         fields = ('name', 'ext', 'may_be_empty', 'file_pattern')
-
-
-class MetaSerializer(serializers.ModelSerializer):
-    """ Serialize a Service meta """
-
-    class Meta:
-        model = ServiceMeta
-        fields = ('title', 'value', 'short_description', 'description')
-
-    def to_representation(self, instance):
-        """ Group meta into a simple array, indexed by type"""
-        to_repr = {}
-        for meta in instance.all():
-            to_repr[meta.type] = {
-                "type": meta.get_type_display(),
-                "title": meta.title,
-                "description": meta.short_description if meta.short_description is not None else strip_tags(
-                    meta.description),
-                "text": meta.value
-            }
-        return to_repr
-
-
-class ServiceMetaSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsModelSerializer):
-    """ Serialize list of Service related metas """
-
-    class Meta:
-        model = Service
-        fields = ('url', 'name', 'metas')
-        extra_kwargs = {
-            'url': {'view_name': 'waves:api_v1:waves-services-detail', 'lookup_field': 'api_name'}
-        }
-
-    metas = MetaSerializer(read_only=True)
 
 
 class ServiceSubmissionSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedRelatedField):
@@ -116,17 +82,14 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
 
     class Meta:
         model = Service
-        fields = ('url', 'category', 'name', 'version', 'created', 'short_description', 'default_submission_uri',
-                  'metas', 'jobs', 'submissions')
+        fields = ('url', 'name', 'version', 'created', 'short_description', 'default_submission_uri',
+                  'jobs', 'submissions')
         lookup_field = 'api_name'
         extra_kwargs = {
             'url': {'view_name': 'waves:api_v1:waves-services-detail', 'lookup_field': 'api_name'},
         }
 
-    category = serializers.HyperlinkedRelatedField(many=False, read_only=True, lookup_field='api_name',
-                                                   view_name='waves:api_v1:waves-services-category-detail')
     jobs = serializers.SerializerMethodField()
-    metas = serializers.SerializerMethodField()
     submissions = ServiceSubmissionSerializer(many=True, read_only=True, hidden=('service',))
     default_submission_uri = serializers.SerializerMethodField()
 
@@ -142,11 +105,6 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
     def get_jobs(self, obj):
         """ return uri to access current service users' jobs """
         return reverse(viewname='waves:api_v1:waves-services-jobs', request=self.context['request'],
-                       kwargs={'api_name': obj.api_name})
-
-    def get_metas(self, obj):
-        """ return uri to Service metas list """
-        return reverse(viewname='waves:api_v1:waves-services-metas', request=self.context['request'],
                        kwargs={'api_name': obj.api_name})
 
 

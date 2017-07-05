@@ -16,8 +16,7 @@ class FormHelper(BaseFormHelper, BaseHelper):
     Extended FormHelper based on crispy FormHelper,
     Dynamic form fields according to inputs types and parameters
     """
-
-    # TODO clean dirty code for tab layout (copy_paste field)
+    # TODO Created dedicated field for (copy_paste field)
 
     def __init__(self, form=None, **kwargs):
         form_tag = kwargs.pop('form_tag', True)

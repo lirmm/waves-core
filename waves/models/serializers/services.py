@@ -11,25 +11,9 @@ from waves.api.v2.serializers import ServiceSerializer as BaseServiceSerializer,
     ServiceSubmissionSerializer as BaseServiceSubmissionSerializer
 from waves.models import *
 from waves.models.serializers.base import RelatedSerializerMixin
-from waves.models.serializers.categories import CategorySerializer
 from waves.models.serializers.runners import RunnerSerializer, RunnerParamSerializer
 
-__all__ = ['ServiceMetaSerializer', 'ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
-
-
-class ServiceMetaSerializer(rest_serializer.ModelSerializer):
-    class Meta:
-        model = ServiceMeta
-        fields = ('type', 'title', 'value', 'is_url', 'order')
-
-
-class RelatedInputSerializer(rest_serializer.ModelSerializer):
-    """ Serialize a RelatedParam """
-
-    class Meta:
-        model = RelatedParam
-        fields = ('order', 'label', 'name', 'default', 'type', 'param_type', 'format', 'mandatory', 'multiple',
-                  'display', 'description', 'short_description', 'when_value')
+__all__ = ['ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
 
 
 class ServiceInputSerializer(DynamicFieldsModelSerializer, RelatedSerializerMixin):
@@ -37,17 +21,18 @@ class ServiceInputSerializer(DynamicFieldsModelSerializer, RelatedSerializerMixi
 
     class Meta:
         model = AParam
-        fields = ('order', 'label', 'name', 'default', 'type', 'param_type', 'format',
-                  'mandatory', 'multiple', 'display', 'description', 'short_description',
-                  'dependents_inputs')
+        fields = ('order', 'label', 'name', 'default', 'type', 'command_type', 'format',
+                  'mandatory', 'multiple', 'display', 'description', 'short_description')
+                  # 'dependents_inputs')
 
-    dependent_inputs = RelatedInputSerializer(many=True, required=False)
+    # TODO reactivate dependent inputs serialzation
+    # dependent_inputs = ServiceInputSerializer(many=True, required=False)
 
     def create(self, validated_data):
         dependent_inputs = validated_data.pop('dependents_inputs')
         srv_input = AParam.objects.create(**validated_data)
         self.create_related(foreign={'parent': srv_input},
-                            serializer=RelatedInputSerializer,
+                            serializer=ServiceInputSerializer,
                             datas=dependent_inputs)
         return srv_input
 
@@ -138,32 +123,27 @@ class ServiceSerializer(BaseServiceSerializer, RelatedSerializerMixin):
 
     class Meta:
         model = Service
-        fields = ('db_version', 'name', 'version', 'description', 'short_description', 'metas', 'runner', 'category',
+        fields = ('db_version', 'name', 'version', 'description', 'short_description', 'runner',
                   'srv_run_params', 'submissions', 'service_outputs', 'exit_codes')
 
     db_version = rest_serializer.SerializerMethodField()
-    metas = ServiceMetaSerializer(many=True, required=False)
     submissions = ServiceSubmissionSerializer(many=True, required=False)
     exit_codes = ExitCodeSerializer(many=True, required=False)
     service_outputs = ServiceOutputSerializer(many=True, required=False)
     runner = RunnerSerializer(many=False, required=False)
-    category = CategorySerializer(many=False, required=False, validators=[])
     srv_run_params = ServiceRunnerParamSerializer(many=True, required=False)
 
     def __init__(self, *args, **kwargs):
-        self.skip_category = kwargs.pop('skip_cat', False)
         self.skip_runner = kwargs.pop('skip_run', False)
         super(ServiceSerializer, self).__init__(*args, **kwargs)
 
     @transaction.atomic
     def create(self, validated_data):
         """ Create a new service from submitted data"""
-        metas_srv = validated_data.pop('metas')
         submissions = validated_data.pop('submissions')
         outputs = validated_data.pop('service_outputs')
         ext_codes = validated_data.pop('exit_codes')
         runner = validated_data.pop('runner')
-        category = validated_data.pop('category')
         srv_run_params = validated_data.pop('srv_run_params')
         if not self.skip_runner:
             try:
@@ -178,17 +158,11 @@ class ServiceSerializer(BaseServiceSerializer, RelatedSerializerMixin):
             run_on = None
         srv_object = Service.objects.create(**validated_data)
         srv_object.runner = run_on
-        if not self.skip_category:
-            cat = CategorySerializer(data=category, many=False)
-            if cat.is_valid():
-                srv_object.category = cat.save()
         srv_object.save()
         if not self.skip_runner:
             s_run_p = ServiceRunnerParamSerializer(data=srv_run_params, many=True)
             if s_run_p.is_valid():
                 s_run_p.save(service=srv_object)
-        srv_object.metas = self.create_related(foreign={'service': srv_object}, serializer=ServiceMetaSerializer,
-                                               datas=metas_srv)
         srv_object.submissions = self.create_related(foreign={'service': srv_object},
                                                      serializer=ServiceSubmissionSerializer, datas=submissions)
         srv_object.service_outputs = self.create_related(foreign={'service': srv_object},

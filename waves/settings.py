@@ -74,14 +74,12 @@ DEFAULTS = {
         'waves.adaptors.core.cluster.SshKeyClusterAdaptor',
     ),
     'PERMISSION_CLASSES': (),
-    'MAILER_CLASS': 'waves.mails.JobMailer',
-    'CATEGORY_CLASS': 'waves.models.services.ServiceCategory'
+    'MAILER_CLASS': 'waves.mails.JobMailer'
 }
 
 IMPORT_STRINGS = [
     'ADAPTORS_CLASSES',
     'MAILER_CLASS',
-    'CATEGORY_CLASS'
 ]
 
 

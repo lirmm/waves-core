@@ -8,7 +8,7 @@ from waves.models.inputs import *
 class AParamSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ['label', 'name', 'default', 'type', 'mandatory', 'description', 'multiple', 'edam_formats',
-                  'edam_datas']
+                  'edam_datas', 'dependents_inputs']
         model = AParam
 
     mandatory = serializers.NullBooleanField(source='required')
@@ -19,6 +19,14 @@ class AParamSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_type(param):
         return param.type
+
+
+class TextParamSerializer(AParamSerializer):
+    class Meta(AParamSerializer.Meta):
+        model = TextParam
+        fields = AParamSerializer.Meta.fields + ['max_length']
+
+    max_length = serializers.IntegerField()
 
 
 class IntegerSerializer(AParamSerializer):
@@ -67,40 +75,39 @@ class InputSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = AParam
         queryset = AParam.objects.all()
-        fields = ('label', 'name', 'default', 'type', 'mandatory', 'description', 'multiple')
+        fields = ('label', 'name', 'default', 'type', 'mandatory', 'help_text', 'multiple', 'dependents_inputs')
         extra_kwargs = {
             'url': {'view_name': 'waves:api_v2:waves-services-detail', 'lookup_field': 'api_name'}
         }
 
-    description = serializers.CharField(source='help_text')
+    dependents_inputs = serializers.RelatedField(source='dependents_inputs', many=True, read_only=True)
 
     def __init__(self, instance=None, data=empty, **kwargs):
         super(InputSerializer, self).__init__(instance, data, **kwargs)
 
     def to_representation(self, obj):
         """ Return representation for an Input, including dependents inputs if needed """
-        if obj.dependents_inputs.count() > 0:
-            return ConditionalInputSerializer(obj, context=self.context).to_representation(obj)
+
+        if isinstance(obj, FileInput):
+            return FileSerializer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, ListParam):
+            return ListSerialzer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, BooleanParam):
+            return BooleanSerializer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, IntegerParam):
+            return IntegerSerializer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, DecimalParam):
+            return DecimalSerializer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, TextParam):
+            return TextParamSerializer(obj, context=self.context).to_representation(obj)
         else:
-            if isinstance(obj, FileInput):
-                return FileSerializer(obj, context=self.context).to_representation(obj)
-            elif isinstance(obj, ListParam):
-                return ListSerialzer(obj, context=self.context).to_representation(obj)
-            elif isinstance(obj, BooleanParam):
-                return BooleanSerializer(obj, context=self.context).to_representation(obj)
-            elif isinstance(obj, IntegerParam):
-                return IntegerSerializer(obj, context=self.context).to_representation(obj)
-            elif isinstance(obj, DecimalParam):
-                return DecimalSerializer(obj, context=self.context).to_representation(obj)
-            else:
-                return AParamSerializer(obj, context=self.context).to_representation(obj)
+            raise Exception('Type not recognized')
 
 
 class RelatedInputSerializer(InputSerializer):
     """ Serialize a dependent Input (RelatedParam models) """
 
     class Meta:
-        model = RelatedParam
         fields = InputSerializer.Meta.fields
 
     def to_representation(self, instance):
@@ -108,13 +115,12 @@ class RelatedInputSerializer(InputSerializer):
         initial_repr = super(RelatedInputSerializer, self).to_representation(instance)
         return {instance.when_value: initial_repr}
 
-
-class ConditionalInputSerializer(DynamicFieldsModelSerializer):
+class ConditionalInputSerializer(InputSerializer):
     """ Serialize inputs if it's a conditional one """
 
     class Meta:
         model = AParam
-        fields = ('label', 'name', 'default', 'type', 'cmd_format', 'mandatory', 'description', 'multiple', 'when')
+        fields = ('label', 'name', 'default', 'param_type', 'cmd_format', 'mandatory', 'help_text', 'multiple',
+                  'when')
 
     when = RelatedInputSerializer(source='dependents_inputs', many=True, read_only=True)
-    description = serializers.CharField(source='help_text')

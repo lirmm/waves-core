@@ -14,7 +14,7 @@ from waves.utils.validators import ServiceInputValidator
 
 logger = logging.getLogger(__name__)
 
-# TODO refactoring for the copy_paste field associated with FileInput (override formfield template ?)
+
 class ServiceForm(forms.ModelForm):
     pass
 
@@ -88,7 +88,7 @@ class ServiceSubmissionForm(forms.ModelForm):
             form_field.css_class = 'text-left'
         elif isinstance(service_input, NumberParam):
             field_dict.update(dict(min_value=service_input.min_val,
-                                   max_value=service_input.max_val,))
+                                   max_value=service_input.max_val, ))
             if isinstance(service_input, IntegerParam):
                 form_field = forms.IntegerField(**field_dict)
             else:

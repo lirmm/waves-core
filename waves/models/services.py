@@ -15,7 +15,7 @@ from waves.models.adaptors import *
 from waves.models.base import *
 import waves.adaptors.const
 
-__all__ = ['ServiceRunParam', 'ServiceCategory', 'Service']
+__all__ = ['ServiceRunParam', 'ServiceManager', 'Service']
 
 
 class ServiceManager(models.Manager):
@@ -69,25 +69,6 @@ class ServiceManager(models.Manager):
         return self.get(api_name=api_name, version=version, status=status)
 
 
-class ServiceCategory(Ordered, Described, ApiModel):
-    """ Service category """
-
-    class Meta:
-        db_table = 'waves_service_category'
-        unique_together = ('api_name',)
-        ordering = ['name']
-        verbose_name_plural = "Categories"
-        verbose_name = "Category"
-
-    name = models.CharField('Category Name', null=False, blank=False, max_length=255, help_text='Category name')
-    ref = models.URLField('Reference', null=True, blank=True, help_text='Category online reference')
-    parent = models.ForeignKey('self', null=True, blank=True, help_text='Parent category',
-                               related_name='children_category', db_index=True)
-
-    def __str__(self):
-        return self.name
-
-
 class ServiceRunParam(AdaptorInitParam):
     """ Defined runner param for Service model objects """
 
@@ -128,8 +109,6 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
                                                verbose_name='Restricted clients', db_table='waves_service_client',
                                                help_text='By default access is granted to everyone, '
                                                          'you may restrict access here.')
-    category = models.ForeignKey(ServiceCategory, on_delete=models.SET_NULL, null=True, related_name='category_tools',
-                                 help_text='Service category')
     status = models.IntegerField(choices=SRV_STATUS_LIST, default=SRV_DRAFT,
                                  help_text='Service online status')
     api_on = models.BooleanField('Available on API', default=True,

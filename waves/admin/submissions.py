@@ -12,7 +12,6 @@ from waves.compat import CompactInline, organize_input_class
 from waves.models.inputs import *
 from waves.models.samples import *
 from waves.models.submissions import *
-# TODO enable the standard django layout for polymorphic inlines
 from waves.utils import url_to_edit_object
 from django.utils.module_loading import import_string
 

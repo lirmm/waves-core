@@ -113,7 +113,6 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
                 for service in obj.runs:
                     message = 'Related %s has been reset' % service
                     service.set_run_params_defaults()
-                    # TODO sometime we should save runParams directly in jobs, so won't rely on db modification
                     for job in service.pending_jobs.all():
                         job.adaptor.cancel_job(job=job)
                         message += '<br/>- Related pending job %s has been cancelled' % job.title

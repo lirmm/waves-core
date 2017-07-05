@@ -1,31 +1,17 @@
 from __future__ import unicode_literals
 
 from django.contrib.auth import get_user_model
-from django.template.defaultfilters import truncatechars
 
 from base import ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin
 from waves.admin.adaptors import ServiceRunnerParamInLine
-from waves.admin.forms.services import ServiceForm, SubmissionInlineForm, ServiceMetaForm
 from waves.admin.submissions import *
-from waves.compat import CompactInline
-from waves.models.metas import *
 from waves.models.services import *
 from waves.models.submissions import *
 from waves.utils import url_to_edit_object
 
 User = get_user_model()
 
-__all__ = ['ServiceAdmin', 'ServiceCategoryAdmin']
-
-
-class ServiceMetaInline(CompactInline):
-    model = ServiceMeta
-    form = ServiceMetaForm
-    exclude = ['order', ]
-    extra = 0
-    suit_classes = 'suit-tab suit-tab-metas'
-    classes = ('grp-collapse grp-closed', 'collapse')
-    fields = ['type', 'title', 'value', 'description']
+__all__ = ['ServiceAdmin']
 
 
 class ServiceSubmissionInline(admin.TabularInline):
@@ -59,14 +45,14 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     form = ServiceForm
     filter_horizontal = ['restricted_client']
     readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link']
-    list_display = ('name', 'api_name', 'runner', 'version', 'category', 'status', 'created_by',
+    list_display = ('name', 'api_name', 'runner', 'version', 'status', 'created_by',
                     'submission_link')
-    list_filter = ('status', 'name', 'category', 'created_by')
+    list_filter = ('status', 'name', 'created_by')
 
     fieldsets = (
         ('General', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['category', 'name', 'created_by', 'runner', 'version', 'created', 'updated', ]
+            'fields': ['name', 'created_by', 'runner', 'version', 'created', 'updated', ]
         }),
         ('Access', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
@@ -79,10 +65,9 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         }),
     )
 
+    # Override admin class and set this list to add your inlines to service admin
     def get_inlines(self, request, obj=None):
-        _inlines = [
-            ServiceMetaInline,
-        ]
+        _inlines = []
         self.inlines = _inlines
         if obj:
             self.inlines.append(ServiceSubmissionInline)
@@ -139,41 +124,5 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         if db_field.name == "created_by":
             kwargs['queryset'] = User.objects.filter(is_staff=True)
         return super(ServiceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
-
-@admin.register(ServiceCategory)
-class ServiceCategoryAdmin(admin.ModelAdmin):
-    """ Model admin for ServiceCategory model objects"""
-    list_display = ('name', 'parent', 'api_name', 'short', 'count_serv')
-    readonly_fields = ('count_serv',)
-    sortable_field_name = 'order'
-    fieldsets = [
-        (None, {
-            'fields': ['name', 'parent', 'api_name']
-        }),
-        ('Details', {
-            'fields': ['short_description', 'description', 'ref']
-        })
-    ]
-
-    def short(self, obj):
-        """ Truncate short description in list display """
-        return truncatechars(obj.short_description, 100)
-
-    def count_serv(self, obj):
-        return obj.category_tools.count()
-
-    short.short_description = "Description"
-    count_serv.short_description = "Services"
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "parent" and request.current_obj is not None:
-            kwargs['queryset'] = ServiceCategory.objects.exclude(id=request.current_obj.id)
-
-        return super(ServiceCategoryAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
-    def get_form(self, request, obj=None, **kwargs):
-        request.current_obj = obj
-        return super(ServiceCategoryAdmin, self).get_form(request, obj, **kwargs)
 
 

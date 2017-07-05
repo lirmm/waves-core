@@ -61,7 +61,6 @@ class JobHistoryInline(TabularInline):
 
     def has_add_permission(self, request):
         """ Never add any job output from admin """
-        # TODO add possibly add new history items when admin
         return False
 
     def get_message(self, obj):

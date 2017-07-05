@@ -33,7 +33,6 @@ class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
     class_label.short_description = "Input type"
 
     def get_queryset(self, request):
-        # TODO order fields according to related also (display first level items just followed by their dependents)
         return super(OrganizeInputInline, self).get_queryset(request).order_by('-required', 'order')
 
     def step(self, obj):

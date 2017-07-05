@@ -92,7 +92,7 @@ class AdaptorImporter(object):
             return None
 
     def list_services(self):
-        """ Get and return a list of tuple ('Category, ['Service Objects' list])  """
+        """ Get and return a list of tuple (['Service Objects' list])  """
         if not self.connected:
             self.connect()
         return self._list_services()

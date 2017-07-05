@@ -6,22 +6,18 @@ from __future__ import unicode_literals
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from django import forms
-from django.core import validators
-from django.core.exceptions import ValidationError
 
-from waves.settings import waves_settings as config
 from waves.models.inputs import *
-from waves.models.metas import ServiceMeta
 from waves.models.runners import Runner
-from waves.models.services import Service, ServiceCategory
+from waves.models.services import Service
 from waves.models.submissions import Submission, SubmissionOutput, SubmissionExitCode
+from waves.settings import waves_settings as config
 
-__all__ = ['ServiceForm', 'ImportForm', 'ServiceMetaForm', 'SubmissionInlineForm',
+__all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm',
            'SubmissionForm', 'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm']
 
 
 class SubmissionInlineForm(forms.ModelForm):
-
     class Meta:
         model = Submission
         fields = ['name', 'availability', 'api_name']
@@ -34,8 +30,6 @@ class ImportForm(forms.Form):
     """
     Service Import Form
     """
-    category = forms.ModelChoiceField(label='Import to category',
-                                      queryset=ServiceCategory.objects.all())
     tool = forms.ChoiceField()
 
     def __init__(self, *args, **kwargs):
@@ -54,7 +48,6 @@ class ImportForm(forms.Form):
         self.helper.form_show_labels = True
         self.helper.form_show_errors = True
         self.helper.layout = Layout(
-            Field('category'),
             Field('tool'),
         )
         self.helper.disable_csrf = True
@@ -132,22 +125,6 @@ class SubmissionForm(forms.ModelForm):
         exclude = ['order']
 
     runner = forms.ModelChoiceField(queryset=Runner.objects.all(), empty_label="Use Service Config")
-
-
-class ServiceMetaForm(forms.ModelForm):
-    class Meta:
-        model = ServiceMeta
-        exclude = ['order']
-
-    def clean(self):
-        cleaned_data = super(ServiceMetaForm, self).clean()
-        try:
-            validator = validators.URLValidator()
-            validator(cleaned_data['value'])
-            self.instance.is_url = True
-        except ValidationError as e:
-            if self.instance.type in (self.instance.META_WEBSITE, self.instance.META_DOC, self.instance.META_DOWNLOAD):
-                raise e
 
 
 class SubmissionOutputForm(forms.ModelForm):
