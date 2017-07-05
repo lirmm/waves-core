@@ -2,15 +2,16 @@
 """ Jobs API serializers """
 from __future__ import unicode_literals
 
-from os.path import getsize, isfile
 from os import stat
+from os.path import getsize, isfile
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
+from waves.api.share import DynamicFieldsModelSerializer
 from waves.models import Service, JobInput, Job, JobOutput, AParam
 from waves.models.history import JobHistory
-from .dynamic import DynamicFieldsModelSerializer
 
 User = get_user_model()
 

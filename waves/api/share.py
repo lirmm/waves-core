@@ -1,4 +1,3 @@
-""" WAVES api dynamic fields serializer """
 from __future__ import unicode_literals
 
 from rest_framework import serializers
@@ -28,3 +27,9 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
             initial = set(hidden)
             for field_name in initial:
                 self.fields.pop(field_name)
+
+
+class RecursiveField(DynamicFieldsModelSerializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data

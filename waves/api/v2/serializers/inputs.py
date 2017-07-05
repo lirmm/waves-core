@@ -1,13 +1,16 @@
+from __future__ import unicode_literals
+
 from rest_framework import serializers
 from rest_framework.fields import empty
-from .fields import CommaSeparatedListField, ListElementField, InputFormatField
-from .dynamic import DynamicFieldsModelSerializer
+
+from waves.api.share import DynamicFieldsModelSerializer, RecursiveField
 from waves.models.inputs import *
+from .fields import CommaSeparatedListField, ListElementField
 
 
 class AParamSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['label', 'name', 'default', 'type', 'mandatory', 'description', 'multiple', 'edam_formats',
+        fields = ['when_value', 'label', 'name', 'default', 'type', 'mandatory', 'description', 'multiple', 'edam_formats',
                   'edam_datas', 'dependents_inputs']
         model = AParam
 
@@ -15,6 +18,15 @@ class AParamSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source='help_text')
     edam_formats = CommaSeparatedListField()
     edam_datas = CommaSeparatedListField()
+    dependents_inputs = RecursiveField(many=True, read_only=True)
+
+    def to_representation(self, instance):
+        repr_initial = super(AParamSerializer, self).to_representation(instance)
+        if instance.dependents_inputs.count() == 0:
+            repr_initial.pop('dependents_inputs')
+        if instance.when_value is None:
+            repr_initial.pop('when_value')
+        return repr_initial
 
     @staticmethod
     def get_type(param):
@@ -80,14 +92,11 @@ class InputSerializer(DynamicFieldsModelSerializer):
             'url': {'view_name': 'waves:api_v2:waves-services-detail', 'lookup_field': 'api_name'}
         }
 
-    dependents_inputs = serializers.RelatedField(source='dependents_inputs', many=True, read_only=True)
-
     def __init__(self, instance=None, data=empty, **kwargs):
         super(InputSerializer, self).__init__(instance, data, **kwargs)
 
     def to_representation(self, obj):
         """ Return representation for an Input, including dependents inputs if needed """
-
         if isinstance(obj, FileInput):
             return FileSerializer(obj, context=self.context).to_representation(obj)
         elif isinstance(obj, ListParam):
@@ -104,6 +113,8 @@ class InputSerializer(DynamicFieldsModelSerializer):
             raise Exception('Type not recognized')
 
 
+
+
 class RelatedInputSerializer(InputSerializer):
     """ Serialize a dependent Input (RelatedParam models) """
 
@@ -114,6 +125,7 @@ class RelatedInputSerializer(InputSerializer):
         """ Return representation of a Related Input """
         initial_repr = super(RelatedInputSerializer, self).to_representation(instance)
         return {instance.when_value: initial_repr}
+
 
 class ConditionalInputSerializer(InputSerializer):
     """ Serialize inputs if it's a conditional one """

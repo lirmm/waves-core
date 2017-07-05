@@ -4,18 +4,20 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 
 from waves.models.inputs import *
-from .dynamic import DynamicFieldsModelSerializer
+from waves.api.share import DynamicFieldsModelSerializer, RecursiveField
 from .fields import ListElementField
 
 
 class AParamSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['label', 'name', 'default', 'format', 'param_type', 'mandatory', 'short_description', 'multiple']
+        fields = ['label', 'name', 'default', 'format', 'type', 'mandatory', 'short_description', 'multiple',
+                  'when']
         model = AParam
 
     mandatory = serializers.NullBooleanField(source='required')
     short_description = serializers.CharField(source='help_text')
-    type = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField(source='param_type')
+    when = RecursiveField(many=True, read_only=True, source='dependents_inputs')
 
     @staticmethod
     def get_type(param):
@@ -26,6 +28,17 @@ class AParamSerializer(serializers.ModelSerializer):
         elif param.type == AParam.TYPE_INT:
             return "number"
         return param.type
+
+    def to_representation(self, instance):
+        repr_initial = super(AParamSerializer, self).to_representation(instance)
+        if instance.dependents_inputs.count() == 0:
+            repr_initial.pop('dependents_inputs', None)
+            repr_initial.pop('when', None)
+        if instance.when_value is not None:
+            reprs = {instance.when_value: repr_initial}
+            return reprs
+
+        return repr_initial
 
 
 class TextParamSerializer(AParamSerializer):
@@ -69,9 +82,9 @@ class FileSerializer(AParamSerializer):
 class ListSerialzer(AParamSerializer):
     class Meta(AParamSerializer.Meta):
         model = ListParam
-        fields = AParamSerializer.Meta.fields + ['values_list']
+        fields = AParamSerializer.Meta.fields + ['format']
 
-    values_list = ListElementField(source='list_elements')
+    format = ListElementField(source='list_elements')
 
 
 class InputSerializer(DynamicFieldsModelSerializer):
@@ -92,23 +105,20 @@ class InputSerializer(DynamicFieldsModelSerializer):
 
     def to_representation(self, obj):
         """ Return representation for an Input, including dependents inputs if needed """
-        if obj.dependents_inputs.count() > 0:
-            return ConditionalInputSerializer(obj, context=self.context).to_representation(obj)
+        if isinstance(obj, FileInput):
+            return FileSerializer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, ListParam):
+            return ListSerialzer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, BooleanParam):
+            return BooleanSerializer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, DecimalParam):
+            return DecimalSerializer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, IntegerParam):
+            return IntegerSerializer(obj, context=self.context).to_representation(obj)
+        elif isinstance(obj, TextParam):
+            return TextParamSerializer(obj, context=self.context).to_representation(obj)
         else:
-            if isinstance(obj, FileInput):
-                return FileSerializer(obj, context=self.context).to_representation(obj)
-            elif isinstance(obj, ListParam):
-                return ListSerialzer(obj, context=self.context).to_representation(obj)
-            elif isinstance(obj, BooleanParam):
-                return BooleanSerializer(obj, context=self.context).to_representation(obj)
-            elif isinstance(obj, DecimalParam):
-                return DecimalSerializer(obj, context=self.context).to_representation(obj)
-            elif isinstance(obj, IntegerParam):
-                return IntegerSerializer(obj, context=self.context).to_representation(obj)
-            elif isinstance(obj, TextParam):
-                return TextParamSerializer(obj, context=self.context).to_representation(obj)
-            else:
-                return AParamSerializer(obj, context=self.context).to_representation(obj)
+            return AParamSerializer(obj, context=self.context).to_representation(obj)
 
 
 class RelatedInputSerializer(InputSerializer):

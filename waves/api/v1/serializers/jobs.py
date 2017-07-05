@@ -10,7 +10,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from waves.utils import normalize_value
 
-from dynamic import DynamicFieldsModelSerializer
+from waves.api.share import DynamicFieldsModelSerializer
 from waves.models import Service, JobHistory, JobInput, Job, JobOutput
 
 logger = logging.getLogger(__name__)

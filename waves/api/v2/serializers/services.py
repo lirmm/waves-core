@@ -2,14 +2,13 @@
 from __future__ import unicode_literals
 
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.utils.html import strip_tags
 from rest_framework import serializers
 from rest_framework.reverse import reverse as reverse
 
-from waves.settings import waves_settings
-from dynamic import DynamicFieldsModelSerializer
+from waves.api.share import DynamicFieldsModelSerializer
 from waves.models.services import *
 from waves.models.submissions import *
+from waves.settings import waves_settings
 from .inputs import InputSerializer
 
 __all__ = ['OutputSerializer', 'ServiceSerializer', 'ServiceFormSerializer', 'ServiceSubmissionSerializer']

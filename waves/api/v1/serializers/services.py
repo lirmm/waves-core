@@ -4,13 +4,12 @@ from __future__ import unicode_literals
 import logging
 
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.utils.html import strip_tags
 from rest_framework.reverse import reverse as reverse
 
-from waves.settings import waves_settings
 from waves.api.v1.serializers.inputs import *
 from waves.models import SubmissionOutput as ServiceOutput, Service, \
     Submission as ServiceSubmission
+from waves.settings import waves_settings
 
 __all__ = ['InputSerializer', 'InputSerializer', 'OutputSerializer', 'ServiceSerializer',
            'ServiceFormSerializer', 'ServiceSubmissionSerializer']
