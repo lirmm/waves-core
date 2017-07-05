@@ -11,7 +11,7 @@ __all__ = ["available_themes", "list_themes", "RichTextField", "CompactInline", 
 
 
 if 'jet' in settings.INSTALLED_APPS:
-    from compat_jet import CompactInline
+    from compat_jet import *
     organize_input_class = 'waves.compat.submissions_jet.OrganizeInputInline'
 else:
     organize_input_class = 'waves.compat.submissions_std.OrganizeInputInline'
@@ -30,7 +30,7 @@ else:
         pass
 
 if 'bootstrap_themes' in settings.INSTALLED_APPS:
-    from compat_bootstrap_themes import available_themes, list_themes
+    from compat_bootstrap_themes import *
 else:
     available_themes = (
         ('default', 'Default'),
@@ -43,4 +43,4 @@ if 'adminsortable2' not in settings.INSTALLED_APPS:
     class SortableInlineAdminMixin(object):
         pass
 else:
-    from adminsortable2 import SortableInlineAdminMixin
+    from compat_adminsortable import *

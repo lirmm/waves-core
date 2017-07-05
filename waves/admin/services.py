@@ -21,7 +21,7 @@ __all__ = ['ServiceAdmin', 'ServiceCategoryAdmin']
 class ServiceMetaInline(CompactInline):
     model = ServiceMeta
     form = ServiceMetaForm
-    exclude = ['order',]
+    exclude = ['order', ]
     extra = 0
     suit_classes = 'suit-tab suit-tab-metas'
     classes = ('grp-collapse grp-closed', 'collapse')
@@ -48,7 +48,8 @@ class ServiceSubmissionInline(admin.TabularInline):
 
 
 @admin.register(Service)
-class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
+class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, WavesModelAdmin,
+                   DynamicInlinesAdmin):
     """ Service model objects Admin"""
 
     class Media:
@@ -144,7 +145,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 class ServiceCategoryAdmin(admin.ModelAdmin):
     """ Model admin for ServiceCategory model objects"""
     list_display = ('name', 'parent', 'api_name', 'short', 'count_serv')
-    readonly_fields = ('count_serv', )
+    readonly_fields = ('count_serv',)
     sortable_field_name = 'order'
     fieldsets = [
         (None, {
@@ -164,3 +165,15 @@ class ServiceCategoryAdmin(admin.ModelAdmin):
 
     short.short_description = "Description"
     count_serv.short_description = "Services"
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "parent" and request.current_obj is not None:
+            kwargs['queryset'] = ServiceCategory.objects.exclude(id=request.current_obj.id)
+
+        return super(ServiceCategoryAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+    def get_form(self, request, obj=None, **kwargs):
+        request.current_obj = obj
+        return super(ServiceCategoryAdmin, self).get_form(request, obj, **kwargs)
+
+
