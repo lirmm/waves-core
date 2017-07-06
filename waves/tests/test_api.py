@@ -12,13 +12,14 @@ from waves.models import Job
 from waves.models.inputs import AParam
 from waves.tests.base import WavesBaseTestCase
 from waves.tests.utils import create_test_file
+import waves.adaptors.const
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):
-    # fixtures = ['waves/tests/fixtures/services.json']
+    fixtures = ['waves/tests/fixtures/services.json']
 
     def setUp(self):
         super(WavesAPITestCase, self).setUp()
@@ -81,26 +82,27 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                 submissions = tool_data.get('submissions')
                 for submission in submissions:
                     for job_input in submission['inputs']:
-                        if job_input['param_type'] == AParam.TYPE_FILE:
+                        if job_input['type'] == AParam.TYPE_FILE:
                             i += 1
                             input_data = create_test_file(job_input['name'], i)
                             # input_datas[job_input['name']] = input_data.name
                             logger.debug('file input %s', input_data)
-                        elif job_input['param_type'] == AParam.TYPE_INT:
+                        elif job_input['type'] == AParam.TYPE_INT:
                             input_data = int(random.randint(0, 199))
                             logger.debug('number input%s', input_data)
-                        elif job_input['param_type'] == AParam.TYPE_DECIMAL:
+                        elif job_input['type'] == AParam.TYPE_DECIMAL:
                             input_data = int(random.randint(0, 199))
                             logger.debug('number input%s', input_data)
-                        elif job_input['param_type'] == AParam.TYPE_BOOLEAN:
+                        elif job_input['type'] == AParam.TYPE_BOOLEAN:
                             input_data = random.randrange(100) < 50
-                        elif job_input['param_type'] == 'text':
+                        elif job_input['type'] == AParam.TYPE_TEXT:
                             input_data = ''.join(random.sample(string.letters, 15))
-                            # input_datas[job_input['name']] = input_data
                             logger.debug('text input %s', input_data)
+                        elif job_input['type'] == AParam.TYPE_LIST:
+                            input_data = ''.join(random.sample(string.letters, 15))
                         else:
                             input_data = ''.join(random.sample(string.letters, 15))
-                            logger.warn('default ???? %s %s', input_data, job_input['param_type'])
+                            logger.warn('default ???? %s %s', input_data, job_input['type'])
                         input_datas[job_input['name']] = input_data
 
                     logger.debug('Data posted %s', input_datas)
@@ -115,7 +117,14 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                     job = Job.objects.all().order_by('-created').first()
                     logger.debug(job)
-
+        jobs = Job.objects.all()
+        for job in jobs:
+            logger.debug('Job %s ', job)
+            self.assertEqual(job.status, waves.adaptors.const.JOB_CREATED)
+            self.assertEqual(job.job_history.count(), 1)
+            self.assertIsNotNone(job.job_inputs)
+            self.assertIsNotNone(job.outputs)
+            self.assertGreaterEqual(job.outputs.count(), 2)
         self.assertEqual(2, Job.objects.count())
 
     def test_update_job(self):

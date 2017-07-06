@@ -36,7 +36,7 @@ def get_sample_dir():
     return join(dirname(dirname(realpath(__file__))), 'data', 'sample')
 
 
-def create_base_job(title="Sample Empty Job -- Test", working_dir='/tmp'):
+def create_base_job(title="Sample Empty Job -- Test"):
     job = Job.objects.create(title=title)
     return job
 
@@ -45,9 +45,9 @@ def create_cp_job(source_file):
     job = create_base_job('Sample CP job')
     shutil.copy(source_file, job.working_dir)
     job.inputs = [JobInput.objects.create(label="File To copy", name='source',
-                                          value=basename(source_file), type='file', job=job),
+                                          value=basename(source_file), param_type=AParam.TYPE_FILE, job=job),
                   JobInput.objects.create(label="Destination Dir", name="dest",
-                                          value='dest_copy.txt', type='text', job=job)]
+                                          value='dest_copy.txt', param_type=AParam.TYPE_TEXT, job=job)]
     job.outputs = [JobOutput.objects.create(_name='Copied File', name='dest', value=job.inputs[1].value, job=job)]
     return job
 

@@ -122,6 +122,9 @@ class RunnerTestCase(TestCase):
                         self.assertEqual(source.read(), copy.read())
                     self.assertTrue(job.results_available)
                     self.assertEqual(job.status, waves.adaptors.const.JOB_TERMINATED)
+            except IOError as e:
+                logger.info('Excepted file not present for job %s ', job)
+                logger.exception(e.message)
             except AdaptorException as e:
-                logger.info('Adaptor %s is not locally available' % adaptor)
+                logger.info('Adaptor %s is not locally available',  adaptor)
                 logger.exception(e.get_full_message())

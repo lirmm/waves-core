@@ -16,6 +16,7 @@ For more specific details see `http://www.gnu.org/licenses, <http://www.gnu.org/
 The GNU operating system which is under the same license has an informative
 `FAQ here <http://www.gnu.org/licenses/gpl-faq.html>`__.
 
+
 Note to developers
 ==================
 

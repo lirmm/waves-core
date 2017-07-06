@@ -48,6 +48,7 @@ class AParam(PolymorphicModel, ApiModel):
     OPT_TYPE_POSIX = 4
     OPT_TYPE_NAMED_OPTION = 5
     OPT_TYPE = [
+        (OPT_TYPE_NONE, "Not used in command"),
         (OPT_TYPE_SIMPLE, '-[name] value'),
         (OPT_TYPE_VALUATED, '--[name]=value'),
         (OPT_TYPE_OPTION, '-[name]'),

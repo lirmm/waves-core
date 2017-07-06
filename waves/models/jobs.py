@@ -310,7 +310,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: list of JobInput models instance
         :rtype: QuerySet
         """
-        return self.job_inputs.filter(type=AParam.TYPE_FILE).exclude(param_type=AParam.OPT_TYPE_NONE)
+        return self.job_inputs.filter(param_type=AParam.TYPE_FILE)
 
     @property
     def output_files_exists(self):
@@ -347,7 +347,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: list of `JobInput` models instance
         :rtype: [list of JobInput objects]
         """
-        return self.job_inputs.exclude(type=AParam.TYPE_FILE).exclude(param_type=AParam.OPT_TYPE_NONE)
+        return self.job_inputs.exclude(param_type=AParam.TYPE_FILE)
 
     @property
     def working_dir(self):
@@ -530,7 +530,6 @@ class Job(TimeStamped, Slugged, UrlMixin):
         if self.nb_retry <= config.JOBS_MAX_RETRY:
             self.nb_retry += 1
             self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status)
-            self.save()
         else:
             self.error(message)
 
@@ -538,7 +537,6 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """ Set job Status to ERROR, save error reason in JobAdminHistory, save job"""
         self.message = '[Error]%s' % message
         self.status = waves.adaptors.const.JOB_ERROR
-        self.save()
 
     def fatal_error(self, exception):
         logger.exception(exception)
@@ -570,12 +568,15 @@ class Job(TimeStamped, Slugged, UrlMixin):
         try:
             returned = getattr(self.adaptor, action)(self)
             self.nb_retry = 0
-            self.save()
             return returned
         except waves.adaptors.exceptions.AdaptorException as exc:
             self.retry(exc.message)
-        except (WavesException, Exception) as exc:
+        except WavesException as exc:
             self.error(exc.message)
+        except BaseException as e:
+            self.fatal_error(e)
+        finally:
+            self.save()
 
     @property
     def next_status(self):
@@ -632,14 +633,18 @@ class Job(TimeStamped, Slugged, UrlMixin):
         file_run_details = join(self.working_dir, 'job_run_details.json')
         if os.path.isfile(file_run_details):
             # Details have already been downloaded
-            with open(file_run_details) as fp:
-                details = JobRunDetails(*json.load(fp))
-            return details
+            try:
+                with open(file_run_details) as fp:
+                    details = JobRunDetails(*json.load(fp))
+                return details
+            except TypeError:
+                logger.error("Unable to retrieve data from file %s", file_run_details)
+                return self.default_run_details()
         else:
             try:
                 remote_details = self._run_action('job_run_details')
             except waves.adaptors.exceptions.AdaptorException:
-                remote_details = default_run_details(self)
+                remote_details = self.default_run_details()
             with open(file_run_details, 'w') as fp:
                 json.dump(obj=remote_details, fp=fp, ensure_ascii=False)
             return remote_details

@@ -159,9 +159,9 @@ class LocalShellAdaptor(JobAdaptor):
 
     def _job_run_details(self, job):
         remote_job = self.connector.get_job(str(job.remote_job_id))
-        date_created = datetime.datetime.fromtimestamp(float(remote_job.created)).isoformat() if remote_job.created else ""
-        date_started = datetime.datetime.fromtimestamp(float(remote_job.started)).isoformat() if remote_job.started else ""
-        date_finished = datetime.datetime.fromtimestamp(float(remote_job.finished)).isoformat() if remote_job.finished else ""
+        date_created = remote_job.created if remote_job.created else ""
+        date_started = remote_job.started if remote_job.started else ""
+        date_finished = remote_job.finished if remote_job.finished else ""
         details = JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
                                 remote_job.exit_code,
                                 date_created,
