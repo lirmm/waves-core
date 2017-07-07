@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from waves.settings import waves_settings
 from waves.models import TimeStamped, ApiModel, Ordered, Slugged, Service
 from waves.models.adaptors import AdaptorInitParam, HasRunnerParamsMixin
 
@@ -30,7 +31,8 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
                                                 (2, "Available on waves:api_v2 only"),
                                                 (3, "Available on both")])
     name = models.CharField('Submission title', max_length=255, null=False, blank=False)
-    service = models.ForeignKey(Service, on_delete=models.CASCADE, null=False, related_name='submissions')
+    service = models.ForeignKey(waves_settings.SERVICE_MODEL, on_delete=models.CASCADE, null=False,
+                                related_name='submissions')
 
     @property
     def config_changed(self):

@@ -33,7 +33,6 @@ class ServiceSubmissionInline(admin.TabularInline):
     get_runner.short_description = "Overridden runner"
 
 
-@admin.register(Service)
 class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, WavesModelAdmin,
                    DynamicInlinesAdmin):
     """ Service model objects Admin"""
@@ -49,7 +48,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
                     'submission_link')
     list_filter = ('status', 'name', 'created_by')
 
-    fieldsets = (
+    fieldsets = [
         ('General', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
             'fields': ['name', 'created_by', 'runner', 'version', 'created', 'updated', ]
@@ -63,7 +62,19 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
             'fields': ['api_name', 'short_description', 'description', 'edam_topics',
                        'edam_operations', 'remote_service_id', ]
         }),
-    )
+    ]
+    extra_fieldsets = None
+    override_fieldsets = False
+
+    def get_fieldsets(self, request, obj=None):
+        base_fieldsets = super(ServiceAdmin, self).get_fieldsets(request, obj)
+        if self.override_fieldsets:
+            field_sets = self.extra_fieldsets
+        elif self.extra_fieldsets is not None:
+            field_sets = base_fieldsets + self.extra_fieldsets
+        else:
+            field_sets = base_fieldsets
+        return field_sets
 
     # Override admin class and set this list to add your inlines to service admin
     def get_inlines(self, request, obj=None):
@@ -126,3 +137,4 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         return super(ServiceAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+admin.site.register(Service, ServiceAdmin)

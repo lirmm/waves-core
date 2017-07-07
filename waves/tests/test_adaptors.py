@@ -27,7 +27,7 @@ def skip_unless_sge():
 
 class RunnerTestCase(TestCase):
     tests_dir = dirname(__file__)
-    loader = AdaptorLoader()
+    loader = AdaptorLoader
 
     adaptors = [
         LocalShellAdaptor(command='cp'),
@@ -52,6 +52,18 @@ class RunnerTestCase(TestCase):
                            basedir=test_settings.WAVES_SSH_KEY_BASE_DIR,
                            host=test_settings.WAVES_SSH_KEY_HOST)
     ]
+
+    def testSerializeUnserialize(self):
+        for adaptor in self.adaptors:
+            logger.info("Testing serialization for %s ", adaptor.name)
+            try:
+                serialized = AdaptorLoader.serialize(adaptor)
+                unserialized = AdaptorLoader.unserialize(serialized)
+                self.assertEqual(adaptor.__class__, unserialized.__class__)
+            except AdaptorException as e:
+                pass
+            else:
+                logger.info("Adaptor not available for testing protocol %s " % adaptor.name)
 
     def testProtocol(self):
         for adaptor in self.adaptors:

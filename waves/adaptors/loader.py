@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 
-from waves.settings import waves_settings
+import json
+
+from waves.settings import waves_settings, import_from_string
 
 __all__ = ['AdaptorLoader']
 
@@ -8,10 +10,22 @@ __all__ = ['AdaptorLoader']
 class AdaptorLoader(object):
     adaptors_classes = waves_settings.ADAPTORS_CLASSES
 
-    def get_adaptors(self):
-        return sorted([adaptor_class() for adaptor_class in self.adaptors_classes])
+    @classmethod
+    def get_adaptors(cls):
+        return sorted([adaptor_class() for adaptor_class in cls.adaptors_classes])
 
-    def load(self, clazz, **params):
+    @classmethod
+    def load(cls, clazz, **params):
         if params is None:
             params = {}
-        return next((x(**params) for x in self.adaptors_classes if x == clazz), None)
+        return next((x(**params) for x in cls.adaptors_classes if x == clazz), None)
+
+    @classmethod
+    def serialize(cls, adaptor):
+        return adaptor.serialize()
+
+    @classmethod
+    def unserialize(cls, serialized):
+        json_data = json.loads(serialized)
+        clazz = import_from_string(json_data['clazz'], None)
+        return cls.load(clazz, **json_data['params'])

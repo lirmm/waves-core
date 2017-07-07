@@ -9,8 +9,11 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 
 from waves.admin.views.export import ModelExportView
-from waves.models import Service
+from waves.models import get_service_model
 from waves.admin.views.runner_tool import RunnerImportToolView, ObjectDoesNotExist, RunnerTestConnectionView
+
+Service = get_service_model()
+
 
 # TODO in manage permission
 # from django.contrib.auth.decorators import permission_required
@@ -37,17 +40,18 @@ class ServiceParamImportView(RunnerImportToolView):
 
 
 class ServiceDuplicateView(View):
-
     def get(self, request, *args, **kwargs):
         try:
             service = get_object_or_404(Service, id=kwargs['service_id'])
             new_service = service.duplicate()
             messages.add_message(request, level=messages.SUCCESS, message="Service successfully copied, "
                                                                           "you may edit it now")
-            return redirect(reverse('admin:waves_service_change', args=[new_service.id]))
+            # return redirect(reverse('admin:waves_service_change', args=[new_service.id]))
+            return redirect(new_service.get_admin_url())
         except DatabaseError as e:
             messages.add_message(request, level=messages.WARNING, message="Error occurred during copy: %s " % e)
-            return redirect(reverse('admin:waves_service_change', args=[kwargs['service_id']]))
+            # return redirect(reverse('admin:waves_service_change', args=[kwargs['service_id']]))
+            return redirect(reverse('admin:index', args=[kwargs['service_id']]))
 
 
 class ServiceExportView(ModelExportView):
@@ -56,7 +60,8 @@ class ServiceExportView(ModelExportView):
 
     @property
     def return_view(self):
-        return reverse('admin:waves_service_change', args=[self.object.id])
+        return self.object.get_admin_url()
+        # return reverse('admin:waves_service_change', args=[self.object.id])
 
 
 class ServiceTestConnectionView(RunnerTestConnectionView):
@@ -64,4 +69,3 @@ class ServiceTestConnectionView(RunnerTestConnectionView):
 
     def get_object_name(self):
         return self.object.runner.name
-

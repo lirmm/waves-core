@@ -9,9 +9,11 @@ from django import forms
 
 from waves.models.inputs import *
 from waves.models.runners import Runner
-from waves.models.services import Service
+from waves.models import get_service_model
 from waves.models.submissions import Submission, SubmissionOutput, SubmissionExitCode
 from waves.settings import waves_settings as config
+
+Service = get_service_model()
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm',
            'SubmissionForm', 'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm']

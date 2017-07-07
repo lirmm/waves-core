@@ -15,7 +15,7 @@ def get_runners_list():
     :return: a list of Tuple 'value'/'label'
     """
     from waves.adaptors.loader import AdaptorLoader
-    adaptors = AdaptorLoader().get_adaptors()
+    adaptors = AdaptorLoader.get_adaptors()
     grp_impls = {'': 'Select a environment...'}
     for adaptor in adaptors:
         grp_name = adaptor.__class__.__module__.split('.')[-1].capitalize()

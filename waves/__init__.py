@@ -8,9 +8,6 @@ __licence__ = 'GPLv3'
 __copyright__ = "Copyright(C) 2016-2017, LIRMM - UM - CNRS"
 __db_version__ = "1.1"
 
-## Avoid user warning for logging init
-import saga
-## //
-
-
 default_app_config = 'waves.apps.WavesConfig'
+
+

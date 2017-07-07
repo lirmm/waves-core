@@ -110,7 +110,7 @@ def create_test_file(path, index):
 def create_runners():
     """ Create base models from all Current implementation parameters """
     runners = []
-    loader = AdaptorLoader()
+    loader = AdaptorLoader
     for adaptor in loader.get_adaptors():
         runners.append(Runner.objects.create(name="%s Runner" % adaptor.name,
                                              clazz='.'.join([adaptor.__module__, adaptor.__class__.__name__])))

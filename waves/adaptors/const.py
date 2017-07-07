@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from django.utils.translation import ugettext as _
 
 JOB_UNDEFINED = -1
@@ -59,3 +61,6 @@ STATUS_MAP = {
     JOB_CANCELLED: STR_JOB_CANCELLED,
     JOB_ERROR: STR_JOB_ERROR,
 }
+JobRunDetails = namedtuple("JobRunDetails",
+                           ['id', 'slug', 'job_remote_id', 'name', 'exit_code', 'created', 'started',
+                            'finished', 'extra'])

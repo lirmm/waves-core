@@ -6,14 +6,17 @@ from __future__ import unicode_literals
 import os
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.core import urlresolvers
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models, transaction
+from django.db import models
+from django.db import transaction
 from django.db.models import Q
 
-from waves.settings import waves_settings as config
+import waves.adaptors.const
 from waves.models.adaptors import *
 from waves.models.base import *
-import waves.adaptors.const
+from waves.settings import waves_settings as config
 
 __all__ = ['ServiceRunParam', 'ServiceManager', 'Service']
 
@@ -257,3 +260,16 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
     @property
     def running_jobs(self):
         return self.jobs.filter(status__in=[waves.adaptors.const.JOB_CREATED, waves.adaptors.const.JOB_COMPLETED])
+
+    def get_admin_url(self):
+        from . import get_service_model
+        ServiceClass = get_service_model()
+        content_type = ContentType.objects.get_for_model(ServiceClass)
+        return urlresolvers.reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model),
+                                    args=(self.id,))
+
+    def get_change_list_url(self):
+        from . import get_service_model
+        ServiceClass = get_service_model()
+        content_type = ContentType.objects.get_for_model(ServiceClass)
+        return urlresolvers.reverse("admin:%s_%s_changelist" % (content_type.app_label, content_type.model))

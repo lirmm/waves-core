@@ -12,8 +12,10 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import override_settings, TestCase
 
-from waves.models import Service
+from waves.models import get_service_model
 from waves.tests.utils import get_sample_dir
+
+Service = get_service_model()
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +27,6 @@ logger = logging.getLogger(__name__)
     SAMPLE_DIR=str(os.path.join(dirname(settings.BASE_DIR), 'tests', 'data', 'sample'))
 )
 class WavesBaseTestCase(TestCase):
-
     service = None
 
     def _loadServiceJobsParams(self, api_name):
@@ -63,5 +64,3 @@ class WavesBaseTestCase(TestCase):
                 submitted_input.update({key: job_params['params'][key]})
             jobs_submitted_input.append(submitted_input)
         return jobs_submitted_input
-
-

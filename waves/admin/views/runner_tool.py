@@ -14,10 +14,10 @@ from json_view import JSONDetailView
 from waves.adaptors.exceptions import AdaptorConnectException
 from waves.exceptions import *
 from waves.admin.forms.services import ImportForm
-from waves.models import Runner
-from waves.models import Service, Submission
+from waves.models import Runner, Submission, get_service_model
 from waves.admin.views.export import ModelExportView
 
+Service = get_service_model()
 
 class RunnerImportToolView(FormView):
     """ Import a new service for a runner """
@@ -43,7 +43,8 @@ class RunnerImportToolView(FormView):
         return context
 
     def get_success_url(self):
-        return reverse('admin:waves_service_change', args=[self.service.id])
+        # return reverse('admin:waves_service_change', args=[self.service.id])
+        return self.service.get_admin_url()
 
     def get_tool_list(self):
         return [(x[0], [(y.remote_service_id, y.name + ' ' + y.version) for y in x[1]]) for x in
@@ -104,7 +105,8 @@ class RunnerImportToolView(FormView):
                             submission.submission_inputs.add(new_input)
                         self.service.save()
                     data = {
-                        'url_redirect': reverse('admin:waves_service_change', args=[self.service.id])
+                        # 'url_redirect': reverse('admin:waves_service_change', args=[self.service.id])
+                        'url_redirect': self.service.get_admin_url()
                     }
                     messages.add_message(request, level=messages.SUCCESS, message='Parameters successfully imported')
                     return JsonResponse(data, status=200)

@@ -63,7 +63,7 @@
                                         </div>
                                         <div class="panel-body text-right">
                                             <a class="btn btn-warning"
-                                               href="{% url 'admin:waves_service_change' service.id %}">Service</a>
+                                               href="{{ service.get_admin_url }}">Service</a>
                                             <a class="btn btn-warning"
                                                href="{% url 'admin:waves_job_changelist' %}?service__id__exact={{ service.id }}">Jobs</a>
                                         </div>

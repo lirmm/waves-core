@@ -3,15 +3,17 @@
 from __future__ import unicode_literals
 
 import logging
-from os.path import getsize, isfile
 from os import stat
+from os.path import getsize, isfile
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from waves.utils import normalize_value
 
 from waves.api.share import DynamicFieldsModelSerializer
-from waves.models import Service, JobHistory, JobInput, Job, JobOutput
+from waves.models import JobHistory, JobInput, Job, JobOutput, get_service_model
+
+Service = get_service_model()
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

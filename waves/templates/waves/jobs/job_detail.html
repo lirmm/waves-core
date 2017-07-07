@@ -90,9 +90,11 @@
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-body text-right">
-                            <a class="btn btn-primary" href="{% url 'waves:service_details' job.service.id %}">Back to
-                                service</a>
-                            {% online_exec_button service=job.service label="New job" %}
+                            {%  if job.submission %}
+                                <a class="btn btn-primary" href="{% url 'waves:service_details' job.submission.service.id %}">Back to
+                                    service</a>
+                                {% online_exec_button service=job.submission.service label="New job" %}
+                            {% endif %}
                         </div>
                     </div>
                     {% if user.is_staff %}
@@ -104,8 +106,7 @@
                             </div>
                             <div class="panel-body text-right">
                                 <a class="btn btn-warning" href="{% url 'admin:waves_job_change' job.id %}">Job</a>
-                                <a class="btn btn-warning"
-                                   href="{% url 'admin:waves_service_change' job.service.id %}">Service</a>
+                                <a class="btn btn-warning" href="{{ job.submission  }}">Service</a>
                             </div>
                         </div>
                     {% endif %}

@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import logging
+import json
 
 import waves.adaptors.const
 from waves.adaptors.exceptions import AdaptorJobStateException, AdaptorNotReady
@@ -243,4 +244,8 @@ class JobAdaptor(object):
     def importer(self):
         return None
 
-
+    def serialize(self):
+        return json.dumps({
+            "clazz": ".".join([self.__module__, self.__class__.__name__]),
+            "params": self.init_params
+        })

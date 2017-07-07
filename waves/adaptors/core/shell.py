@@ -7,7 +7,7 @@ from os.path import join
 
 import waves.adaptors.const
 from waves.adaptors.core.adaptor import JobAdaptor
-from waves.models.jobs import JobRunDetails
+from waves.adaptors.const import JobRunDetails
 from waves.adaptors.exceptions import *
 from waves.utils.encrypt import Encrypt
 

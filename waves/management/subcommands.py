@@ -175,9 +175,7 @@ class ImportCommand(BaseCommand):
                         new_serv = serializer.save()
                         self.stdout.write(' > new service : %s' % new_serv)
                         self.stdout.write(
-                            "... Done, you may edit service on: [your_waves_admin_host]%s " % reverse(
-                                'admin:waves_service_change',
-                                args=[new_serv.id]))
+                            "... Done, you may edit service on: [your_waves_admin_host]%s " % new_serv.get_admin_url())
                 except ValidationError as exc:
                     self.stderr.write('Data can not be import: %s' % exc.detail)
                 except AssertionError as exc:

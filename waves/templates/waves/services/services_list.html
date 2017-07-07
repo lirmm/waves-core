@@ -39,7 +39,7 @@
                             {% online_exec_button service=service %}
                             {% if user.is_staff %}
                                 <a class="btn btn-warning"
-                                   href="{% url 'admin:waves_service_change' service.id %}">Admin</a>
+                                   href="{{ service.get_admin_url }}">Admin</a>
                             {% endif %}
                         </div>
                         <hr/>
