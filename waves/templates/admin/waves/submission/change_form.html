@@ -1,8 +1,6 @@
 {% extends "admin/waves/change_form.html" %}
 {% load i18n admin_modify admin_urls admin_static waves_tags %}
 
-{% block breadcrumbs %}
-{% endblock %}
 {% block object-tools-items %}
     <li>
         <a type="button" href="{% url 'admin:waves_aparam_add' %}?for-submission={{ original.pk }}"
@@ -14,7 +12,7 @@
         </a>
     </li>
     <li>
-        <a type="button" href="{% url 'admin:waves_service_change' original.service.pk %}"
+        <a type="button" href="{{ original.service.get_admin_url  }}"
            target="_self"
            title="Service"
            class="btn btn-high btn-info"

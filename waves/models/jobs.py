@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
-from collections import namedtuple
 from os import path as path
 from os.path import join
 
@@ -20,23 +19,21 @@ from django.utils.html import format_html
 import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.exceptions
-from waves.settings import waves_settings as config
+from waves.adaptors.const import JobRunDetails
+from waves.adaptors.loader import AdaptorLoader
 from waves.exceptions.jobs import *
 from waves.mails import JobMailer
 from waves.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
 from waves.models.inputs import AParam
 from waves.models.submissions import Submission, SubmissionOutput
 from waves.settings import waves_settings
+from waves.settings import waves_settings as config
 from waves.utils import normalize_value
 from waves.utils.storage import allow_display_online
 
 logger = logging.getLogger(__name__)
 
 __all__ = ['Job', 'JobInput', 'JobOutput']
-
-JobRunDetails = namedtuple("JobRunDetails",
-                           ['id', 'slug', 'job_remote_id', 'name', 'exit_code', 'created', 'started',
-                            'finished', 'extra'])
 
 
 class JobManager(models.Manager):
@@ -143,6 +140,7 @@ class JobManager(models.Manager):
         client = user if user is not None and not user.is_anonymous() else None
         job = self.create(email_to=email_to, client=client, title=job_title,
                           submission=submission, service=submission.service.name,
+                          _adaptor=submission.adaptor.serialize(),
                           notify=submission.service.email_on)
         job.create_non_editable_inputs(submission)
         mandatory_params = submission.expected_inputs.filter(required=True)
@@ -182,6 +180,7 @@ class JobManager(models.Manager):
             logger.debug('Expected outputs will be:')
             for j_output in job.outputs.all():
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
+        job._command_line = job.command_line
         return job
 
 
@@ -200,8 +199,6 @@ class Job(TimeStamped, Slugged, UrlMixin):
     #: Job run details retrieved or not
     _run_details = None
 
-
-    _adaptor = None
     class Meta(TimeStamped.Meta):
         db_table = 'waves_job'
         verbose_name = 'Job'
@@ -213,7 +210,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
     #: Job related Service
     submission = models.ForeignKey(Submission, related_name='service_jobs', null=True, on_delete=models.SET_NULL)
     #: Job last known status
-    _status = models.IntegerField('Job status', choices=waves.adaptors.const.STATUS_LIST, default=waves.adaptors.const.JOB_CREATED)
+    _status = models.IntegerField('Job status', choices=waves.adaptors.const.STATUS_LIST,
+                                  default=waves.adaptors.const.JOB_CREATED)
     #: Job last status for which we sent a notification email
     status_mail = models.IntegerField(editable=False, default=9999)
     #: Job associated client, may be null for anonymous submission
@@ -233,6 +231,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     remote_history_id = models.CharField('Remote history ID', max_length=255, editable=False, null=True)
     #: Final generated command line
     _command_line = models.CharField('Final generated command line', max_length=255, editable=False, null=True)
+    _adaptor = models.TextField('Adaptor classed used for this Job', editable=False, null=True)
     service = models.CharField('Issued from service', max_length=255, editable=False, null=True, default="")
     notify = models.BooleanField("Notify this result", default=False, editable=False)
 
@@ -257,6 +256,12 @@ class Job(TimeStamped, Slugged, UrlMixin):
                            self.label_class,
                            self.get_status_display())
 
+    def job_service_back_url(self):
+        if self.submission:
+            return self.submission.service.get_admin_url()
+        else:
+            return "#"
+
     def save(self, *args, **kwargs):
         """ Overriden save, set _status to current job status """
         if self.submission:
@@ -269,9 +274,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
         if not self.title:
             self.title = '%s' % self.slug
-
         super(Job, self).save(*args, **kwargs)
-
         self._status = self.status
 
     def make_job_dirs(self):
@@ -365,15 +368,21 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: `waves.adaptors.runner.JobRunnerAdaptor`
         """
         if self._adaptor:
-            return self._adaptor
+            try:
+                adaptor = AdaptorLoader.unserialize(self._adaptor)
+            except Exception as e:
+                logger.exception("Unable to load adaptor %s", e.message)
+                return None
+            return adaptor
         elif self.submission:
             return self.submission.adaptor
         else:
-            raise JobException('Missing adaptor to execute job')
+            return None
 
     @adaptor.setter
     def adaptor(self, value):
-        self._adaptor = value
+        self._adaptor = value.serialize()
+        self.save(update_fields=["_adaptor"])
 
     def __str__(self):
         return '[%s][%s]' % (self.slug, self.service)
@@ -400,6 +409,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @command_line.setter
     def command_line(self, command_line):
         self._command_line = command_line
+        self.save(update_fields=['_command_line'])
 
     @property
     def label_class(self):
@@ -717,7 +727,7 @@ class JobInputManager(models.Manager):
                           param_type=service_input.param_type,
                           api_name=service_input.api_name,
                           command_type=service_input.cmd_format if hasattr(service_input,
-                                                                         'cmd_format') else service_input.param_type,
+                                                                           'cmd_format') else service_input.param_type,
                           label=service_input.label,
                           value=str(submitted_input))
         try:
@@ -1006,6 +1016,3 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     @property
     def available(self):
         return os.path.isfile(self.file_path) and os.path.getsize(self.file_path) > 0
-
-
-

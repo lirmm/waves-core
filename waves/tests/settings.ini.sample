@@ -8,3 +8,6 @@ WAVES_TEST_SSH_BASE_DIR: 'REMOTE BASE DIR'
 WAVES_LOCAL_TEST_SGE_CELL: your local queue
 WAVES_SSH_TEST_SGE_CELL: your remote queue
 WAVES_SSH_TEST_SGE_BASE_DIR: /shared/nfs/remote/dir
+
+[ssh_key_cluster]
+WAVES_SSH_KEY_USER_ID:

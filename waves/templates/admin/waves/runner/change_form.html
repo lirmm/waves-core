@@ -12,10 +12,6 @@
     {{ block.super }}
 {% endblock %}
 {% block object-tools-items %}
-    <li>
-        <a href="{% url 'admin:waves_service_changelist' %}?runner__id__exact={{ original.pk }}"
-           class="link">{% trans "Associated Services" %}</a>
-    </li>
     {{ block.super }}
     <li>
         <a type="button" href="{% url 'waves:runner_export_form' original.pk %}"
