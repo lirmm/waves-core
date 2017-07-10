@@ -44,7 +44,6 @@ class FileInputSample(models.Model):
         return ""
 
 
-
 class SampleDepParam(models.Model):
     """ When a file sample is selected, some params may be set accordingly. This class represent this behaviour"""
 

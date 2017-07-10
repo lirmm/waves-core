@@ -137,7 +137,6 @@ STATICFILES_FINDERS = (
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = "/media/"
 
-CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 LOGGING_CONFIG = None
@@ -172,7 +171,7 @@ LOGGING = {
     'root': {
         'handlers': ['console'],
         'propagate': True,
-        'level': 'DEBUG',
+        'level': 'WARNING',
     },
     'loggers': {
         'django': {

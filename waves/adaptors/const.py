@@ -2,15 +2,53 @@ from collections import namedtuple
 
 from django.utils.translation import ugettext as _
 
+__all__ = [
+    'JOB_UNDEFINED',
+    'JOB_CREATED',
+    'JOB_PREPARED',
+    'JOB_QUEUED',
+    'JOB_RUNNING',
+    'JOB_SUSPENDED',
+    'JOB_COMPLETED',
+    'JOB_TERMINATED',
+    'JOB_CANCELLED',
+    'JOB_ERROR',
+
+    'STR_JOB_UNDEFINED',
+    'STR_JOB_CREATED',
+    'STR_JOB_PREPARED',
+    'STR_JOB_QUEUED',
+    'STR_JOB_RUNNING',
+    'STR_JOB_COMPLETED',
+    'STR_JOB_TERMINATED',
+    'STR_JOB_CANCELLED',
+    'STR_JOB_SUSPENDED',
+    'STR_JOB_ERROR',
+    'STATUS_LIST',
+    'NEXT_STATUS',
+    'PENDING_STATUS',
+    'STATUS_MAP'
+]
+
+#: Undefined status, can be considered as an error status
 JOB_UNDEFINED = -1
+#: Job has just been created
 JOB_CREATED = 0
+#: Job is prepared for run
 JOB_PREPARED = 1
+#: Job is queued on runner adaptor
 JOB_QUEUED = 2
+#: Job is running
 JOB_RUNNING = 3
+#: Job has been suspended
 JOB_SUSPENDED = 4
+#: Job is completed remotly
 JOB_COMPLETED = 5
+#: Job's data has been retrieved on WAVES platform
 JOB_TERMINATED = 6
+#: Job has been cancelled
 JOB_CANCELLED = 7
+#: Job is in error
 JOB_ERROR = 9
 
 STR_JOB_UNDEFINED = _('Undefined')

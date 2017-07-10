@@ -21,7 +21,7 @@ Features
 Installation
 ------------
 
-- WAVES web app comply to standard reusable project layout for Django. You can use it as a stand alone platform.
+- WAVES core comply to standard reusable project layout for Django. But You can use it as a stand alone platform.
 - Simply clone or download sources, follow the few configurations steps, and her you are, you can put your tools online !
 - See "Details Installation" for more info.
 
