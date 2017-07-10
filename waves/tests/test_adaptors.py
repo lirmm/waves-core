@@ -25,9 +25,10 @@ def skip_unless_sge():
     return lambda f: f
 
 
-class RunnerTestCase(TestCase):
+class RunnerTestCase(TestCase, TestJobWorkflowMixin):
     tests_dir = dirname(__file__)
     loader = AdaptorLoader
+
 
     adaptors = [
         LocalShellAdaptor(command='cp'),
@@ -112,7 +113,7 @@ class RunnerTestCase(TestCase):
         logger.info('job command line %s ', job.command_line)
         copied_file = join(job.working_dir, 'dest_copy.txt')
         source_file = join(job.working_dir, 'test_copy.txt')
-        run_job_workflow(job)
+        self.run_job_workflow(job)
         with open(source_file) as source, open(copied_file) as copy:
             self.assertEqual(source.read(), copy.read())
         self.assertTrue(job.results_available)
@@ -127,7 +128,7 @@ class RunnerTestCase(TestCase):
                     job = create_cp_job(source_file=sample_file)
                     adaptor.command = 'cp'
                     job.adaptor = adaptor
-                    run_job_workflow(job)
+                    self.run_job_workflow(job)
                     copied_file = join(job.working_dir, 'dest_copy.txt')
                     source_file = join(job.working_dir, 'test_copy.txt')
                     with open(source_file) as source, open(copied_file) as copy:

@@ -1,11 +1,9 @@
 from __future__ import unicode_literals
 
 import logging
-import random
 import shutil
+
 import time
-import uuid
-from os import makedirs
 from os.path import join, dirname, realpath, isfile, basename
 
 from django.contrib.contenttypes.models import ContentType
@@ -52,49 +50,53 @@ def create_cp_job(source_file):
     return job
 
 
-def run_job_workflow(job):
-    """ Run a full complete job workflow, you should call this method catching "AssertionError" to get
-    error messages in your tests
-    """
-    logger.info('Starting workflow process for job %s', job)
-    assert (job.job_history.count() == 1), "Wrong job history count %s (expected 1)" % job.job_history.count()
-    job.run_prepare()
-    time.sleep(3)
-    assert (job.status == waves.adaptors.const.JOB_PREPARED), \
-        "Wrong job status %s (expected %s) " % (job.status, waves.adaptors.const.JOB_PREPARED)
-    job.run_launch()
-    time.sleep(3)
-    logger.debug('Remote Job ID %s', job.remote_job_id)
-    assert (job.status == waves.adaptors.const.JOB_QUEUED), \
-        "Wrong job status %s (expected %s) " % (job.status, waves.adaptors.const.JOB_QUEUED)
-    for ix in range(100):
-        job_state = job.run_status()
-        logger.info(u'Current job state (%i) : %s ', ix, job.get_status_display())
-        if job_state >= waves.adaptors.const.JOB_COMPLETED:
-            logger.info('Job state ended to %s ', job.get_status_display())
-            break
+class TestJobWorkflowMixin(object):
+    def run_job_workflow(self, job):
+        """ Run a full complete job workflow, you should call this method catching "AssertionError" to get
+        error messages in your tests
+        """
+        logger.info('Starting workflow process for job %s', job)
+        self.assertTrue(job.job_history.count() == 1,
+                        "Wrong job history count %s (expected 1)" % job.job_history.count())
+        job.run_prepare()
         time.sleep(3)
-    if job.status in (waves.adaptors.const.JOB_COMPLETED, waves.adaptors.const.JOB_TERMINATED):
-        # Get job run details
-        job.run_details()
+        self.assertTrue(job.status == waves.adaptors.const.JOB_PREPARED,
+                        "Wrong job status %s (expected %s) " % (job.status, waves.adaptors.const.JOB_PREPARED))
+        job.run_launch()
         time.sleep(3)
-        history = job.job_history.first()
-        logger.debug("History timestamp %s", localtime(history.timestamp))
-        logger.debug("Job status timestamp %s", job.status_time)
-        assert job.results_available, "Job results are not available"
-        for output_job in job.outputs.all():
-            # TODO reactivate job output verification as soon as possible
-            if not isfile(output_job.file_path):
-                logger.warning("Job <<%s>> did not output expected %s (test_data/jobs/%s/) ",
-                               job.title, output_job.value, job.slug)
+        logger.debug('Remote Job ID %s', job.remote_job_id)
+        self.assertTrue(job.status == waves.adaptors.const.JOB_QUEUED,
+                        "Wrong job status %s (expected %s) " % (job.status, waves.adaptors.const.JOB_QUEUED))
+        for ix in range(100):
+            job_state = job.run_status()
+            logger.info(u'Current job state (%i) : %s ', ix, job.get_status_display())
+            if job_state >= waves.adaptors.const.JOB_COMPLETED:
+                logger.info('Job state ended to %s ', job.get_status_display())
+                if job_state == waves.adaptors.const.JOB_ERROR:
+                    self.fails('Job should not be in error')
+                break
+            time.sleep(3)
+        if job.status in (waves.adaptors.const.JOB_COMPLETED, waves.adaptors.const.JOB_TERMINATED):
+            # Get job run details
+            job.run_details()
+            time.sleep(3)
+            history = job.job_history.first()
+            logger.debug("History timestamp %s", localtime(history.timestamp))
+            logger.debug("Job status timestamp %s", job.status_time)
+            self.assertTrue(job.results_available, "Job results are not available")
+            for output_job in job.outputs.all():
+                # TODO reactivate job output verification as soon as possible
+                if not isfile(output_job.file_path):
+                    logger.warning("Job <<%s>> did not output expected %s (test_data/jobs/%s/) ",
+                                   job.title, output_job.value, job.slug)
 
-            assert (isfile(output_job.file_path)), "Job outut file does not exists %s" % output_job.file_path
-            logger.info("Expected output file: %s ", output_job.file_path)
-        assert (job.status >= waves.adaptors.const.JOB_COMPLETED)
-    else:
-        logger.warn('problem with job status %s', job.get_status_display())
-        return False
-    return True
+                logger.info("Expected output file: %s ", output_job.file_path)
+                self.assertTrue(isfile(output_job.file_path), "Job outut file does not exists %s" % output_job.file_path)
+            self.assertTrue(job.status == waves.adaptors.const.JOB_TERMINATED)
+        else:
+            logger.warn('problem with job status %s', job.get_status_display())
+            return False
+        return True
 
 
 def create_test_file(path, index):

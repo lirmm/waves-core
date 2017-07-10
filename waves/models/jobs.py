@@ -192,8 +192,6 @@ class Job(TimeStamped, Slugged, UrlMixin):
     # non persistent field, used for history savings see signals
     #: Current message associated with job object, not directly stored in job table, but in history
     message = None
-    #: Job status issued from last retrieve on DB
-    _status = None
     #: Job status time (for history)
     status_time = None
     #: Job run details retrieved or not
@@ -209,7 +207,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     title = models.CharField('Job title', max_length=255, null=True, blank=True)
     #: Job related Service
     submission = models.ForeignKey(Submission, related_name='service_jobs', null=True, on_delete=models.SET_NULL)
-    #: Job last known status
+    #: Job status issued from last retrieve on DB
     _status = models.IntegerField('Job status', choices=waves.adaptors.const.STATUS_LIST,
                                   default=waves.adaptors.const.JOB_CREATED)
     #: Job last status for which we sent a notification email

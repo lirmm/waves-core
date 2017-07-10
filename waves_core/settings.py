@@ -181,12 +181,7 @@ LOGGING = {
         },
         'waves': {
             'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'waves.management': {
-            'handlers': ['waves_daemon'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': False,
         },
     }
