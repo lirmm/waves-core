@@ -1,7 +1,7 @@
 ReadME
 ======
 
-.. note:: What WAVES stands for ?
+    .. note:: What WAVES stands for ?
 
     WAVES stands for "Web Application for Versatile and Easy online bioinformatic Services."
 

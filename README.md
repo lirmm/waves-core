@@ -31,6 +31,8 @@ Project Home Page
 Project home page:
 https://github.com/lirmm/waves-core
 
+Documentation:
+http://waves-core.readthedocs.io/en/latest/
 
 License
 -------
