@@ -20,14 +20,12 @@ import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.exceptions
 from waves.adaptors.const import JobRunDetails
-from waves.adaptors.loader import AdaptorLoader
 from waves.exceptions.jobs import *
 from waves.mails import JobMailer
 from waves.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
 from waves.models.inputs import AParam
 from waves.models.submissions import Submission, SubmissionOutput
 from waves.settings import waves_settings
-from waves.settings import waves_settings as config
 from waves.utils import normalize_value
 from waves.utils.storage import allow_display_online
 
@@ -269,11 +267,9 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 self.notify = self.submission.service.email_on
             if not self.title:
                 self.title = "%s %s" % (self.service, self.slug)
-
         if not self.title:
             self.title = '%s' % self.slug
         super(Job, self).save(*args, **kwargs)
-        self._status = self.status
 
     def make_job_dirs(self):
         """
@@ -366,11 +362,11 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: `waves.adaptors.runner.JobRunnerAdaptor`
         """
         if self._adaptor:
+            from waves.adaptors.loader import AdaptorLoader
             try:
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
             except Exception as e:
                 logger.exception("Unable to load adaptor %s", e.message)
-                return None
             return adaptor
         elif self.submission:
             return self.submission.adaptor
@@ -432,7 +428,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         mailer = JobMailer()
         if self.status != self.status_mail and self.status == waves.adaptors.const.JOB_ERROR:
             mailer.send_job_admin_error(self)
-        if config.NOTIFY_RESULTS and self.notify:
+        if waves_settings.NOTIFY_RESULTS and self.notify:
             if self.email_to is not None and self.status != self.status_mail:
                 # should send a email
                 try:
@@ -535,7 +531,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     def retry(self, message):
         """ Add a new try for job execution, save retry reason in JobAdminHistory, save job """
-        if self.nb_retry <= config.JOBS_MAX_RETRY:
+        if self.nb_retry <= waves_settings.JOBS_MAX_RETRY:
             self.nb_retry += 1
             self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status)
         else:
@@ -543,11 +539,12 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     def error(self, message):
         """ Set job Status to ERROR, save error reason in JobAdminHistory, save job"""
+        logger.error('Job error: %s', message)
         self.message = '[Error]%s' % message
         self.status = waves.adaptors.const.JOB_ERROR
 
     def fatal_error(self, exception):
-        logger.exception(exception)
+        logger.exception('Job fatal error: %s', exception)
         self.error(exception.message)
 
     def get_status_display(self):
@@ -578,12 +575,18 @@ class Job(TimeStamped, Slugged, UrlMixin):
             self.nb_retry = 0
             return returned
         except waves.adaptors.exceptions.AdaptorException as exc:
+            logger.debug('Retry execution - non fatal error')
             self.retry(exc.message)
         except WavesException as exc:
+            logger.debug("Abort execution - Waves Exception")
             self.error(exc.message)
-        except BaseException as e:
-            self.fatal_error(e)
+            raise exc
+        except BaseException as exc:
+            logger.debug("Abort execution - Fatal unexpected error")
+            self.fatal_error(exc)
+            raise exc
         finally:
+            logger.debug("Always save job in DB")
             self.save()
 
     @property
@@ -610,7 +613,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         logger.debug('job current state :%s', self.status)
         if self.status == waves.adaptors.const.JOB_COMPLETED:
             self.run_results()
-        if self.status == waves.adaptors.const.JOB_UNDEFINED and self.nb_retry > config.JOBS_MAX_RETRY:
+        if self.status == waves.adaptors.const.JOB_UNDEFINED and self.nb_retry > waves_settings.JOBS_MAX_RETRY:
             self.run_cancel()
         self.save()
         return self.status

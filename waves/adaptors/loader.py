@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import json
 
 from waves.settings import waves_settings, import_from_string
+from waves.adaptors.exceptions import AdaptorNotAvailableException
 
 __all__ = ['AdaptorLoader']
 
@@ -18,7 +19,10 @@ class AdaptorLoader(object):
     def load(cls, clazz, **params):
         if params is None:
             params = {}
-        return next((x(**params) for x in cls.adaptors_classes if x == clazz), None)
+        loaded = next((x(**params) for x in cls.adaptors_classes if x == clazz), None)
+        if loaded is None:
+            raise AdaptorNotAvailableException("This adaptor class %s is not available " % clazz)
+        return loaded
 
     @classmethod
     def serialize(cls, adaptor):

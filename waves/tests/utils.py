@@ -73,7 +73,7 @@ class TestJobWorkflowMixin(object):
             if job_state >= waves.adaptors.const.JOB_COMPLETED:
                 logger.info('Job state ended to %s ', job.get_status_display())
                 if job_state == waves.adaptors.const.JOB_ERROR:
-                    self.fails('Job should not be in error')
+                    self.fail('Job is in error')
                 break
             time.sleep(3)
         if job.status in (waves.adaptors.const.JOB_COMPLETED, waves.adaptors.const.JOB_TERMINATED):

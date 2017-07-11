@@ -5,6 +5,7 @@ from waves.adaptors.core.adaptor import JobAdaptor
 
 class PublicApiAdaptor(JobAdaptor):
     """ Base Class for remote public API calls"""
+
     def __init__(self, command=None, protocol='http', host="localhost", port='', api_base_path='', api_endpoint='',
                  **kwargs):
         super(PublicApiAdaptor, self).__init__(command, protocol, host, **kwargs)
@@ -49,6 +50,6 @@ class ApiKeyAdaptor(PublicApiAdaptor):
 
     @property
     def init_params(self):
-        base = super(PublicApiAdaptor, self).init_params
+        base = super(ApiKeyAdaptor, self).init_params
         base.update(dict(app_key=self.app_key))
         return base

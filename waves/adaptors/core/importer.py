@@ -63,9 +63,9 @@ class AdaptorImporter(object):
                 return None
             # TODO manage exit codes
             logger_import = logging.getLogger('import_tool_logger')
-            logger_import.setLevel(logging.INFO)
+            # logger_import.setLevel(logging.INFO)
             logger_import.info('------------------------------------')
-            logger_import.info(self._service.info())
+            logger_import.info(self._service)
             logger_import.info('------------------------------------')
             if self.warnings or self.errors:
                 logger_import.warn('*** // WARNINGS // ***')
@@ -79,12 +79,15 @@ class AdaptorImporter(object):
             logger_import.info('-- Inputs --')
             logger_import.info('------------')
             for service_input in self._service.inputs:
-                logger_import.info(service_input.info())
+                logger_import.info("Name:%s;default:%s;required:%s", service_input, service_input.type,
+                                   service_input.get_required_display())
+                logger_import.debug("Full input:")
+                [logger_import.debug('%s:%s', item, value) for (item, value) in vars(service_input).iteritems()]
             logger_import.info('-------------')
             logger_import.info('-- Outputs --')
             logger_import.info('-------------')
             for service_output in self._service.outputs:
-                logger_import.info(service_output.info())
+                logger_import.info(service_output)
             logger_import.info('------------------------------------')
             return self._service
         except ImporterException as e:

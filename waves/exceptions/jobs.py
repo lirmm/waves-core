@@ -1,5 +1,9 @@
+from __future__ import unicode_literals
+
 from waves.exceptions import WavesException
 
+__all__ = ['JobException', 'JobRunException', 'JobSubmissionException', 'JobCreateException',
+           'JobMissingMandatoryParam', 'JobInconsistentStateError', 'JobPrepareException']
 
 class JobException(WavesException):
     """ Base Exception class for all job related errors  """
