@@ -5,7 +5,7 @@ Managers
 
 Service Manager
 ---------------
-.. autoclass:: waves.models.services.ServiceManager
+.. autoclass:: waves.core.models.services.ServiceManager
     :members:
     :undoc-members:
 
@@ -13,6 +13,6 @@ Service Manager
 
 Job Manager
 -----------
-.. autoclass:: waves.models.jobs.JobManager
+.. autoclass:: waves.core.models.jobs.JobManager
     :members:
     :undoc-members:

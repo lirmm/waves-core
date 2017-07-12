@@ -44,46 +44,16 @@ GET a WAVES web-app online following the next few steps, WAVES can run on Apache
 
     1.3. Include the services urls in your project urls.py::
 
-            url(r'^waves/', include('waves.urls', namespace='waves')),
+            url(r'^waves/', include('waves.core.urls', namespace='waves')),
 
             Alternativly you can use only parts waves urls configuration you need:
 
-                url(r'^admin/waves/', include('waves.urls.waves_admin_url', namespace='waves')),
-                url(r'^my-api/', include('waves.urls.waves_api_url', namespace='waves')),
-                url(r'^waves/', include('waves.urls.front_url', namespace='waves'))
+                url(r'^admin/waves/', include('waves.core.urls.waves_admin_url', namespace='waves')),
+                url(r'^my-api/', include('waves.core.urls.waves_api_url', namespace='waves')),
+                url(r'^waves/', include('waves.core.urls.front_url', namespace='waves'))
 
     1.4. Run ``python manage.py makemigrations`` to update database models.
 
     1.5. Run ``python manage.py migrate`` to import sample data if you wish
 
     1.6. Run ``python manage.py check`` to check installation
-
-
-2. Configure your web server:
------------------------------
-
-    2.1 UWSGI:
-        - Sample file is located under src/waves/config/waves_uwsgi.ini.sample
-        - Rename/Edit according to your settings
-        - more information `<http://uwsgi-docs.readthedocs.io/>`_
-
-        .. seealso::
-            Init script is available in src/waves/config/uwsgi.conf in order to automatically start WAVES on server
-            start-up
-
-
-    2.1 APACHE:
-        - Sample file is located under src/waves/config/waves.apache.conf.sample
-        - Rename/Edit according to your settings
-        - Add it to Apache enabled conf
-
-        .. seealso:: `<http://uwsgi-docs.readthedocs.io/en/latest/Apache.html>`_
-
-    2.2 NGINX:
-        - Sample file is located under src/waves/config/waves.nginx.conf.sample
-        - Rename/Edit according to your settings
-        - Add it to nginx enabled conf
-
-        .. seealso:: `<http://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html>`_
-
-
