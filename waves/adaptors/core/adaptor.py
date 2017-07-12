@@ -5,8 +5,9 @@ import logging
 import json
 
 import waves.adaptors.const
-from waves.adaptors.exceptions import AdaptorJobStateException, AdaptorNotReady
+from waves.adaptors.exceptions import AdaptorJobStateException
 from waves.utils.exception_logging_decorator import exception
+from waves.adaptors.utils import check_ready
 
 logger = logging.getLogger(__name__)
 
@@ -64,11 +65,6 @@ class JobAdaptor(object):
         :raise: :class:`waves.adaptors.exceptions.adaptors.AdaptorConnectException`
         :return: connector reference or raise an
         """
-        if not all([value is not None for init_param, value in self.init_params.items()]):
-            # search missing values
-            raise AdaptorNotReady(
-                "Missing required parameter(s) for initialization: %s " % [init_param for init_param, value in
-                                                                           self.init_params.items() if value is None])
         if not self.connected:
             self._connect()
         return self.connector
@@ -85,6 +81,7 @@ class JobAdaptor(object):
         self._connected = False
 
     @exception(logger)
+    @check_ready
     def prepare_job(self, job):
         """ Job execution preparation process, may store prepared data in a pickled object
         :param job: The job to prepare execution for
@@ -102,6 +99,7 @@ class JobAdaptor(object):
         return job
 
     @exception(logger)
+    @check_ready
     def run_job(self, job):
         """ Launch a previously 'prepared' job on the remote adaptor class
         :param job: The job to launch execution
@@ -119,6 +117,7 @@ class JobAdaptor(object):
         return job
 
     @exception(logger)
+    @check_ready
     def cancel_job(self, job):
         """ Cancel a running job on adaptor class, if possible
         :param job: The job to cancel
@@ -137,19 +136,20 @@ class JobAdaptor(object):
         return job
 
     @exception(logger)
+    @check_ready
     def job_status(self, job):
         """ Return current WAVES Job status
         :param job: current job
         :return: one of `waves.adaptors.STATUS_MAP`
         """
         self.connect()
-        status = self._states_map[self._job_status(job)]
+        job.status = self._states_map[self._job_status(job)]
         logger.debug('Current remote state %s mapped to %s', self._job_status(job),
-                     waves.adaptors.const.STATUS_MAP.get(status, 'Undefined'))
-        job.status = status
+                     waves.adaptors.const.STATUS_MAP.get(job.status, 'Undefined'))
         return job
 
     @exception(logger)
+    @check_ready
     def job_results(self, job):
         """ If job is done, return results
         :param job: current Job
@@ -231,7 +231,7 @@ class JobAdaptor(object):
     def _dump_config(self):
         """ Return string representation of concrete adaptor configuration
         :return: a String representing configuration """
-        return ""
+        return str([(item, value) for (item, value) in vars(self).iteritems()])
 
     def test_connection(self):
         self.connect()

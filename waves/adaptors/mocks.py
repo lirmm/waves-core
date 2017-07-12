@@ -11,7 +11,6 @@ import waves.adaptors.const
 import waves.adaptors.core
 import waves.adaptors.utils
 from waves.adaptors.core.adaptor import JobAdaptor
-from waves.adaptors.const import JobRunDetails
 
 
 class MockConnector(object):

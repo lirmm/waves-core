@@ -102,7 +102,7 @@ class RunnerImportToolView(FormView):
                             new_input = Submission.objects.create(submission=submission)
                             new_input.from_dto(inp)
                             new_input.save()
-                            submission.submission_inputs.add(new_input)
+                            submission.inputs.add(new_input)
                         self.service.save()
                     data = {
                         # 'url_redirect': reverse('admin:waves_service_change', args=[self.service.id])

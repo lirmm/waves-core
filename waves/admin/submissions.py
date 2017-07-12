@@ -25,7 +25,7 @@ class SubmissionOutputInline(CompactInline):
     sortable_field_name = "order"
     sortable_options = []
     fk_name = 'submission'
-    fields = ['label', 'api_name', 'file_pattern', 'from_input', 'help_text', 'edam_format', 'edam_data']
+    fields = ['label', 'file_pattern', 'api_name', 'extension', 'edam_format', 'edam_data', 'from_input', 'help_text']
     verbose_name_plural = "Outputs"
     classes = ('grp-collapse', 'grp-closed', 'collapse')
 

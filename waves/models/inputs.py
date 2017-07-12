@@ -79,7 +79,7 @@ class AParam(PolymorphicModel, ApiModel):
                             help_text='Input runner\'s job param command line name')
     multiple = models.BooleanField('Multiple', default=False, help_text="Can hold multiple values")
     help_text = models.TextField('Help Text', null=True, blank=True)
-    submission = models.ForeignKey('Submission', on_delete=models.CASCADE, null=False, related_name='submission_inputs')
+    submission = models.ForeignKey('Submission', on_delete=models.CASCADE, null=False, related_name='inputs')
     required = models.NullBooleanField('Required', choices={(False, "Optional"), (True, "Required"),
                                                             (None, "Not submitted")},
                                        default=True, help_text="Submitted and/or Required")

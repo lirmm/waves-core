@@ -59,7 +59,7 @@ class WavesBaseTestCase(TestCase):
                 with open(os.path.join(get_sample_dir(), self.service.api_name,
                                        job_params['inputs'][key])) as f:
                     submitted_input.update({key: f.read()})
-                    # self.service.default_submission.submission_inputs.add(SubmissionParam.objects.create(ser))
+                    # self.service.default_submission.inputs.add(SubmissionParam.objects.create(ser))
             for key in job_params['params']:
                 submitted_input.update({key: job_params['params'][key]})
             jobs_submitted_input.append(submitted_input)

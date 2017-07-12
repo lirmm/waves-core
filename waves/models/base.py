@@ -81,7 +81,8 @@ class ApiModel(models.Model):
 
     field_api_name = 'name'
     #: A char field, must be unique for a model instance
-    api_name = models.CharField(max_length=100, null=True, blank=True, help_text='Api short code, must be unique')
+    api_name = models.CharField(max_length=100, null=True, blank=True,
+                                help_text='Api short code, must be unique, leave blank for automatic setup')
 
     def duplicate_api_name(self):
         """ Check is another entity is set with same api_name """

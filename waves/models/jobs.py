@@ -21,6 +21,8 @@ import waves.adaptors.core
 import waves.adaptors.exceptions
 from waves.adaptors.const import JobRunDetails
 from waves.exceptions.jobs import *
+from waves.exceptions import WavesException
+
 from waves.mails import JobMailer
 from waves.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
 from waves.models.inputs import AParam
@@ -147,7 +149,7 @@ class JobManager(models.Manager):
         if len(missing) > 0:
             raise ValidationError(missing)
         # First create inputs
-        submission_inputs = submission.submission_inputs.filter(name__in=submitted_inputs.keys()).exclude(required=None)
+        submission_inputs = submission.inputs.filter(name__in=submitted_inputs.keys()).exclude(required=None)
         for service_input in submission_inputs:
             # Treat only non dependent inputs first
             incoming_input = submitted_inputs.get(service_input.name, None)
@@ -496,7 +498,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :param service_submission:
         :return: None
         """
-        for service_input in service_submission.submission_inputs.filter(required=None):
+        for service_input in service_submission.inputs.filter(required=None):
             # Create fake "submitted_inputs" with non editable ones with default value if not already set
             logger.debug('Created non editable job input: %s (%s, %s)', service_input.label,
                          service_input.name, service_input.default)
@@ -511,7 +513,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """ Create standard default outputs for job (stdout and stderr)
         :return: None
         """
-        output_dict = dict(job=self, value=self.stdout, _name='Standard output', type=".txt")
+        output_dict = dict(job=self, value=self.stdout, _name='Standard output', extension=".txt")
         out = JobOutput.objects.create(**output_dict)
         self.outputs.add(out)
         open(join(self.working_dir, self.stdout), 'a').close()
@@ -630,8 +632,9 @@ class Job(TimeStamped, Slugged, UrlMixin):
         self.run_details()
         logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
                      os.stat(join(self.working_dir, self.stderr)).st_size)
-        if self.exit_code != 0 or os.stat(join(self.working_dir, self.stderr)).st_size > 0:
-            logger.error('Error found %s %s ', self.exit_code, self.stderr_txt.decode('ascii', errors="replace"))
+        if self.exit_code != 0:
+            if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
+                logger.error('Error found %s %s ', self.exit_code, self.stderr_txt.decode('ascii', errors="replace"))
             self.message = "Error detected in job.stderr"
             self.status = waves.adaptors.const.JOB_ERROR
         else:
@@ -835,7 +838,7 @@ class JobInput(Ordered, Slugged, ApiModel):
 
     @property
     def srv_input(self):
-        return self.job.submission.submission_inputs.filter(name=self.name).first()
+        return self.job.submission.inputs.filter(name=self.name).first()
 
     def clean(self):
         if self.srv_input.mandatory and not self.srv_input.default and not self.value:
@@ -920,7 +923,7 @@ class JobOutputManager(models.Manager):
     @transaction.atomic
     def create_from_submission(self, job, submission_output, submitted_inputs):
         assert (isinstance(submission_output, SubmissionOutput))
-        output_dict = dict(job=job, _name=submission_output.label, type=submission_output.ext,
+        output_dict = dict(job=job, _name=submission_output.label, extension=submission_output.ext,
                            api_name=submission_output.api_name)
         if submission_output.from_input:
             # issued from a input value
@@ -956,7 +959,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     #: Each output may have its own identifier on remote adaptor
     remote_output_id = models.CharField('Remote output ID (on adaptor)', max_length=255, editable=False, null=True)
     _name = models.CharField('Name', max_length=200, null=False, blank=False, help_text='Output displayed name')
-    type = models.CharField('File extension', max_length=5, null=False, default=".txt")
+    extension = models.CharField('File extension', max_length=5, null=False, default="")
 
     @property
     def name(self):
@@ -986,11 +989,18 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     @property
     def file_name(self):
-        return self.value
+        base = self.value + self.extension
+        if '.' not in base:
+            return '.'.join([self.value, self.extension])
+        return base
 
     @property
     def file_path(self):
-        return os.path.join(self.job.working_dir, self.value)
+        if self.value == self.job.stdout:
+            return os.path.join(self.job.working_dir, self.job.stdout)
+        elif self.value == self.job.stderr:
+            return os.path.join(self.job.working_dir, self.job.stdout)
+        return os.path.join(self.job.working_dir, self.file_name)
 
     @property
     def file_content(self):

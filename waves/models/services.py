@@ -175,8 +175,8 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
         :rtype: QuerySet
         """
         if not submission:
-            return self.default_submission.submission_inputs
-        return submission.submission_inputs
+            return self.default_submission.inputs
+        return submission.inputs
 
     @transaction.atomic
     def duplicate(self):

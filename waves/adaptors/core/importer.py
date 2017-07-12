@@ -1,7 +1,10 @@
 import logging
 import warnings
 
+from django.contrib.contenttypes.models import ContentType
 from waves.adaptors.exceptions import *
+from waves.models.runners import Runner
+from waves.models.adaptors import AdaptorInitParam
 from waves.utils.exception_logging_decorator import exception
 
 logger = logging.getLogger(__name__)
@@ -22,12 +25,13 @@ class AdaptorImporter(object):
     _warnings = []
     _errors = []
 
-    def __init__(self, adaptor, formatter=None):
+    def __init__(self, adaptor, formatter=None, runner=None):
         """
         Initialize a Import from it's source adaptor
         :param adaptor: a JobAdaptor object, providing connection support
         """
         self._formatter = InputFormat() if formatter is None else formatter
+        self._runner = runner
         self._adaptor = adaptor
         self._service = None
         self._submission = None
@@ -55,9 +59,9 @@ class AdaptorImporter(object):
             if self._service:
                 logger.debug('Import Service %s', tool_id)
                 logger.debug('Service %s', self._service.name)
-                self._service.inputs = self.import_service_params(inputs)
-                self._service.outputs = self.import_service_outputs(outputs)
-                self._service.exit_codes = self.import_exit_codes(exit_codes)
+                self._submission.inputs = self.import_service_params(inputs)
+                self._submission.outputs = self.import_service_outputs(outputs)
+                self._submission.exit_codes = self.import_exit_codes(exit_codes)
             else:
                 logger.warn('No service retrieved (%s)', tool_id)
                 return None
@@ -78,7 +82,7 @@ class AdaptorImporter(object):
             logger_import.info('------------')
             logger_import.info('-- Inputs --')
             logger_import.info('------------')
-            for service_input in self._service.inputs:
+            for service_input in self._submission.inputs.all():
                 logger_import.info("Name:%s;default:%s;required:%s", service_input, service_input.type,
                                    service_input.get_required_display())
                 logger_import.debug("Full input:")
@@ -86,10 +90,37 @@ class AdaptorImporter(object):
             logger_import.info('-------------')
             logger_import.info('-- Outputs --')
             logger_import.info('-------------')
-            for service_output in self._service.outputs:
+            for service_output in self._submission.outputs.all():
                 logger_import.info(service_output)
+                [logger_import.debug('%s:%s', item, value) for (item, value) in vars(service_output).iteritems()]
             logger_import.info('------------------------------------')
-            return self._service
+            self._adaptor.command = tool_id
+
+            if self._runner is not None:
+                self._submission.runner = self._runner
+            else:
+                init_params = self._adaptor.init_params
+                print "init_params", init_params
+                runner = Runner.objects.create(name=self._adaptor.__class__.__name__,
+                                               clazz='.'.join(
+                                                   (self._adaptor.__module__, self._adaptor.__class__.__name__)),
+                                               importer_clazz='.'.join((self.__module__, self.__class__.__name__)))
+                for name, value in self._adaptor.init_params.iteritems():
+                    print "Name ", name, " Value ", value
+                    adaptor_param = AdaptorInitParam.objects.create(name=name,
+                                                                    value=value,
+                                                                    crypt=False,
+                                                                    prevent_override=True,
+                                                                    content_type=ContentType.objects.get_for_model(
+                                                                        Runner),
+                                                                    object_id=runner.pk)
+                # runner.save()
+                # runner.adaptor = self._adaptor
+                print "runner params", runner.run_params
+                self._service.runner = runner
+                self._service.save()
+            self._submission.save()
+            return self._service, self._submission
         except ImporterException as e:
 
             return None

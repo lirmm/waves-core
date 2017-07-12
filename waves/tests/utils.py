@@ -89,9 +89,8 @@ class TestJobWorkflowMixin(object):
                 if not isfile(output_job.file_path):
                     logger.warning("Job <<%s>> did not output expected %s (test_data/jobs/%s/) ",
                                    job.title, output_job.value, job.slug)
-
-                logger.info("Expected output file: %s ", output_job.file_path)
-                self.assertTrue(isfile(output_job.file_path), "Job outut file does not exists %s" % output_job.file_path)
+                else:
+                    logger.info("Expected output file found : %s ", output_job.file_path)
             self.assertTrue(job.status == waves.adaptors.const.JOB_TERMINATED)
         else:
             logger.warn('problem with job status %s', job.get_status_display())
@@ -164,7 +163,7 @@ def sample_job(service):
     """
     job = Job.objects.create(title='SubmissionSample Job', submission=service.submissions.first())
     srv_submission = service.default_submission
-    for srv_input in srv_submission.submission_inputs.all():
+    for srv_input in srv_submission.inputs.all():
         job.job_inputs.add(JobInput.objects.create(srv_input=srv_input, job=job, value="fake_value"))
     return job
 

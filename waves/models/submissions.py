@@ -25,11 +25,16 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
         unique_together = ('service', 'api_name')
         ordering = ('order',)
 
+    NOT_AVAILABLE = 0
+    AVAILABLE_WEB_ONLY = 1
+    AVAILABLE_API_ONLY = 2
+    AVAILABLE_BOTH = 3
+
     availability = models.IntegerField('Availability', default=3,
-                                       choices=[(0, "Not Available"),
-                                                (1, "Available on web only"),
-                                                (2, "Available on waves:api_v2 only"),
-                                                (3, "Available on both")])
+                                       choices=[(NOT_AVAILABLE, "Not Available"),
+                                                (AVAILABLE_WEB_ONLY, "Available on web only"),
+                                                (AVAILABLE_API_ONLY, "Available on api only"),
+                                                (AVAILABLE_BOTH, "Available on both")])
     name = models.CharField('Submission title', max_length=255, null=False, blank=False)
     service = models.ForeignKey(waves_settings.SERVICE_MODEL, on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
@@ -77,16 +82,16 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     @property
     def expected_inputs(self):
         """ Retrieve only expected inputs to submit a job """
-        return self.submission_inputs.filter(parent__isnull=True).exclude(required=None)
+        return self.inputs.filter(parent__isnull=True).exclude(required=None)
 
     def duplicate(self, service):
         """ Duplicate a submission with all its inputs """
         self.service = service
-        init_inputs = self.submission_inputs.all()
+        init_inputs = self.inputs.all()
         self.pk = None
         self.save()
         for init_input in init_inputs:
-            self.submission_inputs.add(init_input.duplicate(self))
+            self.inputs.add(init_input.duplicate(self))
         # raise TypeError("Fake")
         return self
 
@@ -94,18 +99,18 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     def file_inputs(self):
         """ Only files inputs """
         from waves.models.inputs import FileInput
-        return self.submission_inputs.instance_of(FileInput).all()
+        return self.inputs.instance_of(FileInput).all()
 
     @property
     def params(self):
         """ Exclude files inputs """
         from waves.models.inputs import FileInput
-        return self.submission_inputs.not_instance_of(FileInput).all()
+        return self.inputs.not_instance_of(FileInput).all()
 
     @property
     def required_params(self):
         """ Return only required params """
-        return self.submission_inputs.filter(required=True)
+        return self.inputs.filter(required=True)
 
     @property
     def submission_samples(self):
@@ -136,14 +141,19 @@ class SubmissionOutput(TimeStamped, ApiModel):
 
     field_api_name = 'label'
     label = models.CharField('Label', max_length=255, null=True, blank=False, help_text="Label")
+    name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Label")
     submission = models.ForeignKey(Submission, related_name='outputs', on_delete=models.CASCADE)
     from_input = models.ForeignKey('AParam', null=True, blank=True, related_name='to_outputs',
-                                   help_text='Valuated with input')
+                                   help_text='Is valuated from an input')
     file_pattern = models.CharField('File name or name pattern', max_length=100, blank=False,
                                     help_text="Pattern is used to match input value (%s to retrieve value from input)")
-    edam_format = models.CharField('Edam format', max_length=255, null=True, blank=True, help_text="Edam format")
-    edam_data = models.CharField('Edam data', max_length=255, null=True, blank=True, help_text="Edam data")
+    edam_format = models.CharField('Edam format', max_length=255, null=True, blank=True,
+                                   help_text="Edam ontology format")
+    edam_data = models.CharField('Edam data', max_length=255, null=True, blank=True,
+                                 help_text="Edam ontology data")
     help_text = models.TextField('Help Text', null=True, blank=True, )
+    extension = models.CharField('Extension', max_length=5, blank=True, default="",
+                                 help_text="Leave blank for *, or set in file pattern")
 
     def __str__(self):
         return '%s (%s)' % (self.label, self.ext)
@@ -155,11 +165,9 @@ class SubmissionOutput(TimeStamped, ApiModel):
         return cleaned_data
 
     def save(self, *args, **kwargs):
+        if not self.name:
+            self.name = self.label
         super(SubmissionOutput, self).save(*args, **kwargs)
-
-    @property
-    def name(self):
-        return self.file_pattern
 
     @property
     def ext(self):

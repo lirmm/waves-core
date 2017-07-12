@@ -86,7 +86,7 @@ class ServiceOutputSerializer(rest_serializer.ModelSerializer):
         obj = super(ServiceOutputSerializer, self).create(validated_data)
         for sub in submission_from:
             submit = service.submissions.filter(api_name=sub['submission']['api_name']).first()
-            srv_input = submit.submission_inputs.filter(name=sub['srv_input']['name']).first()
+            srv_input = submit.inputs.filter(name=sub['srv_input']['name']).first()
             output_submission = SubmissionOutput.objects.create(srv_input=srv_input,
                                                                 submission=submit,
                                                                 srv_output=obj)
