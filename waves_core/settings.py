@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'waves',
+    'waves.core',
     'crispy_forms',
     'rest_framework',
 )

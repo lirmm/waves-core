@@ -12,10 +12,12 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
 import os
-import django
+import sys
 from distutils.sysconfig import get_python_lib
+
+import django
+
 # from mock import Mock as MagicMock
 import waves
 

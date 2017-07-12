@@ -5,14 +5,19 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
 
+def import_version():
+    from waves.core import __version__
+    return __version__
+
+
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='waves-core',
-    version=__import__('waves').__version__,
+    version=import_version(),
     packages=find_packages(),
-    provides=['waves'],
+    provides=['waves.core'],
     include_package_data=True,
     license='GPLv3',
     description='WAVES - core ',
