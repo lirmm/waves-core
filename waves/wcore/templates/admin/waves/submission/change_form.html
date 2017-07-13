@@ -35,6 +35,7 @@
 {% block admin_change_form_document_ready %}
     {{ block.super }}
     <script type="text/javascript">
+    alert("Loaded !!!");
         (function ($) {
             $(document).on('formset:added', function (event, $row, formsetName) {
                 console.log("formsetName" + formsetName)
