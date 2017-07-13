@@ -77,12 +77,12 @@ class WavesModelAdmin(ModelAdmin):
     """ Base models admin including global medias """
     class Media:
         js = (
-            'waves/admin/js/admin.js',
-            'waves/admin/js/modal.js'
+            'admin/waves/js/admin.js',
+            'admin/waves/js/modal.js'
         )
         css = {
-            'screen': ('waves/admin/css/admin.css',
-                       'waves/admin/css/modal.css')
+            'screen': ('admin/waves/css/admin.css',
+                       'admin/waves/css/modal.css')
         }
 
 

@@ -1,6 +1,6 @@
 include LICENSE.md
 include README.md
-recursive-include waves/static *
-recursive-include waves/templates *
+recursive-include waves/core/static *
+recursive-include waves/core/templates *
 recursive-include docs *
 recursive-exclude waves_core *

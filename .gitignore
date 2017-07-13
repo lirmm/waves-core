@@ -102,3 +102,5 @@ ENV/
 !/waves/templates/waves/parts/
 !/waves/forms/lib/
 /waves/tests/settings.ini
+/staticfiles/
+!/waves/core/forms/lib/
