@@ -3,7 +3,7 @@ Jobs
 
 Jobs models documentation
 
-.. autoclass:: waves.core.models.jobs.Job
+.. autoclass:: waves.wcore.models.jobs.Job
     :members:
     :undoc-members:
     :show-inheritance:
@@ -14,7 +14,7 @@ Job Inputs
 ----------
 Job Inputs related to inputs defined in service configuration, see :ref:`service-inputs-label`.
 
-.. autoclass:: waves.core.models.jobs.JobInput
+.. autoclass:: waves.wcore.models.jobs.JobInput
     :members:
     :undoc-members:
 
@@ -24,7 +24,7 @@ Job Outputs
 -----------
 Job outputs related to outputs defined in service configuration
 
-.. autoclass:: waves.core.models.jobs.JobOutput
+.. autoclass:: waves.wcore.models.jobs.JobOutput
     :members:
     :undoc-members:
 

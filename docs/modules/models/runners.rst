@@ -4,7 +4,7 @@ Runners
 Runners are in charge of running job on a specific 'Adaptor' configuration
 
 
-.. automodule:: waves.core.models.runners
+.. automodule:: waves.wcore.models.runners
     :members:
     :undoc-members:
     :show-inheritance:

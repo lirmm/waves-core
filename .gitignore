@@ -103,4 +103,4 @@ ENV/
 !/waves/forms/lib/
 /waves/tests/settings.ini
 /staticfiles/
-!/waves/core/forms/lib/
+!/waves/wcore/forms/lib/

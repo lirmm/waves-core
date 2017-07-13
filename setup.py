@@ -6,7 +6,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 
 
 def import_version():
-    from waves.core import __version__
+    from waves.wcore import __version__
     return __version__
 
 
@@ -17,7 +17,7 @@ setup(
     name='waves-core',
     version=import_version(),
     packages=find_packages(),
-    provides=['waves.core'],
+    provides=['waves.wcore'],
     include_package_data=True,
     license='GPLv3',
     description='WAVES - core ',

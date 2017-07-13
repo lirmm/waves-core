@@ -44,13 +44,13 @@ GET a WAVES web-app online following the next few steps, WAVES can run on Apache
 
     1.3. Include the services urls in your project urls.py::
 
-            url(r'^waves/', include('waves.core.urls', namespace='waves')),
+            url(r'^waves/', include('waves.wcore.urls', namespace='waves')),
 
             Alternativly you can use only parts waves urls configuration you need:
 
-                url(r'^admin/waves/', include('waves.core.urls.waves_admin_url', namespace='waves')),
-                url(r'^my-api/', include('waves.core.urls.waves_api_url', namespace='waves')),
-                url(r'^waves/', include('waves.core.urls.front_url', namespace='waves'))
+                url(r'^admin/waves/', include('waves.wcore.urls.waves_admin_url', namespace='waves')),
+                url(r'^my-api/', include('waves.wcore.urls.waves_api_url', namespace='waves')),
+                url(r'^waves/', include('waves.wcore.urls.front_url', namespace='waves'))
 
     1.4. Run ``python manage.py makemigrations`` to update database models.
 

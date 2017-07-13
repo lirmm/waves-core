@@ -6,40 +6,40 @@ These modules execute job on dedicated platforms, remotely or locally, they are 
 
 Constants
 ---------
-.. automodule:: waves.core.adaptors.const
+.. automodule:: waves.wcore.adaptors.const
 
 Exceptions
 ----------
-.. automodule:: waves.core.adaptors.exceptions
+.. automodule:: waves.wcore.adaptors.exceptions
 
 Adaptor Loader
 --------------
-.. automodule:: waves.core.adaptors.loader
+.. automodule:: waves.wcore.adaptors.loader
 
 Utilities classes
 -----------------
-.. automodule:: waves.core.adaptors.utils
+.. automodule:: waves.wcore.adaptors.utils
 
 Adaptor base class
 ------------------
-.. automodule:: waves.core.adaptors.adaptor
+.. automodule:: waves.wcore.adaptors.adaptor
     :members:
     :show-inheritance:
 
 Shell script related adaptors class
 -----------------------------------
-.. automodule:: waves.core.adaptors.shell
+.. automodule:: waves.wcore.adaptors.shell
     :members:
     :show-inheritance:
 
 Api related adaptor base class
 ------------------------------
-.. automodule:: waves.core.adaptors.api
+.. automodule:: waves.wcore.adaptors.api
     :members:
     :show-inheritance:
 
 Cluster related adaptors
 ------------------------
-.. automodule:: waves.core.adaptors.cluster
+.. automodule:: waves.wcore.adaptors.cluster
     :members:
     :show-inheritance:

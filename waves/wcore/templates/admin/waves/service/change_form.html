@@ -1,0 +1,59 @@
+{% extends "admin/waves/change_form.html" %}
+{% load i18n admin_modify admin_urls admin_static waves_tags %}
+{% block object-tools-items %}
+    <li>
+        <a type="button" href="{% url 'admin:wcore_job_changelist' %}?service__id__exact={{ original.pk }}"
+           title="View online"
+           class="btn btn-high btn-info"
+           id="view_jobs">
+            Jobs
+        </a>
+    </li>
+    <!--li>
+        <a type="button" href="{% url 'waves:service_duplicate' original.pk %}"
+           target="_self"
+           title="Duplicate"
+           class="btn btn-high btn-info"
+           id="duplicate_service">
+            Duplicate
+        </a>
+    </li-->
+    <li>
+        <a type="button" href="{% url 'waves:service_export_form' original.pk %}"
+           title="View online"
+           class="btn btn-high btn-info"
+           id="view_jobs">
+            Export
+        </a>
+    </li>
+    <li>
+        <a type="button" href="{% url 'waves:service_submission_preview' original.pk %}"
+           class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
+            Preview
+        </a>
+    </li>
+    {% if original.runner %}
+        <li>
+            <a type="button" href="{% url 'waves:service_test_connection' original.pk %}"
+               title="Connection Test"
+               class="button"
+               id="test_connect">
+                Test Connection
+            </a>
+        </li>
+        {% if original.runner.adaptor.importer_clazz %}
+            <li>
+                <a type="button" href="{% url 'waves:service_import_form' original.pk %}"
+                   title="Import from adapter"
+                   class="button"
+                   data-toggle="modal"
+                   data-target="#popup_modal_content"
+                   data-tooltip
+                   id="open_import_form">
+                    Add submission from adapter
+                </a>
+            </li>
+        {% endif %}
+
+    {% endif %}
+{% endblock %}
