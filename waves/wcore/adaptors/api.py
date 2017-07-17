@@ -27,9 +27,9 @@ class PublicApiAdaptor(JobAdaptor):
         url = "%s://%s" % (self.protocol, self.host)
         if self.port is not None and self.port != '' and self.port != '80':
             url += ':%s' % self.port
-        if self.api_base_path != '':
+        if self.api_base_path is not None and self.api_base_path != '':
             url += '/%s' % self.api_base_path
-        if self.api_endpoint != '':
+        if self.api_endpoint is not None and self.api_endpoint != '':
             url += '/%s' % self.api_endpoint
         return url
 

@@ -102,8 +102,7 @@ class AdaptorImporter(object):
                 init_params = self._adaptor.init_params
                 runner = Runner.objects.create(name=self._adaptor.__class__.__name__,
                                                clazz='.'.join(
-                                                   (self._adaptor.__module__, self._adaptor.__class__.__name__)),
-                                               importer_clazz='.'.join((self.__module__, self.__class__.__name__)))
+                                                   (self._adaptor.__module__, self._adaptor.__class__.__name__)))
                 for name, value in self._adaptor.init_params.iteritems():
                     adaptor_param = AdaptorInitParam.objects.create(name=name,
                                                                     value=value,
@@ -120,7 +119,7 @@ class AdaptorImporter(object):
             return self._service, self._submission
         except ImporterException as e:
 
-            return None
+            return None, None
 
     def list_services(self):
         """ Get and return a list of tuple (['Service Objects' list])  """

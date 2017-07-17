@@ -34,8 +34,6 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
     enabled = models.BooleanField('Enabled', default=True, null=False, blank=True,
                                   help_text="Runner is enable for job runs")
-    # TODO add choices issued from get_importers
-    importer_clazz = models.CharField('Importer', max_length=200, null=True, blank=True, choices=[])
 
     @property
     def importer(self):
@@ -44,11 +42,10 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
         :return: an Importer new instance
         """
         # TODO recheck importer
-        if self.importer_clazz:
-            importer = import_string(self.importer_clazz)
-            return importer(self)
+        if self.adaptor is not None:
+            return self.adaptor.importer
         else:
-            raise None
+            return None
 
     def __str__(self):
         return self.name

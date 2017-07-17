@@ -31,7 +31,7 @@
             </a>
         </li>
     {% endif %}
-    {% if original.adaptor.importer_clazz %}
+    {% if original.adaptor.importer %}
         <li>
             <a type="button" href="{% url 'waves:runner_import_form' original.pk %}"
                title="Import from adapter"

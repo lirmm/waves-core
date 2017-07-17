@@ -46,12 +46,10 @@ class ServiceDuplicateView(View):
             new_service = service.duplicate()
             messages.add_message(request, level=messages.SUCCESS, message="Service successfully copied, "
                                                                           "you may edit it now")
-            # return redirect(reverse('admin:waves_service_change', args=[new_service.id]))
-            return redirect(new_service.get_admin_url())
+            return redirect(reverse('admin:wcore_service_change', args=[new_service.id]))
         except DatabaseError as e:
             messages.add_message(request, level=messages.WARNING, message="Error occurred during copy: %s " % e)
-            # return redirect(reverse('admin:waves_service_change', args=[kwargs['service_id']]))
-            return redirect(reverse('admin:index', args=[kwargs['service_id']]))
+            return redirect(reverse('admin:wcore_service_change', args=[kwargs['service_id']]))
 
 
 class ServiceExportView(ModelExportView):

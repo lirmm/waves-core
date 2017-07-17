@@ -42,8 +42,7 @@ class RunnerImportToolView(FormView):
         return context
 
     def get_success_url(self):
-        # return reverse('admin:waves_service_change', args=[self.service.id])
-        return self.service.get_admin_url()
+        return reverse('admin:wcore_service_change', args=[self.service.id])
 
     def get_tool_list(self):
         return [(x[0], [(y.remote_service_id, y.name + ' ' + y.version) for y in x[1]]) for x in
@@ -90,22 +89,14 @@ class RunnerImportToolView(FormView):
             if form.is_valid():
                 try:
                     with transaction.atomic():
-                        service_dto = self.object.importer.import_service(self.remote_service_id(request))
-                        self.service = Service.objects.create()
-                        self.service.from_dto(service_dto)
+                        new_service, new_submission = self.object.importer.import_service(self.remote_service_id(request))
+                        self.service = new_service
                         self.service.runner = self.object
                         self.service.created_by = self.request.user
-                        submission = Submission.objects.create(name='Imported submission', service=self.service)
-                        self.service.submissions.add(submission)
-                        for inp in service_dto.inputs:
-                            new_input = Submission.objects.create(submission=submission)
-                            new_input.from_dto(inp)
-                            new_input.save()
-                            submission.inputs.add(new_input)
+                        self.service.submissions.add(new_submission)
                         self.service.save()
                     data = {
-                        # 'url_redirect': reverse('admin:waves_service_change', args=[self.service.id])
-                        'url_redirect': self.service.get_admin_url()
+                        'url_redirect': reverse('admin:wcore_service_change', args=[self.service.id])
                     }
                     messages.add_message(request, level=messages.SUCCESS, message='Parameters successfully imported')
                     return JsonResponse(data, status=200)
@@ -127,7 +118,7 @@ class RunnerExportView(ModelExportView):
 
     @property
     def return_view(self):
-        return reverse('admin:waves_runner_change', args=[self.object.id])
+        return reverse('admin:wcore_runner_change', args=[self.object.id])
 
 
 class RunnerTestConnectionView(JSONDetailView):

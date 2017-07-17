@@ -41,7 +41,7 @@
                 Test Connection
             </a>
         </li>
-        {% if original.runner.adaptor.importer_clazz %}
+        {% if original.runner.adaptor.importer %}
             <li>
                 <a type="button" href="{% url 'waves:service_import_form' original.pk %}"
                    title="Import from adapter"
