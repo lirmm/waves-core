@@ -25,7 +25,7 @@ class PublicApiAdaptor(JobAdaptor):
     def complete_url(self):
         """ Create complete url string for remote api"""
         url = "%s://%s" % (self.protocol, self.host)
-        if self.port != '':
+        if self.port is not None and self.port != '' and self.port != '80':
             url += ':%s' % self.port
         if self.api_base_path != '':
             url += '/%s' % self.api_base_path

@@ -85,7 +85,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
         # keep old values set for runner if key is the same
         adaptors_defaults = self.adaptor.init_params
         current_defaults = self.run_params
-        [adaptors_defaults.pop(k, None) for k in current_defaults]
+        [adaptors_defaults.pop(k, None) for k in current_defaults if k != 'protocol']
         for name, default in adaptors_defaults.items():
             if name == 'password':
                 defaults = {'name': name[6:], 'crypt': True}
@@ -130,7 +130,10 @@ class HasAdaptorClazzMixin(WavesBaseModel):
         :rtype: JobAdaptor
         """
         if self.clazz is not '' and (self._adaptor is None or self.config_changed):
-            self._adaptor = import_string(self.clazz)(**self.run_params)
+            try:
+                self._adaptor = import_string(self.clazz)(**self.run_params)
+            except ImportError as e:
+                self._adaptor = None
         return self._adaptor
 
     @adaptor.setter
@@ -164,7 +167,7 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
                 self.adaptor_params.all().delete()
             runners_defaults = self.runner.run_params
             current_defaults = self.run_params
-            [runners_defaults.pop(k, None) for k in current_defaults]
+            [runners_defaults.pop(k, None) for k in current_defaults if k != 'protocol']
             queryset = self.runner.adaptor_params.filter(
                 name__in=runners_defaults.keys()) if runners_defaults else self.runner.adaptor_params.all()
             for runner_param in queryset:
