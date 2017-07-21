@@ -8,8 +8,7 @@ from django.core.exceptions import ValidationError
 
 from waves.wcore.forms.crispy import FormHelper
 from waves.wcore.models.inputs import *
-from waves.wcore.models.samples import *
-from waves.wcore.models.submissions import Submission
+from waves.wcore.models.services import Submission
 from waves.wcore.utils.validators import ServiceInputValidator
 
 logger = logging.getLogger(__name__)

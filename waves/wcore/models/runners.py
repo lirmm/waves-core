@@ -27,7 +27,6 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
     class Meta:
         ordering = ['name']
-        db_table = 'waves_runner'
         verbose_name = 'Execution'
         verbose_name_plural = "Execution"
     objects = RunnerManager()

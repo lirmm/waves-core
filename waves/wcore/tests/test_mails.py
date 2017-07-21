@@ -7,8 +7,8 @@ from django.conf import settings
 from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
-from waves.wcore.models import Job, JobInput, JobOutput, Submission
-from waves.wcore.models.services import get_service_model
+from waves.wcore.models import Job, JobInput, JobOutput
+from waves.wcore.models.services import get_service_model, Submission
 from waves.wcore.settings import waves_settings as config
 from waves.wcore.tests.base import WavesBaseTestCase
 

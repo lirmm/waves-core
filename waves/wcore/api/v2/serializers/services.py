@@ -6,8 +6,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse as reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
-from waves.wcore.models.services import get_service_model
-from waves.wcore.models.submissions import *
+from waves.wcore.models.services import get_service_model, Submission, SubmissionOutput
 from waves.wcore.settings import waves_settings
 from .inputs import InputSerializer
 

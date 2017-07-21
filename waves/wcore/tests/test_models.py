@@ -9,8 +9,8 @@ from django.utils.module_loading import import_string
 
 import waves.wcore.adaptors.const
 from waves.wcore.adaptors.adaptor import JobAdaptor
-from waves.wcore.models import Job, Submission
-from waves.wcore.models.services import get_service_model
+from waves.wcore.models import Job
+from waves.wcore.models.services import get_service_model, Submission
 from waves.wcore.tests.base import WavesBaseTestCase
 from waves.wcore.tests.utils import create_runners, create_service_for_runners
 

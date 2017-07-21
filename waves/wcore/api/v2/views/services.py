@@ -16,8 +16,8 @@ from waves.wcore.api.v2.serializers.services import ServiceSerializer, ServiceFo
     ServiceSubmissionSerializer
 from waves.wcore.api.views.base import WavesAuthenticatedView
 from waves.wcore.exceptions.jobs import JobException
-from waves.wcore.models import Job, Submission
-from waves.wcore.models.services import get_service_model
+from waves.wcore.models import Job
+from waves.wcore.models.services import get_service_model, Submission
 
 Service = get_service_model()
 

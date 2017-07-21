@@ -5,7 +5,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import *
 
 from waves.wcore.models.inputs import *
-from waves.wcore.models.samples import FileInputSample
+from waves.wcore.models.inputs import FileInputSample
 from waves.wcore.forms.helper import WFormHelper
 
 __all__ = ['WFormHelper', 'FormLayout']

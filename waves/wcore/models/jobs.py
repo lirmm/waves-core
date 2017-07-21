@@ -23,8 +23,8 @@ from waves.wcore.exceptions import WavesException
 from waves.wcore.exceptions.jobs import *
 from waves.wcore.mails import JobMailer
 from waves.wcore.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
-from waves.wcore.models.inputs import AParam
-from waves.wcore.models.submissions import Submission, SubmissionOutput
+from waves.wcore.models.inputs import AParam, FileInputSample
+from waves.wcore.models.services import Submission, SubmissionOutput
 from waves.wcore.settings import waves_settings
 from waves.wcore.utils import normalize_value
 from waves.wcore.utils.storage import allow_display_online
@@ -196,7 +196,6 @@ class Job(TimeStamped, Slugged, UrlMixin):
     _run_details = None
 
     class Meta(TimeStamped.Meta):
-        db_table = 'waves_job'
         verbose_name = 'Job'
         ordering = ['-updated', '-created']
 
@@ -722,7 +721,6 @@ class JobInputManager(models.Manager):
         :rtype: :class:`waves.wcore.models.jobs.JobInput`
         """
         from waves.wcore.models.inputs import AParam, FileInput
-        from waves.wcore.models.samples import FileInputSample
         input_dict = dict(job=job,
                           order=order,
                           name=service_input.name,
@@ -771,7 +769,6 @@ class JobInput(Ordered, Slugged, ApiModel):
     """
 
     class Meta:
-        db_table = 'waves_job_input'
         unique_together = ('name', 'value', 'job')
 
     objects = JobInputManager()
@@ -943,7 +940,6 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     """
 
     class Meta:
-        db_table = 'waves_job_output'
         unique_together = ('_name', 'job')
 
     objects = JobOutputManager()

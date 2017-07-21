@@ -6,7 +6,6 @@ import logging
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.utils.module_loading import import_string
 
@@ -14,7 +13,7 @@ from waves.wcore.models.base import WavesBaseModel
 from waves.wcore.utils.encrypt import Encrypt
 
 logger = logging.getLogger(__name__)
-__all__ = ['AdaptorInitParam', 'HasRunnerParamsMixin', 'HasAdaptorClazzMixin']
+__all__ = ['AdaptorInitParam', 'HasAdaptorClazzMixin']
 
 
 class AdaptorInitParam(WavesBaseModel):
@@ -24,7 +23,6 @@ class AdaptorInitParam(WavesBaseModel):
         ordering = ['name']
         verbose_name = "Initial param"
         verbose_name_plural = "Init params"
-        db_table = "waves_adaptor_init_param"
 
     _value = None
     _override = None
@@ -142,76 +140,3 @@ class HasAdaptorClazzMixin(WavesBaseModel):
         self._adaptor = adaptor
 
 
-class HasRunnerParamsMixin(HasAdaptorClazzMixin):
-    """ Model mixin to manage params overriding and shortcut method to retrieve concrete classes """
-
-    class Meta:
-        abstract = True
-
-    _runner = None
-    runner = models.ForeignKey('Runner', related_name='%(app_label)s_%(class)s_runs', null=True, blank=False,
-                               on_delete=models.SET_NULL,
-                               help_text='Service job runs adapter')
-
-    @classmethod
-    def from_db(cls, db, field_names, values):
-        """ Executed each time a Service is restored from DB layer"""
-        instance = super(HasRunnerParamsMixin, cls).from_db(db, field_names, values)
-        instance._runner = instance.runner
-        return instance
-
-    def set_run_params_defaults(self):
-        """ Set runs params with defaults issued from concrete class object """
-        if self.runner:
-            if self.adaptor_params.count() > 0:
-                self.adaptor_params.all().delete()
-            runners_defaults = self.runner.run_params
-            current_defaults = self.run_params
-            [runners_defaults.pop(k, None) for k in current_defaults if k != 'protocol']
-            queryset = self.runner.adaptor_params.filter(
-                name__in=runners_defaults.keys()) if runners_defaults else self.runner.adaptor_params.all()
-            for runner_param in queryset:
-                if runner_param.prevent_override:
-                    try:
-                        self.adaptor_params.get(name=runner_param.name).delete()
-                    except ObjectDoesNotExist:
-                        continue
-                    except MultipleObjectsReturned:
-                        self.adaptor_params.filter(name=runner_param.name).delete()
-                else:
-                    defaults = {'value': runner_param.value, 'prevent_override': runner_param.prevent_override,
-                                'crypt': runner_param.crypt}
-                    object_ctype = ContentType.objects.get_for_model(self)
-                    obj, created = AdaptorInitParam.objects.update_or_create(defaults=defaults,
-                                                                             content_type=object_ctype,
-                                                                             object_id=self.pk, name=runner_param.name)
-                    logger.debug('Object %s, %s', obj, created)
-
-    @property
-    def clazz(self):
-        return self.get_runner().clazz if self.get_runner() else None
-
-    @property
-    def config_changed(self):
-        return self._runner != self.runner
-
-    @property
-    def run_params(self):
-        """
-        Return a list of tuples representing current service adaptor init params
-        :return: a Dictionary (param_name=param_service_value or runner_param_default if not set
-        :rtype: dict
-        """
-        object_params = super(HasRunnerParamsMixin, self).run_params
-        runners_default = self.get_runner().run_params
-        runners_default.update(object_params)
-        return runners_default
-
-    @property
-    def adaptor_defaults(self):
-        """ Retrieve init params defined associated concrete class (from runner attribute) """
-        return self.get_runner().run_params if self.get_runner() else {}
-
-    def get_runner(self):
-        """ Return effective runner (could be overridden is any subclasses) """
-        return self.runner

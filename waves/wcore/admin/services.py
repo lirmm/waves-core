@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 
+from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.utils.safestring import mark_safe
 
-from base import ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
-from waves.wcore.admin.submissions import *
-from waves.wcore.models.services import get_service_model
-from waves.wcore.models.submissions import *
+from waves.wcore.admin.base import *
+from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
+from waves.wcore.models.services import get_service_model, Submission
 from waves.wcore.utils import url_to_edit_object
 
 Service = get_service_model()

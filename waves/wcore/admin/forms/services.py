@@ -8,15 +8,13 @@ from crispy_forms.layout import Layout, Field
 from django import forms
 
 from waves.wcore.models.inputs import *
-from waves.wcore.models.runners import Runner
-from waves.wcore.models.services import get_service_model
-from waves.wcore.models.submissions import Submission, SubmissionOutput, SubmissionExitCode
+from waves.wcore.models.services import get_service_model, Submission, SubmissionOutput, SubmissionExitCode
 from waves.wcore.settings import waves_settings as config
 
 Service = get_service_model()
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm',
-           'SubmissionForm', 'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm']
+           'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm']
 
 
 class SubmissionInlineForm(forms.ModelForm):
@@ -119,15 +117,6 @@ class InputSampleForm(forms.ModelForm):
         self.fields['file_input'].widget.can_delete_related = False
         self.fields['file_input'].widget.can_add_related = False
         self.fields['file_input'].widget.can_change_related = False
-
-
-class SubmissionForm(forms.ModelForm):
-    class Meta:
-        model = Submission
-        exclude = ['order']
-
-
-    runner = forms.ModelChoiceField(queryset=Runner.objects.all(), empty_label="Use Service Config")
 
 
 class SubmissionOutputForm(forms.ModelForm):

@@ -8,9 +8,7 @@ from waves.wcore.models.history import JobHistory
 from waves.wcore.models.inputs import *
 from waves.wcore.models.jobs import *
 from waves.wcore.models.runners import *
-from waves.wcore.models.samples import *
 from waves.wcore.models.services import *
-from waves.wcore.models.submissions import *
 
 """
 List of different constants used for models

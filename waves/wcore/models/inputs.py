@@ -2,25 +2,25 @@
 from __future__ import unicode_literals
 
 from decimal import Decimal
+from os.path import basename
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel
 
+from waves.wcore.models import WavesBaseModel
 from waves.wcore.models.base import Ordered, ApiModel
 from waves.wcore.settings import waves_settings
+from waves.wcore.utils.storage import file_sample_directory, waves_storage
 from waves.wcore.utils.validators import validate_list_comma, validate_list_param
 
 __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam', 'NumberParam',
-           'ListParam', 'IntegerParam', 'TextParam']
+           'ListParam', 'IntegerParam', 'TextParam', 'FileInputSample', 'SampleDepParam']
 
 
 class RepeatedGroup(Ordered):
     """ Some input may be grouped, and group could be repeated"""
-
-    class Meta:
-        db_table = "waves_repeat_group"
 
     submission = models.ForeignKey('Submission', related_name='submission_groups', null=True,
                                    on_delete=models.CASCADE)
@@ -40,7 +40,6 @@ class AParam(PolymorphicModel, ApiModel):
         verbose_name_plural = "Service params"
         verbose_name = "Service param"
         base_manager_name = 'base_objects'
-        db_table = "waves_aparam"
 
     OPT_TYPE_NONE = 0
     OPT_TYPE_VALUATED = 1
@@ -154,7 +153,6 @@ class TextParam(AParam):
     class Meta:
         verbose_name = "Text Input"
         verbose_name_plural = "Text Input"
-        db_table = "waves_textparam"
 
     max_length = models.CharField('Max length (<255)', max_length=255, default=255)
 
@@ -169,7 +167,6 @@ class BooleanParam(AParam):
     class Meta:
         verbose_name = "Boolean choice"
         verbose_name_plural = "Boolean choices"
-        db_table = "waves_booleanparam"
 
     class_label = "Boolean"
     true_value = models.CharField('True value', default='True', max_length=50)
@@ -256,7 +253,6 @@ class DecimalParam(NumberParam, AParam):
     class Meta:
         verbose_name = "Decimal"
         verbose_name_plural = "Decimal"
-        db_table = "waves_decimalparam"
 
     class_label = "Decimal"
     min_val = models.DecimalField('Min value', decimal_places=3, max_digits=50, default=None, null=True, blank=True,
@@ -277,8 +273,6 @@ class IntegerParam(NumberParam, AParam):
     class Meta:
         verbose_name = "Integer"
         verbose_name_plural = "Integer"
-        db_table = "waves_integerparam"
-
 
     class_label = "Integer"
     min_val = models.IntegerField('Min value', default=0, null=True, blank=True,
@@ -298,8 +292,6 @@ class ListParam(AParam):
     class Meta:
         verbose_name = "List"
         verbose_name_plural = "Lists"
-        db_table = "waves_listparam"
-
 
     DISPLAY_SELECT = 'select'
     DISPLAY_RADIO = 'radio'
@@ -361,7 +353,6 @@ class FileInput(AParam):
     """ Submission file inputs """
 
     class Meta:
-        db_table = "waves_fileparam"
         ordering = ['order', ]
         verbose_name = "File"
         verbose_name_plural = "Files input"
@@ -378,3 +369,65 @@ class FileInput(AParam):
     @property
     def param_type(self):
         return AParam.TYPE_FILE
+
+
+class FileInputSample(WavesBaseModel):
+    """ Any file input can provide samples """
+
+    class Meta:
+        verbose_name_plural = "Input samples"
+        verbose_name = "Input sample"
+
+    class_label = "File Input Sample"
+    label = models.CharField('Input Label', blank=False, null=True, max_length=255)
+    help_text = models.CharField('Help text', blank=True, null=True, max_length=255)
+    file = models.FileField('Sample file', upload_to=file_sample_directory, storage=waves_storage, blank=False,
+                            null=False)
+    file_input = models.ForeignKey('FileInput', on_delete=models.CASCADE, related_name='input_samples')
+    dependent_params = models.ManyToManyField('AParam', blank=True, through='SampleDepParam')
+
+    def __str__(self):
+        return '%s (%s)' % (self.label, self.name)
+
+    def save_base(self, *args, **kwargs):
+        super(FileInputSample, self).save_base(*args, **kwargs)
+
+    @property
+    def name(self):
+        if self.file:
+            return basename(self.file.name)
+        else:
+            return '--'
+
+    @property
+    def required(self):
+        return False
+
+    @property
+    def default(self):
+        return ""
+
+
+class SampleDepParam(WavesBaseModel):
+    """ When a file sample is selected, some params may be set accordingly. This class represent this behaviour"""
+
+    class Meta:
+        verbose_name_plural = "Sample dependencies"
+        verbose_name = "Sample dependency"
+
+    # submission = models.ForeignKey('Submission', on_delete=models.CASCADE, related_name='sample_dependent_params')
+    file_input = models.ForeignKey('FileInput', null=True, on_delete=models.CASCADE, related_name="sample_dependencies")
+    sample = models.ForeignKey(FileInputSample, on_delete=models.CASCADE, related_name='dependent_inputs')
+    related_to = models.ForeignKey('AParam', on_delete=models.CASCADE, related_name='related_samples')
+    set_default = models.CharField('Set value to ', max_length=200, null=False, blank=False)
+
+    """
+    def clean(self):
+        if (isinstance(self.related_to, BooleanParam) or isinstance(self.related_to, ListParam)) \
+                and self.set_default not in self.related_to.values:
+            raise ValidationError({'set_default': 'This value is not possible for related input [%s]' % ', '.join(
+                self.related_to.values)})
+    """
+
+    def __str__(self):
+        return "%s > %s=%s" % (self.sample.label, self.related_to.name, self.set_default)

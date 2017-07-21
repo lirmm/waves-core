@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
+from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
@@ -10,10 +11,10 @@ from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.services import *
 from waves.wcore.compat import CompactInline, organize_input_class
 from waves.wcore.models.inputs import *
-from waves.wcore.models.samples import *
-from waves.wcore.models.submissions import *
-from waves.wcore.utils import url_to_edit_object
-from django.utils.module_loading import import_string
+from waves.wcore.models.services import Submission, SubmissionOutput, SubmissionExitCode
+
+__all__ = ['SubmissionOutputInline', 'SampleDependentInputInline', 'ExitCodeInline', 'FileInputSampleInline',
+           'RepeatGroupAdmin', 'OrgRepeatGroupInline', 'ServiceSubmissionAdmin']
 
 
 class SubmissionOutputInline(CompactInline):
@@ -73,7 +74,6 @@ class FileInputSampleInline(CompactInline):
     classes = ('grp-collapse grp-closed', 'collapse')
 
 
-@admin.register(RepeatedGroup)
 class RepeatGroupAdmin(WavesModelAdmin):
     # readonly_fields = ['submission']
     # readonly_fields = ['submission']
@@ -92,11 +92,9 @@ class OrgRepeatGroupInline(CompactInline):
     classes = ('grp-collapse grp-closed', 'collapse')
 
 
-@admin.register(Submission)
 class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, DynamicInlinesAdmin):
     """ Submission process administration -- Model Submission """
     current_obj = None
-    form = SubmissionForm
     exclude = ['order']
     list_display = ['get_name', 'service', 'runner_link', 'available_online', 'available_api', 'runner']
     readonly_fields = ['available_online', 'available_api']
@@ -181,3 +179,7 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
 
     def runner_link(self, obj):
         return obj.get_runner()
+
+
+admin.site.register(RepeatedGroup, RepeatGroupAdmin)
+admin.site.register(Submission, ServiceSubmissionAdmin)

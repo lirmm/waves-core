@@ -13,7 +13,7 @@ from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModel
 
 from waves.wcore.admin.submissions import FileInputSampleInline
 from waves.wcore.models.inputs import *
-from waves.wcore.models.submissions import Submission
+from waves.wcore.models.services import Submission
 
 __all__ = ['AllParamModelAdmin']
 
