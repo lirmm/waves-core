@@ -98,7 +98,7 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     current_obj = None
     form = SubmissionForm
     exclude = ['order']
-    list_display = ['get_name', 'service_link', 'runner_link', 'available_online', 'available_api', 'runner']
+    list_display = ['get_name', 'service', 'runner_link', 'available_online', 'available_api', 'runner']
     readonly_fields = ['available_online', 'available_api']
     list_filter = (
         'service__name',
@@ -154,14 +154,9 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
             elem['fields'].remove('api_name') if 'api_name' in elem['fields'] else None
         return fieldsets
 
-    def service_link(self, obj):
-        """ Back link to related service """
-        return url_to_edit_object(obj.service)
-
     def get_name(self, obj):
         return mark_safe("<span title='Edit submission'>%s (%s)</span>" % (obj.name, obj.service))
 
-    service_link.short_description = "Service"
     get_name.short_description = "Name"
 
     def get_readonly_fields(self, request, obj=None):
@@ -185,4 +180,4 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
         return False
 
     def runner_link(self, obj):
-        return url_to_edit_object(obj.get_runner())
+        return obj.get_runner()
