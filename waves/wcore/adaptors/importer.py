@@ -95,26 +95,6 @@ class AdaptorImporter(object):
                 [logger_import.debug('%s:%s', item, value) for (item, value) in vars(service_output).iteritems()]
             logger_import.info('------------------------------------')
             self._adaptor.command = tool_id
-
-            if self._runner is not None:
-                self._submission.runner = self._runner
-            else:
-                init_params = self._adaptor.init_params
-                runner = Runner.objects.create(name=self._adaptor.__class__.__name__,
-                                               clazz='.'.join(
-                                                   (self._adaptor.__module__, self._adaptor.__class__.__name__)))
-                for name, value in self._adaptor.init_params.iteritems():
-                    adaptor_param = AdaptorInitParam.objects.create(name=name,
-                                                                    value=value,
-                                                                    crypt=False,
-                                                                    prevent_override=True,
-                                                                    content_type=ContentType.objects.get_for_model(
-                                                                        Runner),
-                                                                    object_id=runner.pk)
-                # runner.save()
-                # runner.adaptor = self._adaptor
-                self._service.runner = runner
-                self._service.save()
             self._submission.save()
             return self._service, self._submission
         except ImporterException as e:

@@ -8,10 +8,10 @@ from django.views import generic
 
 from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.forms.services import ServiceSubmissionForm
-from waves.wcore.models import Job, Service
-from waves.wcore.models.submissions import Submission
+from waves.wcore.models import Job, Submission
+from waves.wcore.models.services import get_service_model
 
-
+Service = get_service_model()
 
 
 class ServiceListView(generic.ListView):

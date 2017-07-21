@@ -7,6 +7,8 @@ from django.db import models
 from waves.wcore.models.base import TimeStamped, ApiModel, Ordered, Slugged, WavesBaseModel
 from waves.wcore.models.adaptors import AdaptorInitParam, HasRunnerParamsMixin
 
+from waves.wcore.settings import waves_settings
+
 __all__ = ['Submission', 'SubmissionOutput', 'SubmissionExitCode', 'SubmissionRunParam']
 
 
@@ -35,7 +37,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
                                                 (AVAILABLE_API_ONLY, "Available on api only"),
                                                 (AVAILABLE_BOTH, "Available on both")])
     name = models.CharField('Submission title', max_length=255, null=False, blank=False)
-    service = models.ForeignKey('Service', on_delete=models.CASCADE, null=False,
+    service = models.ForeignKey(waves_settings.SERVICE_MODEL, on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
 
     @property

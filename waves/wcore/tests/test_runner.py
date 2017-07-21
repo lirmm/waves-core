@@ -12,6 +12,9 @@ from waves.wcore.exceptions.jobs import *
 from waves.wcore.models import *
 from waves.wcore.tests.base import WavesBaseTestCase
 from waves.wcore.tests.utils import sample_runner, sample_job
+from waves.wcore.models.services import get_service_model
+
+Service = get_service_model()
 
 logger = logging.getLogger(__name__)
 

@@ -12,9 +12,10 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import override_settings, TestCase
 
-from waves.wcore.models import Service
+from waves.wcore.models.services import get_service_model
 from waves.wcore.tests.utils import get_sample_dir
 
+Service = get_service_model()
 
 logger = logging.getLogger(__name__)
 

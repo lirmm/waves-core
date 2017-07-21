@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ WAVES Service back-office Import view"""
 from __future__ import unicode_literals
 
@@ -9,10 +10,10 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 
 from waves.wcore.admin.views.export import ModelExportView
-from waves.wcore.models import Service
+from waves.wcore.models.services import get_service_model
 from waves.wcore.admin.views.runner_tool import RunnerImportToolView, ObjectDoesNotExist, RunnerTestConnectionView
 
-
+Service = get_service_model()
 
 
 # TODO in manage permission

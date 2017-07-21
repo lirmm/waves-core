@@ -10,7 +10,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import localtime
 from waves.wcore.adaptors.loader import AdaptorLoader
 from waves.wcore.models import *
+from waves.wcore.models.services import get_service_model
 from waves.wcore.settings import waves_settings
+
+Service = get_service_model()
 
 logger = logging.getLogger(__name__)
 

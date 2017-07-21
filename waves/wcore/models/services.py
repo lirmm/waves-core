@@ -5,8 +5,9 @@ from __future__ import unicode_literals
 
 import os
 
+from django.apps import apps as django_apps
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.db import models
 from django.db import transaction
 from django.db.models import Q
@@ -14,9 +15,23 @@ from django.db.models import Q
 import waves.wcore.adaptors.const
 from waves.wcore.models.adaptors import *
 from waves.wcore.models.base import *
-from waves.wcore.settings import waves_settings as config
+from waves.wcore.settings import waves_settings
 
-__all__ = ['ServiceRunParam', 'ServiceManager', 'Service']
+__all__ = ['ServiceRunParam', 'ServiceManager', 'get_service_model', 'Service']
+
+
+def get_service_model():
+    """
+    Returns the User model that is active in this project.
+    """
+    try:
+        return django_apps.get_model(waves_settings.SERVICE_MODEL, require_ready=False)
+    except ValueError:
+        raise ImproperlyConfigured("SERVICE_MODEL must be of the form 'app_label.model_name'")
+    except LookupError:
+        raise ImproperlyConfigured(
+            "SERVICE_MODEL refers to model '%s' that has not been installed" % waves_settings.SERVICE_MODEL
+        )
 
 
 class ServiceManager(models.Manager):
@@ -68,6 +83,11 @@ class ServiceManager(models.Manager):
 
     def get_by_natural_key(self, api_name, version, status):
         return self.get(api_name=api_name, version=version, status=status)
+
+    def get_admin_url(self):
+        from waves.wcore.utils import url_to_edit_object
+        Service = get_service_model()
+        return url_to_edit_object(Service)
 
 
 class ServiceRunParam(AdaptorInitParam):
@@ -195,7 +215,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
     @property
     def sample_dir(self):
         """ Return expected sample dir for a Service """
-        return os.path.join(config.SAMPLE_DIR, self.api_name)
+        return os.path.join(waves_settings.SAMPLE_DIR, self.api_name)
 
     @property
     def default_submission(self):
@@ -230,10 +250,10 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
         """
         if user.is_anonymous():
             return (self.runner is not None and self.status == Service.SRV_PUBLIC and
-                    config.ALLOW_JOB_SUBMISSION is True)
+                    waves_settings.ALLOW_JOB_SUBMISSION is True)
         # RULES to set if user can access submissions
         return self.runner is not None and (self.runner is not None and self.status == Service.SRV_PUBLIC and
-                                            config.ALLOW_JOB_SUBMISSION is True) or \
+                                            waves_settings.ALLOW_JOB_SUBMISSION is True) or \
                (self.status == Service.SRV_DRAFT and self.created_by == user) or \
                (self.status == Service.SRV_TEST and user.is_staff) or \
                (self.status == Service.SRV_RESTRICTED and (

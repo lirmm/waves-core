@@ -11,7 +11,11 @@ from base import ExportInMassMixin
 from waves.wcore.admin.adaptors import RunnerParamInline
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.runners import RunnerForm
-from waves.wcore.models import Runner, Service, Submission
+from waves.wcore.models import Runner, Submission
+
+from waves.wcore.models.services import get_service_model
+
+Service = get_service_model()
 
 __all__ = ['RunnerAdmin']
 

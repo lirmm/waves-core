@@ -14,10 +14,13 @@ from waves.wcore.models.base import ApiModel
 from waves.wcore.models.inputs import *
 from waves.wcore.models.jobs import Job, JobOutput
 from waves.wcore.models.runners import *
-from waves.wcore.models.services import *
+# from waves.wcore.models.services import *
 from waves.wcore.models.submissions import *
 from waves.wcore.models.samples import *
 from waves.wcore.utils import get_all_subclasses
+from waves.wcore.models.services import get_service_model
+
+Service = get_service_model()
 
 
 @receiver(pre_save, sender=Job)

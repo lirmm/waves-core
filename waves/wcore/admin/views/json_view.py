@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ WAVES Mixin for ajax based classs views"""
 from __future__ import unicode_literals
 

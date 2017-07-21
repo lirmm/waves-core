@@ -8,7 +8,7 @@ __all__ = ['WavesException', 'RunnerException', 'RunnerNotInitialized', 'RunnerN
            'RunnerUnexpectedInitParam']
 
 if sys.version_info[0] < 3:
-    __all__ = [n.encode('ascii') for n in __all__]
+    __all__ = [n.encode('utf-8') for n in __all__]
 
 logger = logging.getLogger(__name__)
 

@@ -14,7 +14,7 @@ from json_view import JSONDetailView
 from waves.wcore.adaptors.exceptions import AdaptorConnectException
 from waves.wcore.exceptions import *
 from waves.wcore.admin.forms.services import ImportForm
-from waves.wcore.models import Runner, Submission, Service
+from waves.wcore.models import Runner
 from waves.wcore.admin.views.export import ModelExportView
 
 
@@ -42,6 +42,7 @@ class RunnerImportToolView(FormView):
         return context
 
     def get_success_url(self):
+        return self.service.get_admin_url()
         return reverse('admin:wcore_service_change', args=[self.service.id])
 
     def get_tool_list(self):
@@ -95,6 +96,7 @@ class RunnerImportToolView(FormView):
                         self.service.created_by = self.request.user
                         self.service.submissions.add(new_submission)
                         self.service.save()
+                    print self.service.get_admin_url()
                     data = {
                         'url_redirect': reverse('admin:wcore_service_change', args=[self.service.id])
                     }

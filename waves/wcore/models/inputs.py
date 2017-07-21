@@ -313,7 +313,7 @@ class ListParam(AParam):
     class_label = "List"
     list_mode = models.CharField('List display mode', choices=LIST_DISPLAY_TYPE, default='select',
                                  max_length=100)
-    list_elements = models.TextField('Elements', max_length=500, validators=[validate_list_param, ],
+    list_elements = models.TextField('Elements', validators=[validate_list_param, ],
                                      help_text="One Element per line label|value")
 
     def save(self, *args, **kwargs):

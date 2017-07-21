@@ -12,6 +12,9 @@ from waves.wcore.api.v2.serializers import ServiceSerializer as BaseServiceSeria
 from waves.wcore.models import *
 from waves.wcore.models.serializers.base import RelatedSerializerMixin
 from waves.wcore.models.serializers.runners import RunnerSerializer, RunnerParamSerializer
+from waves.wcore.models.services import get_service_model
+
+Service = get_service_model()
 
 __all__ = ['ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
 
@@ -23,7 +26,7 @@ class ServiceInputSerializer(DynamicFieldsModelSerializer, RelatedSerializerMixi
         model = AParam
         fields = ('order', 'label', 'name', 'default', 'type', 'command_type', 'format',
                   'mandatory', 'multiple', 'display', 'description', 'short_description')
-                  # 'dependents_inputs')
+        # 'dependents_inputs')
 
     # TODO reactivate dependent inputs serialzation
     # dependent_inputs = ServiceInputSerializer(many=True, required=False)

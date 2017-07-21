@@ -11,19 +11,21 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
-from waves.wcore.models import JobHistory, JobInput, Job, JobOutput, Service
+from waves.wcore.models import JobHistory, JobInput, Job, JobOutput
+from waves.wcore.models.services import get_service_model
 
-
-
-logger = logging.getLogger(__name__)
+Service = get_service_model()
 User = get_user_model()
+logger = logging.getLogger(__name__)
 
 
 class JobHistorySerializer(DynamicFieldsModelSerializer):
     """ JobHistory Serializer - display status / message / timestamp """
+
     class Meta:
         model = JobHistory
         fields = ('status_txt', 'status_code', 'timestamp', 'message')
+
     status_txt = serializers.SerializerMethodField()
     status_code = serializers.IntegerField(source='status')
 
@@ -35,12 +37,14 @@ class JobHistorySerializer(DynamicFieldsModelSerializer):
 
 class JobHistoryDetailSerializer(serializers.HyperlinkedModelSerializer):
     """ Job history serializer """
+
     class Meta:
         model = Job
         fields = ('url', 'last_status', 'last_status_txt', 'job_history')
         extra_kwargs = {
             'url': {'view_name': 'waves:api_v1:waves-jobs-detail', 'lookup_field': 'slug'}
         }
+
     last_status = serializers.IntegerField(source='status')
     last_status_txt = serializers.SerializerMethodField()
     job_history = JobHistorySerializer(many=True, read_only=True)
@@ -53,10 +57,12 @@ class JobHistoryDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 class JobInputSerializer(DynamicFieldsModelSerializer):
     """ JobInput serializer """
+
     class Meta:
         model = JobInput
         fields = ('name', 'label', 'value')
         # depth = 1
+
     # input = serializers.SerializerMethodField()
 
     def get_input(self, obj):
@@ -66,12 +72,14 @@ class JobInputSerializer(DynamicFieldsModelSerializer):
 
 class JobInputDetailSerializer(serializers.HyperlinkedModelSerializer):
     """ Job Input Details serializer """
+
     class Meta:
         model = Job
         fields = ('url', 'status', 'inputs')
         extra_kwargs = {
             'url': {'view_name': 'waves:api_v1:waves-jobs-detail', 'lookup_field': 'slug'}
         }
+
     status = serializers.SerializerMethodField()
     inputs = JobInputSerializer(source='job_inputs', many=True, read_only=True)
 
@@ -83,9 +91,11 @@ class JobInputDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 class JobOutputSerializer(serializers.ModelSerializer):
     """ JobOutput serializer """
+
     class Meta:
         model = JobOutput
         fields = ('name', 'download_url', 'content')
+
     download_url = serializers.SerializerMethodField()
 
     def file_get_content(self, instance):
@@ -118,12 +128,14 @@ class JobOutputSerializer(serializers.ModelSerializer):
 
 class JobOutputDetailSerializer(serializers.HyperlinkedModelSerializer):
     """ JobOutput List serializer """
+
     class Meta:
         model = Job
         fields = ('url', 'status_txt', 'status_code', 'outputs')
         extra_kwargs = {
             'url': {'view_name': 'waves:api_v1:waves-jobs-detail', 'lookup_field': 'slug'}
         }
+
     status_txt = serializers.SerializerMethodField()
     status_code = serializers.IntegerField(source='status')
     outputs = JobOutputSerializer(read_only=True, source='output_files_exists')
@@ -136,6 +148,7 @@ class JobOutputDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSerializer):
     """ Serializer for Job (only GET) """
+
     class Meta:
         model = Job
         fields = ('url', 'title', 'status_code', 'status_txt', 'created', 'updated', 'inputs', 'outputs',

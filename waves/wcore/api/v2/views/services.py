@@ -12,11 +12,14 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework.response import Response
 
 from waves.wcore.api.v2.serializers.jobs import JobSerializer
-from waves.wcore.api.v2.serializers.services import ServiceSerializer, ServiceFormSerializer, ServiceSubmissionSerializer
+from waves.wcore.api.v2.serializers.services import ServiceSerializer, ServiceFormSerializer, \
+    ServiceSubmissionSerializer
 from waves.wcore.api.views.base import WavesAuthenticatedView
 from waves.wcore.exceptions.jobs import JobException
-from waves.wcore.models import Job, Service
-from waves.wcore.models.submissions import Submission
+from waves.wcore.models import Job, Submission
+from waves.wcore.models.services import get_service_model
+
+Service = get_service_model()
 
 logger = logging.getLogger(__name__)
 

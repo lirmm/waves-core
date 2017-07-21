@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ Job tool WAVES admin dedicated views """
 from __future__ import unicode_literals
 

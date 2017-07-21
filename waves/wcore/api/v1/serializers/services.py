@@ -7,9 +7,11 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework.reverse import reverse as reverse
 
 from waves.wcore.api.v1.serializers.inputs import *
-from waves.wcore.models import SubmissionOutput as ServiceOutput, Service, \
-    Submission as ServiceSubmission
+from waves.wcore.models import SubmissionOutput as ServiceOutput, Submission as ServiceSubmission
+from waves.wcore.models.services import get_service_model
 from waves.wcore.settings import waves_settings
+
+Service = get_service_model()
 
 __all__ = ['InputSerializer', 'InputSerializer', 'OutputSerializer', 'ServiceSerializer',
            'ServiceFormSerializer', 'ServiceSubmissionSerializer']

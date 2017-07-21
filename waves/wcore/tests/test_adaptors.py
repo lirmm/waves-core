@@ -140,4 +140,4 @@ class RunnerTestCase(TestCase, TestJobWorkflowMixin):
                 logger.exception(e.message)
             except AdaptorException as e:
                 logger.info('Adaptor %s is not locally available',  adaptor)
-                logger.exception(e.get_full_message())
+                logger.exception(e.message)

@@ -5,10 +5,11 @@ from django.contrib.auth import get_user_model
 from base import ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
 from waves.wcore.admin.submissions import *
-from waves.wcore.models.services import *
+from waves.wcore.models.services import get_service_model
 from waves.wcore.models.submissions import *
 from waves.wcore.utils import url_to_edit_object
 
+Service = get_service_model()
 User = get_user_model()
 
 __all__ = ['ServiceAdmin']

@@ -16,8 +16,10 @@ from waves.wcore.api.v1.serializers import ServiceSerializer, JobSerializer, Ser
     ServiceSubmissionSerializer
 from waves.wcore.api.views.base import WavesAuthenticatedView
 from waves.wcore.exceptions.jobs import JobException
-from waves.wcore.models import Job, Service
-from waves.wcore.models.submissions import Submission as ServiceSubmission
+from waves.wcore.models import Job, Submission as ServiceSubmission
+from waves.wcore.models.services import get_service_model
+
+Service = get_service_model()
 
 logger = logging.getLogger(__name__)
 
