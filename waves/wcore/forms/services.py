@@ -6,7 +6,7 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 
-from waves.wcore.forms.crispy import FormHelper
+from waves.wcore.forms.helper import WFormHelper
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import Submission
 from waves.wcore.utils.validators import ServiceInputValidator
@@ -102,7 +102,7 @@ class ServiceSubmissionForm(forms.ModelForm):
 
     @staticmethod
     def get_helper(**kwargs):
-        return FormHelper(**kwargs)
+        return WFormHelper(**kwargs)
 
     def _create_copy_paste_field(self, service_input):
         # service_input.mandatory = False # Field is validated in clean process
