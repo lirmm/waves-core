@@ -310,14 +310,14 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
         :return: True or False
         """
         if user.is_anonymous():
-            return (self.runner is not None and self.status == Service.SRV_PUBLIC and
+            return (self.runner is not None and self.status == self.SRV_PUBLIC and
                     waves_settings.ALLOW_JOB_SUBMISSION is True)
         # RULES to set if user can access submissions
-        return self.runner is not None and (self.runner is not None and self.status == Service.SRV_PUBLIC and
+        return self.runner is not None and (self.runner is not None and self.status == self.SRV_PUBLIC and
                                             waves_settings.ALLOW_JOB_SUBMISSION is True) or \
-               (self.status == Service.SRV_DRAFT and self.created_by == user) or \
-               (self.status == Service.SRV_TEST and user.is_staff) or \
-               (self.status == Service.SRV_RESTRICTED and (
+               (self.status == self.SRV_DRAFT and self.created_by == user) or \
+               (self.status == self.SRV_TEST and user.is_staff) or \
+               (self.status == self.SRV_RESTRICTED and (
                    user in self.restricted_client.all() or user.is_staff)) or \
                user.is_superuser
 
@@ -333,7 +333,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     def activate_deactivate(self):
         """ Published or unpublished Service """
-        self.status = Service.SRV_DRAFT if self.status is Service.SRV_PUBLIC else Service.SRV_PUBLIC
+        self.status = self.SRV_DRAFT if self.status is self.SRV_PUBLIC else self.SRV_PUBLIC
         self.save()
 
     @property
@@ -341,8 +341,10 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
         return self.jobs.filter(status__in=[waves.wcore.adaptors.const.JOB_CREATED, waves.wcore.adaptors.const.JOB_COMPLETED])
 
     def get_admin_url(self):
-        url = reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
-        return url
+        return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    def get_admin_changelist(self):
+        return reverse('admin:%s_%s_changelist' % (self._meta.app_label, self._meta.model_name))
 
 
 class Service(BaseService):
