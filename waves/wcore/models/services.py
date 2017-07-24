@@ -3,12 +3,14 @@ WAVES Services related models objects
 """
 from __future__ import unicode_literals
 
-import os
 import logging
+import os
+
 import swapper
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
 from django.db.models import Q
@@ -24,6 +26,7 @@ User = get_user_model()
 __all__ = ['ServiceRunParam', 'ServiceManager', 'Service', 'BaseService']
 
 logger = logging.getLogger(__name__)
+
 
 class ServiceManager(models.Manager):
     """
@@ -75,10 +78,7 @@ class ServiceManager(models.Manager):
     def get_by_natural_key(self, api_name, version, status):
         return self.get(api_name=api_name, version=version, status=status)
 
-    def get_admin_url(self):
-        from waves.wcore.utils import url_to_edit_object
-        Service = swapper.load_model("wcore", "Service")
-        return url_to_edit_object(Service)
+
 
 
 class ServiceRunParam(AdaptorInitParam):
@@ -339,6 +339,10 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     @property
     def running_jobs(self):
         return self.jobs.filter(status__in=[waves.wcore.adaptors.const.JOB_CREATED, waves.wcore.adaptors.const.JOB_COMPLETED])
+
+    def get_admin_url(self):
+        url = reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
+        return url
 
 
 class Service(BaseService):

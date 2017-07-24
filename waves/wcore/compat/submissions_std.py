@@ -2,8 +2,7 @@ from __future__ import unicode_literals
 
 from django import forms
 from polymorphic.admin import StackedPolymorphicInline
-
-from waves.wcore.admin.submissions import *
+from waves.wcore.models.inputs import *
 
 
 class OrganizeInputForm(forms.ModelForm):
