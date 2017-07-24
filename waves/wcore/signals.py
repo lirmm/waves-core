@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import os
 import shutil
+import swapper
 
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
@@ -15,10 +16,11 @@ from waves.wcore.models.inputs import *
 from waves.wcore.models.jobs import Job, JobOutput
 from waves.wcore.models.runners import *
 # from waves.wcore.models.services import *
-from waves.wcore.models.services import get_service_model, SubmissionExitCode, Submission
+from waves.wcore.models.services import SubmissionExitCode, Submission
 from waves.wcore.utils import get_all_subclasses
 
-Service = get_service_model()
+Service = swapper.load_model("wcore", "Service")
+
 
 
 @receiver(pre_save, sender=Job)

@@ -5,15 +5,16 @@ from __future__ import unicode_literals
 from os import stat
 from os.path import getsize, isfile
 
+import swapper
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
 from waves.wcore.models import JobInput, Job, JobOutput, AParam, JobHistory
-from waves.wcore.models.services import get_service_model
 
-Service = get_service_model()
+Service = swapper.load_model("wcore", "Service")
+
 User = get_user_model()
 
 

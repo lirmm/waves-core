@@ -6,14 +6,15 @@ from __future__ import unicode_literals
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from django import forms
+import swapper
 
 from waves.wcore.models.inputs import *
-from waves.wcore.models.services import get_service_model, Submission, SubmissionOutput, SubmissionExitCode
+from waves.wcore.models.services import Submission, SubmissionOutput, SubmissionExitCode
 from waves.wcore.settings import waves_settings as config
 
-Service = get_service_model()
+Service = swapper.load_model("wcore", "Service")
 
-__all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm',
+__all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm', 'InputInlineForm', 'SubmissionExitCodeForm',
            'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm']
 
 
@@ -103,12 +104,6 @@ class InputInlineForm(forms.ModelForm):
         if self.instance.parent is not None:
             self.fields['required'].widget.attrs['disabled'] = 'disabled'
             self.fields['required'].widget.attrs['title'] = 'Inputs with dependencies must be optional'
-
-
-class TextParamForm(forms.ModelForm):
-    class Meta:
-        model = TextParam
-        exclude = ['order']
 
 
 class InputSampleForm(forms.ModelForm):

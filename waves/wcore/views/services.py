@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from uuid import UUID
 
+import swapper
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.views import generic
@@ -9,9 +10,9 @@ from django.views import generic
 from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.forms.services import ServiceSubmissionForm
 from waves.wcore.models import Job
-from waves.wcore.models.services import get_service_model, Submission
+from waves.wcore.models.services import Submission
 
-Service = get_service_model()
+Service = swapper.load_model("wcore", "Service")
 
 
 class ServiceListView(generic.ListView):

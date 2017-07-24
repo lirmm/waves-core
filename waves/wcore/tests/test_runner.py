@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 
 import logging
 
+import swapper
+
 import waves.wcore.adaptors.const
 from waves.wcore.adaptors.exceptions import *
 from waves.wcore.adaptors.mocks import MockJobRunnerAdaptor
@@ -12,9 +14,8 @@ from waves.wcore.exceptions.jobs import *
 from waves.wcore.models import *
 from waves.wcore.tests.base import WavesBaseTestCase
 from waves.wcore.tests.utils import sample_runner, sample_job
-from waves.wcore.models.services import get_service_model
 
-Service = get_service_model()
+Service = swapper.load_model("wcore", "Service")
 
 logger = logging.getLogger(__name__)
 

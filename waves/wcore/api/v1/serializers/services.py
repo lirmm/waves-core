@@ -3,15 +3,17 @@ from __future__ import unicode_literals
 
 import logging
 
+import swapper
 from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework.reverse import reverse as reverse
 
 from waves.wcore.api.v1.serializers.inputs import *
-from waves.wcore.models.services import get_service_model, Submission as ServiceSubmission, \
+from waves.wcore.models.services import Submission as ServiceSubmission, \
     SubmissionOutput as ServiceOutput
 from waves.wcore.settings import waves_settings
 
-Service = get_service_model()
+Service = swapper.load_model("wcore", "Service")
+
 
 __all__ = ['InputSerializer', 'InputSerializer', 'OutputSerializer', 'ServiceSerializer',
            'ServiceFormSerializer', 'ServiceSubmissionSerializer']

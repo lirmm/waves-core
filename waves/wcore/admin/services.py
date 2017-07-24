@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import swapper
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
@@ -7,13 +8,13 @@ from django.utils.safestring import mark_safe
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
 from waves.wcore.admin.base import *
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
-from waves.wcore.models.services import get_service_model, Submission
+from waves.wcore.models.services import Submission
 from waves.wcore.utils import url_to_edit_object
 
-Service = get_service_model()
+Service = swapper.load_model("wcore", "Service")
 User = get_user_model()
 
-__all__ = ['ServiceAdmin']
+__all__ = ['ServiceAdmin', 'ServiceSubmissionInline']
 
 
 class ServiceSubmissionInline(admin.TabularInline):

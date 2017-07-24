@@ -4,9 +4,9 @@ WAVES Services related models objects
 from __future__ import unicode_literals
 
 import os
-
+import logging
 import swapper
-from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
 from django.db import models
@@ -14,20 +14,16 @@ from django.db import transaction
 from django.db.models import Q
 
 import waves.wcore.adaptors.const
-from waves.wcore.models.runners import Runner
 from waves.wcore.models.adaptors import *
 from waves.wcore.models.base import *
+from waves.wcore.models.runners import Runner
 from waves.wcore.settings import waves_settings
 
-__all__ = ['ServiceRunParam', 'ServiceManager', 'get_service_model', 'Service', 'BaseService']
+User = get_user_model()
 
+__all__ = ['ServiceRunParam', 'ServiceManager', 'Service', 'BaseService']
 
-def get_service_model():
-    """
-    Returns the User model that is active in this project.
-    """
-    return swapper.load_model("wcore", "Service")
-
+logger = logging.getLogger(__name__)
 
 class ServiceManager(models.Manager):
     """
@@ -81,7 +77,7 @@ class ServiceManager(models.Manager):
 
     def get_admin_url(self):
         from waves.wcore.utils import url_to_edit_object
-        Service = get_service_model()
+        Service = swapper.load_model("wcore", "Service")
         return url_to_edit_object(Service)
 
 
@@ -191,8 +187,8 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     name = models.CharField('Service name', max_length=255, help_text='Service displayed name')
     version = models.CharField('Current version', max_length=10, null=True, blank=True, default='1.0',
                                help_text='Service displayed version')
-    restricted_client = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='restricted_services', blank=True,
-                                               verbose_name='Restricted clients',
+    restricted_client = models.ManyToManyField(User, related_name='%(app_label)s_%(class)s_restricted_services',
+                                               blank=True, verbose_name='Restricted clients',
                                                help_text='By default access is granted to everyone, '
                                                          'you may restrict access here.')
     status = models.IntegerField(choices=SRV_STATUS_LIST, default=SRV_DRAFT,
@@ -204,7 +200,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
                                    help_text='This service sends notification email')
     partial = models.BooleanField('Dynamic outputs', default=False,
                                   help_text='Set whether some service outputs are dynamic (not known in advance)')
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     remote_service_id = models.CharField('Remote service tool ID', max_length=255, editable=False, null=True)
     edam_topics = models.TextField('Edam topics', null=True, blank=True,
                                    help_text='Comma separated list of Edam ontology topics')
@@ -347,33 +343,26 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
 class Service(BaseService):
     """
-    Represents a service on the platform
+    Represents a default swappable service on the platform
     """
 
     class Meta:
         swappable = swapper.swappable_setting('wcore', 'Service')
 
 
-class SubmissionManager(models.Manager):
-    pass
-
-
-class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
+class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     class Meta:
-        abstract = True
         verbose_name = 'Submission'
         verbose_name_plural = 'Submissions'
         unique_together = ('service', 'api_name')
         ordering = ('order',)
 
-    service = models.ForeignKey(settings.WCORE_SERVICE_MODEL, on_delete=models.CASCADE, null=False,
-                                related_name='submissions')
-
     NOT_AVAILABLE = 0
     AVAILABLE_WEB_ONLY = 1
     AVAILABLE_API_ONLY = 2
     AVAILABLE_BOTH = 3
-
+    service = models.ForeignKey(swapper.get_model_name('wcore', 'Service'), on_delete=models.CASCADE, null=False,
+                                related_name='submissions')
     availability = models.IntegerField('Availability', default=3,
                                        choices=[(NOT_AVAILABLE, "Not Available"),
                                                 (AVAILABLE_WEB_ONLY, "Available on web only"),
@@ -388,7 +377,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     def set_run_params_defaults(self):
         if self.config_changed and self._runner:
             self.adaptor_params.all().delete()
-        super(BaseSubmission, self).set_run_params_defaults()
+        super(Submission, self).set_run_params_defaults()
 
     @property
     def run_params(self):
@@ -397,10 +386,10 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         elif self.runner.pk == self.service.runner.pk:
             # same runner but still overriden in bo, so merge params (submission params prevents)
             service_run_params = self.service.run_params
-            object_run_params = super(BaseSubmission, self).run_params
+            object_run_params = super(Submission, self).run_params
             service_run_params.update(object_run_params)
             return service_run_params
-        return super(BaseSubmission, self).run_params
+        return super(Submission, self).run_params
 
     def get_runner(self):
         if self.runner:
@@ -468,11 +457,6 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     def duplicate_api_name(self):
         """ Check is another entity is set with same api_name """
         return Submission.objects.filter(api_name__startswith=self.api_name, service=self.service)
-
-
-class Submission(BaseSubmission):
-    """ Represents a service submission parameter set for a service """
-    pass
 
 
 class SubmissionOutput(TimeStamped, ApiModel):

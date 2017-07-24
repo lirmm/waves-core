@@ -1,16 +1,17 @@
 """ WAVES API services related serializers"""
 from __future__ import unicode_literals
 
+import swapper
 from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework import serializers
 from rest_framework.reverse import reverse as reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
-from waves.wcore.models.services import get_service_model, Submission, SubmissionOutput
+from waves.wcore.models.services import Submission, SubmissionOutput
 from waves.wcore.settings import waves_settings
 from .inputs import InputSerializer
 
-Service = get_service_model()
+Service = swapper.load_model("wcore", "Service")
 
 __all__ = ['OutputSerializer', 'ServiceSerializer', 'ServiceFormSerializer', 'ServiceSubmissionSerializer']
 

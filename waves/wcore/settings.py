@@ -76,7 +76,6 @@ DEFAULTS = {
     ),
     'PERMISSION_CLASSES': (),
     'MAILER_CLASS': 'waves.wcore.mails.JobMailer',
-    'SERVICE_MODEL': 'wcore.Service'
 }
 
 IMPORT_STRINGS = [

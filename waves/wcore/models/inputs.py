@@ -11,6 +11,7 @@ from polymorphic.models import PolymorphicModel
 
 from waves.wcore.models import WavesBaseModel
 from waves.wcore.models.base import Ordered, ApiModel
+from waves.wcore.models.services import Submission
 from waves.wcore.settings import waves_settings
 from waves.wcore.utils.storage import file_sample_directory, waves_storage
 from waves.wcore.utils.validators import validate_list_comma, validate_list_param
@@ -22,7 +23,7 @@ __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam
 class RepeatedGroup(Ordered):
     """ Some input may be grouped, and group could be repeated"""
 
-    submission = models.ForeignKey('Submission', related_name='submission_groups', null=True,
+    submission = models.ForeignKey(Submission, related_name='submission_groups', null=True,
                                    on_delete=models.CASCADE)
     name = models.CharField('Group name', max_length=255, null=False, blank=False)
     title = models.CharField('Group title', max_length=255, null=False, blank=False)
@@ -79,7 +80,7 @@ class AParam(PolymorphicModel, ApiModel):
                             help_text='Input runner\'s job param command line name')
     multiple = models.BooleanField('Multiple', default=False, help_text="Can hold multiple values")
     help_text = models.TextField('Help Text', null=True, blank=True)
-    submission = models.ForeignKey('Submission', on_delete=models.CASCADE, null=False, related_name='inputs')
+    submission = models.ForeignKey(Submission, on_delete=models.CASCADE, null=False, related_name='inputs')
     required = models.NullBooleanField('Required', choices={(False, "Optional"), (True, "Required"),
                                                             (None, "Not submitted")},
                                        default=True, help_text="Submitted and/or Required")
@@ -415,7 +416,7 @@ class SampleDepParam(WavesBaseModel):
         verbose_name_plural = "Sample dependencies"
         verbose_name = "Sample dependency"
 
-    # submission = models.ForeignKey('Submission', on_delete=models.CASCADE, related_name='sample_dependent_params')
+    # submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name='sample_dependent_params')
     file_input = models.ForeignKey('FileInput', null=True, on_delete=models.CASCADE, related_name="sample_dependencies")
     sample = models.ForeignKey(FileInputSample, on_delete=models.CASCADE, related_name='dependent_inputs')
     related_to = models.ForeignKey('AParam', on_delete=models.CASCADE, related_name='related_samples')

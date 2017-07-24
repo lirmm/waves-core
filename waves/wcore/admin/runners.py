@@ -13,9 +13,11 @@ from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.runners import RunnerForm
 from waves.wcore.models import Runner
 
-from waves.wcore.models.services import get_service_model, Submission
+from waves.wcore.models.services import Submission
+import swapper
 
-Service = get_service_model()
+Service = swapper.load_model("wcore", "Service")
+
 
 __all__ = ['RunnerAdmin']
 
