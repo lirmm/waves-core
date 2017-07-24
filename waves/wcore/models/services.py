@@ -16,6 +16,7 @@ from django.db import transaction
 from django.db.models import Q
 
 import waves.wcore.adaptors.const
+
 from waves.wcore.models.adaptors import *
 from waves.wcore.models.base import *
 from waves.wcore.models.runners import Runner
@@ -79,8 +80,6 @@ class ServiceManager(models.Manager):
         return self.get(api_name=api_name, version=version, status=status)
 
 
-
-
 class ServiceRunParam(AdaptorInitParam):
     """ Defined runner param for Service model objects """
 
@@ -113,9 +112,10 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
                 self.adaptor_params.all().delete()
             runners_defaults = self.runner.run_params
             current_defaults = self.run_params
-            [runners_defaults.pop(k, None) for k in current_defaults if k != 'protocol']
-            queryset = self.runner.adaptor_params.filter(
-                name__in=runners_defaults.keys()) if runners_defaults else self.runner.adaptor_params.all()
+            [runners_defaults.pop(k, None) for k in current_defaults if k == 'protocol']
+            queryset = self.runner.adaptor_params.filter(name__in=runners_defaults.keys()) \
+                if runners_defaults else self.runner.adaptor_params.all()
+            queryset = queryset.exclude(prevent_override=True)
             for runner_param in queryset:
                 if runner_param.prevent_override:
                     try:
@@ -230,7 +230,8 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def pending_jobs(self):
         """ Get current Service Jobs """
         from waves.wcore.models import Job
-        return Job.objects.filter(submission__in=self.submissions.all(), status__in=Job.PENDING_STATUS)
+        return Job.objects.filter(submission__in=self.submissions.all(),
+                                  _status__in=waves.wcore.adaptors.const.PENDING_STATUS)
 
     def import_service_params(self):
         """ Try to import service param configuration issued from adaptor
@@ -338,7 +339,8 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     @property
     def running_jobs(self):
-        return self.jobs.filter(status__in=[waves.wcore.adaptors.const.JOB_CREATED, waves.wcore.adaptors.const.JOB_COMPLETED])
+        return self.jobs.filter(
+            status__in=[waves.wcore.adaptors.const.JOB_CREATED, waves.wcore.adaptors.const.JOB_COMPLETED])
 
     def get_admin_url(self):
         return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
@@ -457,8 +459,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     @property
     def pending_jobs(self):
         """ Get current Service Jobs """
-        from waves.wcore.models import Job
-        return self.service_jobs.filter(status__in=Job.PENDING_STATUS)
+        return self.service_jobs.filter(status__in=waves.wcore.adaptors.const.PENDING_STATUS)
 
     def duplicate_api_name(self):
         """ Check is another entity is set with same api_name """
@@ -509,9 +510,9 @@ class SubmissionOutput(TimeStamped, ApiModel):
     def ext(self):
         """ return expected file output extension """
         file_name = "fake.txt"
-        if '%s' in self.name and self.from_input and self.from_input.default:
+        if self.name and '%s' in self.name and self.from_input and self.from_input.default:
             file_name = self.name % self.from_input.default
-        elif '%s' not in self.name and self.name:
+        elif self.name and '%s' not in self.name and self.name:
             file_name = self.name
         if '.' in file_name:
             return '.' + file_name.rsplit('.', 1)[1]
