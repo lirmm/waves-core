@@ -92,9 +92,9 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
         ]
         if obj and IS_POPUP_VAR not in request.GET:
             self.inlines = _inlines
-            if obj.wcore_submission_runs.count() > 0:
+            if obj.running_submissions.count() > 0:
                 self.inlines.append(SubmissionRunInline)
-            if obj.wcore_service_runs.count() > 0:
+            if obj.running_services.count() > 0:
                 self.inlines.append(ServiceRunInline)
         elif IS_POPUP_VAR not in request.GET:
             self.inlines = [_inlines[0], ]

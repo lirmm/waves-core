@@ -4,10 +4,10 @@ from __future__ import unicode_literals
 from itertools import chain
 
 from django.db import models
-from django.utils.module_loading import import_string
 
 from waves.wcore.models.adaptors import HasAdaptorClazzMixin
 from waves.wcore.models.base import Described, ExportAbleMixin
+
 
 __all__ = ['Runner']
 
@@ -57,7 +57,18 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
     @property
     def runs(self):
-        services_list = self.wcore_service_runs.all()
-        submissions_list = self.wcore_submission_runs.all()
+        services_list = self.running_services.all()
+        submissions_list = self.running_submissions.all()
         runs_list = list(chain(services_list, submissions_list))
         return runs_list
+
+    @property
+    def running_services(self):
+        from waves.wcore.utils import get_service_model
+        Service = get_service_model()
+        return Service.objects.filter(runner=self)
+
+    @property
+    def running_submissions(self):
+        from waves.wcore.models.services import Submission
+        return Submission.objects.filter(runner=self)
