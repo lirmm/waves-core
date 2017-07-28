@@ -1,0 +1,25 @@
+{% extends 'admin/login.html' %}
+
+{% block extrastyle %}{{ block.super }}
+    <style>
+        body.login {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0.2),
+            rgba(255, 255, 255, 0)),
+            url(/static/img/banner.png);
+            background-repeat: no-repeat;
+            background-position: 80% center;
+            background-attachment: fixed;
+            -webkit-background-size: cover;
+            background-size: cover;
+            padding: 10em 0;
+            margin-bottom: 0;
+            height: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumbs %}
+    <div align="center" style="margin: 5px"><i>Welcome to WAVES</i></div>
+{% endblock %}
+

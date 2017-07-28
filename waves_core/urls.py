@@ -21,9 +21,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 
-urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='base_waves.html')),
-    url(r'^admin/', admin.site.urls),
-    url(r'^waves/', include('waves.wcore.urls', namespace='waves')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
-    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+admin.site.site_title = 'WAVES Administration'
+
+urlpatterns = \
+    [
+        url(r'^$', TemplateView.as_view(template_name='base_waves.html')),
+        url(r'^admin/', admin.site.urls),
+        url(r'^waves/', include('waves.wcore.urls', namespace='waves')),
+    ]   + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
+        + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

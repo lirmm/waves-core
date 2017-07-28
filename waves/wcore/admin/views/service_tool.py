@@ -15,7 +15,6 @@ from waves.wcore.admin.views.runner_tool import RunnerImportToolView, ObjectDoes
 Service = swapper.load_model("wcore", "Service")
 
 
-
 # TODO in manage permission
 # from django.contrib.auth.decorators import permission_required
 # @permission_required('services.can_edit')
