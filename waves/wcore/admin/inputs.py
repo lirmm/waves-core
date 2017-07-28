@@ -11,7 +11,7 @@ from django.template.response import SimpleTemplateResponse
 from django.utils import six
 from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
-from waves.wcore.admin.submissions import FileInputSampleInline
+from waves.wcore.admin.submissions import FileInputSampleInline, SampleDependentInputInline
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import Submission
 
@@ -159,7 +159,7 @@ class FileInputAdmin(AParamAdmin):
     show_in_index = False
     extra_fieldset_title = 'File params'
 
-    inlines = [FileInputSampleInline]
+    inlines = [FileInputSampleInline, SampleDependentInputInline]
     # TODO activate sample selection dependencies (both on forms and on submission)
     # TOD, SampleDependentInputInline,]
     readonly_fields = ['regexp', ]
