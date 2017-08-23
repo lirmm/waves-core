@@ -64,8 +64,6 @@
                                         <div class="panel-body text-right">
                                             <a class="btn btn-warning"
                                                href="{{ service.get_admin_url }}">Service</a>
-                                            <a class="btn btn-warning"
-                                               href="{% url 'admin:wcore_job_changelist' %}?service__id__exact={{ service.id }}">Jobs</a>
                                         </div>
                                     </div>
                                 {% endif %}

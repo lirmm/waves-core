@@ -78,7 +78,6 @@ var RelatedInlinePopup = function () {
             $('#django-waves-admin-inline-popup-response-constants').each(function () {
                 var $constants = $(this);
                 var response = $constants.data('popup-response');
-                console.log('Found !');
                 self.closePopup(response);
             });
         },
