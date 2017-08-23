@@ -8,7 +8,7 @@ WAVES application defines a waves_settings attributes generated from WAVES_CORE 
 
 Here are the defaults values:
 
-    .. literalinclude:: ../../waves/core/settings.py
+    .. literalinclude:: ../../waves/wcore/settings.py
         :language: python
         :lines: 48-78
 

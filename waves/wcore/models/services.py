@@ -24,7 +24,8 @@ from waves.wcore.settings import waves_settings
 
 User = get_user_model()
 
-__all__ = ['ServiceRunParam', 'ServiceManager', 'Service', 'BaseService']
+__all__ = ['ServiceRunParam', 'ServiceManager', 'Service', 'BaseService', 'Submission', "SubmissionExitCode",
+           'SubmissionOutput', 'SubmissionRunParam', 'HasRunnerParamsMixin']
 
 logger = logging.getLogger(__name__)
 

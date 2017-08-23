@@ -542,7 +542,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """ Add a new try for job execution, save retry reason in JobAdminHistory, save job """
         if self.nb_retry <= waves_settings.JOBS_MAX_RETRY:
             self.nb_retry += 1
-            self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status)
+            if message is not None:
+                self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status)
         else:
             self.error(message)
 

@@ -11,14 +11,14 @@ Services are the main entry point for WAVEs application, managed by :ref:`servic
 
 Services may be accessed from multiple 'submissions'
 
-    .. autoclass:: waves.wcore.models.submissions.Submission
+    .. autoclass:: waves.wcore.models.services.Submission
         :members:
         :show-inheritance:
 
 .. _service-inputs-label:
 
-Submission Inputs
------------------
+Submission Inputs:
+------------------
 
 Base class for service inputs shared information
         .. autoclass:: waves.wcore.models.inputs.AParam
@@ -31,32 +31,31 @@ Submission Outputs:
 -------------------
 Submission description defines expected outputs
 
-    .. autoclass:: waves.wcore.models.submissions.SubmissionOutput
+    .. autoclass:: waves.wcore.models.services.SubmissionOutput
         :members:
 
-Submission Outputs:
--------------------
+
+Submission ExitCode:
+--------------------
+
 Submission description defines expected exitcode
 
-    .. autoclass:: waves.wcore.models.submissions.SubmissionOutput
+    .. autoclass:: waves.wcore.models.services.SubmissionExitCode
         :members:
-
-
-
 
 .. _service-samples-label:
 
-Input Samples
--------------
+Input Samples:
+--------------
 
 Services may provide sample data for their submissions
 
-    .. autoclass:: waves.wcore.models.samples.FileInputSample
+    .. autoclass:: waves.wcore.models.inputs.FileInputSample
         :members:
         :undoc-members:
         :show-inheritance:
 
-    .. autoclass:: waves.wcore.models.samples.SampleDepParam
+    .. autoclass:: waves.wcore.models.inputs.SampleDepParam
         :members:
         :undoc-members:
         :show-inheritance:

@@ -1,23 +1,25 @@
 """ Daemonized WAVES system commands """
 from __future__ import unicode_literals
 
-import datetime
 import logging
 import os
 import sys
+import tempfile
 import time
 from itertools import chain
 
+import datetime
+from django.core.management.base import BaseCommand, CommandError
+
 import waves.wcore.adaptors.const
 import waves.wcore.exceptions
-from django.core.management.base import BaseCommand, CommandError
 from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.management.runner import DaemonRunner
 from waves.wcore.models import Job
 from waves.wcore.settings import waves_settings
 from waves.wcore.settings import waves_settings as config
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('waves.daemon')
 
 
 class DaemonCommand(BaseCommand):
@@ -131,7 +133,7 @@ class JobQueueCommand(DaemonCommand):
     """
     help = 'Managing WAVES job queue states'
     SLEEP_TIME = 2
-    pidfile_path = os.path.join(waves_settings.DATA_ROOT, 'waves_queue.pid')
+    pidfile_path = os.path.join(tempfile.gettempdir(), 'waves_queue.pid')
     pidfile_timeout = 5
 
     def loop_callback(self):
