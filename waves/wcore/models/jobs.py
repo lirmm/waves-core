@@ -94,11 +94,15 @@ class JobManager(models.Manager):
             if user.is_superuser or user.is_staff:
                 # return all pending jobs
                 return self.filter(status__in=(
-                    self.model.JOB_CREATED, self.model.JOB_PREPARED, self.model.JOB_QUEUED,
-                    self.model.JOB_RUNNING))
+                    waves.wcore.adaptors.const.JOB_CREATED,
+                    waves.wcore.adaptors.const.JOB_PREPARED,
+                    waves.wcore.adaptors.const.JOB_QUEUED,
+                    waves.wcore.adaptors.const.JOB_RUNNING))
             # get only user jobs
-            return self.filter(status__in=(self.model.JOB_CREATED, self.model.JOB_PREPARED,
-                                           self.model.JOB_QUEUED, self.model.JOB_RUNNING),
+            return self.filter(status__in=(waves.wcore.adaptors.const.JOB_CREATED,
+                                           waves.wcore.adaptors.const.JOB_PREPARED,
+                                           waves.wcore.adaptors.const.JOB_QUEUED,
+                                           waves.wcore.adaptors.const.JOB_RUNNING),
                                client=user)
         # User is not supposed to be None
         return self.none()
@@ -112,13 +116,16 @@ class JobManager(models.Manager):
         :return: QuerySet
         """
         if user is not None:
-            self.filter(status=self.model.JOB_CREATED,
+            self.filter(status=waves.wcore.adaptors.const.JOB_CREATED,
                         client=user,
                         **extra_filter).order_by('-created')
-        return self.filter(status=self.model.JOB_CREATED, **extra_filter).order_by('-created').all()
+        return self.filter(status=waves.wcore.adaptors.const.JOB_CREATED,
+                           **extra_filter).order_by('-created').all()
 
     @transaction.atomic
-    def create_from_submission(self, submission, submitted_inputs, email_to=None, user=None):
+    def create_from_submission(self, submission, submitted_inputs,
+                               email_to=None, user=None,
+                               force_status=None):
         """ Create a new job from service submission data and submitted inputs values
         :param submission: Dictionary { param_name: param_value }
         :param submitted_inputs: received input from client submission
@@ -128,7 +135,7 @@ class JobManager(models.Manager):
         :rtype: :class:`waves.wcore.models.jobs.Job`
         """
         try:
-            job_title = submitted_inputs.pop('title')
+            job_title = submitted_inputs.pop('title', 'New Job')
         except KeyError:
             job_title = ""
         if logger.isEnabledFor(logging.DEBUG):
@@ -179,6 +186,9 @@ class JobManager(models.Manager):
             for j_output in job.outputs.all():
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
         job._command_line = job.command_line
+        if force_status is not None and force_status in waves.wcore.adaptors.const.STATUS_MAP.keys():
+            job.status = force_status
+        job.save()
         return job
 
 
@@ -753,12 +763,14 @@ class JobInputManager(models.Manager):
                 with open(filename, 'wb+') as uploaded_file:
                     for chunk in input_sample.file.chunks():
                         uploaded_file.write(chunk)
-            elif isinstance(submitted_input, str):
+            elif isinstance(submitted_input, (str, unicode)):
                 # copy / paste content
                 filename = path.join(job.working_dir, service_input.name + '.txt')
                 input_dict.update(dict(value=service_input.name + '.txt'))
                 with open(filename, 'wb+') as uploaded_file:
                     uploaded_file.write(submitted_input)
+            else:
+                logger.warn("Unable to determine usable type for input %s:%s " % (service_input.name, submitted_input))
         new_input = self.create(**input_dict)
         return new_input
 
@@ -925,7 +937,7 @@ class JobOutputManager(models.Manager):
             srv_submission_output = submission_output.from_input
             value_to_normalize = submitted_inputs.get(srv_submission_output.name,
                                                       srv_submission_output.default)
-            if srv_submission_output.param_type == AParam.TYPE_FILE:
+            if srv_submission_output.param_type == AParam.TYPE_FILE and type(value_to_normalize) is file:
                 value_to_normalize = value_to_normalize.name
             input_value = normalize_value(value_to_normalize)
             formatted_value = submission_output.file_pattern % input_value
