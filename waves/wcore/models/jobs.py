@@ -247,8 +247,11 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @status.setter
     def status(self, value):
         if value != self._status:
-            message = self.message.decode('utf8', errors='replace')
-            logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
+            if self.message:
+                message = self.message.decode('utf8', errors='replace')
+                logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
+            else:
+                message = ""
             self.job_history.create(message=message, status=value)
         self._status = value
 
@@ -602,8 +605,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def next_status(self):
         """ Automatically retrieve next expected status """
-        if self.status in self.NEXT_STATUS:
-            return self.NEXT_STATUS[self.status]
+        if self.status in waves.wcore.adaptors.const.NEXT_STATUS:
+            return waves.wcore.adaptors.const.NEXT_STATUS[self.status]
         else:
             return waves.wcore.adaptors.const.JOB_UNDEFINED
 
@@ -1033,4 +1036,4 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     @property
     def available(self):
-        return os.path.isfile(self.file_path) and os.path.getsize(self.file_path) > 0
+        return os.path.isfile(self.file_path)

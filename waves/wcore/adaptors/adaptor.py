@@ -5,7 +5,7 @@ import json
 import logging
 
 import waves.wcore.adaptors.const
-from waves.wcore.adaptors.exceptions import AdaptorJobStateException
+from waves.wcore.adaptors.exceptions import *
 from waves.wcore.adaptors.utils import check_ready
 from waves.wcore.utils.exception_logging_decorator import exception
 
@@ -131,7 +131,15 @@ class JobAdaptor(object):
         except AssertionError:
             raise AdaptorJobStateException(job.status, waves.wcore.adaptors.const.STATUS_MAP[0:5])
         self.connect()
-        self._cancel_job(job)
+        try:
+            self._cancel_job(job)
+        except AdaptorException as exc:
+            job.job_history.create(
+                message="Job for %s '%s' could not be remotely cancelled: %s " % (self.__class__.__name__,
+                                                                                  job.remote_job_id,
+                                                                                  exc.message),
+                status=job.status,
+                is_admin=True)
         job.status = waves.wcore.adaptors.const.JOB_CANCELLED
         return job
 

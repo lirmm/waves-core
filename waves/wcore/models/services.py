@@ -510,7 +510,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     @property
     def ext(self):
         """ return expected file output extension """
-        file_name = "fake.txt"
+        file_name = None
         if self.name and '%s' in self.name and self.from_input and self.from_input.default:
             file_name = self.name % self.from_input.default
         elif self.name and '%s' not in self.name and self.name:
@@ -518,7 +518,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
         if '.' in file_name:
             return '.' + file_name.rsplit('.', 1)[1]
         else:
-            return '.txt'
+            return self.extension
 
 
 class SubmissionExitCode(WavesBaseModel):

@@ -199,7 +199,10 @@ class JobAdmin(WavesModelAdmin):
         return form
 
     def get_run_on(self, obj):
-        return obj.submission.get_runner().name
+        if obj.submission.get_runner():
+            return obj.submission.get_runner().name
+        else:
+            return "Undefined"
 
     def get_client(self, obj):
         return obj.client.email if obj.client else "Anonymous"
@@ -215,13 +218,22 @@ class JobAdmin(WavesModelAdmin):
         return read_only_fields
 
     def connexion_string(self, obj):
-        return obj.adaptor.connexion_string()
+        if obj.adaptor:
+            return obj.adaptor.connexion_string()
+        else:
+            return "Unavailable"
 
     def get_command_line(self, obj):
-        return obj.command_line
+        if obj.adaptor:
+            return obj.adaptor.command + " " + obj.command_line
+        else:
+            return "Unavailable"
 
     def submission_service_name(self, obj):
-        return "%s [%s]" % (obj.submission.service.name, obj.submission.name)
+        if obj.submission:
+            return "%s [%s]" % (obj.submission.service.name, obj.submission.name)
+        else:
+            return "Unavailable"
 
     connexion_string.short_description = "Remote connexion string"
     get_command_line.short_description = "Remote command line"
