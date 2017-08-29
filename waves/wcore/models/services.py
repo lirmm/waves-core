@@ -494,7 +494,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
                                  help_text="Leave blank for *, or set in file pattern")
 
     def __str__(self):
-        return '%s (%s)' % (self.label, self.ext)
+        return self.label
 
     def clean(self):
         cleaned_data = super(SubmissionOutput, self).clean()
