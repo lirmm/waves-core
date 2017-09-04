@@ -125,7 +125,7 @@ class JobOutputSerializer(serializers.ModelSerializer):
             with open(file_path) as fp:
                 file_content = fp.read()
             return file_content.decode()
-        return None
+        return ""
 
     def to_representation(self, instance):
         """ Representation for a output """
@@ -134,6 +134,7 @@ class JobOutputSerializer(serializers.ModelSerializer):
         for output in instance:
             to_repr[normalize_value(output.get_api_name())] = {
                 "name": output.name,
+                "raw": self.get_raw_url(output.slug),
                 "download_uri": self.get_download_url(output.slug),
                 "content": self.file_get_content(output.file_path)
             }
@@ -143,6 +144,12 @@ class JobOutputSerializer(serializers.ModelSerializer):
         """ Link to jobOutput download uri """
         return "%s?export=1" % reverse(viewname='waves:api_v2:waves-job-output', request=self.context['request'],
                                        kwargs={'slug': slug})
+
+    def get_raw_url(self, slug):
+        """ Link to jobOutput download uri """
+        return "%s" % reverse(viewname='waves:api_v2:waves-job-output-raw',
+                              request=self.context['request'],
+                              kwargs={'slug': slug})
 
 
 class JobOutputDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -183,10 +190,6 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
     status_txt = serializers.SerializerMethodField()
     status_code = serializers.IntegerField(source='status')
     client = serializers.StringRelatedField(many=False, read_only=False)
-    service = serializers.HyperlinkedRelatedField(many=False, read_only=False,
-                                                  view_name='waves:api_v2:waves-services-detail',
-                                                  lookup_field='api_name', queryset=Service.objects.all(),
-                                                  required=True)
     history = serializers.SerializerMethodField()
     outputs = serializers.SerializerMethodField()
     inputs = serializers.SerializerMethodField()
