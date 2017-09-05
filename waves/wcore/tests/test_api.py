@@ -18,7 +18,7 @@ User = get_user_model()
 
 
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):
-    fixtures = ['waves/core/tests/fixtures/services.json']
+    fixtures = ['waves/wcore/tests/fixtures/services.json']
 
     def setUp(self):
         super(WavesAPITestCase, self).setUp()
@@ -29,7 +29,7 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
         admin_user.set_password('admin1234')
         admin_user.save()
 
-        api_user = User.objects.create(email="waves:api@waves.wcore.fr", username="api_user", is_staff=False,
+        api_user = User.objects.create(email="wavesapi@waves.wcore.fr", username="api_user", is_staff=False,
                                        is_superuser=False, is_active=True)
         api_user.set_password('api_user1234')
         api_user.save()
@@ -37,7 +37,7 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
 
     def test_api_root(self):
         for api_version in ('api_v1', 'api_v2'):
-            api_root = self.client.get(reverse('waves:' + api_version + ':api-root'))
+            api_root = self.client.get(reverse('wapi:' + api_version + ':api-root'))
             self.assertEqual(api_root.status_code, status.HTTP_200_OK)
             logger.debug('Results: %s ', api_root.data)
             self.assertIn('services', api_root.data.keys())
@@ -62,9 +62,9 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
         """
         import random
         import string
-        logger.debug('Retrieving service-list from ' + reverse('waves:api_v2:waves-services-list'))
+        logger.debug('Retrieving service-list from ' + reverse('wapi:api_v2:waves-services-list'))
         for api_version in ('api_v1', 'api_v2'):
-            tool_list = self.client.get(reverse('waves:'+api_version+':waves-services-list'), format="json")
+            tool_list = self.client.get(reverse('wapi:'+api_version+':waves-services-list'), format="json")
             self.assertEqual(tool_list.status_code, status.HTTP_200_OK)
             self.assertIsNotNone(tool_list)
             logger.debug(tool_list.data)
@@ -116,8 +116,7 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                     job = Job.objects.all().order_by('-created').first()
                     logger.debug(job)
-        jobs = Job.objects.all()
-        for job in jobs:
+        for job in Job.objects.all():
             logger.debug('Job %s ', job)
             self.assertEqual(job.status, waves.wcore.adaptors.const.JOB_CREATED)
             self.assertEqual(job.job_history.count(), 1)
@@ -139,7 +138,7 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
         pass
 
     def testPhysicIST(self):
-        url_post = self.client.get(reverse('waves:api_v2:waves-services-detail',
+        url_post = self.client.get(reverse('wapi:api_v2:waves-services-detail',
                                            kwargs={'api_name': 'physic_ist'}))
         if url_post.status_code == status.HTTP_200_OK:
 
@@ -152,7 +151,7 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                                             format='multipart')
                 logger.debug(response)
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-                job_details = self.client.get(reverse('waves:api_v2:waves-jobs-detail',
+                job_details = self.client.get(reverse('wapi:api_v2:waves-jobs-detail',
                                                       kwargs={'slug': response.data['slug']}))
 
                 self.assertEqual(job_details.status_code, status.HTTP_200_OK)
@@ -160,10 +159,10 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                 self.assertIsInstance(job, Job)
                 self.assertEqual(job.status, Job.JOB_CREATED)
         else:
-            self.skipTest("Service physic_ist not available on waves:api_v2 [status_code:%s]" % url_post.status_code)
+            self.skipTest("Service physic_ist not available on wapi:api_v2 [status_code:%s]" % url_post.status_code)
 
     def testMissingParam(self):
-        response = self.client.get(reverse('waves:api_v2:waves-services-detail',
+        response = self.client.get(reverse('wapi:api_v2:waves-services-detail',
                                            kwargs={'api_name': 'physic_ist'}))
         if response.status_code == status.HTTP_200_OK:
             jobs_params = self._loadServiceJobsParams(api_name='physic_ist')
@@ -179,4 +178,4 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             logger.info(response)
         else:
-            self.skipTest("Service physic_ist not available on waves:api_v2 [status_code:%s]" % response.status_code)
+            self.skipTest("Service physic_ist not available on wapi:api_v2 [status_code:%s]" % response.status_code)

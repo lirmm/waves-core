@@ -1,15 +1,13 @@
 from __future__ import unicode_literals
 
-from django.conf.urls import url, include
+from django.conf.urls import url
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import login_required
 
 from waves.wcore.admin.views import *
-from waves.wcore.views.jobs import *
 from waves.wcore.views.services import *
 
 # TODO change auth decorators to specific WAVES ones
-waves_admin_url = [
+urlpatterns = [
     url(r'^admin/service/(?P<service_id>\d+)/import$', staff_member_required(ServiceParamImportView.as_view()),
         name="service_import_form"),
     url(r'^admin/runner/(?P<runner_id>\d+)/import$', staff_member_required(RunnerImportToolView.as_view()),
@@ -31,20 +29,3 @@ waves_admin_url = [
     url(r'^admin/service/form/(?P<pk>\d+)/preview$', staff_member_required(SubmissionPreview.as_view()),
         name="service_submission_preview"),
 ]
-waves_front_url = [
-    url(r'^services/$', ServiceListView.as_view(), name='services_list'),
-    url(r'^service/(?P<pk>[0-9]+)/$', ServiceDetailView.as_view(), name='service_details'),
-    url(r'^service/(?P<pk>[0-9]+)/create$', JobSubmissionView.as_view(), name='job_submission'),
-    url(r'^jobs/(?P<slug>[\w-]+)/$', JobView.as_view(), name="job_details"),
-    url(r'^jobs/inputs/(?P<slug>[\w-]+)/$', login_required(JobInputView.as_view()), name="job_input"),
-    url(r'^jobs/outputs/(?P<slug>[\w-]+)/$', login_required(JobOutputView.as_view()), name="job_output"),
-    url(r'^jobs/$', login_required(JobListView.as_view()), name="job_list"),
-]
-
-
-waves_api_url = [
-    url(r'^api/v1/', include('waves.wcore.api.v1.urls', namespace='api_v1')),
-    url(r'^api/', include('waves.wcore.api.v2.urls', namespace='api_v2')),
-]
-
-urlpatterns = waves_admin_url + waves_api_url + waves_front_url

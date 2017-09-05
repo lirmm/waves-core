@@ -89,7 +89,7 @@ class InputSerializer(DynamicFieldsModelSerializer):
         queryset = AParam.objects.all()
         fields = ('label', 'name', 'default', 'type', 'mandatory', 'help_text', 'multiple', 'dependents_inputs')
         extra_kwargs = {
-            'url': {'view_name': 'waves:api_v2:waves-services-detail', 'lookup_field': 'api_name'}
+            'url': {'view_name': 'wapi:api_v2:waves-services-detail', 'lookup_field': 'api_name'}
         }
 
     def __init__(self, instance=None, data=empty, **kwargs):

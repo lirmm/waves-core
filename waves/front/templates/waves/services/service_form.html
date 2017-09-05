@@ -14,7 +14,7 @@
 {% block content_main %}
     <div class="panel panel-info">
         <div class="panel-heading">
-            <a href="{% url 'waves:service_details' service.id %}">
+            <a href="{% url 'wfront:service_details' service.id %}">
                 <h3 class="panel-title">{{ service.name }} online submission</h3>
             </a>
         </div>
@@ -23,7 +23,7 @@
         </div>
         <div class="panel-footer">
             <span class="text-left">
-                <a href="{% url 'waves:service_details' service.id %}">Back to service</a>
+                <a href="{% url 'wfront:service_details' service.id %}">Back to service</a>
             </span>
         </div>
     </div>

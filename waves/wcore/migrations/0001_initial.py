@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(help_text='Service displayed name', max_length=255, verbose_name='Service name')),
                 ('version', models.CharField(blank=True, default='1.0', help_text='Service displayed version', max_length=10, null=True, verbose_name='Current version')),
                 ('status', models.IntegerField(choices=[[0, 'Draft'], [1, 'Test'], [2, 'Restricted'], [3, 'Public']], default=0, help_text='Service online status')),
-                ('api_on', models.BooleanField(default=True, help_text='Service is available for waves:api_v2 calls', verbose_name='Available on API')),
+                ('api_on', models.BooleanField(default=True, help_text='Service is available for wapi:api_v2 calls', verbose_name='Available on API')),
                 ('web_on', models.BooleanField(default=True, help_text='Service is available for web front', verbose_name='Available on WEB')),
                 ('email_on', models.BooleanField(default=True, help_text='This service sends notification email', verbose_name='Notify results')),
                 ('partial', models.BooleanField(default=False, help_text='Set whether some service outputs are dynamic (not known in advance)', verbose_name='Dynamic outputs')),

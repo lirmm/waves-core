@@ -17,7 +17,7 @@ setup(
     name='waves-core',
     version=import_version(),
     packages=find_packages(),
-    provides=['waves.wcore'],
+    provides=['waves.wcore', 'waves.front'],
     include_package_data=True,
     license='GPLv3',
     description='WAVES - core ',
