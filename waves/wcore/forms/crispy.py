@@ -23,6 +23,7 @@ class FormHelper(FormHelper, WFormHelper):
         form_class = kwargs.pop('form_class', 'form-horizontal')
         label_class = kwargs.pop('label_class', 'col-lg-4')
         field_class = kwargs.pop('field_class', 'col-lg-8 text-left')
+        self.form_obj = form
         super(FormHelper, self).__init__(form)
         self.form_tag = form_tag
         self.form_class = form_class
@@ -31,7 +32,7 @@ class FormHelper(FormHelper, WFormHelper):
         self.render_unmentioned_fields = False
         self.layout = Layout()
 
-    def set_layout(self, service_input, form):
+    def set_layout(self, service_input):
         """
         Setup layout for displaying a form for a Service, append extra fields for forms if needed
         """
@@ -52,7 +53,7 @@ class FormHelper(FormHelper, WFormHelper):
             dependent_4_value = service_input.when_value
             field_dict.update(dict(dependent_on=service_input.parent.name,
                                    dependent_4_value=service_input.when_value))
-            when_value = form.data.get(service_input.parent.name, service_input.parent.default)
+            when_value = self.form_obj.data.get(service_input.parent.name, service_input.parent.default)
             if service_input.when_value != when_value:
                 field_dict.update(dict(wrapper_class="hid_dep_parameter", disabled="disabled"))
             else:

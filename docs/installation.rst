@@ -12,31 +12,47 @@ GET a WAVES web-app online following the next few steps, WAVES can run on Apache
         with another user (such as www-data)
 
     .. note::
-        In order to install WAVES you will need:
-            - python 2.7.X (WAVES should be compatible with python 3.5 but not fully tested)
+        In order to install WAVES you need:
+            - python 2.7.X (WAVES is not yet compatible with python3)
             - pip package manager
-            - A web server: `Apache <https://httpd.apache.org/>`_ or `NGINX <https://nginx.org/>`_
-            - A database backend (Mysql or Postgres) but WAVES basically runs out-of-the-box with a sqlite DB
+            - Django Application set up (use `Waves-demo <https://github.com/lirmm/waves-demo>`_ project if you don't have one )
+            - Web server: `Apache <https://httpd.apache.org/>`_ or `NGINX <https://nginx.org/>`_
+            - Message broker : we won't force you but Waves is tested with Celery and RabbitMQ
+
+    .. seealso::
+
+        * `RabbitMQ Installation <http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html#rabbitmq>`_
+        * `Rabbit MQ Celery broker configuration <http://docs.celeryproject.org/en/latest/getting-started/brokers/rabbitmq.html#broker-rabbitmq>`_
+        * `Celery Django <http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#using-celery-with-django>`_
 
 1. Install WAVES
 ----------------
 
-    1.1. Install waves package (strongly recommended to do so in a
-       dedicated virtualenv):
+    1.0. Configure RabbitMQ message broker::
 
-       ``pip install -e git+https://github.com/lirmm/waves-core.git#egg=waves``
+        $sudo rabbitmqctl add_user waves [mypassword]
+        $sudo rabbitmqctl add_vhost [yourHost]
+        $sudo rabbitmqctl set_user_tags waves [mytag]
+        $sudo rabbitmqctl set_permissions -p [yourHost] waves ".*" ".*" ".*"
+
+    1.1. Install waves package (strongly recommended to do so in a  dedicated virtualenv):
+
+        ``pip install -e git+https://github.com/lirmm/waves-core.git#egg=waves``
 
     1.2. Add "waves" to your INSTALLED_APPS settings, minimum apps are as follow ::
 
         INSTALLED_APPS = [
             'polymorphic',
+            ...
             'django.contrib.admin',
             'django.contrib.auth',
             'django.contrib.contenttypes',
             'django.contrib.sessions',
             'django.contrib.messages',
             'django.contrib.staticfiles',
-            'waves',
+            ...
+            'waves.wcore',
+            ...
             'crispy_forms',
             'rest_framework',
             ...
@@ -44,16 +60,10 @@ GET a WAVES web-app online following the next few steps, WAVES can run on Apache
 
     1.3. Include the services urls in your project urls.py::
 
-            url(r'^waves/', include('waves.wcore.urls', namespace='waves')),
+        url(r'^waves/', include('waves.wcore.urls', namespace='waves')),
 
-            Alternativly you can use only parts waves urls configuration you need:
+    1.4. Create your database::
 
-                url(r'^admin/waves/', include('waves.wcore.urls.waves_admin_url', namespace='waves')),
-                url(r'^my-api/', include('waves.wcore.urls.waves_api_url', namespace='waves')),
-                url(r'^waves/', include('waves.wcore.urls.front_url', namespace='waves'))
-
-    1.4. Run ``python manage.py makemigrations`` to update database models.
-
-    1.5. Run ``python manage.py migrate`` to import sample data if you wish
-
-    1.6. Run ``python manage.py check`` to check installation
+        python manage.py makemigrations
+        python manage.py migrate
+        python manage.py check

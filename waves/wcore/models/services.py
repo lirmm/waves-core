@@ -3,17 +3,20 @@ WAVES Services related models objects
 """
 from __future__ import unicode_literals
 
-import os
 import logging
+import os
+
 import swapper
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
 from django.db.models import Q
 
 import waves.wcore.adaptors.const
+
 from waves.wcore.models.adaptors import *
 from waves.wcore.models.base import *
 from waves.wcore.models.runners import Runner
@@ -21,9 +24,11 @@ from waves.wcore.settings import waves_settings
 
 User = get_user_model()
 
-__all__ = ['ServiceRunParam', 'ServiceManager', 'Service', 'BaseService']
+__all__ = ['ServiceRunParam', 'ServiceManager', 'Service', 'BaseService', 'Submission', "SubmissionExitCode",
+           'SubmissionOutput', 'SubmissionRunParam', 'HasRunnerParamsMixin']
 
 logger = logging.getLogger(__name__)
+
 
 class ServiceManager(models.Manager):
     """
@@ -75,11 +80,6 @@ class ServiceManager(models.Manager):
     def get_by_natural_key(self, api_name, version, status):
         return self.get(api_name=api_name, version=version, status=status)
 
-    def get_admin_url(self):
-        from waves.wcore.utils import url_to_edit_object
-        Service = swapper.load_model("wcore", "Service")
-        return url_to_edit_object(Service)
-
 
 class ServiceRunParam(AdaptorInitParam):
     """ Defined runner param for Service model objects """
@@ -113,9 +113,10 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
                 self.adaptor_params.all().delete()
             runners_defaults = self.runner.run_params
             current_defaults = self.run_params
-            [runners_defaults.pop(k, None) for k in current_defaults if k != 'protocol']
-            queryset = self.runner.adaptor_params.filter(
-                name__in=runners_defaults.keys()) if runners_defaults else self.runner.adaptor_params.all()
+            [runners_defaults.pop(k, None) for k in current_defaults if k == 'protocol']
+            queryset = self.runner.adaptor_params.filter(name__in=runners_defaults.keys()) \
+                if runners_defaults else self.runner.adaptor_params.all()
+            queryset = queryset.exclude(prevent_override=True)
             for runner_param in queryset:
                 if runner_param.prevent_override:
                     try:
@@ -230,7 +231,8 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def pending_jobs(self):
         """ Get current Service Jobs """
         from waves.wcore.models import Job
-        return Job.objects.filter(submission__in=self.submissions.all(), status__in=Job.PENDING_STATUS)
+        return Job.objects.filter(submission__in=self.submissions.all(),
+                                  _status__in=waves.wcore.adaptors.const.PENDING_STATUS)
 
     def import_service_params(self):
         """ Try to import service param configuration issued from adaptor
@@ -310,14 +312,14 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
         :return: True or False
         """
         if user.is_anonymous():
-            return (self.runner is not None and self.status == Service.SRV_PUBLIC and
+            return (self.runner is not None and self.status == self.SRV_PUBLIC and
                     waves_settings.ALLOW_JOB_SUBMISSION is True)
         # RULES to set if user can access submissions
-        return self.runner is not None and (self.runner is not None and self.status == Service.SRV_PUBLIC and
+        return self.runner is not None and (self.runner is not None and self.status == self.SRV_PUBLIC and
                                             waves_settings.ALLOW_JOB_SUBMISSION is True) or \
-               (self.status == Service.SRV_DRAFT and self.created_by == user) or \
-               (self.status == Service.SRV_TEST and user.is_staff) or \
-               (self.status == Service.SRV_RESTRICTED and (
+               (self.status == self.SRV_DRAFT and self.created_by == user) or \
+               (self.status == self.SRV_TEST and user.is_staff) or \
+               (self.status == self.SRV_RESTRICTED and (
                    user in self.restricted_client.all() or user.is_staff)) or \
                user.is_superuser
 
@@ -333,12 +335,19 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     def activate_deactivate(self):
         """ Published or unpublished Service """
-        self.status = Service.SRV_DRAFT if self.status is Service.SRV_PUBLIC else Service.SRV_PUBLIC
+        self.status = self.SRV_DRAFT if self.status is self.SRV_PUBLIC else self.SRV_PUBLIC
         self.save()
 
     @property
     def running_jobs(self):
-        return self.jobs.filter(status__in=[waves.wcore.adaptors.const.JOB_CREATED, waves.wcore.adaptors.const.JOB_COMPLETED])
+        return self.jobs.filter(
+            status__in=[waves.wcore.adaptors.const.JOB_CREATED, waves.wcore.adaptors.const.JOB_COMPLETED])
+
+    def get_admin_url(self):
+        return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    def get_admin_changelist(self):
+        return reverse('admin:%s_%s_changelist' % (self._meta.app_label, self._meta.model_name))
 
 
 class Service(BaseService):
@@ -451,8 +460,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     @property
     def pending_jobs(self):
         """ Get current Service Jobs """
-        from waves.wcore.models import Job
-        return self.service_jobs.filter(status__in=Job.PENDING_STATUS)
+        return self.service_jobs.filter(status__in=waves.wcore.adaptors.const.PENDING_STATUS)
 
     def duplicate_api_name(self):
         """ Check is another entity is set with same api_name """
@@ -486,7 +494,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
                                  help_text="Leave blank for *, or set in file pattern")
 
     def __str__(self):
-        return '%s (%s)' % (self.label, self.ext)
+        return self.label
 
     def clean(self):
         cleaned_data = super(SubmissionOutput, self).clean()
@@ -502,15 +510,15 @@ class SubmissionOutput(TimeStamped, ApiModel):
     @property
     def ext(self):
         """ return expected file output extension """
-        file_name = "fake.txt"
-        if '%s' in self.name and self.from_input and self.from_input.default:
+        file_name = None
+        if self.name and '%s' in self.name and self.from_input and self.from_input.default:
             file_name = self.name % self.from_input.default
-        elif '%s' not in self.name and self.name:
+        elif self.name and '%s' not in self.name and self.name:
             file_name = self.name
         if '.' in file_name:
             return '.' + file_name.rsplit('.', 1)[1]
         else:
-            return '.txt'
+            return self.extension
 
 
 class SubmissionExitCode(WavesBaseModel):

@@ -6,7 +6,7 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 
-from waves.wcore.forms.helper import WFormHelper
+from waves.wcore.forms.crispy import FormHelper
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import Submission
 from waves.wcore.utils.validators import ServiceInputValidator
@@ -46,7 +46,7 @@ class ServiceSubmissionForm(forms.ModelForm):
                 for input_sample in service_input.input_samples.all():
                     self.add_field(input_sample)
 
-            self.helper.set_layout(service_input, self)
+            self.helper.set_layout(service_input)
             for dependent_input in service_input.dependents_inputs.exclude(required=None):
                 # conditional parameters must not be required to use classic django form validation process
                 dependent_input.required = False
@@ -56,7 +56,7 @@ class ServiceSubmissionForm(forms.ModelForm):
                     for input_sample in dependent_input.input_samples.all():
                         self.add_field(input_sample)
                 self.add_field(dependent_input)
-                self.helper.set_layout(dependent_input, self)
+                self.helper.set_layout(dependent_input)
         self.list_inputs.extend(extra_fields)
         self.helper.end_layout()
 
@@ -100,9 +100,9 @@ class ServiceSubmissionForm(forms.ModelForm):
             form_field = forms.CharField(**field_dict)
         self.fields[field_name] = form_field
 
-    @staticmethod
-    def get_helper(**kwargs):
-        return WFormHelper(**kwargs)
+    def get_helper(self, **helper_args):
+        # TODO add dynamic Helper class loading
+        return FormHelper(form=self, **helper_args)
 
     def _create_copy_paste_field(self, service_input):
         # service_input.mandatory = False # Field is validated in clean process

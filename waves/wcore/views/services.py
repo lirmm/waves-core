@@ -147,10 +147,11 @@ class JobSubmissionView(ServiceDetailView, generic.FormView):
         return self.render_to_response(self.get_context_data(**kwargs))
 
 
-class SubmissionPreview(JobSubmissionView):
-    template_name = 'admin/waves/service/service_form.html'
+class SubmissionPreview(ServiceDetailView):
+    template_name = 'admin/waves/service/service_preview.html'
 
     def get_context_data(self, **kwargs):
         context = super(SubmissionPreview, self).get_context_data(**kwargs)
         context['preview'] = True
+        context['service_id'] = self.get_object().id
         return context

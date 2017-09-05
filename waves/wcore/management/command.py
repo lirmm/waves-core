@@ -1,23 +1,25 @@
 """ Daemonized WAVES system commands """
 from __future__ import unicode_literals
 
-import datetime
 import logging
 import os
 import sys
+import tempfile
 import time
 from itertools import chain
 
+import datetime
+from django.core.management.base import BaseCommand, CommandError
+
 import waves.wcore.adaptors.const
 import waves.wcore.exceptions
-from django.core.management.base import BaseCommand, CommandError
 from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.management.runner import DaemonRunner
 from waves.wcore.models import Job
 from waves.wcore.settings import waves_settings
 from waves.wcore.settings import waves_settings as config
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('waves.daemon')
 
 
 class DaemonCommand(BaseCommand):
@@ -131,7 +133,7 @@ class JobQueueCommand(DaemonCommand):
     """
     help = 'Managing WAVES job queue states'
     SLEEP_TIME = 2
-    pidfile_path = os.path.join(waves_settings.DATA_ROOT, 'waves_queue.pid')
+    pidfile_path = os.path.join(tempfile.gettempdir(), 'waves_queue.pid')
     pidfile_timeout = 5
 
     def loop_callback(self):
@@ -152,32 +154,30 @@ class JobQueueCommand(DaemonCommand):
             logger.info("Starting queue process with %i(s) unfinished jobs", jobs.count())
         for job in jobs:
             runner = job.adaptor
-            logger.debug('[Runner]-------\n%s\n----------------', job.adaptor.dump_config())
+            if runner and logger.isEnabledFor(logging.DEBUG):
+                logger.debug('[Runner]-------\n%s\n----------------', runner.dump_config())
             try:
                 job.check_send_mail()
-                logger.debug("Launching Job %s (adaptor:%s)", job, job.adaptor)
+                logger.debug("Launching Job %s (adaptor:%s)", job, runner)
                 if job.status == waves.wcore.adaptors.const.JOB_CREATED:
                     job.run_prepare()
-                    # runner.prepare_job(job=job)
-                    logger.debug("[PrepareJob] %s (adaptor:%s)", job, job.adaptor)
+                    logger.debug("[PrepareJob] %s (adaptor:%s)", job, runner)
                 elif job.status == waves.wcore.adaptors.const.JOB_PREPARED:
-                    logger.debug("[LaunchJob] %s (adaptor:%s)", job, job.adaptor)
+                    logger.debug("[LaunchJob] %s (adaptor:%s)", job, runner)
                     job.run_launch()
-                    # runner.run_job(job)
                 elif job.status == waves.wcore.adaptors.const.JOB_COMPLETED:
-                    # runner.job_run_details(job)
                     job.run_results()
-                    logger.debug("[JobExecutionEnded] %s (adaptor:%s)", job.get_status_display(), job.adaptor)
+                    logger.debug("[JobExecutionEnded] %s (adaptor:%s)", job.get_status_display(), runner)
                 else:
                     job.run_status()
-                    # runner.job_status(job)
             except (waves.wcore.exceptions.WavesException, AdaptorException) as e:
                 logger.error("Error Job %s (adaptor:%s-state:%s): %s", job, runner, job.get_status_display(),
                              e.message)
             finally:
                 logger.info("Queue job terminated at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
                 job.check_send_mail()
-                runner.disconnect()
+                if runner is not None:
+                    runner.disconnect()
         # logger.debug('Go to sleep for %i seconds' % self.SLEEP_TIME)
         time.sleep(self.SLEEP_TIME)
 

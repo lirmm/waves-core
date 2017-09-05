@@ -99,8 +99,6 @@ class InputInlineForm(forms.ModelForm):
         if isinstance(self.instance, ListParam) or isinstance(self.instance, BooleanParam):
             self.fields['default'] = forms.ChoiceField(choices=self.instance.choices, initial=self.instance.default)
             self.fields['default'].required = False
-        elif isinstance(self.instance, FileInput):
-            self.fields['default'].widget.attrs['style'] = 'display:none'
         if self.instance.parent is not None:
             self.fields['required'].widget.attrs['disabled'] = 'disabled'
             self.fields['required'].widget.attrs['title'] = 'Inputs with dependencies must be optional'

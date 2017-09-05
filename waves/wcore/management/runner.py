@@ -15,7 +15,7 @@ import psutil
 from daemon.runner import DaemonRunner as BaseDaemonRunner, DaemonRunnerStopFailureError, \
     DaemonRunnerStartFailureError, emit_message
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('waves.daemon')
 
 
 class DaemonRunner(BaseDaemonRunner):

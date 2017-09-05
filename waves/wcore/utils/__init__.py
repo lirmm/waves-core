@@ -30,6 +30,7 @@ def url_to_edit_object(obj):
     """ Retrieve url to access admin change object """
     if obj is not None:
         url = reverse('admin:%s_%s_change' % (obj._meta.app_label, obj._meta.model_name), args=[obj.id])
+
         return mark_safe('<a class="" href="{}" title="Edit {}">{}</a>'.format(url, obj._meta.model_name, str(obj)))
     else:
         logger.warn('Trying to view a NoneType object link %s ', obj.__class__.__name__)

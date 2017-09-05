@@ -207,8 +207,7 @@ class DumpConfigCommand(BaseCommand):
         :param options: Command options (expected none)
         """
         from django.conf import settings
-        from waves.wcore.compat import config
-        var_dict = dir(config)
+        from waves.wcore import settings as config
         self.stdout.write("************************************************")
         self.stdout.write('Current Django default database: %s' % settings.DATABASES['default']['ENGINE'])
         self.stdout.write('Current Django static dir: %s' % settings.STATICFILES_DIRS)
@@ -217,7 +216,9 @@ class DumpConfigCommand(BaseCommand):
         self.stdout.write('Current Django allowed hosts: %s' % settings.ALLOWED_HOSTS)
         self.stdout.write("************************************************")
         self.stdout.write("****  WAVES current setup *****")
-        for key, val in config.dump_config():
+        var_dict = vars(config)
+
+        for key, val in var_dict['DEFAULTS'].items():
             self.stdout.write('%s: %s' % (key, val))
         self.stdout.write("************************************************")
 

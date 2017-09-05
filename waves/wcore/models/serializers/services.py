@@ -12,7 +12,7 @@ from waves.wcore.api.v2.serializers import ServiceSerializer as BaseServiceSeria
 from waves.wcore.models import *
 from waves.wcore.models.serializers.base import RelatedSerializerMixin
 from waves.wcore.models.serializers.runners import RunnerSerializer, RunnerParamSerializer
-from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode, SubmissionRunParam
+from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode, SubmissionRunParam, Submission
 from waves.wcore.settings import waves_settings
 
 Service = swapper.load_model("wcore", "Service")

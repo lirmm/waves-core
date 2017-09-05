@@ -25,7 +25,7 @@ setup(
     author='Marc Chakiachvili',
     author_email='marc.chakiachvili@lirmm.fr, marc@archi-logic.fr',
     install_requires=[
-        'saga-python==0.45.1',
+        'saga-python==0.46.1',
         'django==1.11.1',
         'django-crispy-forms==1.6.1',
         'djangorestframework==3.5.4',
@@ -34,7 +34,9 @@ setup(
         'pycrypto==2.6.1',
         'python-magic==0.4.13',
         'python-daemon==2.1.1',
-        'psutil==5.2.2'
+        'psutil==5.2.2',
+        'swapper==1.1.0',
+        'setproctitle==1.1.10'
     ],
     classifiers=[
         'Environment :: Web Environment',

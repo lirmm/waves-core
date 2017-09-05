@@ -13,12 +13,6 @@
   -webkit-overflow-scrolling: touch;
   outline: 0;
 }
-.modal-body {
-  position: relative;
-  overflow-y: auto;
-  max-height: 400px;
-  padding: 15px;
-}
 .modal.fade .modal-dialog {
   -webkit-transform: translate(0, -25%);
   -ms-transform: translate(0, -25%);

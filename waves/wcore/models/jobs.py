@@ -15,6 +15,7 @@ from django.core.files.uploadedfile import TemporaryUploadedFile, InMemoryUpload
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.html import format_html
+from django.core.files.base import File
 
 import waves.wcore.adaptors.const
 import waves.wcore.adaptors.exceptions
@@ -31,7 +32,7 @@ from waves.wcore.utils.storage import allow_display_online
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['Job', 'JobInput', 'JobOutput']
+__all__ = ['Job', 'JobInput', 'JobOutput', 'JobManager']
 
 
 class JobManager(models.Manager):
@@ -94,11 +95,15 @@ class JobManager(models.Manager):
             if user.is_superuser or user.is_staff:
                 # return all pending jobs
                 return self.filter(status__in=(
-                    self.model.JOB_CREATED, self.model.JOB_PREPARED, self.model.JOB_QUEUED,
-                    self.model.JOB_RUNNING))
+                    waves.wcore.adaptors.const.JOB_CREATED,
+                    waves.wcore.adaptors.const.JOB_PREPARED,
+                    waves.wcore.adaptors.const.JOB_QUEUED,
+                    waves.wcore.adaptors.const.JOB_RUNNING))
             # get only user jobs
-            return self.filter(status__in=(self.model.JOB_CREATED, self.model.JOB_PREPARED,
-                                           self.model.JOB_QUEUED, self.model.JOB_RUNNING),
+            return self.filter(status__in=(waves.wcore.adaptors.const.JOB_CREATED,
+                                           waves.wcore.adaptors.const.JOB_PREPARED,
+                                           waves.wcore.adaptors.const.JOB_QUEUED,
+                                           waves.wcore.adaptors.const.JOB_RUNNING),
                                client=user)
         # User is not supposed to be None
         return self.none()
@@ -112,14 +117,19 @@ class JobManager(models.Manager):
         :return: QuerySet
         """
         if user is not None:
-            self.filter(status=self.model.JOB_CREATED,
+            self.filter(status=waves.wcore.adaptors.const.JOB_CREATED,
                         client=user,
                         **extra_filter).order_by('-created')
-        return self.filter(status=self.model.JOB_CREATED, **extra_filter).order_by('-created').all()
+        return self.filter(status=waves.wcore.adaptors.const.JOB_CREATED,
+                           **extra_filter).order_by('-created').all()
 
     @transaction.atomic
-    def create_from_submission(self, submission, submitted_inputs, email_to=None, user=None):
+    def create_from_submission(self, submission, submitted_inputs,
+                               email_to=None, user=None,
+                               force_status=None, update=None):
         """ Create a new job from service submission data and submitted inputs values
+        :type update: Existing Job to extend
+        :param force_status: Force initial job status
         :param submission: Dictionary { param_name: param_value }
         :param submitted_inputs: received input from client submission
         :param email_to: if given, email address to notify job process to
@@ -128,7 +138,7 @@ class JobManager(models.Manager):
         :rtype: :class:`waves.wcore.models.jobs.Job`
         """
         try:
-            job_title = submitted_inputs.pop('title')
+            job_title = submitted_inputs.pop('title', 'New Job')
         except KeyError:
             job_title = ""
         if logger.isEnabledFor(logging.DEBUG):
@@ -136,10 +146,14 @@ class JobManager(models.Manager):
             for key in submitted_inputs:
                 logger.debug('Param %s: %s', key, submitted_inputs[key])
         client = user if user is not None and not user.is_anonymous() else None
-        job = self.create(email_to=email_to, client=client, title=job_title,
-                          submission=submission, service=submission.service.name,
-                          _adaptor=submission.adaptor.serialize(),
-                          notify=submission.service.email_on)
+        if update is None:
+            job = self.create(email_to=email_to, client=client, title=job_title,
+                              submission=submission, service=submission.service.name,
+                              _adaptor=submission.adaptor.serialize(),
+                              notify=submission.service.email_on)
+        else:
+            job = update
+            job.submission = submission
         job.create_non_editable_inputs(submission)
         mandatory_params = submission.expected_inputs.filter(required=True)
         missing = {m.name: '%s (:%s:) is required field' % (m.label, m.name) for m in mandatory_params if
@@ -179,6 +193,9 @@ class JobManager(models.Manager):
             for j_output in job.outputs.all():
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
         job._command_line = job.command_line
+        if force_status is not None and force_status in waves.wcore.adaptors.const.STATUS_MAP.keys():
+            job.status = force_status
+        job.save()
         return job
 
 
@@ -237,8 +254,11 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @status.setter
     def status(self, value):
         if value != self._status:
-            message = self.message.decode('utf8', errors='replace')
-            logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
+            if self.message:
+                message = self.message.decode('utf8', errors='replace')
+                logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
+            else:
+                message = ""
             self.job_history.create(message=message, status=value)
         self._status = value
 
@@ -370,6 +390,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         elif self.submission:
             return self.submission.adaptor
         else:
+            logger.exception("None adaptor ...")
             return None
 
     @adaptor.setter
@@ -532,7 +553,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """ Add a new try for job execution, save retry reason in JobAdminHistory, save job """
         if self.nb_retry <= waves_settings.JOBS_MAX_RETRY:
             self.nb_retry += 1
-            self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status)
+            if message is not None:
+                self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status)
         else:
             self.error(message)
 
@@ -570,9 +592,12 @@ class Job(TimeStamped, Slugged, UrlMixin):
         if self.status not in [int(i[0]) for i in status_allowed]:
             raise JobInconsistentStateError(self.get_status_display(), status_allowed)
         try:
-            returned = getattr(self.adaptor, action)(self)
-            self.nb_retry = 0
-            return returned
+            if self.adaptor is None:
+                raise WavesException("No Adaptor, impossible to run")
+            else:
+                returned = getattr(self.adaptor, action)(self)
+                self.nb_retry = 0
+                return returned
         except waves.wcore.adaptors.exceptions.AdaptorException as exc:
             logger.debug('Retry execution - non fatal error')
             self.retry(exc.message)
@@ -591,8 +616,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def next_status(self):
         """ Automatically retrieve next expected status """
-        if self.status in self.NEXT_STATUS:
-            return self.NEXT_STATUS[self.status]
+        if self.status in waves.wcore.adaptors.const.NEXT_STATUS:
+            return waves.wcore.adaptors.const.NEXT_STATUS[self.status]
         else:
             return waves.wcore.adaptors.const.JOB_UNDEFINED
 
@@ -737,7 +762,7 @@ class JobInputManager(models.Manager):
         except ObjectDoesNotExist:
             pass
         if service_input.param_type == AParam.TYPE_FILE:
-            if isinstance(submitted_input, TemporaryUploadedFile) or isinstance(submitted_input, InMemoryUploadedFile):
+            if isinstance(submitted_input, File):
                 # classic uploaded file
                 filename = path.join(job.working_dir, submitted_input.name)
                 with open(filename, 'wb+') as uploaded_file:
@@ -748,17 +773,24 @@ class JobInputManager(models.Manager):
                 # Manage sample data
                 input_sample = FileInputSample.objects.get(pk=submitted_input)
                 filename = path.join(job.working_dir, path.basename(input_sample.file.name))
-                input_dict['command_type'] = input_sample.file_input.cmd_format
+                # input_dict['command_type'] = input_sample.file_input.cmd_format
                 input_dict['value'] = path.basename(input_sample.file.name)
                 with open(filename, 'wb+') as uploaded_file:
                     for chunk in input_sample.file.chunks():
                         uploaded_file.write(chunk)
-            elif isinstance(submitted_input, str):
+            elif isinstance(submitted_input, (str, unicode)):
                 # copy / paste content
-                filename = path.join(job.working_dir, service_input.name + '.txt')
-                input_dict.update(dict(value=service_input.name + '.txt'))
+                print "service Input has default name ", service_input.name
+                if service_input.default:
+                    filename = path.join(job.working_dir, service_input.default)
+                    input_dict.update(dict(value=service_input.default))
+                else:
+                    filename = path.join(job.working_dir, service_input.name + '.txt')
+                    input_dict.update(dict(value=service_input.name + '.txt'))
                 with open(filename, 'wb+') as uploaded_file:
                     uploaded_file.write(submitted_input)
+            else:
+                logger.warn("Unable to determine usable type for input %s:%s " % (service_input.name, submitted_input))
         new_input = self.create(**input_dict)
         return new_input
 
@@ -926,9 +958,15 @@ class JobOutputManager(models.Manager):
             value_to_normalize = submitted_inputs.get(srv_submission_output.name,
                                                       srv_submission_output.default)
             if srv_submission_output.param_type == AParam.TYPE_FILE:
-                value_to_normalize = value_to_normalize.name
+                if type(value_to_normalize) is file:
+                    value_to_normalize = value_to_normalize.name
+                elif isinstance(value_to_normalize, (str, unicode)):
+                    value_to_normalize = srv_submission_output.default
+                    print value_to_normalize
+
             input_value = normalize_value(value_to_normalize)
             formatted_value = submission_output.file_pattern % input_value
+            print "output", srv_submission_output.param_type
             output_dict.update(dict(value=formatted_value))
         else:
             output_dict.update(dict(value=submission_output.file_pattern))
@@ -993,7 +1031,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
         if self.value == self.job.stdout:
             return os.path.join(self.job.working_dir, self.job.stdout)
         elif self.value == self.job.stderr:
-            return os.path.join(self.job.working_dir, self.job.stdout)
+            return os.path.join(self.job.working_dir, self.job.stderr)
         return os.path.join(self.job.working_dir, self.file_name)
 
     @property
@@ -1020,4 +1058,4 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     @property
     def available(self):
-        return os.path.isfile(self.file_path) and os.path.getsize(self.file_path) > 0
+        return os.path.isfile(self.file_path)

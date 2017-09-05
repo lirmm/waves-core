@@ -2,16 +2,19 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins, status
+from rest_framework import viewsets, mixins, status, generics
 from rest_framework.decorators import detail_route
-from rest_framework.parsers import MultiPartParser, JSONParser
+from rest_framework.parsers import MultiPartParser, JSONParser, BaseParser
 from rest_framework.response import Response
 
 from waves.wcore.api.views.base import WavesAuthenticatedView
 from waves.wcore.exceptions import WavesException
-from waves.wcore.models import Job
+from waves.wcore.models import Job, JobOutput
 from waves.wcore.api.v2.serializers.jobs import JobSerializer, JobHistoryDetailSerializer, JobInputDetailSerializer, \
     JobOutputDetailSerializer
+from django.http import HttpResponse, HttpResponseNotFound
+from django.views.generic import View
+from django.views.generic.detail import SingleObjectMixin
 
 
 class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
@@ -30,9 +33,7 @@ class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Destro
 
     def list(self, request, *args, **kwargs):
         """ List User's jobs (if any) from ListModelMixin """
-        serializer = JobSerializer(self.get_queryset(), many=True, context={'request': request},
-                                   fields=('url', 'slug', 'title', 'created', 'status_code', 'status_txt', 'service',
-                                           'client'))
+        serializer = JobSerializer(self.get_queryset(), many=True, context={'request': request})
         return Response(serializer.data)
 
     def retrieve(self, request, slug=None, *args, **kwargs):
@@ -74,3 +75,30 @@ class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Destro
         job = get_object_or_404(queryset, slug=slug)
         serializer = JobOutputDetailSerializer(job, many=False, context={'request': request})
         return Response(serializer.data)
+
+
+class PlainTextParser(BaseParser):
+    """
+        Plain text parser.
+        """
+    media_type = 'text/plain'
+
+    def parse(self, stream, media_type=None, parser_context=None):
+        """
+        Simply return a string representing the body of the request.
+        """
+        return stream.read()
+
+
+class JobOutputRawView(SingleObjectMixin, View):
+    model = JobOutput
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            with open(instance.file_path) as fp:
+                file_content = fp.read()
+                o_content = file_content.decode()
+        except IOError as e:
+            return HttpResponseNotFound('Content not available')
+        return HttpResponse(content=o_content, content_type="text/plain; charset=utf8")

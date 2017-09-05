@@ -12,7 +12,7 @@
         </a>
     </li>
     <li>
-        <a type="button" href="{{ original.service.get_admin_url  }}"
+        <a type="button" href="{{ original.service.get_admin_url }}"
            target="_self"
            title="Service"
            class="btn btn-high btn-info"
@@ -21,7 +21,7 @@
         </a>
     </li>
     <li>
-        <a type="button" href="{{ original.service.get_change_list_url }}"
+        <a type="button" href="{{ original.service.get_admin_changelist }}"
            target="_self"
            title="Service"
            class="btn btn-high btn-info"
@@ -36,6 +36,7 @@
     {{ block.super }}
     <script type="text/javascript">
         (function ($) {
+            console.log("loaded")
             $(document).on('formset:added', function (event, $row, formsetName) {
                 console.log("formsetName" + formsetName)
                 if (formsetName == 'inputs') {
@@ -46,6 +47,13 @@
                     rel.popupInline($('#add_submission_link').attr('href'));
                     // $('#add_submission_link').trigger('click');
                 }
+            });
+            var rel1 = new RelatedInlinePopup();
+            rel1.findPopupResponse();
+            $('fieldset.show-change-link-popup a.inlinechangelink').click(function (e) {
+                var rel = new RelatedInlinePopup();
+                e.preventDefault();
+                rel.popupInline(e.target.href)
             });
             $(document).on('formset:removed', function (event, $row, formsetName) {
                 // Row removed

@@ -40,7 +40,7 @@ Service Creation
     - *Access restriction* : When service online status is 'restricted', along with all staff members, you can grant other 'web user' access to your service
     - *Mail Notification* : Check or uncheck mail notification for this Service (this is disabled if configuration disallow it globally)
     - *Api availability* : Set whether service is available on api as well as on the web
-    - *Command Class* : Parser Class : dedicated for specific and very complex command, set the :ref:`waves.wcore.commands` class implementation to create a job command line
+    - *Command Class* : Parser Class : dedicated for specific and very complex command, set the waves.wcore.commands class implementation to create a job command line
     - *TimeRecord* : Creation and last update date, you can't set these values, they are assigned automatically
 
     .. CAUTION::

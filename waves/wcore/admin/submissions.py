@@ -1,7 +1,8 @@
 """ Service Submission administration classes """
 from __future__ import unicode_literals
 
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.http import HttpResponseRedirect
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 from polymorphic.admin import PolymorphicInlineSupportMixin
@@ -179,6 +180,20 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
 
     def runner_link(self, obj):
         return obj.get_runner()
+
+    def response_add(self, request, obj, post_url_continue=None):
+        if '_continue' not in request.POST:
+            messages.success(request, "Submission %s successfully saved" % obj)
+            return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
+        else:
+            return super(ServiceSubmissionAdmin, self).response_add(request, obj, post_url_continue)
+
+    def response_change(self, request, obj):
+        if '_continue' not in request.POST:
+            messages.success(request, "Submission %s successfully saved" % obj)
+            return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
+        else:
+            return super(ServiceSubmissionAdmin, self).response_change(request, obj)
 
 
 admin.site.register(RepeatedGroup, RepeatGroupAdmin)

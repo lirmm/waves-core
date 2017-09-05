@@ -92,9 +92,9 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
         ]
         if obj and IS_POPUP_VAR not in request.GET:
             self.inlines = _inlines
-            if obj.wcore_submission_runs.count() > 0:
+            if obj.running_submissions.count() > 0:
                 self.inlines.append(SubmissionRunInline)
-            if obj.wcore_service_runs.count() > 0:
+            if obj.running_services.count() > 0:
                 self.inlines.append(ServiceRunInline)
         elif IS_POPUP_VAR not in request.GET:
             self.inlines = [_inlines[0], ]
@@ -121,13 +121,14 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
                     message = 'Related %s has been reset' % service
                     service.set_run_params_defaults()
                     for job in service.pending_jobs.all():
-                        job.adaptor.cancel_job(job=job)
+                        if job.adaptor is not None:
+                            job.run_cancel()
                         message += '<br/>- Related pending job %s has been cancelled' % job.title
                     messages.info(request, message)
 
     def connexion_string(self, obj):
         concrete = obj.adaptor
-        if concrete:
+        if concrete is not None:
             return obj.adaptor.connexion_string()
         else:
             return 'n/a'

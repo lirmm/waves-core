@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^services/(?P<service>[^/.]+)/submissions/(?P<api_name>[^/.]+)/form/',
         services.ServiceJobSubmissionViewForm.as_view(), name='waves-services-submissions-form'),
     url(r'^jobs/outputs/(?P<slug>[\w-]+)/$', JobOutputView.as_view(), name="waves-job-output"),
+    url(r'^jobs/outputs/(?P<slug>[\w-]+)/raw$', jobs.JobOutputRawView.as_view(), name="waves-job-output-raw"),
     url(r'^jobs/inputs/(?P<slug>[\w-]+)/$', JobInputView.as_view(), name="waves-job-input"),
 ]
 

@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 from waves.wcore.exceptions import *
 from waves.wcore.models import Job
+import waves.wcore.adaptors.const
 
 
 class JobCancelView(View):
@@ -18,7 +19,11 @@ class JobCancelView(View):
         try:
             job = get_object_or_404(Job, id=self.kwargs['job_id'])
             runner = job.adaptor
-            runner.cancel_job(job)
+            if runner is not None:
+                runner.cancel_job(job)
+            else:
+                job.status=waves.wcore.adaptors.const.JOB_CANCELLED
+                job.save()
             messages.add_message(request, level=messages.SUCCESS, message="Job cancelled")
         except WavesException as e:
             messages.add_message(request, level=messages.ERROR, message=e.message)

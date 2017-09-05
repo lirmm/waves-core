@@ -81,7 +81,7 @@ def mark_rerun(modeladmin, request, queryset):
 
 def delete_model(modeladmin, request, queryset):
     for obj in queryset.all():
-        if obj.client == request.user or obj.service.created_by == request.user or request.user.is_superuser:
+        if obj.client == request.user or request.user.is_superuser:
             try:
                 obj.delete()
                 messages.success(request, message="Jobs %s successfully deleted" % obj)
@@ -199,7 +199,10 @@ class JobAdmin(WavesModelAdmin):
         return form
 
     def get_run_on(self, obj):
-        return obj.submission.get_runner().name
+        if obj.submission is not None and obj.submission.get_runner():
+            return obj.submission.get_runner().name
+        else:
+            return "Undefined"
 
     def get_client(self, obj):
         return obj.client.email if obj.client else "Anonymous"
@@ -215,13 +218,22 @@ class JobAdmin(WavesModelAdmin):
         return read_only_fields
 
     def connexion_string(self, obj):
-        return obj.adaptor.connexion_string()
+        if obj.adaptor:
+            return obj.adaptor.connexion_string()
+        else:
+            return "Unavailable"
 
     def get_command_line(self, obj):
-        return obj.command_line
+        if obj.adaptor:
+            return obj.adaptor.command + " " + obj.command_line
+        else:
+            return "Unavailable"
 
     def submission_service_name(self, obj):
-        return "%s [%s]" % (obj.submission.service.name, obj.submission.name)
+        if obj.submission:
+            return "%s [%s]" % (obj.submission.service.name, obj.submission.name)
+        else:
+            return "Unavailable"
 
     connexion_string.short_description = "Remote connexion string"
     get_command_line.short_description = "Remote command line"
@@ -229,7 +241,7 @@ class JobAdmin(WavesModelAdmin):
     get_run_on.short_description = 'Run on'
     get_client.short_description = 'Email'
     get_slug.short_description = 'Identifier'
-    get_slug.admin_order_field = 'Slug'
+    get_slug.admin_order_field = 'slug'
     get_colored_status.admin_order_field = 'status'
     get_run_on.admin_order_field = 'service__runner'
     get_client.admin_order_field = 'client'

@@ -12,5 +12,13 @@
     <div id="django-waves-admin-inline-popup-response-constants"
          data-popup-response="{{ data|escape }}">
     </div>
+  <script>
+      (function ($) {
+          var rel1 = new RelatedInlinePopup();
+          rel1.findPopupResponse();
+      }) (django.jQuery);
+
+  </script>
+
   </body>
 </html>
