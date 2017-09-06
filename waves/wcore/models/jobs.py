@@ -38,7 +38,6 @@ __all__ = ['Job', 'JobInput', 'JobOutput', 'JobManager']
 class JobManager(models.Manager):
     """ Job Manager add few shortcut function to default Django models objects Manager
     """
-
     def get_by_natural_key(self, slug, service):
         return self.get(slug=slug, service=service)
 
@@ -154,6 +153,9 @@ class JobManager(models.Manager):
         else:
             job = update
             job.submission = submission
+            job.adaptor = submission.adaptor.serialize()
+            job.notify = submission.service.email_on
+            job.service = submission.service.name
         job.create_non_editable_inputs(submission)
         mandatory_params = submission.expected_inputs.filter(required=True)
         missing = {m.name: '%s (:%s:) is required field' % (m.label, m.name) for m in mandatory_params if

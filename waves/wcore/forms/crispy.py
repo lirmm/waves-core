@@ -23,6 +23,7 @@ class FormHelper(FormHelper, WFormHelper):
         form_class = kwargs.pop('form_class', 'form-horizontal')
         label_class = kwargs.pop('label_class', 'col-lg-4')
         field_class = kwargs.pop('field_class', 'col-lg-8 text-left')
+        template_pack = kwargs.pop('template_pack', 'bootstrap3')
         self.form_obj = form
         super(FormHelper, self).__init__(form)
         self.form_tag = form_tag
@@ -31,6 +32,7 @@ class FormHelper(FormHelper, WFormHelper):
         self.field_class = field_class
         self.render_unmentioned_fields = False
         self.layout = Layout()
+        self.template_pack = template_pack
 
     def set_layout(self, service_input):
         """

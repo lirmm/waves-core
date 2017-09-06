@@ -30,8 +30,9 @@ class ServiceSubmissionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         parent = kwargs.pop('parent', None)
         user = kwargs.pop('user', None)
+        template_pack = kwargs.pop('template_pack', 'bootstrap3')
         super(ServiceSubmissionForm, self).__init__(*args, **kwargs)
-        self.helper = self.get_helper(form_tag=True)
+        self.helper = self.get_helper(form_tag=True, template_pack=template_pack)
         self.helper.init_layout(fields=('title', 'email', 'slug'))
         # Always add "title" / "slug" to submitted jobs
         self.fields['title'].initial = 'my %s job' % self.instance.service.name

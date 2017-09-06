@@ -1,18 +1,19 @@
 {% load crispy_forms_tags %}
 
-{% if service.submissions_web.count > 1 %}
-    <ul class="nav nav-tabs">
-        {% for possible_submission in service.submissions_web.all %}
-            <li role="presentation"
-                class="{% if selected_submission == possible_submission %}active{% endif %}">
-                <a href="#{{ possible_submission.api_name }}" data-toggle="tab">
-                    {{ possible_submission.name }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-<div id="my-tab-content" class="tab-content">
+{% with single_submission=service.submissions_web.count %}
+    {% if single_submission > 1 %}
+        <ul class="nav nav-tabs">
+            {% for possible_submission in service.submissions_web.all %}
+                <li role="presentation"
+                    class="{% if selected_submission == possible_submission %}active{% endif %}">
+                    <a href="#{{ possible_submission.api_name }}" data-toggle="tab">
+                        {{ possible_submission.name }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div id="my-tab-content" class="tab-content">
+    {% endif %}
     {% for form_sub in forms %}
         <div class="tab-pane {% if selected_submission == form_sub.instance %}active{% endif %}"
              id="{{ form_sub.instance.api_name }}">
@@ -21,4 +22,7 @@
             {% crispy form_sub %}
         </div>
     {% endfor %}
-</div>
+{% if single_submission > 1 %}
+    </div>
+{% endif %}
+{% endwith %}

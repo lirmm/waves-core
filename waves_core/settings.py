@@ -189,6 +189,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     )
 }
+ALLOWED_TEMPLATE_PACKS = ['bootstrap3', 'bootstrap4', 'foundation']
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'

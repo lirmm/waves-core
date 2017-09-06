@@ -39,7 +39,7 @@ class JobHistoryDetailSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('url', 'last_status', 'last_status_txt', 'job_history')
+        fields = ('job', 'last_status', 'last_status_txt', 'job_history')
         extra_kwargs = {
             'url': {'view_name': 'wapi:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}
         }
@@ -47,6 +47,11 @@ class JobHistoryDetailSerializer(serializers.HyperlinkedModelSerializer):
     last_status = serializers.IntegerField(source='status')
     last_status_txt = serializers.SerializerMethodField()
     job_history = JobHistorySerializer(many=True, read_only=True, source="public_history")
+    job = serializers.SerializerMethodField()
+
+    def get_job(self, obj):
+        return reverse(viewname='wapi:api_v2:waves-jobs-detail', request=self.context['request'],
+                       kwargs={'slug': obj.slug})
 
     @staticmethod
     def get_last_status_txt(obj):
@@ -94,18 +99,16 @@ class JobInputDetailSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('url', 'status', 'inputs')
+        fields = ('job', 'inputs')
         extra_kwargs = {
             'url': {'view_name': 'wapi:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}
         }
-
-    status = serializers.SerializerMethodField()
     inputs = JobInputSerializer(source='job_inputs', read_only=True)
+    job = serializers.SerializerMethodField()
 
-    @staticmethod
-    def get_status(obj):
-        """ return job status """
-        return obj.get_status_display()
+    def get_job(self, obj):
+        return reverse(viewname='wapi:api_v2:waves-jobs-detail', request=self.context['request'],
+                       kwargs={'slug': obj.slug})
 
 
 class JobOutputSerializer(serializers.ModelSerializer):
@@ -118,6 +121,7 @@ class JobOutputSerializer(serializers.ModelSerializer):
     download_url = serializers.SerializerMethodField()
 
     def file_get_content(self, file_path):
+        print self.instance
         """ Either returns output content, or text of content size exceeds 500ko"""
         if not isfile(file_path) or stat(file_path).st_size == 0:
             return None
@@ -157,15 +161,18 @@ class JobOutputDetailSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Job
-        fields = ('url', 'status_txt', 'status_code', 'outputs')
+        fields = ('job', 'outputs')
         extra_kwargs = {
             'url': {'view_name': 'wapi:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}
         }
 
-    status_txt = serializers.SerializerMethodField()
-    status_code = serializers.IntegerField(source='status')
     outputs = JobOutputSerializer(read_only=True, source='output_files')
 
+    def get_job(self, obj):
+        return reverse(viewname='wapi:api_v2:waves-jobs-detail', request=self.context['request'],
+                       kwargs={'slug': obj.slug})
+
+    job = serializers.SerializerMethodField()
     @staticmethod
     def get_status_txt(obj):
         """ Return job status text """
@@ -177,8 +184,8 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
 
     class Meta:
         model = Job
-        fields = ('url', 'title', 'status_code', 'status_txt', 'created', 'updated', 'inputs', 'outputs',
-                  'history', 'client', 'service', 'slug')
+        fields = ('url', 'slug', 'title', 'status_code', 'status_txt', 'created', 'updated', 'inputs', 'outputs',
+                  'history', 'client', 'service')
         read_only_fields = (
             'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history')
         extra_kwargs = {
@@ -193,6 +200,14 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
     history = serializers.SerializerMethodField()
     outputs = serializers.SerializerMethodField()
     inputs = serializers.SerializerMethodField()
+    service = serializers.SerializerMethodField()
+
+    def get_service(self, obj):
+        if obj.submission and obj.submission.service:
+            return reverse(viewname='wapi:api_v2:waves-services-detail', request=self.context['request'],
+                           kwargs={'api_name': obj.submission.service.api_name})
+        else:
+            return obj.service
 
     def get_history(self, obj):
         """ Link to job history details wapi:api_v2 endpoint """

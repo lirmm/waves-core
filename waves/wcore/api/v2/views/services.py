@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import logging
 
 import swapper
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -40,7 +41,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         """ List all available services """
         serializer = ServiceSerializer(self.get_queryset(), many=True, context={'request': request},
                                        fields=('url', 'name', 'short_description',
-                                               'version', 'created', 'updated', 'jobs'))
+                                               'version', 'created', 'updated', 'form', 'submissions', 'jobs'))
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
@@ -59,12 +60,35 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                    fields=('url', 'created', 'status', 'service'))
         return Response(serializer.data)
 
+    def get_css(self, obj):
+        """ link to service css """
+        return [
+            self.request.build_absolute_uri(staticfiles_storage.url('waves/css/forms.css')), ]
+
+    def get_js(self, obj):
+        """ link to service js"""
+        return [
+            self.request.build_absolute_uri(staticfiles_storage.url('waves/js/services.js')),
+            self.request.build_absolute_uri(staticfiles_storage.url('waves/js/api_services.js')),
+        ]
+
     @detail_route(methods=['get'], url_path="form")
     def service_form(self, request, api_name=None):
         """ Retrieve service form """
+        from django.shortcuts import render
+        from django.http import HttpResponse
+        from waves.wcore.forms.services import ServiceSubmissionForm
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
-        serializer = ServiceFormSerializer(many=False, context={'request': request}, instance=service_tool)
-        return Response(serializer.data)
+        form = [
+            ServiceSubmissionForm(instance=service_submission, parent=service_tool) for service_submission in
+            service_tool.submissions.all()]
+        content = render(request=self.request,
+                         template_name='waves/api/service_api_form.html',
+                         context={'form': form,
+                                  'js': self.get_js(service_tool),
+                                  'css': self.get_css(service_tool)},
+                         content_type='')
+        return HttpResponse(content=content, content_type="text/plain; charset=utf8")
 
 
 class MultipleFieldLookupMixin(object):
@@ -78,6 +102,47 @@ class MultipleFieldLookupMixin(object):
         for field in self.lookup_fields:
             filters[field] = self.kwargs[field]
         return get_object_or_404(queryset, **filters)  # Lookup the object
+
+
+class ServiceSubmissionViewSet(viewsets.ModelViewSet):
+    serializer_class = ServiceSubmissionSerializer
+    lookup_field = 'api_name'
+
+    def get_queryset(self):
+        """ Retrieve for service, current submissions available for API """
+        list = Submission.objects.filter(service__api_name=self.kwargs.get('service'), availability__gt=2)
+        print list.query
+        return list
+
+    def get_css(self, obj):
+        """ link to service css """
+        return [
+            self.request.build_absolute_uri(staticfiles_storage.url('waves/css/forms.css')), ]
+
+    def get_js(self, obj):
+        """ link to service js"""
+        return [
+            self.request.build_absolute_uri(staticfiles_storage.url('waves/js/services.js')),
+            self.request.build_absolute_uri(staticfiles_storage.url('waves/js/api_services.js')),
+        ]
+
+    @detail_route(methods=['get'], url_path="form")
+    def submission_form(self, request, service=None, api_name=None, **kwargs):
+        """ Retrieve service form """
+        from django.shortcuts import render
+        from django.http import HttpResponse
+        from waves.wcore.forms.services import ServiceSubmissionForm
+        service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
+        template_pack = self.request.GET.get('tp', 'bootstrap3')
+        print 'template pack', template_pack
+        form = [ServiceSubmissionForm(instance=self.get_object(), parent=service_tool,
+                                      template_pack=template_pack)]
+        content = render(request=self.request,
+                         template_name='waves/api/service_api_form.html',
+                         context={'form': form,
+                                  'js': self.get_js(service_tool),
+                                  'css': self.get_css(service_tool)})
+        return HttpResponse(content=content, content_type="text/plain; charset=utf8")
 
 
 class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIView, generics.CreateAPIView,
