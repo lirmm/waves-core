@@ -19,23 +19,10 @@ GET a WAVES web-app online following the next few steps, WAVES can run on Apache
             - Web server: `Apache <https://httpd.apache.org/>`_ or `NGINX <https://nginx.org/>`_
             - Message broker : we won't force you but Waves is tested with Celery and RabbitMQ
 
-    .. seealso::
-
-        * `RabbitMQ Installation <http://docs.celeryproject.org/en/latest/getting-started/first-steps-with-celery.html#rabbitmq>`_
-        * `Rabbit MQ Celery broker configuration <http://docs.celeryproject.org/en/latest/getting-started/brokers/rabbitmq.html#broker-rabbitmq>`_
-        * `Celery Django <http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#using-celery-with-django>`_
-
 1. Install WAVES
 ----------------
 
-    1.0. Configure RabbitMQ message broker::
-
-        $sudo rabbitmqctl add_user waves [mypassword]
-        $sudo rabbitmqctl add_vhost [yourHost]
-        $sudo rabbitmqctl set_user_tags waves [mytag]
-        $sudo rabbitmqctl set_permissions -p [yourHost] waves ".*" ".*" ".*"
-
-    1.1. Install waves package (strongly recommended to do so in a  dedicated virtualenv):
+    1.1. Install waves package:
 
         ``pip install -e git+https://github.com/lirmm/waves-core.git#egg=waves``
 
@@ -58,9 +45,18 @@ GET a WAVES web-app online following the next few steps, WAVES can run on Apache
             ...
         ]
 
-    1.3. Include the services urls in your project urls.py::
+    1.3. Include the services urls in your project urls.py:
 
-        url(r'^waves/', include('waves.wcore.urls', namespace='waves')),
+        ``url(r'^wcore/', include('waves.wcore.urls', namespace='wcore'))``
+
+        1.3.1 If you need standard front pages:
+
+            ``url(r'^waves/', include('waves.front.urls', namespace='wfront')),``
+
+        1.3.2 If you need api:
+
+            ``url(r'^api/', include('waves.wcore.api.urls', namespace='wapi'))``
+
 
     1.4. Create your database::
 
