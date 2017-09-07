@@ -121,7 +121,6 @@ class JobOutputSerializer(serializers.ModelSerializer):
     download_url = serializers.SerializerMethodField()
 
     def file_get_content(self, file_path):
-        print self.instance
         """ Either returns output content, or text of content size exceeds 500ko"""
         if not isfile(file_path) or stat(file_path).st_size == 0:
             return None

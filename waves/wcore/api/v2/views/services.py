@@ -111,7 +111,6 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """ Retrieve for service, current submissions available for API """
         list = Submission.objects.filter(service__api_name=self.kwargs.get('service'), availability__gt=2)
-        print list.query
         return list
 
     def get_css(self, obj):
@@ -134,7 +133,6 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
         from waves.wcore.forms.services import ServiceSubmissionForm
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
         template_pack = self.request.GET.get('tp', 'bootstrap3')
-        print 'template pack', template_pack
         form = [ServiceSubmissionForm(instance=self.get_object(), parent=service_tool,
                                       template_pack=template_pack)]
         content = render(request=self.request,

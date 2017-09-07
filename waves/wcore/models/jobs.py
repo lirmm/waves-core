@@ -153,7 +153,7 @@ class JobManager(models.Manager):
         else:
             job = update
             job.submission = submission
-            job.adaptor = submission.adaptor.serialize()
+            job.adaptor = submission.adaptor
             job.notify = submission.service.email_on
             job.service = submission.service.name
         job.create_non_editable_inputs(submission)
@@ -782,7 +782,6 @@ class JobInputManager(models.Manager):
                         uploaded_file.write(chunk)
             elif isinstance(submitted_input, (str, unicode)):
                 # copy / paste content
-                print "service Input has default name ", service_input.name
                 if service_input.default:
                     filename = path.join(job.working_dir, service_input.default)
                     input_dict.update(dict(value=service_input.default))
@@ -964,11 +963,9 @@ class JobOutputManager(models.Manager):
                     value_to_normalize = value_to_normalize.name
                 elif isinstance(value_to_normalize, (str, unicode)):
                     value_to_normalize = srv_submission_output.default
-                    print value_to_normalize
 
             input_value = normalize_value(value_to_normalize)
             formatted_value = submission_output.file_pattern % input_value
-            print "output", srv_submission_output.param_type
             output_dict.update(dict(value=formatted_value))
         else:
             output_dict.update(dict(value=submission_output.file_pattern))

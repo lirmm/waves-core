@@ -39,7 +39,6 @@ def import_string(dotted_path):
     """
     import importlib
     try:
-        print "dotted path ", dotted_path
         module_path, class_name = dotted_path.rsplit('.', 1)
     except ValueError:
         msg = "%s doesn't look like a module path" % dotted_path

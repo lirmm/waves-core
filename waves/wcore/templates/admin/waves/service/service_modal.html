@@ -9,9 +9,17 @@
 </head>
 <body>
 <div class="container-fluid">
-    <div class="messages alert alert-warning ">
-        Submitting job will not create a actual job
-    </div>
+    {% for message in messages %}
+        <div class="messages alert alert-{{ message.tags }} alert-dismissible fade in">  <!-- singular -->
+            <a class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span></a>
+            {{ message|safe }}
+        </div>
+    {% empty %}
+        <div class="messages alert alert-danger" align="center">
+            Submitting form will create a new job
+        </div>
+    {% endfor %}
     {% include 'waves/parts/submission_form.html' with service=service %}
 </div>
 </body>

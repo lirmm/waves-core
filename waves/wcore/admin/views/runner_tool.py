@@ -96,7 +96,6 @@ class RunnerImportToolView(FormView):
                         self.service.created_by = self.request.user
                         self.service.submissions.add(new_submission)
                         self.service.save()
-                    print self.service.get_admin_url()
                     data = {
                         'url_redirect': reverse('admin:wcore_service_change', args=[self.service.id])
                     }

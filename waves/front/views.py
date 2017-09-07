@@ -1,12 +1,11 @@
 from uuid import UUID
 
 import swapper
-from django.contrib import messages
 from django.urls import reverse
 from django.views import generic
 
-from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.forms.services import ServiceSubmissionForm
+from waves.wcore.views.services import SubmissionFormView
 from waves.wcore.models import Submission, Job
 
 Service = swapper.load_model("wcore", "Service")
@@ -41,7 +40,7 @@ class ServiceDetailView(generic.DetailView):
         return obj
 
 
-class JobSubmissionView(ServiceDetailView, generic.FormView):
+class JobSubmissionView(ServiceDetailView, SubmissionFormView):
     model = Service
     template_name = 'waves/services/service_form.html'
     form_class = ServiceSubmissionForm
@@ -61,34 +60,6 @@ class JobSubmissionView(ServiceDetailView, generic.FormView):
         self.selected_submission = self._get_selected_submission()
         return super(JobSubmissionView, self).get(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        if 'form' not in kwargs:
-            kwargs.update({'form': []})
-            form = None
-        else:
-            form = kwargs['form']
-        # self.object = self.get_object()
-        context = super(JobSubmissionView, self).get_context_data(**kwargs)
-        context['selected_submission'] = self._get_selected_submission()
-        context['forms'] = []
-        for submission in self.get_object().submissions.all():
-            if form is not None and str(submission.slug) == form.cleaned_data['slug']:
-                context['forms'].append(form)
-            else:
-                context['forms'].append(self.form_class(instance=submission, parent=self.object,
-                                                        user=self.request.user))
-        return context
-
-    def get_form(self, form_class=None):
-        return super(JobSubmissionView, self).get_form(form_class)
-
-    def get_form_kwargs(self):
-        kwargs = super(JobSubmissionView, self).get_form_kwargs()
-        extra_kwargs = {
-            'parent': self.object,
-        }
-        extra_kwargs.update(kwargs)
-        return extra_kwargs
 
     def get_success_url(self):
         return reverse('wfront:job_details', kwargs={'slug': self.job.slug})
@@ -100,48 +71,6 @@ class JobSubmissionView(ServiceDetailView, generic.FormView):
         else:
             submission = Submission.objects.get(slug=UUID(slug))
             return Submission.objects.get(slug=UUID(slug))
-
-    def post(self, request, *args, **kwargs):
-        self.user = self.request.user
-        self.selected_submission = self._get_selected_submission()
-        form = ServiceSubmissionForm(parent=self.get_object(),
-                                     instance=self.selected_submission,
-                                     data=self.request.POST,
-                                     files=self.request.FILES)
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(**{'form': form})
-
-    def form_valid(self, form):
-        # create job in database
-        ass_email = form.cleaned_data.pop('email')
-        if not ass_email and self.request.user.is_authenticated():
-            ass_email = self.request.user.email
-        user = self.request.user if self.request.user.is_authenticated() else None
-        try:
-            self.job = Job.objects.create_from_submission(submission=self.selected_submission,
-                                                          email_to=ass_email,
-                                                          submitted_inputs=form.cleaned_data,
-                                                          user=user)
-            messages.success(
-                self.request,
-                "Job successfully submitted"
-            )
-        except JobException as e:
-            messages.error(
-                self.request,
-                "An unexpected error occurred, sorry for the inconvenience, our team has been noticed"
-            )
-            return self.render_to_response(self.get_context_data(form=form))
-        return super(JobSubmissionView, self).form_valid(form)
-
-    def form_invalid(self, **kwargs):
-        messages.error(
-            self.request,
-            "Your job could not be submitted, check errors"
-        )
-        return self.render_to_response(self.get_context_data(**kwargs))
 
 
 class JobView(generic.DetailView):

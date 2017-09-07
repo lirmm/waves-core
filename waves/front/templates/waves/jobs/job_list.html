@@ -44,6 +44,10 @@
                 {% endif %}
                 {% for job in job_list %}
                     {% include "waves/parts/job_list_element.html" with job=job %}
+                {% empty %}
+                    <div class="alert alert-info">
+                        <strong>Sorry!</strong> It seems that you don't have any job available
+                    </div>
                 {% endfor %}
                 {% if is_paginated %}
                     <div align="center">

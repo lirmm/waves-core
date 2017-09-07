@@ -160,7 +160,6 @@ class ServiceFormSerializer(serializers.ModelSerializer):
         from django.shortcuts import render
         import re
         form = ServiceSubmissionForm(instance=self.instance, parent=self.instance.service)
-        print form.helper.get_attributes()
         form.helper.form_tag = True
         view = JobSubmissionView()
         content = render(request=self.context['request'],
@@ -169,7 +168,6 @@ class ServiceFormSerializer(serializers.ModelSerializer):
                                   'js': self.get_js(obj),
                                   'css': self.get_css(obj)},
                          content_type='')
-        print content
         return re.sub(r'\s\s+', '', str(content))
 
     def get_post_uri(self, obj):

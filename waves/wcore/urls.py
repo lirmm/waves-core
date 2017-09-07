@@ -26,8 +26,8 @@ urlpatterns = [
         name="runner_export_form"),
     url(r'^runner/(?P<pk>\d+)/check$', staff_member_required(RunnerTestConnectionView.as_view()),
         name="runner_test_connection"),
-    url(r'^service/(?P<pk>\d+)/preview$', staff_member_required(ServicePreview.as_view()),
+    url(r'^service/(?P<pk>\d+)/preview$', staff_member_required(ServiceModalPreview.as_view()),
         name="service_preview"),
-    url(r'^submission/(?P<pk>\d+)/preview$', staff_member_required(SubmissionPreview.as_view()),
-        name="submission_preview"),
+    url(r'^submission/(?P<pk>\d+)/preview', staff_member_required(SubmissionFormView.as_view()),
+        name="submission"),
 ]
