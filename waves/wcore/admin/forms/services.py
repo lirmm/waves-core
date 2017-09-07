@@ -15,7 +15,7 @@ from waves.wcore.settings import waves_settings as config
 Service = swapper.load_model("wcore", "Service")
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm', 'InputInlineForm', 'SubmissionExitCodeForm',
-           'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm']
+           'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'InputSampleForm2', 'SampleDepForm2']
 
 
 class SubmissionInlineForm(forms.ModelForm):
@@ -105,11 +105,41 @@ class InputInlineForm(forms.ModelForm):
 
 
 class InputSampleForm(forms.ModelForm):
+    class Meta:
+        model = FileInputSample
+        fields = '__all__'
+
     def __init__(self, *args, **kwargs):
         super(InputSampleForm, self).__init__(*args, **kwargs)
         self.fields['file_input'].widget.can_delete_related = False
         self.fields['file_input'].widget.can_add_related = False
         self.fields['file_input'].widget.can_change_related = False
+
+
+class InputSampleModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return '(%s - %s) %s' % (obj.submission.service.name, obj.submission.name, obj)
+
+
+class InputSampleForm2(forms.ModelForm):
+    file_input = InputSampleModelChoiceField(queryset=FileInput.objects.all())
+
+    class Meta:
+        model = FileInputSample
+        fields = '__all__'
+
+
+class SampleDepForm2(forms.ModelForm):
+    related_to = InputSampleModelChoiceField(queryset=AParam.objects.not_instance_of(FileInput))
+
+    def __init__(self, *args, **kwargs):
+        super(SampleDepForm2, self).__init__(*args, **kwargs)
+        self.fields['file_input'].widget.can_delete_related = False
+        self.fields['file_input'].widget.can_add_related = False
+        self.fields['file_input'].widget.can_change_related = False
+        self.fields['related_to'].widget.can_delete_related = False
+        self.fields['related_to'].widget.can_add_related = False
+        self.fields['related_to'].widget.can_change_related = False
 
 
 class SubmissionOutputForm(forms.ModelForm):

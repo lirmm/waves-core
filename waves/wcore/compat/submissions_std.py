@@ -45,7 +45,7 @@ class TextParamInline(AParamInline):
 
 
 class FileInputInline(AParamInline):
-    fields = required_base_fields + ['max_size', 'allowed_extensions'] + extra_base_fields
+    fields = required_base_fields + ['max_size', 'allowed_extensions', 'regexp'] + extra_base_fields
     exclude = ['order']
     classes = ['collapse']
     model = FileInput

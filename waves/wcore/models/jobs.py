@@ -386,14 +386,14 @@ class Job(TimeStamped, Slugged, UrlMixin):
             from waves.wcore.adaptors.loader import AdaptorLoader
             try:
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
+                return adaptor
             except Exception as e:
-                logger.exception("Unable to load adaptor %s", e.message)
-            return adaptor
+                logger.exception("Unable to load %s adaptor %s", self._adaptor, e.message)
         elif self.submission:
             return self.submission.adaptor
         else:
             logger.exception("None adaptor ...")
-            return None
+        return None
 
     @adaptor.setter
     def adaptor(self, value):

@@ -21,7 +21,7 @@ class JobAdaptor(object):
     #: Remote status need to be mapped with WAVES expected job status
     _states_map = {}
 
-    def __init__(self, command='', protocol='http', host="localhost", **kwargs):
+    def __init__(self, command='', protocol='fork', host="localhost", **kwargs):
         """ Initialize a adaptor
         Set _initialized value (True or False) if all non default expected params are set
         :param kwargs: its possible to force connector and parser attributes when initialize a Adaptor

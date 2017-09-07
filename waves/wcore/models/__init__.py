@@ -9,6 +9,7 @@ from waves.wcore.models.runners import *
 from waves.wcore.models.services import *
 from waves.wcore.models.inputs import *
 from waves.wcore.models.jobs import *
+from waves.wcore.models.binaries import ServiceBinaryFile
 
 """
 List of different constants used for models
