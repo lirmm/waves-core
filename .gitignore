@@ -97,6 +97,7 @@ ENV/
 /logs/*
 !/logs/.gitkeep
 /data/*
+/bin/*
 !/data/.gitkeep
 *.sqlite3
 !/waves/templates/waves/parts/

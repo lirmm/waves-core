@@ -12,3 +12,6 @@ class ServiceBinaryFile(Slugged, TimeStamped):
 
     label = models.CharField('Binary file label', max_length=255, null=False)
     binary = models.FileField('Binary file', upload_to=binary_directory, storage=binary_storage)
+
+    def __str__(self):
+        return self.label
