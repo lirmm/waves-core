@@ -5,7 +5,7 @@
         <ul class="nav nav-tabs">
             {% for possible_submission in service.submissions_web.all %}
                 <li role="presentation"
-                    class="{% if selected_submission == possible_submission %}active{% endif %}">
+                    class="{% if forloop.first %}active{% endif %}">
                     <a href="#{{ possible_submission.api_name }}" data-toggle="tab">
                         {{ possible_submission.name }}
                     </a>
@@ -15,7 +15,7 @@
         <div id="my-tab-content" class="tab-content">
     {% endif %}
     {% for form_sub in forms %}
-        <div class="tab-pane {% if selected_submission == form_sub.instance %}active{% endif %}"
+        <div class="tab-pane {% if forloop.first %}active{% endif %}"
              id="{{ form_sub.instance.api_name }}">
             <h1>{{ form_sub.label }}</h1>
             <p>{{ form_sub.api_name }}</p>

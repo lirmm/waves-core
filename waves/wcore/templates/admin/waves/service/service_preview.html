@@ -1,9 +1,9 @@
 {% load staticfiles %}
 
-{% block form_main %}
-    <div class="panel panel-info">
-        <div class="panel-body">
-            <iframe src="{% url 'wfront:service_details' service_id %}" width="100%" height="600" frameborder="0" allowfullscreen></iframe>
-        </div>
+<div class="panel panel-info">
+    <div class="panel-body" align="center">
+        <iframe src="{% url 'wcore:submission_preview' service.pk %}" width="90%" height="600" frameborder="0"
+                allowfullscreen>
+        </iframe>
     </div>
-{% endblock %}
+</div>

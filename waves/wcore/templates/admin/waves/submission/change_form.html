@@ -21,6 +21,12 @@
         </a>
     </li>
     <li>
+        <a type="button" href="{% url 'wcore:service_preview' original.service.pk %}"
+           class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
+            Preview
+        </a>
+    </li>
+    <li>
         <a type="button" href="{{ original.service.get_admin_changelist }}"
            target="_self"
            title="Service"

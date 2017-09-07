@@ -41,7 +41,6 @@
   position: relative;
   background-color: #ffffff;
   border: 1px solid #999999;
-  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
@@ -172,4 +171,10 @@
 #alert_modal_content > div.modal-body > img, #popup_modal_content > div.modal-body > img {
   margin: 0 auto;
   display: block;
+}
+
+#popup_modal {
+  max-width: 90%;
+  left: 50%;
+  transform: translateX(-50%);
 }
