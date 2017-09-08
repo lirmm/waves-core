@@ -16,10 +16,10 @@
     <dd class="input_output">
         {{ job_input.value }}
         <div class="pull-right">
-            <a href="{% url 'waves:job_input' job_input.slug %}">See
+            <a href="{% url 'wfront:job_input' job_input.slug %}">See
                 online</a>
             &nbsp;|&nbsp;
-            <a href="{% url 'waves:job_input' job_input.slug %}?export=1">
+            <a href="{% url 'wfront:job_input' job_input.slug %}?export=1">
                 Download File <i
                     class="glyphicon glyphicon-download-alt"></i>
             </a>
@@ -80,7 +80,7 @@
                             <div class="pull-right">
                                 {% if job_output.available %}
                                     {% if job_output.display_online %}
-                                        <a href="{% url 'waves:job_output' job_output.slug %}">See
+                                        <a href="{% url 'wfront:job_output' job_output.slug %}">See
                                             online</a>
                                         &nbsp;|&nbsp;
                                     {% endif %}

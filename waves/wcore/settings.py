@@ -7,13 +7,16 @@ from __future__ import unicode_literals
 import socket
 from importlib import import_module
 from os.path import join
+
 from django.conf import settings
 from django.test.signals import setting_changed
 from django.utils import six
 
+from . import __version__, __db_version__
+
 try:
     HOSTNAME = socket.gethostname()
-except:
+except socket.error:
     HOSTNAME = 'localhost'
 
 
@@ -25,13 +28,13 @@ def perform_import(val, setting_name):
     if val is None:
         return None
     elif isinstance(val, six.string_types):
-        return import_from_string(val, setting_name)
+        return import_from_string(val)
     elif isinstance(val, (list, tuple)):
-        return [import_from_string(item, setting_name) for item in val]
+        return [import_from_string(item) for item in val]
     return val
 
 
-def import_from_string(val, setting_name):
+def import_from_string(val):
     """
     Attempt to import a class from a string representation.
     """
@@ -44,13 +47,13 @@ def import_from_string(val, setting_name):
         msg = "Could not import '%s' for WAVES settings '%s': %s." % (val, e.__class__.__name__, e)
         raise ImportError(msg)
 
-from . import __version__, __db_version__
 
 DEFAULTS = {
     'VERSION': __version__,
     'DB_VERSION': __db_version__,
     'DATA_ROOT': join(getattr(settings, 'BASE_DIR', '/tmp'), 'data'),
     'JOB_BASE_DIR': join(getattr(settings, 'BASE_DIR', '/tmp'), 'data', 'jobs'),
+    'BINARIES_DIR': join(getattr(settings, 'BASE_DIR', '/tmp'), 'bin'),
     'SAMPLE_DIR': join(getattr(settings, 'MEDIA_ROOT', '/tmp'), 'sample'),
     'UPLOAD_MAX_SIZE': 20 * 1024 * 1024,
     'HOST': HOSTNAME,

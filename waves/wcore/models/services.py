@@ -39,7 +39,7 @@ class ServiceManager(models.Manager):
         """
 
         :param user: current User
-        :param for_api: filter only waves:api_v2 enabled, either return only web enabled
+        :param for_api: filter only wapi:api_v2 enabled, either return only web enabled
         :return: QuerySet for services
         :rtype: QuerySet
         """
@@ -69,7 +69,7 @@ class ServiceManager(models.Manager):
         return queryset
 
     def get_api_services(self, user=None):
-        """ Return all waves:api_v2 enabled service to User
+        """ Return all wapi:api_v2 enabled service to User
         """
         return self.get_services(user, for_api=True)
 
@@ -195,7 +195,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     status = models.IntegerField(choices=SRV_STATUS_LIST, default=SRV_DRAFT,
                                  help_text='Service online status')
     api_on = models.BooleanField('Available on API', default=True,
-                                 help_text='Service is available for waves:api_v2 calls')
+                                 help_text='Service is available for wapi:api_v2 calls')
     web_on = models.BooleanField('Available on WEB', default=True, help_text='Service is available for web front')
     email_on = models.BooleanField('Notify results', default=True,
                                    help_text='This service sends notification email')
@@ -210,7 +210,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     def clean(self):
         cleaned_data = super(BaseService, self).clean()
-        # TODO check changed status with at least one submission available on each submission channel (web/waves:api_v2)
+        # TODO check changed status with at least one submission available on each submission channel (web/wapi:api_v2)
         return cleaned_data
 
     def __str__(self):
@@ -290,7 +290,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     @property
     def default_submission_api(self):
-        """ Return Service default submission for waves:api_v2 """
+        """ Return Service default submission for wapi:api_v2 """
         try:
             return self.submissions.filter(availability__gt=2).first()
         except ObjectDoesNotExist:
@@ -413,7 +413,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
 
     @property
     def available_api(self):
-        """ return whether submission is available for waves:api_v2 calls """
+        """ return whether submission is available for wapi:api_v2 calls """
         return self.availability >= 2
 
     def __str__(self):

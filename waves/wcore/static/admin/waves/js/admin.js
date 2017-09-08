@@ -82,7 +82,41 @@ var RelatedInlinePopup = function () {
             });
         },
     };
-})(django.jQuery || jQuery);
+
+    $(document).ready(function () {
+        $('#popup_modal').on('shown.bs.modal', function () {
+            $(this).find('.modal-dialog').css({
+                width: 'auto',
+                height: 'auto',
+                'max-height': '80%'
+            });
+        });
+
+        $('.js-popup-link').click(function (e) {
+            e.preventDefault();
+            // language=JQuery-CSS
+            var modalContent = $('#popup_modal_content');
+            console.log('Js-pop-up-modal called ' + $('#popup_modal'));
+            if ($(this).attr('modal-title') !== null) {
+                modalContent.find('.modal-header').html("<h4>" + $(this).attr('modal-title') + "</h4>");
+            }
+            modalContent.find('.modal-body').load($(this).attr('href'), function () {
+                console.log('open modal')
+                $('#popup_modal').modal('toggle');
+            });
+        });
+        $('fieldset.collapse.open').removeClass('collapsed');
+        $('#modal_alert').on('show.bs.modal', function () {
+            console.log('opened !');
+            $(this).find('.modal-dialog').css({
+                'max-height': '50%'
+            });
+        }).on('hidden.bs.modal', function () {
+            $(this).find('.modal-body').html("");
+            console.log("closed");
+        });
+    });
+})(jQuery || django.jQuery);
 
 
 

@@ -16,11 +16,23 @@ class WavesStorage(FileSystemStorage):
                                            file_permissions_mode=0o775)
 
 
+class BinaryStorage(FileSystemStorage):
+    """ Waves binary file storage engine """
+
+    def __init__(self):
+        super(BinaryStorage, self).__init__(location=waves_settings.BINARIES_DIR,
+                                            directory_permissions_mode=0o775,
+                                            file_permissions_mode=0o775)
+
+
 def file_sample_directory(instance, filename):
     """ Submission file sample directory upload pattern """
-    return 'sample/{0}/{1}/{2}'.format(str(instance.file_input.submission.service.api_name),
-                                       str(instance.file_input.submission.slug),
-                                       filename)
+    return os.path.join('sample', str(instance.file_input.submission.service.api_name),
+                        str(instance.file_input.submission.slug), filename)
+
+
+def binary_directory(instance, filename):
+    return os.path.join(str(instance.slug), filename)
 
 
 def job_file_directory(instance, filename):
@@ -42,4 +54,6 @@ def allow_display_online(file_name):
         return False
     return False
 
+
 waves_storage = WavesStorage()
+binary_storage = BinaryStorage()

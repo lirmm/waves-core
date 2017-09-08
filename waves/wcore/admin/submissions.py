@@ -1,6 +1,7 @@
 """ Service Submission administration classes """
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils.module_loading import import_string
@@ -56,6 +57,19 @@ class SampleDependentInputInline(CompactInline):
         return super(SampleDependentInputInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class SampleDependentInputInline2(CompactInline):
+    model = SampleDepParam
+    form = SampleDepForm2
+    fk_name = 'sample'
+    extra = 0
+    classes = ('grp-collapse grp-closed', 'collapse')
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "related_to":
+            kwargs['queryset'] = AParam.objects.filter(cmd_format__gt=0).not_instance_of(FileInput)
+        return super(SampleDependentInputInline2, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 class ExitCodeInline(admin.TabularInline):
     model = SubmissionExitCode
     extra = 0
@@ -73,6 +87,13 @@ class FileInputSampleInline(CompactInline):
     fields = ['label', 'file', 'file_input']
     exclude = ['order']
     classes = ('grp-collapse grp-closed', 'collapse')
+
+
+class FileInputSampleAdmin(WavesModelAdmin):
+    model = FileInputSample
+    form = InputSampleForm2
+
+    inlines = [SampleDependentInputInline2, ]
 
 
 class RepeatGroupAdmin(WavesModelAdmin):
@@ -198,3 +219,4 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
 
 admin.site.register(RepeatedGroup, RepeatGroupAdmin)
 admin.site.register(Submission, ServiceSubmissionAdmin)
+admin.site.register(FileInputSample, FileInputSampleAdmin)

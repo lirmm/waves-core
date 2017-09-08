@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'waves.wcore',
+    'waves.front',
     'crispy_forms',
     'rest_framework',
 )
@@ -59,8 +60,7 @@ ROOT_URLCONF = 'waves_core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -189,6 +189,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     )
 }
+ALLOWED_TEMPLATE_PACKS = ['bootstrap3', 'bootstrap4', 'foundation']
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'

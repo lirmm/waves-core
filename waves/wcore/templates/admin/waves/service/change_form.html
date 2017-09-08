@@ -10,7 +10,7 @@
         </a>
     </li>
     <!--li>
-        <a type="button" href="{% url 'waves:service_duplicate' original.pk %}"
+        <a type="button" href="{% url 'wcore:service_duplicate' original.pk %}"
            target="_self"
            title="Duplicate"
            class="btn btn-high btn-info"
@@ -19,7 +19,7 @@
         </a>
     </li-->
     <li>
-        <a type="button" href="{% url 'waves:service_export_form' original.pk %}"
+        <a type="button" href="{% url 'wcore:service_export_form' original.pk %}"
            title="View online"
            class="btn btn-high btn-info"
            id="view_jobs">
@@ -27,14 +27,14 @@
         </a>
     </li>
     <li>
-        <a type="button" href="{% url 'waves:service_submission_preview' original.pk %}"
+        <a type="button" href="{% url 'wcore:service_preview' original.pk %}"
            class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
             Preview
         </a>
     </li>
     {% if original.runner %}
         <li>
-            <a type="button" href="{% url 'waves:service_test_connection' original.pk %}"
+            <a type="button" href="{% url 'wcore:service_test_connection' original.pk %}"
                title="Connection Test"
                class="button"
                id="test_connect">
@@ -43,7 +43,7 @@
         </li>
         {% if original.runner.adaptor.importer %}
             <li>
-                <a type="button" href="{% url 'waves:service_import_form' original.pk %}"
+                <a type="button" href="{% url 'wcore:service_import_form' original.pk %}"
                    title="Import from adapter"
                    class="button"
                    data-toggle="modal"

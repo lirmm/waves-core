@@ -1,4 +1,4 @@
-{% extends "waves/services/base.html" %}
+{% extends "waves/services/../services/base.html" %}
 {% load waves_tags %}
 {% block scripts %}
     {{ block.super }}
@@ -91,7 +91,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body text-right">
                             {%  if job.submission %}
-                                <a class="btn btn-primary" href="{% url 'waves:service_details' job.submission.service.id %}">Back to
+                                <a class="btn btn-primary" href="{% url 'wfront:service_details' job.submission.service.id %}">Back to
                                     service</a>
                                 {% online_exec_button service=job.submission.service label="New job" %}
                             {% endif %}

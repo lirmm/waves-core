@@ -28,8 +28,6 @@ def skip_unless_sge():
 class RunnerTestCase(TestCase, TestJobWorkflowMixin):
     tests_dir = dirname(__file__)
     loader = AdaptorLoader
-
-
     adaptors = [
         LocalShellAdaptor(command='cp'),
         LocalClusterAdaptor(protocol='sge', queue=test_settings.WAVES_LOCAL_TEST_SGE_CELL, command='cp'),

@@ -1,10 +1,13 @@
 """ Base Utils classes """
 from __future__ import unicode_literals
 
+import logging
+import random
+import string
+
 import swapper
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -42,3 +45,8 @@ def get_service_model():
     Returns the User model that is active in this project.
     """
     return swapper.load_model("wcore", "Service")
+
+
+def random_analysis_name():
+    return "analysis " + ''.join(
+        random.choice(string.ascii_uppercase + string.digits) for _ in range(15))

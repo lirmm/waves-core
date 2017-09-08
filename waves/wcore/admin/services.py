@@ -55,7 +55,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     fieldsets = [
         ('General', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['name', 'created_by', 'runner', 'version', 'created', 'updated', ]
+            'fields': ['name', 'created_by', 'runner', 'version', 'created', 'updated', 'short_description']
         }),
         ('Access', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
@@ -63,7 +63,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         }),
         ('Details', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['api_name', 'short_description', 'description', 'edam_topics',
+            'fields': ['api_name', 'description', 'edam_topics',
                        'edam_operations', 'remote_service_id', ]
         }),
     ]

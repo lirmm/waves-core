@@ -7,6 +7,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from waves.wcore.forms.crispy import FormHelper
+from waves.wcore.utils import random_analysis_name
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import Submission
 from waves.wcore.utils.validators import ServiceInputValidator
@@ -30,11 +31,12 @@ class ServiceSubmissionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         parent = kwargs.pop('parent', None)
         user = kwargs.pop('user', None)
+        template_pack = kwargs.pop('template_pack', 'bootstrap3')
         super(ServiceSubmissionForm, self).__init__(*args, **kwargs)
-        self.helper = self.get_helper(form_tag=True)
+        self.helper = self.get_helper(form_tag=True, template_pack=template_pack)
         self.helper.init_layout(fields=('title', 'email', 'slug'))
         # Always add "title" / "slug" to submitted jobs
-        self.fields['title'].initial = 'my %s job' % self.instance.service.name
+        self.fields['title'].initial = 'Job %s' % random_analysis_name()
         self.fields['slug'].initial = str(self.instance.slug)
         self.list_inputs = list(self.instance.expected_inputs.order_by('-required', 'order'))
         extra_fields = []

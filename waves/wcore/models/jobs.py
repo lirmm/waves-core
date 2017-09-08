@@ -38,7 +38,6 @@ __all__ = ['Job', 'JobInput', 'JobOutput', 'JobManager']
 class JobManager(models.Manager):
     """ Job Manager add few shortcut function to default Django models objects Manager
     """
-
     def get_by_natural_key(self, slug, service):
         return self.get(slug=slug, service=service)
 
@@ -154,6 +153,9 @@ class JobManager(models.Manager):
         else:
             job = update
             job.submission = submission
+            job.adaptor = submission.adaptor
+            job.notify = submission.service.email_on
+            job.service = submission.service.name
         job.create_non_editable_inputs(submission)
         mandatory_params = submission.expected_inputs.filter(required=True)
         missing = {m.name: '%s (:%s:) is required field' % (m.label, m.name) for m in mandatory_params if
@@ -384,14 +386,14 @@ class Job(TimeStamped, Slugged, UrlMixin):
             from waves.wcore.adaptors.loader import AdaptorLoader
             try:
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
+                return adaptor
             except Exception as e:
-                logger.exception("Unable to load adaptor %s", e.message)
-            return adaptor
+                logger.exception("Unable to load %s adaptor %s", self._adaptor, e.message)
         elif self.submission:
             return self.submission.adaptor
         else:
             logger.exception("None adaptor ...")
-            return None
+        return None
 
     @adaptor.setter
     def adaptor(self, value):
@@ -479,7 +481,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: the absolute uri of this job (without host)
         """
         from django.core.urlresolvers import reverse
-        return reverse('waves:job_details', kwargs={'slug': self.slug})
+        return reverse('wfront:job_details', kwargs={'slug': self.slug})
 
     @property
     def details_available(self):
@@ -780,7 +782,6 @@ class JobInputManager(models.Manager):
                         uploaded_file.write(chunk)
             elif isinstance(submitted_input, (str, unicode)):
                 # copy / paste content
-                print "service Input has default name ", service_input.name
                 if service_input.default:
                     filename = path.join(job.working_dir, service_input.default)
                     input_dict.update(dict(value=service_input.default))
@@ -962,11 +963,9 @@ class JobOutputManager(models.Manager):
                     value_to_normalize = value_to_normalize.name
                 elif isinstance(value_to_normalize, (str, unicode)):
                     value_to_normalize = srv_submission_output.default
-                    print value_to_normalize
 
             input_value = normalize_value(value_to_normalize)
             formatted_value = submission_output.file_pattern % input_value
-            print "output", srv_submission_output.param_type
             output_dict.update(dict(value=formatted_value))
         else:
             output_dict.update(dict(value=submission_output.file_pattern))
@@ -1043,7 +1042,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('waves:job_output', kwargs={'slug': self.slug})
+        return reverse('wfront:job_output', kwargs={'slug': self.slug})
 
     @property
     def download_url(self):

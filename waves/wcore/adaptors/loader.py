@@ -31,5 +31,5 @@ class AdaptorLoader(object):
     @classmethod
     def unserialize(cls, serialized):
         json_data = json.loads(serialized)
-        clazz = import_from_string(json_data['clazz'], None)
+        clazz = import_from_string(json_data['clazz'])
         return cls.load(clazz, **json_data['params'])
