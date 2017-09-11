@@ -15,7 +15,7 @@ import waves.wcore.adaptors.const
 import waves.wcore.exceptions
 from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.management.runner import DaemonRunner
-from waves.wcore.models import Job
+from waves.wcore.models import Job, Submission
 from waves.wcore.settings import waves_settings
 from waves.wcore.settings import waves_settings as config
 
@@ -148,6 +148,7 @@ class JobQueueCommand(DaemonCommand):
 
         :return: Nothing
         """
+        print Submission.objects.all()
         jobs = Job.objects.prefetch_related('job_inputs'). \
             prefetch_related('outputs').filter(_status__lt=waves.wcore.adaptors.const.JOB_TERMINATED)
         if jobs.count() > 0:

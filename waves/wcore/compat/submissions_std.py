@@ -38,7 +38,7 @@ class AParamInline(StackedPolymorphicInline.Child):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['collapse']
+            'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -57,7 +57,7 @@ class TextParamInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['collapse']
+            'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -80,7 +80,7 @@ class FileInputInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['collapse']
+            'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -102,7 +102,7 @@ class IntegerFieldInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['collapse']
+            'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -124,7 +124,7 @@ class BooleanFieldInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['collapse']
+            'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -146,7 +146,7 @@ class DecimalFieldInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['collapse']
+            'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -168,7 +168,7 @@ class ListFieldInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['collapse']
+            'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -203,7 +203,7 @@ class OrganizeInputInline(StackedPolymorphicInline):
     base_fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['collapse']
+            'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,

@@ -3,11 +3,12 @@
 
 {% block branding %}
     <div id="grp-admin-brand">
-        <img src="{% static 'waves/logos/waves.png' %}" width="40px" id="#navbar-logo" style="float:left;"/>
+        <img src="{% static 'waves/img/logo.png' %}" width="40px" id="#navbar-logo"
+             style="float:left; padding-right: 10px"/>
         <h1 id="grp-admin-title">
             <span>
                 {% if grappelli_admin_title %} {{ grappelli_admin_title }} {% else %}
-                    {{ site_title|default:"WAVES ADMIN"}} {% endif %}
+                    {{ site_title|default:"WAVES ADMIN" }} {% endif %}
             </span>
         </h1>
     </div>

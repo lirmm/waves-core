@@ -157,9 +157,7 @@ class JobManager(models.Manager):
             job.notify = submission.service.email_on
             job.service = submission.service.name
         job.create_non_editable_inputs(submission)
-        print 'submission params ', [init_param for init_param in submission.expected_inputs]
         mandatory_params = submission.expected_inputs.filter(required=True)
-        print "mandatory params !! ", [param for param in mandatory_params.all()]
         missing = {m.name: '%s (:%s:) is required field' % (m.label, m.name) for m in mandatory_params if
                    m.name not in submitted_inputs.keys()}
         if len(missing) > 0:
@@ -525,8 +523,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
             logger.debug('Created non editable job input: %s (%s, %s)', service_input.label,
                          service_input.name, service_input.default)
             self.job_inputs.add(JobInput.objects.create(job=self, name=service_input.name,
-                                                        type=service_input.type,
-                                                        param_type=AParam.OPT_TYPE_NONE,
+                                                        param_type=service_input.type,
+                                                        command_type=AParam.OPT_TYPE_NONE,
                                                         label=service_input.label,
                                                         order=service_input.order,
                                                         value=service_input.default))
@@ -736,7 +734,7 @@ class JobInputManager(models.Manager):
         # Backward compatibility hack
         sin = kwargs.pop('srv_input', None)
         if sin:
-            kwargs.update(dict(name=sin.name, type=sin.type, param_type=sin.cmd_line_type, label=sin.label))
+            kwargs.update(dict(name=sin.name, param_type=sin.type, command_type=sin.cmd_line_type, label=sin.label))
         return super(JobInputManager, self).create(**kwargs)
 
     @transaction.atomic
@@ -759,12 +757,13 @@ class JobInputManager(models.Manager):
                                                                            'cmd_format') else service_input.param_type,
                           label=service_input.label,
                           value=str(submitted_input))
-        try:
+        """try:
             if isinstance(service_input, FileInput) and service_input.to_outputs.filter(
                     submission=service_input.submission).exists():
                 input_dict['value'] = normalize_value(input_dict['value'])
         except ObjectDoesNotExist:
             pass
+        """
         if service_input.param_type == AParam.TYPE_FILE:
             if isinstance(submitted_input, File):
                 # classic uploaded file
@@ -955,14 +954,13 @@ class JobOutputManager(models.Manager):
         assert (isinstance(submission_output, SubmissionOutput))
         output_dict = dict(job=job, _name=submission_output.label, extension=submission_output.ext,
                            api_name=submission_output.api_name)
-        print 'outnput ', submission_output
         if hasattr(submission_output, 'from_input') and submission_output.from_input:
             # issued from a input value
             srv_submission_output = submission_output.from_input
             value_to_normalize = submitted_inputs.get(srv_submission_output.name,
                                                       srv_submission_output.default)
             if srv_submission_output.param_type == AParam.TYPE_FILE:
-                if type(value_to_normalize) is file:
+                if type(value_to_normalize) is file or isinstance(value_to_normalize, File):
                     value_to_normalize = value_to_normalize.name
                 elif isinstance(value_to_normalize, (str, unicode)):
                     value_to_normalize = srv_submission_output.default

@@ -77,7 +77,7 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
     readonly_fields = ['connexion_string']
     fieldsets = [
         ('Main', {
-            'fields': ['name', 'clazz', 'connexion_string', 'update_init_params']
+            'fields': ['name', 'clazz', 'connexion_string', 'binary_file', 'update_init_params']
         }),
         ('Description', {
             'fields': ['short_description', 'description'],

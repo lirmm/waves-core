@@ -10,6 +10,7 @@ from django.db import models
 from django.utils.module_loading import import_string
 
 from waves.wcore.models.base import WavesBaseModel
+from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.utils.encrypt import Encrypt
 
 logger = logging.getLogger(__name__)
@@ -51,9 +52,14 @@ class AdaptorInitParam(WavesBaseModel):
         instance = super(AdaptorInitParam, cls).from_db(db, field_names, values)
         if instance.name == "password" and instance.value:
             instance.value = Encrypt.decrypt(instance.value)
-        instance._value = instance.value
+        instance._value = instance.get_value()
         instance._override = instance.prevent_override
         return instance
+
+    def get_value(self):
+        if self.name == "command" and self.content_object.binary_file is not None:
+            return self.content_object.binary_file.binary.path
+        return self.value
 
     @property
     def config_changed(self):
@@ -74,6 +80,8 @@ class HasAdaptorClazzMixin(WavesBaseModel):
     clazz = models.CharField('Adaptor object', max_length=100, null=False,
                              help_text="This is the concrete class used to perform job execution")
     adaptor_params = GenericRelation(AdaptorInitParam)
+
+    binary_file = models.ForeignKey('ServiceBinaryFile', null=True, blank=True, on_delete=models.SET_NULL)
 
     def set_run_params_defaults(self):
         """Set runs params with defaults issued from concrete class object """
@@ -99,7 +107,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
     @property
     def run_params(self):
         """ Get defined params values from db """
-        return {init.name: init.value for init in self.adaptor_params.all()}
+        return {init.name: init.get_value() for init in self.adaptor_params.all()}
 
     @property
     def adaptor_defaults(self):
@@ -131,6 +139,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
             try:
                 self._adaptor = import_string(self.clazz)(**self.run_params)
             except ImportError as e:
+                logger.error('Import Adaptor error %s ' % e)
                 self._adaptor = None
         return self._adaptor
 

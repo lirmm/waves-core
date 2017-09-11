@@ -359,7 +359,7 @@ class FileInput(AParam):
 
     class_label = "File Input"
 
-    max_size = models.BigIntegerField('Maximum allowed file size ', default=waves_settings.UPLOAD_MAX_SIZE / 1024,
+    max_size = models.BigIntegerField('Allowed file size ', default=waves_settings.UPLOAD_MAX_SIZE / 1024,
                                       help_text="in Ko")
     allowed_extensions = models.CharField('Filter by extensions', max_length=255,
                                           help_text="Comma separated list, * means no filter",

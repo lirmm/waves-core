@@ -9,6 +9,7 @@ from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
 from waves.wcore.admin.base import *
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
 from waves.wcore.models.services import Submission
+from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.utils import url_to_edit_object
 
 Service = swapper.load_model("wcore", "Service")
@@ -36,6 +37,10 @@ class ServiceSubmissionInline(admin.TabularInline):
     get_runner.short_description = "Overridden runner"
 
 
+class ServiceBinaryInline(admin.TabularInline):
+    model = ServiceBinaryFile
+
+
 class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, WavesModelAdmin,
                    DynamicInlinesAdmin):
     """ Service model objects Admin"""
@@ -55,7 +60,8 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     fieldsets = [
         ('General', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['name', 'created_by', 'runner', 'version', 'created', 'updated', 'short_description']
+            'fields': ['name', 'created_by', 'runner', 'version', 'created', 'updated', 'binary_file',
+                       'short_description']
         }),
         ('Access', {
             'classes': ('grp-collapse grp-closed', 'collapse'),

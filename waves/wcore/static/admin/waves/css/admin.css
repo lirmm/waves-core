@@ -166,5 +166,6 @@ div.inline-group fieldset div.inline-related {
     border: 1px dashed darkgray;
 }
 div.inline-group fieldset div.inline-related fieldset{
-    padding-left:1.5em;
+    margin-left:1.5em;
+    margin-bottom:1em;
 }

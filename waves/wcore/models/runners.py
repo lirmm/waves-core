@@ -1,6 +1,7 @@
 """ Job Runners related models """
 from __future__ import unicode_literals
 
+import swapper
 from itertools import chain
 
 from django.db import models
@@ -27,8 +28,8 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'Execution'
-        verbose_name_plural = "Execution"
+        verbose_name = 'Execution environment'
+        verbose_name_plural = "Executions"
     objects = RunnerManager()
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
     enabled = models.BooleanField('Enabled', default=True, null=False, blank=True,
@@ -64,8 +65,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
     @property
     def running_services(self):
-        from waves.wcore.utils import get_service_model
-        Service = get_service_model()
+        Service = swapper.load_model("wcore", "Service")
         return Service.objects.filter(runner=self)
 
     @property

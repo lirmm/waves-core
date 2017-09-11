@@ -15,7 +15,8 @@ from waves.wcore.settings import waves_settings as config
 Service = swapper.load_model("wcore", "Service")
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm', 'InputInlineForm', 'SubmissionExitCodeForm',
-           'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'InputSampleForm2', 'SampleDepForm2']
+           'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'InputSampleForm2', 'SampleDepForm2',
+           'ServiceSubmissionForm']
 
 
 class SubmissionInlineForm(forms.ModelForm):
@@ -54,6 +55,15 @@ class ImportForm(forms.Form):
         self.helper.disable_csrf = True
 
 
+class ServiceSubmissionForm(forms.ModelForm):
+    class Meta:
+        model = Submission
+        fields = '__all__'
+        help_texts = {
+            'binary_file': "If set, 'Execution parameter' param line:'command' will be ignored"
+        }
+
+
 class ServiceForm(forms.ModelForm):
     """
     Service form parameters
@@ -65,6 +75,9 @@ class ServiceForm(forms.ModelForm):
         widgets = {
             'edam_topics': forms.TextInput(attrs={'size': 50}),
             'edam_operations': forms.TextInput(attrs={'size': 50}),
+        }
+        help_texts = {
+            'binary_file': "If set, 'Execution parameter' param line:'command' will be ignored"
         }
 
     def __init__(self, *args, **kwargs):
@@ -128,9 +141,11 @@ class InputSampleForm2(forms.ModelForm):
         model = FileInputSample
         fields = '__all__'
 
+def get_related_to():
+    return AParam.objects.not_instance_of(FileInput)
 
 class SampleDepForm2(forms.ModelForm):
-    related_to = InputSampleModelChoiceField(queryset=AParam.objects.not_instance_of(FileInput))
+    related_to = InputSampleModelChoiceField(queryset=None)
 
     def __init__(self, *args, **kwargs):
         super(SampleDepForm2, self).__init__(*args, **kwargs)
@@ -140,6 +155,7 @@ class SampleDepForm2(forms.ModelForm):
         self.fields['related_to'].widget.can_delete_related = False
         self.fields['related_to'].widget.can_add_related = False
         self.fields['related_to'].widget.can_change_related = False
+
 
 
 class SubmissionOutputForm(forms.ModelForm):

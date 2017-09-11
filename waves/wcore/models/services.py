@@ -423,7 +423,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     @property
     def expected_inputs(self):
         """ Retrieve only expected inputs to submit a job """
-        return self.inputs.filter(parent__isnull=True)
+        return self.inputs.filter(parent__isnull=True, required__isnull=False)
 
     def duplicate(self, service):
         """ Duplicate a submission with all its inputs """

@@ -225,7 +225,7 @@ class JobAdmin(WavesModelAdmin):
 
     def get_command_line(self, obj):
         if obj.adaptor:
-            return obj.adaptor.command + " " + obj.command_line
+            return "%s %s" % (obj.adaptor.command, obj.command_line)
         else:
             return "Unavailable"
 

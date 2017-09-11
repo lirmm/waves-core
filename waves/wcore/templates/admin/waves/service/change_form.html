@@ -9,15 +9,6 @@
             Jobs
         </a>
     </li>
-    <!--li>
-        <a type="button" href="{% url 'wcore:service_duplicate' original.pk %}"
-           target="_self"
-           title="Duplicate"
-           class="btn btn-high btn-info"
-           id="duplicate_service">
-            Duplicate
-        </a>
-    </li-->
     <li>
         <a type="button" href="{% url 'wcore:service_export_form' original.pk %}"
            title="View online"
@@ -26,13 +17,13 @@
             Export
         </a>
     </li>
-    <li>
-        <a type="button" href="{% url 'wcore:service_preview' original.pk %}"
-           class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
-            Preview
-        </a>
-    </li>
     {% if original.runner %}
+        <li>
+            <a type="button" href="{% url 'wcore:service_preview' original.pk %}"
+               class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
+                Preview
+            </a>
+        </li>
         <li>
             <a type="button" href="{% url 'wcore:service_test_connection' original.pk %}"
                title="Connection Test"
