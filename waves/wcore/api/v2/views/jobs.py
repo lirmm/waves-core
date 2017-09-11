@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins, status, generics
+from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import detail_route
 from rest_framework.parsers import MultiPartParser, JSONParser, BaseParser
 from rest_framework.response import Response

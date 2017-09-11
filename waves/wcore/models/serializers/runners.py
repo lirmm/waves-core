@@ -15,7 +15,7 @@ class RunnerParamSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         repre = super(RunnerParamSerializer, self).to_representation(instance)
-        if instance.name == 'password' or instance.crypt :
+        if instance.name == 'password' or instance.crypt:
             repre['value'] = "xxxxxx"
         return repre
 

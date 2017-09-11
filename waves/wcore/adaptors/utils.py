@@ -44,9 +44,9 @@ def import_string(dotted_path):
         msg = "%s doesn't look like a module path" % dotted_path
         raise ImportError(msg)
 
-    module = importlib.import_module(module_path)
+    mod = importlib.import_module(module_path)
     try:
-        return getattr(module, class_name)
+        return getattr(mod, class_name)
     except AttributeError:
         msg = 'Module "%s" does not define a "%s" attribute/class' % (
             module_path, class_name)

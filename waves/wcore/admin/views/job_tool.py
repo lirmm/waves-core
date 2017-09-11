@@ -14,6 +14,7 @@ import waves.wcore.adaptors.const
 
 class JobCancelView(View):
     """ View after cancel a job, if possible """
+
     def get(self, request, *args, **kwargs):
         """ Try to cancel specified job (in kwargs), redirect to current job page """
         try:
@@ -22,7 +23,7 @@ class JobCancelView(View):
             if runner is not None:
                 runner.cancel_job(job)
             else:
-                job.status=waves.wcore.adaptors.const.JOB_CANCELLED
+                job.status = waves.wcore.adaptors.const.JOB_CANCELLED
                 job.save()
             messages.add_message(request, level=messages.SUCCESS, message="Job cancelled")
         except WavesException as e:
@@ -31,7 +32,6 @@ class JobCancelView(View):
 
 
 class JobRerunView(View):
-
     def get(self, request, *args, **kwargs):
         job = get_object_or_404(Job, id=self.kwargs['job_id'])
         if job.allow_rerun:

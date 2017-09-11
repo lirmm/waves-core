@@ -111,10 +111,8 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         readonly_fields = super(ServiceAdmin, self).get_readonly_fields(request, obj)
         if not request.user.is_superuser:
             readonly_fields.append('created_by')
-        if obj and obj.status > Service.SRV_TEST:
+        if obj and obj.status > Service.SRV_TEST and not 'api_name' in readonly_fields:
             readonly_fields.append('api_name')
-        else:
-            readonly_fields.remove('api_name') if 'api_name' in readonly_fields else None
         if obj is not None and obj.created_by != request.user:
             readonly_fields.append('clazz')
             readonly_fields.append('version')

@@ -22,7 +22,6 @@ from waves.wcore.utils import get_all_subclasses
 Service = swapper.load_model("wcore", "Service")
 
 
-
 @receiver(pre_save, sender=Job)
 def job_pre_save_handler(sender, instance, **kwargs):
     """ job presave handler """
@@ -119,6 +118,7 @@ def adaptor_param_pre_save_handler(sender, instance, **kwargs):
         instance.crypt = True
         instance.value = Encrypt.encrypt(instance.value)
 
+
 for subclass in get_all_subclasses(AdaptorInitParam):
     if not subclass._meta.abstract:
         pre_save.connect(adaptor_param_pre_save_handler, subclass)
@@ -144,8 +144,9 @@ def job_output_post_save_handler(sender, instance, created, **kwargs):
         open(join(instance.job.working_dir, instance.value), 'a').close()
     """
 
+
 # Connect all ApiModel subclass to pre_save_handler
-for subclass in get_all_subclasses(ApiModel): #.__subclasses__():
+for subclass in get_all_subclasses(ApiModel):  # .__subclasses__():
     pre_save.connect(api_able_pre_save_handler, subclass)
 
 for subclass in get_all_subclasses(Job):

@@ -4,9 +4,8 @@ WAVES app Django application descriptor
 """
 from __future__ import unicode_literals
 
-from os.path import dirname
 from django.apps import AppConfig
-from django.core.checks import Error, Warning, register
+from django.core.checks import Error, register
 
 
 class WavesConfig(AppConfig):
@@ -26,7 +25,7 @@ class WavesConfig(AppConfig):
 
 
 @register()
-def check_waves_config(app_configs=('waves.wcore'), **kwargs):
+def check_waves_config(app_configs=('waves.wcore',), **kwargs):
     """
     WAVES configuration check up, added to classic ``manage.py check`` Django command
 

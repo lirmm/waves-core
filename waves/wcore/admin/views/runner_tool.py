@@ -43,7 +43,6 @@ class RunnerImportToolView(FormView):
 
     def get_success_url(self):
         return self.service.get_admin_url()
-        return reverse('admin:wcore_service_change', args=[self.service.id])
 
     def get_tool_list(self):
         return [(x[0], [(y.remote_service_id, y.name + ' ' + y.version) for y in x[1]]) for x in
@@ -90,7 +89,8 @@ class RunnerImportToolView(FormView):
             if form.is_valid():
                 try:
                     with transaction.atomic():
-                        new_service, new_submission = self.object.importer.import_service(self.remote_service_id(request))
+                        new_service, new_submission = self.object.importer.import_service(
+                            self.remote_service_id(request))
                         self.service = new_service
                         self.service.runner = self.object
                         self.service.created_by = self.request.user
@@ -129,9 +129,9 @@ class RunnerTestConnectionView(JSONDetailView):
     runner_model = None
 
     def get_object(self, queryset=None):
-        self.object = super(RunnerTestConnectionView, self).get_object(queryset)
+        obj = super(RunnerTestConnectionView, self).get_object(queryset)
         self.adaptor = self.object.adaptor
-        return self.object
+        return obj
 
     def get_object_name(self):
         return self.object.name

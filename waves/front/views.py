@@ -10,7 +10,6 @@ from waves.wcore.forms.services import ServiceSubmissionForm
 from waves.wcore.views.services import SubmissionFormView
 from waves.wcore.models import Submission, Job
 
-
 Service = swapper.load_model("wcore", "Service")
 
 
@@ -64,7 +63,6 @@ class JobSubmissionView(ServiceDetailView, SubmissionFormView):
         self.user = self.request.user
         self.selected_submission = self._get_selected_submission()
         return super(JobSubmissionView, self).get(request, *args, **kwargs)
-
 
     def get_success_url(self):
         return reverse('wfront:job_details', kwargs={'slug': self.job.slug})

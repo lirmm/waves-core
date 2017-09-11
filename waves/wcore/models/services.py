@@ -325,7 +325,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
                user.is_superuser
 
     @property
-    def serializer(self):
+    def serializer(self, context=None):
         from waves.wcore.models.serializers.services import ServiceSerializer
         return ServiceSerializer
 

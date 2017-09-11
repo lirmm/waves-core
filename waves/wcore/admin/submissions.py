@@ -1,7 +1,6 @@
 """ Service Submission administration classes """
 from __future__ import unicode_literals
 
-from django.conf import settings
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils.module_loading import import_string
@@ -31,6 +30,17 @@ class SubmissionOutputInline(CompactInline):
     fields = ['label', 'file_pattern', 'api_name', 'extension', 'edam_format', 'edam_data', 'from_input', 'help_text']
     verbose_name_plural = "Outputs"
     classes = ('grp-collapse', 'grp-closed', 'collapse')
+
+    fieldsets = [
+        ('General', {
+            'fields': ['label', 'file_pattern', 'extension'],
+            'classes': ['collapse']
+        }),
+        ('More', {
+            'fields': ['api_name', 'edam_format', 'edam_data', 'from_input', 'help_text'],
+            'classes': ['collapse']
+        }),
+    ]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "from_input":
@@ -135,9 +145,9 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     change_form_template = "admin/waves/submission/change_form.html"
 
     def get_inlines(self, request, obj=None):
-        OrganizeInputInline = import_string(organize_input_class)
+        organize_input_inline = import_string(organize_input_class)
         _inlines = [
-            OrganizeInputInline,
+            organize_input_inline,
             # OrgRepeatGroupInline,
             SubmissionOutputInline,
             ExitCodeInline,

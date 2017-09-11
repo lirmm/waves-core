@@ -5,8 +5,10 @@ from waves.wcore.exceptions import WavesException
 __all__ = ['JobException', 'JobRunException', 'JobSubmissionException', 'JobCreateException',
            'JobMissingMandatoryParam', 'JobInconsistentStateError', 'JobPrepareException']
 
+
 class JobException(WavesException):
     """ Base Exception class for all job related errors  """
+
     def __init__(self, message, job=None):
         if job is not None:
             message = '[job:%s][%s] - %s' % (job.slug, job.remote_job_id, message)
@@ -25,6 +27,7 @@ class JobSubmissionException(JobException):
 
 class JobCreateException(JobSubmissionException):
     """ Job creation process erro """
+
     def __init__(self, message, job=None):
         super(JobException, self).__init__(message)
 
@@ -32,6 +35,7 @@ class JobCreateException(JobSubmissionException):
 class JobMissingMandatoryParam(JobSubmissionException):
     """ Inconsistency in job submission detected, missing a required params to run job (issued from service
     configuration """
+
     def __init__(self, param, job):
         message = u'Missing mandatory parameter "%s"' % param
         super(JobMissingMandatoryParam, self).__init__(message, job)

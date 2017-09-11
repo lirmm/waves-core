@@ -3,7 +3,7 @@ Runner configuration BackOffice Forms
 """
 from __future__ import unicode_literals
 
-from django.forms import ModelForm, CheckboxInput, BooleanField, ChoiceField, HiddenInput
+from django.forms import ModelForm, BooleanField, ChoiceField, HiddenInput
 from waves.wcore.models import Runner
 
 __all__ = ['RunnerForm']

@@ -44,7 +44,8 @@ class ServiceInputValidator(object):
         except AssertionError as e:
             form.add_error(the_input.name, 'Wrong input "%s": %s' % (the_input, e.message))
         except AttributeError as e:
-            form.add_error(the_input.name, 'Unknown param_type for input: %s - param_type: %s' % (the_input, the_input.type))
+            form.add_error(the_input.name,
+                           'Unknown param_type for input: %s - param_type: %s' % (the_input, the_input.type))
 
     def _validate_input_boolean(self, the_input, value):
         from waves.wcore.models.inputs import AParam
@@ -127,6 +128,7 @@ def validate_list_param(value):
     pattern = re.compile(r"^.+\|[\w+;,:\"?']+$", re.MULTILINE)
     if not all([pattern.match(val) for val in value.splitlines()]):
         raise ValidationError('Wrong format for list elements : spaces allowed for labels, not for values')
+
 
 def validate_name_param(value):
     import re

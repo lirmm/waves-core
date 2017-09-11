@@ -35,6 +35,17 @@ class AParamInline(StackedPolymorphicInline.Child):
             kwargs['queryset'] = AParam.objects.filter(submission=request.current_obj)
         return super(AParamInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Details', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+    ]
+
 
 class TextParamInline(AParamInline):
     fields = required_base_fields + ['max_length'] + extra_base_fields
@@ -42,6 +53,21 @@ class TextParamInline(AParamInline):
     classes = ['collapse']
     model = TextParam
     form = OrganizeInputForm
+
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Details', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Text params', {
+            'fields': ['max_length', ],
+            'classes': ['collapse']
+        }),
+    ]
 
 
 class FileInputInline(AParamInline):
@@ -51,6 +77,21 @@ class FileInputInline(AParamInline):
     model = FileInput
     form = OrganizeInputForm
 
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Details', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('File set up', {
+            'fields': ['max_size', 'allowed_extensions', 'regexp'],
+            'classes': ['collapse']
+        }),
+    ]
+
 
 class IntegerFieldInline(AParamInline):
     fields = required_base_fields + extra_base_fields + ['min_val', 'max_val', 'step']
@@ -58,19 +99,42 @@ class IntegerFieldInline(AParamInline):
     model = IntegerParam
     form = OrganizeInputForm
 
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Details', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Integer range params', {
+            'fields': ['min_val', 'max_val', 'step'],
+            'classes': ['collapse']
+        }),
+    ]
 
-class BooleanFielInline(AParamInline):
+
+class BooleanFieldInline(AParamInline):
     fields = required_base_fields + ['true_value', 'false_value'] + extra_base_fields
     exclude = ['order']
     model = BooleanParam
     form = OrganizeInputForm
 
-
-class TextFieldInline(AParamInline):
-    fields = required_base_fields + extra_base_fields
-    model = TextParam
-    exclude = ['order']
-    form = TextParamForm
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Details', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Boolean params', {
+            'fields': ['true_value', 'false_value'],
+            'classes': ['collapse']
+        }),
+    ]
 
 
 class DecimalFieldInline(AParamInline):
@@ -79,12 +143,42 @@ class DecimalFieldInline(AParamInline):
     model = DecimalParam
     form = OrganizeInputForm
 
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Details', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Decimal range params', {
+            'fields': ['min_val', 'max_val', 'step'],
+            'classes': ['collapse']
+        }),
+    ]
+
 
 class ListFieldInline(AParamInline):
     fields = required_base_fields + ['list_mode', 'list_elements'] + extra_base_fields
     exclude = ['order']
     model = ListParam
     form = OrganizeInputForm
+
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Details', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('List params', {
+            'fields': ['list_mode', 'list_elements'],
+            'classes': ['collapse']
+        }),
+    ]
 
 
 class OrganizeInputInline(StackedPolymorphicInline):
@@ -101,8 +195,19 @@ class OrganizeInputInline(StackedPolymorphicInline):
         FileInputInline,
         DecimalFieldInline,
         IntegerFieldInline,
-        BooleanFielInline,
+        BooleanFieldInline,
         ListFieldInline,
-        TextFieldInline
     )
-    classes = ["", ]
+    classes = ["collapse", ]
+
+    base_fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Details', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        })
+    ]
+

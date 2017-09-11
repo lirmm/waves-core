@@ -11,5 +11,5 @@ class WavesAuthenticatedView(APIView):
 
     def get_permissions(self):
         if settings.DEBUG:
-            self.permission_classes = [AllowAny,]
+            self.permission_classes = [AllowAny, ]
         return super(WavesAuthenticatedView, self).get_permissions()

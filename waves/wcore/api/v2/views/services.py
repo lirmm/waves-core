@@ -9,7 +9,6 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
-from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets, generics
 from rest_framework.decorators import detail_route
@@ -54,7 +53,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         """ retrieve available services for current request user """
         return Service.objects.get_api_services(user=self.request.user)
 
-    def list(self, request):
+    def list(self, request, **kwargs):
         """ List all available services """
         serializer = ServiceSerializer(self.get_queryset(), many=True, context={'request': request},
                                        fields=('url', 'name', 'short_description',

@@ -50,7 +50,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
         return self.name
 
     @property
-    def serializer(self):
+    def serializer(self, context=None):
         """ Retrieve a serializer for json export """
         from waves.wcore.models.serializers.runners import RunnerSerializer
         return RunnerSerializer

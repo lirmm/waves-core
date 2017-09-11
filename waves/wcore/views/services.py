@@ -76,10 +76,8 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         return extra_kwargs
 
     def post(self, request, *args, **kwargs):
-        self.user = self.request.user
-        self.selected_submission = self._get_selected_submission()
         form = ServiceSubmissionForm(parent=self.get_object(),
-                                     instance=self.selected_submission,
+                                     instance=self._get_selected_submission(),
                                      data=self.request.POST,
                                      files=self.request.FILES)
         if form.is_valid():
@@ -94,13 +92,13 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
             ass_email = self.request.user.email
         user = self.request.user if self.request.user.is_authenticated() else None
         try:
-            self.job = Job.objects.create_from_submission(submission=self.selected_submission,
-                                                          email_to=ass_email,
-                                                          submitted_inputs=form.cleaned_data,
-                                                          user=user)
+            job = Job.objects.create_from_submission(submission=self.selected_submission,
+                                                     email_to=ass_email,
+                                                     submitted_inputs=form.cleaned_data,
+                                                     user=user)
             messages.success(
                 self.request,
-                "Job successfully submitted"
+                "Job successfully submitted %s" % job.slug
             )
         except JobException as e:
             messages.error(

@@ -103,6 +103,7 @@ class JobInputDetailSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url': {'view_name': 'wapi:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}
         }
+
     inputs = JobInputSerializer(source='job_inputs', read_only=True)
     job = serializers.SerializerMethodField()
 
@@ -172,6 +173,7 @@ class JobOutputDetailSerializer(serializers.HyperlinkedModelSerializer):
                        kwargs={'slug': obj.slug})
 
     job = serializers.SerializerMethodField()
+
     @staticmethod
     def get_status_txt(obj):
         """ Return job status text """

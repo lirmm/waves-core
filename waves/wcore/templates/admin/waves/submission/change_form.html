@@ -45,7 +45,7 @@
             console.log("loaded");
             $(document).on('formset:added', function (event, $row, formsetName) {
                 console.log("formsetName" + formsetName);
-                if (formsetName == 'inputs') {
+                if (formsetName === 'inputs') {
                     // Do something
                     event.stopImmediatePropagation();
                     event.stopPropagation();

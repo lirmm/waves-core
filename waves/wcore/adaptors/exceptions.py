@@ -37,8 +37,9 @@ class AdaptorJobStateException(AdaptorJobException):
     def __init__(self, status, expected):
         if expected is not list:
             expected = [expected]
-        msg = "Wrong job state, excepted %s, got %s" % ([waves.wcore.adaptors.const.STATUS_MAP[state] for state in expected],
-                                                        waves.wcore.adaptors.const.STATUS_MAP[status])
+        msg = "Wrong job state, excepted %s, got %s" % (
+            [waves.wcore.adaptors.const.STATUS_MAP[state] for state in expected],
+            waves.wcore.adaptors.const.STATUS_MAP[status])
         super(AdaptorJobStateException, self).__init__(msg)
 
 
