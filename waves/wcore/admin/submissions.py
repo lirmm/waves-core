@@ -127,6 +127,7 @@ class OrgRepeatGroupInline(CompactInline):
 class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, DynamicInlinesAdmin):
     """ Submission process administration -- Model Submission """
     current_obj = None
+    form = ServiceSubmissionForm
     exclude = ['order']
     list_display = ['get_name', 'service', 'runner_link', 'available_online', 'available_api', 'runner']
     readonly_fields = ['available_online', 'available_api']
@@ -137,7 +138,7 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     search_fields = ('service__name', 'label', 'override_runner__name', 'service__runner__name')
     fieldsets = [
         ('General', {
-            'fields': ['service', 'name', 'availability', 'api_name', 'runner', ],
+            'fields': ['service', 'name', 'availability', 'api_name', 'runner', 'binary_file'],
             'classes': ['collapse']
         }),
     ]

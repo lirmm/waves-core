@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+
 from waves.wcore.models.base import Slugged, TimeStamped
 from waves.wcore.utils.storage import binary_storage, binary_directory
 

@@ -92,7 +92,7 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
             ass_email = self.request.user.email
         user = self.request.user if self.request.user.is_authenticated() else None
         try:
-            job = Job.objects.create_from_submission(submission=self.selected_submission,
+            job = Job.objects.create_from_submission(submission=self._get_selected_submission(),
                                                      email_to=ass_email,
                                                      submitted_inputs=form.cleaned_data,
                                                      user=user)

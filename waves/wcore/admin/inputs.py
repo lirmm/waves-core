@@ -7,8 +7,13 @@ from django import forms
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
 from django.utils import six
+from django.utils.encoding import force_text
+from django.utils.html import format_html
+from django.utils.http import urlquote
 from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
 from waves.wcore.admin.submissions import FileInputSampleInline, SampleDependentInputInline
@@ -131,6 +136,11 @@ class AParamAdmin(PolymorphicChildModelAdmin):
             return SimpleTemplateResponse('admin/waves/baseparam/popup_response.html', {
                 'popup_response_data': popup_response_data,
             })
+        elif "_addanother" in request.POST:
+            # TODO add new param and setup submission foreign key
+            pass
+        else:
+            post_url_continue = reverse('admin:wcore_submission_change', args=[obj.submission.id])
         return super(AParamAdmin, self).response_add(request, obj, post_url_continue)
 
     def response_change(self, request, obj):
@@ -149,7 +159,25 @@ class AParamAdmin(PolymorphicChildModelAdmin):
             return SimpleTemplateResponse('admin/waves/baseparam/popup_response.html', {
                 'popup_response_data': popup_response_data,
             })
+        elif "_addanother" in request.POST:
+            # TODO add new param and setup submission foreign key
+            pass
+        else:
+            opts = self.model._meta
+            msg_dict = {
+                'name': force_text(opts.verbose_name),
+                'obj': format_html('<a href="{}">{}</a>', urlquote(request.path), obj),
+            }
+
+            msg = format_html(
+                'The {name} "{obj}" was changed successfully.',
+                **msg_dict
+            )
+            self.message_user(request, msg, messages.SUCCESS)
+            return HttpResponseRedirect(
+                reverse('admin:wcore_submission_change', args=[obj.submission.pk]) + '#/tab/inline_0/')
         return super(AParamAdmin, self).response_change(request, obj)
+
 
 
 @admin.register(FileInput)

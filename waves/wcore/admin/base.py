@@ -6,7 +6,8 @@ from django.contrib.admin import ModelAdmin
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
-__all__ = ['DuplicateInMassMixin', 'ExportInMassMixin', 'MarkPublicInMassMixin', 'WavesModelAdmin', 'DynamicInlinesAdmin']
+__all__ = ['DuplicateInMassMixin', 'ExportInMassMixin', 'MarkPublicInMassMixin', 'WavesModelAdmin',
+           'DynamicInlinesAdmin']
 
 
 def duplicate_in_mass(modeladmin, request, queryset):

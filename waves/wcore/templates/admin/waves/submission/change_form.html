@@ -56,7 +56,7 @@
             });
             var rel1 = new RelatedInlinePopup();
             rel1.findPopupResponse();
-            $('fieldset.show-change-link-popup a.inlinechangelink').click(function (e) {
+            $('a.inlinechangelink').click(function (e) {
                 var rel = new RelatedInlinePopup();
                 e.preventDefault();
                 rel.popupInline(e.target.href)

@@ -157,9 +157,7 @@ class JobManager(models.Manager):
             job.notify = submission.service.email_on
             job.service = submission.service.name
         job.create_non_editable_inputs(submission)
-        print 'submission params ', [init_param for init_param in submission.expected_inputs]
         mandatory_params = submission.expected_inputs.filter(required=True)
-        print "mandatory params !! ", [param for param in mandatory_params.all()]
         missing = {m.name: '%s (:%s:) is required field' % (m.label, m.name) for m in mandatory_params if
                    m.name not in submitted_inputs.keys()}
         if len(missing) > 0:
@@ -955,7 +953,6 @@ class JobOutputManager(models.Manager):
         assert (isinstance(submission_output, SubmissionOutput))
         output_dict = dict(job=job, _name=submission_output.label, extension=submission_output.ext,
                            api_name=submission_output.api_name)
-        print 'outnput ', submission_output
         if hasattr(submission_output, 'from_input') and submission_output.from_input:
             # issued from a input value
             srv_submission_output = submission_output.from_input
