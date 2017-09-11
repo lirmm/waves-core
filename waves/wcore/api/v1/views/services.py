@@ -100,18 +100,17 @@ class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.CreateAPIView,
     def post(self, request, *args, **kwargs):
         """ Create a new job from submitted params """
         if logger.isEnabledFor(logging.DEBUG):
-            for param in request.data:
-                logger.debug('param key ' + param)
-                logger.debug(request.data[param])
-            logger.debug('Request Data %s', request.data)
+            for key, param in request.data.items():
+                logger.debug('param key ' + key + ' param:' + str(param))
         service_submission = self.get_object()
-        ass_email = request.data.pop('email', None)
+        passed_data = request.data.copy()
+        ass_email = passed_data.pop('email', None)
         try:
-            request.data.pop('api_key', None)
+            passed_data.pop('api_key', None)
             from ..serializers.jobs import JobCreateSerializer
             from django.db.models import Q
             job = Job.objects.create_from_submission(submission=service_submission, email_to=ass_email,
-                                                     submitted_inputs=request.data, user=request.user)
+                                                     submitted_inputs=passed_data, user=request.user)
             # Now job is created (or raise an exception),
             serializer = JobSerializer(job, many=False, context={'request': request},
                                        fields=('slug', 'url', 'created', 'status',))

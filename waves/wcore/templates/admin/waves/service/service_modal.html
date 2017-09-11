@@ -17,10 +17,10 @@
         </div>
     {% empty %}
         <div class="messages alert alert-danger" align="center">
-            Submitting form will create a new job
+            <strong>Warning</strong> Submitting form will create a new job
         </div>
     {% endfor %}
-    {% include 'waves/parts/submission_form.html' with service=service %}
+    {% include 'waves/parts/submission_form.html' with preview=True %}
 </div>
 </body>
 </html>

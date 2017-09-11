@@ -24,8 +24,9 @@ router.register(r'services/(?P<service>[^/.]+)/submissions',
 
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'services/(?P<service>[^/.]+)/submissions/(?P<api_name>[^/.]+)',
+        services.ServiceSubmissionViewSet.as_view({'post': 'create_job'})),
     url(r'^jobs/outputs/(?P<slug>[\w-]+)/$', JobOutputView.as_view(), name="waves-job-output"),
     url(r'^jobs/outputs/(?P<slug>[\w-]+)/raw$', jobs.JobOutputRawView.as_view(), name="waves-job-output-raw"),
     url(r'^jobs/inputs/(?P<slug>[\w-]+)/$', JobInputView.as_view(), name="waves-job-input"),
 ]
-

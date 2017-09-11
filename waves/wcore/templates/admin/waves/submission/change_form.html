@@ -42,9 +42,9 @@
     {{ block.super }}
     <script type="text/javascript">
         (function ($) {
-            console.log("loaded")
+            console.log("loaded");
             $(document).on('formset:added', function (event, $row, formsetName) {
-                console.log("formsetName" + formsetName)
+                console.log("formsetName" + formsetName);
                 if (formsetName == 'inputs') {
                     // Do something
                     event.stopImmediatePropagation();

@@ -12,7 +12,7 @@ from django.views.generic import TemplateView
 admin.site.site_title = 'WAVES Administration'
 
 urlpatterns = [
-        url(r'^$', TemplateView.as_view(template_name='base_waves.html')),
+        url(r'^$', TemplateView.as_view(template_name='base.html')),
         url(r'^admin/', admin.site.urls),
         url(r'^wcore/', include('waves.wcore.urls', namespace='wcore')),
         url(r'^waves/', include('waves.front.urls', namespace='wfront')),

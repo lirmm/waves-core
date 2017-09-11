@@ -1,25 +1,30 @@
 {% load crispy_forms_tags %}
-{% with single_submission=service.submissions_web.count %}
+{% with single_submission=submissions.count %}
     {% if single_submission > 1 %}
         <ul class="nav nav-tabs">
-            {% for possible_submission in service.submissions_web.all %}
+            {% for sub in submissions %}
                 <li role="presentation"
                     class="{% if forloop.first %}active{% endif %}">
-                    <a href="#{{ possible_submission.api_name }}" data-toggle="tab">
-                        {{ possible_submission.name }}
+                    <a href="#{{ sub.submission.api_name }}" data-toggle="tab">
+                        {{ sub.submission.name }}
                     </a>
                 </li>
             {% endfor %}
         </ul>
         <div id="my-tab-content" class="tab-content panel-body">
     {% endif %}
-{% for form in submission_forms %}
+{% for sub in submissions %}
+    <!-- form {{ sub.submission.name  }}  | {{ sub.submission.api_name }}-->
     <div class="tab-pane {% if forloop.first %}active{% endif %}"
-         id="{{ form.instance.api_name }}">
+         id="{{ sub.submission.api_name }}">
+        {% if preview %}
+            <blockquote>Availability : {{ sub.submission.get_availability_display }}</blockquote>
+        {% endif %}
         <div>
-            {% crispy form %}
+            {% crispy sub.form %}
         </div>
     </div>
+    <!-- END form {{ sub.submission.name  }} -->
 {% endfor %}
 {% if single_submission > 1 %}
     </div>

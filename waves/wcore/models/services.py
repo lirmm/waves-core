@@ -20,6 +20,7 @@ import waves.wcore.adaptors.const
 from waves.wcore.models.adaptors import *
 from waves.wcore.models.base import *
 from waves.wcore.models.runners import Runner
+from waves.wcore.models.inputs import *
 from waves.wcore.settings import waves_settings
 
 User = get_user_model()
@@ -246,7 +247,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def command(self):
         """ Return command parser for current Service """
         from waves.wcore.commands.command import BaseCommand
-        return BaseCommand(service=self)
+        return BaseCommand()
 
     def service_submission_inputs(self, submission=None):
         """
@@ -271,7 +272,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
             srv.validated_data['name'] += ' (copy)'
             new_object = srv.save()
         else:
-            messages.warning('Object could not be duplicated')
+            messages.warning(message='Object could not be duplicated')
             new_object = self
         return new_object
 
@@ -373,10 +374,10 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     service = models.ForeignKey(swapper.get_model_name('wcore', 'Service'), on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
     availability = models.IntegerField('Availability', default=3,
-                                       choices=[(NOT_AVAILABLE, "Not Available"),
+                                       choices=((NOT_AVAILABLE, "Not Available"),
                                                 (AVAILABLE_WEB_ONLY, "Available on web only"),
                                                 (AVAILABLE_API_ONLY, "Available on api only"),
-                                                (AVAILABLE_BOTH, "Available on both")])
+                                                (AVAILABLE_BOTH, "Available on both api and web")))
     name = models.CharField('Submission title', max_length=255, null=False, blank=False)
 
     @property
@@ -422,7 +423,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     @property
     def expected_inputs(self):
         """ Retrieve only expected inputs to submit a job """
-        return self.inputs.filter(parent__isnull=True).exclude(required=None)
+        return self.inputs.filter(parent__isnull=True)
 
     def duplicate(self, service):
         """ Duplicate a submission with all its inputs """
@@ -481,7 +482,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     label = models.CharField('Label', max_length=255, null=True, blank=False, help_text="Label")
     name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Label")
     submission = models.ForeignKey(Submission, related_name='outputs', on_delete=models.CASCADE)
-    from_input = models.ForeignKey('AParam', null=True, blank=True, related_name='to_outputs',
+    from_input = models.ForeignKey('AParam', null=True, blank=True, default=None, related_name='to_outputs',
                                    help_text='Is valuated from an input')
     file_pattern = models.CharField('File name or name pattern', max_length=100, blank=False,
                                     help_text="Pattern is used to match input value (%s to retrieve value from input)")

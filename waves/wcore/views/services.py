@@ -35,6 +35,9 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
     def __init__(self, **kwargs):
         super(SubmissionFormView, self).__init__(**kwargs)
 
+    def get_submissions(self):
+        return self.get_object().submissions
+
     def get_success_url(self):
         return reverse('wcore:submission', kwargs={'pk': self.get_object().id})
 
@@ -54,14 +57,14 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         # self.object = self.get_object()
         context = super(SubmissionFormView, self).get_context_data(**kwargs)
         context['selected_submission'] = self._get_selected_submission()
-        context['view_mode'] = self.kwargs.get('view_mode', '')
-        context['submission_forms'] = []
-        for submission in self.get_object().submissions_web.all():
+        context['submissions'] = []
+        for submission in self.get_submissions().all():
             if form is not None and str(submission.slug) == form.cleaned_data['slug']:
-                context['submission_forms'].append(form)
+                context['submissions'].append({'submission': submission, 'form': form})
             else:
-                context['submission_forms'].append(self.form_class(instance=submission, parent=self.object,
-                                                              user=self.request.user))
+                context['submissions'].append(
+                    {'submission': submission, 'form': self.form_class(instance=submission, parent=self.object,
+                                                                       user=self.request.user)})
         return context
 
     def get_form_kwargs(self):

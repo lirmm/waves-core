@@ -5,8 +5,9 @@
 
 (function ($) {
     $(document).ready(function () {
-        var prev_val = $("#id_runner").val();
-        $("#id_runner").select(function () {
+        var $runner_tag = $("#id_runner");
+        var prev_val = $runner_tag.val();
+        $runner_tag.select(function () {
             console.log('focus !');
             prev_val = $(this).val();
             console.log('Prev val' + prev_val);

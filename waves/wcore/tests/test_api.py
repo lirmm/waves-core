@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 import logging
 from urlparse import urlparse
 
+import swapper
 import waves.wcore.adaptors.const
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -15,10 +16,11 @@ from waves.wcore.tests.utils import create_test_file
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
+Service = swapper.load_model("wcore", "Service")
 
 
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):
-    fixtures = ['waves/wcore/tests/fixtures/services.json']
+    fixtures = ['waves/wcore/tests/fixtures/users.json', 'waves/wcore/tests/fixtures/services.json']
 
     def setUp(self):
         super(WavesAPITestCase, self).setUp()
@@ -56,15 +58,21 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
         # TODO test authorization
         pass
 
-    def test_create_job(self):
+    def test_create_job_api_v1(self):
         """
         Ensure for any service, we can create a job according to retrieved parameters
         """
         import random
         import string
         logger.debug('Retrieving service-list from ' + reverse('wapi:api_v2:waves-services-list'))
-        for api_version in ('api_v1', 'api_v2'):
-            tool_list = self.client.get(reverse('wapi:'+api_version+':waves-services-list'), format="json")
+        logger.debug('1 %s service loaded ' % Service.objects.count())
+        expected_jobs = 0
+        for service in Service.objects.all():
+            logger.debug("'%s' (%s) is available with %s submission(s)" % (
+                service.name, service.get_status_display(), service.submissions_api.count()))
+            expected_jobs += service.submissions_api.count()
+        for api_version in ('api_v1',):
+            tool_list = self.client.get(reverse('wapi:' + api_version + ':waves-services-list'), format="json")
             self.assertEqual(tool_list.status_code, status.HTTP_200_OK)
             self.assertIsNotNone(tool_list)
             logger.debug(tool_list.data)
@@ -79,12 +87,12 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                 i = 0
                 input_datas = {}
                 submissions = tool_data.get('submissions')
+                logger.debug(submissions)
                 for submission in submissions:
                     for job_input in submission['inputs']:
                         if job_input['type'] == AParam.TYPE_FILE:
                             i += 1
                             input_data = create_test_file(job_input['name'], i)
-                            # input_datas[job_input['name']] = input_data.name
                             logger.debug('file input %s', input_data)
                         elif job_input['type'] == AParam.TYPE_INT:
                             input_data = int(random.randint(0, 199))
@@ -108,7 +116,7 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                     logger.debug('To => %s', submission['submission_uri'])
                     o = urlparse(servicetool['url'])
                     path = o.path.split('/')
-                    self.client.login(username="api_user",  password="api_user1234")
+                    self.client.login(username="api_user", password="api_user1234")
                     response = self.client.post(submission['submission_uri'],
                                                 data=input_datas,
                                                 format='multipart')
@@ -123,7 +131,85 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
             self.assertIsNotNone(job.job_inputs)
             self.assertIsNotNone(job.outputs)
             self.assertGreaterEqual(job.outputs.count(), 2)
-        self.assertEqual(2, Job.objects.count())
+        self.assertEqual(expected_jobs, Job.objects.count())
+
+    def test_create_job_api_v2(self):
+        """
+        Ensure for any service, we can create a job according to retrieved parameters
+        """
+        import random
+        import string
+        logger.debug('Retrieving service-list from ' + reverse('wapi:api_v2:waves-services-list'))
+        logger.debug('1 %s service loaded ' % Service.objects.count())
+        expected_jobs = 0
+        for service in Service.objects.all():
+            logger.debug("'%s' (%s) is available with %s submission(s)" % (
+                service.name, service.get_status_display(), service.submissions_api.count()))
+            expected_jobs += service.submissions_api.count()
+        tool_list = self.client.get(reverse('wapi:api_v2:waves-services-list'), format="json")
+        self.assertEqual(tool_list.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(tool_list)
+        logger.debug(tool_list.data)
+        for servicetool in tool_list.data:
+            logger.debug('Creating job submission for %s %s', servicetool['name'], str(servicetool['version']))
+            # for each servicetool retrieve inputs
+            self.assertIsNotNone(servicetool['url'])
+            detail = self.client.get(servicetool['url'])
+            # logger.debug('Details data: %s', detail)
+            tool_data = detail.data
+            self.assertTrue('submissions' in tool_data)
+            i = 0
+            input_datas = {}
+            submissions = tool_data.get('submissions')
+            logger.debug(submissions)
+            for submission_url in submissions:
+                submission_srv = self.client.get(submission_url)
+                self.assertEqual(submission_srv.status_code, status.HTTP_200_OK)
+                submission = submission_srv.data
+                logger.debug(submission_srv.data)
+                for name in submission['inputs']:
+                    job_input = submission['inputs'][name]
+                    if job_input['type'] == AParam.TYPE_FILE:
+                        i += 1
+                        input_data = create_test_file(job_input['name'], i)
+                        logger.debug('file input %s', input_data)
+                    elif job_input['type'] == AParam.TYPE_INT:
+                        input_data = int(random.randint(0, 199))
+                        logger.debug('number input%s', input_data)
+                    elif job_input['type'] == AParam.TYPE_DECIMAL:
+                        input_data = int(random.randint(0, 199))
+                        logger.debug('number input%s', input_data)
+                    elif job_input['type'] == AParam.TYPE_BOOLEAN:
+                        input_data = random.randrange(100) < 50
+                    elif job_input['type'] == AParam.TYPE_TEXT:
+                        input_data = ''.join(random.sample(string.letters, 15))
+                        logger.debug('text input %s', input_data)
+                    elif job_input['type'] == AParam.TYPE_LIST:
+                        input_data = ''.join(random.sample(string.letters, 15))
+                    else:
+                        input_data = ''.join(random.sample(string.letters, 15))
+                        logger.warn('default ???? %s %s', input_data, job_input['type'])
+                    input_datas[name] = input_data
+
+                logger.debug('Data posted %s', input_datas)
+                logger.debug('To => %s', submission_url + 'job')
+                o = urlparse(servicetool['url'])
+                self.client.login(username="api_user", password="api_user1234")
+                response = self.client.post(submission_url + 'job',
+                                            data=input_datas,
+                                            format='multipart')
+                logger.debug(response)
+                self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+                job = Job.objects.all().order_by('-created').first()
+                logger.debug(job)
+        for job in Job.objects.all():
+            logger.debug('Job %s ', job)
+            self.assertEqual(job.status, waves.wcore.adaptors.const.JOB_CREATED)
+            self.assertEqual(job.job_history.count(), 1)
+            self.assertIsNotNone(job.job_inputs)
+            self.assertIsNotNone(job.outputs)
+            self.assertGreaterEqual(job.outputs.count(), 2)
+        self.assertEqual(expected_jobs, Job.objects.count())
 
     def test_update_job(self):
         pass

@@ -7,12 +7,15 @@ html, body {
     padding: 40px 15px;
     text-align: center;
 }
+
 div.collapse.navbar-collapse > ul.nav.navbar-nav.navbar-right > li.dropdown {
     padding-right: 1em;
 }
+
 #nav-bar-user:last-child {
     margin-right: 1em;
 }
+
 .footer {
     border-top: 1px solid #eee;
 }
@@ -58,11 +61,8 @@ body > .navbar-transparent {
 
 /* Home page styling */
 .corporate-jumbo {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)),
-    url("/static/img/banner.png");
-    background-repeat: no-repeat;
-    background-position: 80% center;
-    background-attachment: fixed;
+    background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)),
+    url("/static/waves/img/banner.png") no-repeat fixed 80% center;
     -webkit-background-size: cover;
     background-size: cover;
     color: #f5f5f5;
@@ -77,7 +77,7 @@ body > .navbar-transparent {
 
 .corporate-jumbo p, .corporate-jumbo h1 {
     color: #eee;
-    text-shadow: 0px 0px 2px black;
+    text-shadow: 0 0 2px black;
 }
 
 .corporate-jumbo p {
@@ -113,7 +113,7 @@ body > .navbar-transparent {
 
 /* Profile page styling */
 .profile-head {
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAJklEQVQIW2NkAIILFy78NzAwYATRjCABZEGwAEwFiA1WBlIOUwkA72gTdDIYVO4AAAAASUVORK5CYII=) repeat;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAJklEQVQIW2NkAIILFy78NzAwYATRjCABZEGwAEwFiA1WBlIOUwkA72gTdDIYVO4AAAAASUVORK5CYII=/) repeat;
     padding: 70px 0px 30px 20px;
 }
 
@@ -306,9 +306,8 @@ input[readonly] {
 /* make sidebar nav vertical */
 @media (min-width: 768px) {
     .sidebar-nav .navbar .navbar-collapse {
-        padding: 0;
         max-height: none;
-        padding-bottom: 15px;
+        padding: 0 0 15px;
     }
 
     .sidebar-nav .navbar ul {
@@ -331,10 +330,11 @@ input[readonly] {
 }
 
 .tab-content.panel-body {
-    border-right:1px solid #ecf0f1;
-    border-left:1px solid #ecf0f1;
-    border-bottom:1px solid #ecf0f1;
+    border-right: 1px solid #ecf0f1;
+    border-left: 1px solid #ecf0f1;
+    border-bottom: 1px solid #ecf0f1;
 }
+
 div[id^="tab_pane_"] {
     margin-bottom: 5px;
 }

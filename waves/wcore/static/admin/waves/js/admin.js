@@ -2,7 +2,7 @@
  * Created by marc on 23/09/16.
  */
 var RelatedInlinePopup = function () {
-    inline_source = undefined
+    var inline_source = undefined
 };
 
 (function ($) {
@@ -101,7 +101,7 @@ var RelatedInlinePopup = function () {
                 modalContent.find('.modal-header').html("<h4>" + $(this).attr('modal-title') + "</h4>");
             }
             modalContent.find('.modal-body').load($(this).attr('href'), function () {
-                console.log('open modal')
+                console.log('open modal');
                 $('#popup_modal').modal('toggle');
             });
         });

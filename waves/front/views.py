@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from uuid import UUID
 
 import swapper
@@ -7,6 +9,7 @@ from django.views import generic
 from waves.wcore.forms.services import ServiceSubmissionForm
 from waves.wcore.views.services import SubmissionFormView
 from waves.wcore.models import Submission, Job
+
 
 Service = swapper.load_model("wcore", "Service")
 
@@ -48,10 +51,12 @@ class JobSubmissionView(ServiceDetailView, SubmissionFormView):
     def get_template_names(self):
         return super(JobSubmissionView, self).get_template_names()
 
-    def __init__(self, *args, **kwargs):
-        super(JobSubmissionView, self).__init__(*args, **kwargs)
+    def get_submissions(self):
+        return self.get_object().submissions_web
+
+    def __init__(self, **kwargs):
+        super(JobSubmissionView, self).__init__(**kwargs)
         self.job = None
-        # self.object = None
         self.user = None
         self.selected_submission = None
 

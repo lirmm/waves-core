@@ -6,27 +6,5 @@
     <link rel="stylesheet" href="{{ css_link }}">
 {% endfor %}
 <!-- Service forms -->
-    {% if form|length > 1 %}
-        <ul class="nav nav-tabs">
-            {% for form_sub in form %}
-                <li role="presentation"
-                    class="{% if forloop.counter == 1 %}active{% endif %}">
-                    <a href="#{{ form_sub.instance.api_name }}" data-toggle="tab">
-                        {{ form_sub.instance.name }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-        <div id="my-tab-content" class="tab-content">
-    {% endif %}
-    {% for form_sub in form %}
-        <div class="tab-pane {% if forloop.counter == 1 %}active{% endif %}"
-             id="{{ form_sub.instance.api_name }}">
-            <h1>{{ form_sub.instance.name }}</h1>
-            {% crispy form_sub %}
-        </div>
-    {% endfor %}
-{% if form|length > 1 %}
-    </div>
-{% endif %}
+{% include "waves/parts/submission_form.html" %}
 <!-- End Service form -->

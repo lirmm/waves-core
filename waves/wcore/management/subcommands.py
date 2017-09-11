@@ -51,6 +51,7 @@ def choice_input(question, choices, default=None):
     """
     Ask user for choice in a list, indexed by integer response
 
+    :param default:
     :param question: The question to ask
     :param choices: List of possible choices
     :return: Selected choice by user
