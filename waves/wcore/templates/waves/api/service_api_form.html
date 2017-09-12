@@ -1,4 +1,4 @@
-{% load staticfiles crispy_forms_tags %}
+{% load staticfiles crispy_forms_tags waves_tags %}
 {% for js_link in js %}
     <script src="{{ js_link }}"></script>
 {% endfor %}
@@ -6,5 +6,5 @@
     <link rel="stylesheet" href="{{ css_link }}">
 {% endfor %}
 <!-- Service forms -->
-{% include "waves/parts/../services/bootstrap/submission_form.html" %}
+{% submission_form %}
 <!-- End Service form -->

@@ -1,0 +1,37 @@
+{% load crispy_forms_tags %}
+<div class="row">
+    <div class="card-panel col m6 offset-m3">
+        <!-- Only one line -->
+        {% with single_submission=submissions.count %}
+            {% if single_submission > 1 %}
+                <ul class="nav nav-tabs">
+                    {% for sub in submissions %}
+                        <li role="presentation"
+                            class="{% if forloop.first %}active{% endif %}">
+                            <a href="#{{ sub.submission.api_name }}" data-toggle="tab">
+                                {{ sub.submission.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div id="my-tab-content" class="tab-content panel-body">
+            {% endif %}
+        {% for sub in submissions %}
+            <!-- form {{ sub.submission.name  }}  | {{ sub.submission.api_name }}-->
+            <div class="tab-pane {% if forloop.first %}active{% endif %}"
+                 id="{{ sub.submission.api_name }}">
+                {% if preview %}
+                    <blockquote>Availability : {{ sub.submission.get_availability_display }}</blockquote>
+                {% endif %}
+                <div>
+                    {% crispy sub.form %}
+                </div>
+            </div>
+            <!-- END form {{ sub.submission.name  }} -->
+        {% endfor %}
+        {% if single_submission > 1 %}
+            </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+</div>

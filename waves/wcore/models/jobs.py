@@ -936,6 +936,13 @@ class JobInput(Ordered, Slugged, ApiModel):
         return self.param_type == AParam.TYPE_FILE and os.path.isfile(self.file_path) \
                and os.path.getsize(self.file_path) > 0
 
+    def get_absolute_url(self):
+        """Reverse url for this Job according to Django urls configuration
+        :return: the absolute uri of this job (without host)
+        """
+        from django.core.urlresolvers import reverse
+        return reverse('wfront:job_input', kwargs={'slug': self.slug})
+
 
 class JobOutputManager(models.Manager):
     """ JobInput model Manager """
