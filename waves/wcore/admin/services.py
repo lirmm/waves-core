@@ -10,6 +10,7 @@ from waves.wcore.admin.base import *
 from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
 from waves.wcore.models.services import Submission
+from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.utils import url_to_edit_object
 
 Service = swapper.load_model("wcore", "Service")
@@ -35,6 +36,10 @@ class ServiceSubmissionInline(admin.TabularInline):
         return obj.runner or "-"
 
     get_runner.short_description = "Overridden runner"
+
+
+class ServiceBinaryInline(admin.TabularInline):
+    model = ServiceBinaryFile
 
 
 class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, WavesModelAdmin,

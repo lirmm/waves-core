@@ -179,6 +179,7 @@ class AParamAdmin(PolymorphicChildModelAdmin):
         return super(AParamAdmin, self).response_change(request, obj)
 
 
+
 @admin.register(FileInput)
 class FileInputAdmin(AParamAdmin):
     """ FileInput subclass Admin """
