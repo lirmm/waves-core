@@ -1,8 +1,9 @@
 {% extends "waves/services/service_details.html" %}
-{% load staticfiles crispy_forms_tags %}
+{% load staticfiles crispy_forms_tags waves_tags %}
 
 {% block styles %}
     {{ block.super }}
+    {% service_inc 'css' %}
     <link rel="stylesheet" href="{% static 'admin/waves/css/forms.css' %}">
 {% endblock %}
 
@@ -19,7 +20,7 @@
             </a>
         </div>
         <div class="panel-body">
-            {% include 'waves/parts/submission_form.html' with service=service %}
+            {% submission_form %}
         </div>
         <div class="panel-footer">
             <span class="text-left">

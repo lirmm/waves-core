@@ -11,16 +11,9 @@ from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.forms.services import ServiceSubmissionForm
 from waves.wcore.models.jobs import Job
 from waves.wcore.models.services import Submission
+from waves.wcore.settings import waves_settings
 
 Service = swapper.load_model("wcore", "Service")
-
-
-class ServiceModalPreview(generic.DetailView):
-    model = Service
-    context_object_name = 'service'
-    queryset = Service.objects.all().prefetch_related('submissions')
-    object = None
-    template_name = 'admin/waves/service/service_preview.html'
 
 
 class SubmissionFormView(generic.FormView, generic.DetailView):
@@ -28,9 +21,14 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
     context_object_name = 'service'
     queryset = Service.objects.all().prefetch_related('submissions')
     object = None
-    template_name = 'admin/waves/service/service_modal.html'
+    # template_name = 'waves/services/bootstrap/submission_form.html'
     form_class = ServiceSubmissionForm
     view_mode = ''
+
+    def get_template_names(self):
+        if self.template_name is None:
+            self.template_name = 'waves/services/' + waves_settings.TEMPLATE_PACK + '/submission_form.html'
+        return super(SubmissionFormView, self).get_template_names()
 
     def __init__(self, **kwargs):
         super(SubmissionFormView, self).__init__(**kwargs)

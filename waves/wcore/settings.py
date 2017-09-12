@@ -67,7 +67,7 @@ DEFAULTS = {
     'NOTIFY_RESULTS': True,
     'REGISTRATION_ALLOWED': True,
     'SERVICES_EMAIL': 'waves@atgc-montpellier.fr',
-    'TEMPLATE_PACK': 'bootstrap3',
+    'TEMPLATE_PACK': getattr(settings, 'CRISPY_TEMPLATE_PACK'),
     'SECRET_KEY': getattr(settings, 'SECRET_KEY', '')[0:32],
     'ADAPTORS_CLASSES': (
         'waves.wcore.adaptors.shell.SshShellAdaptor',

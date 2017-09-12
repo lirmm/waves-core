@@ -28,6 +28,3 @@ class JobSubmissionView(SubmissionFormView):
         context['css'] = self.get_css()
         context['js'] = self.get_js()
         return context
-
-
-
