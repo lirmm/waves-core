@@ -6,10 +6,10 @@ from waves.wcore.models.adaptors import *
 from waves.wcore.models.base import *
 from waves.wcore.models.history import JobHistory
 from waves.wcore.models.runners import *
+from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.models.services import *
 from waves.wcore.models.inputs import *
 from waves.wcore.models.jobs import *
-from waves.wcore.models.binaries import ServiceBinaryFile
 
 """
 List of different constants used for models

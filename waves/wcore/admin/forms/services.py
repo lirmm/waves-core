@@ -141,11 +141,13 @@ class InputSampleForm2(forms.ModelForm):
         model = FileInputSample
         fields = '__all__'
 
+
 def get_related_to():
     return AParam.objects.not_instance_of(FileInput)
 
+
 class SampleDepForm2(forms.ModelForm):
-    related_to = InputSampleModelChoiceField(queryset=None)
+    related_to = InputSampleModelChoiceField(queryset=get_related_to())
 
     def __init__(self, *args, **kwargs):
         super(SampleDepForm2, self).__init__(*args, **kwargs)
@@ -155,7 +157,6 @@ class SampleDepForm2(forms.ModelForm):
         self.fields['related_to'].widget.can_delete_related = False
         self.fields['related_to'].widget.can_add_related = False
         self.fields['related_to'].widget.can_change_related = False
-
 
 
 class SubmissionOutputForm(forms.ModelForm):
