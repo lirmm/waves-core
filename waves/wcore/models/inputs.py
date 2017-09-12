@@ -37,8 +37,8 @@ class RepeatedGroup(Ordered):
 class AParam(PolymorphicModel, ApiModel):
     class Meta:
         ordering = ['order']
-        verbose_name_plural = "Service params"
-        verbose_name = "Service param"
+        verbose_name_plural = "Inputs"
+        verbose_name = "Input"
         base_manager_name = 'base_objects'
 
     OPT_TYPE_NONE = 0

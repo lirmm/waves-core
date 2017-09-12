@@ -92,9 +92,9 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         _inlines = []
         self.inlines = _inlines
         if obj:
-            self.inlines.append(ServiceSubmissionInline)
             if obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
                 self.inlines.append(ServiceRunnerParamInLine)
+            self.inlines.append(ServiceSubmissionInline)
         return self.inlines
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -130,9 +130,9 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         request.current_obj = obj
         form = super(ServiceAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
-        form.base_fields['runner'].widget.can_delete_related = False
-        form.base_fields['runner'].widget.can_add_related = False
-        form.base_fields['runner'].widget.can_change_related = False
+        # form.base_fields['runner'].widget.can_delete_related = False
+        # form.base_fields['runner'].widget.can_add_related = False
+        # form.base_fields['runner'].widget.can_change_related = False
         form.base_fields['created_by'].widget.can_change_related = False
         form.base_fields['created_by'].widget.can_add_related = False
         form.base_fields['created_by'].widget.can_delete_related = False

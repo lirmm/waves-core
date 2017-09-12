@@ -16,6 +16,6 @@ urlpatterns = [
         url(r'^admin/', admin.site.urls),
         url(r'^wcore/', include('waves.wcore.urls', namespace='wcore')),
         url(r'^waves/', include('waves.front.urls', namespace='wfront')),
-        url(r'^api/', include('waves.wcore.api.urls', namespace='wapi'))
+        url(r'^waves/api/', include('waves.wcore.api.urls', namespace='wapi'))
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
       + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
