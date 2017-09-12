@@ -269,8 +269,8 @@ class DecimalParam(NumberParam, AParam):
 class IntegerParam(NumberParam, AParam):
     """ Integer param """
 
-    # TODO add specific validator
     class Meta:
+    # TODO add specific validator
         verbose_name = "Integer"
         verbose_name_plural = "Integer"
 
@@ -279,7 +279,7 @@ class IntegerParam(NumberParam, AParam):
                                   help_text="Leave blank if no min")
     max_val = models.IntegerField('Max value', default=None, null=True, blank=True,
                                   help_text="Leave blank if no max")
-    step = models.IntegerField('Step', default=1, blank=True)
+    step = models.IntegerField('Step', default=1, blank=True, help_text="Step to increment/decrement values")
 
     @property
     def param_type(self):
@@ -325,8 +325,9 @@ class ListParam(AParam):
 
     @property
     def choices(self):
+        choice_init = [(None, '----')] if self.list_mode == ListParam.DISPLAY_SELECT and self.required is False else []
         try:
-            return [(None, '----')] + \
+            return  choice_init + \
                    [(line.split('|')[1], line.split('|')[0]) for line in self.list_elements.splitlines()]
         except ValueError:
             raise RuntimeError('Wrong list element format')

@@ -22,8 +22,9 @@ class TextParamForm(OrganizeInputForm):
         exclude = ['order']
 
 
-required_base_fields = ['label', 'name', 'cmd_format']
-extra_base_fields = ['help_text', 'required', 'api_name', 'default', 'parent', 'when_value']
+required_base_fields = ['label', 'name', 'cmd_format', 'required']
+extra_base_fields = ['help_text', 'multiple', 'api_name', 'default']
+dependencies_fields = ['parent', 'when_value']
 
 
 class AParamInline(StackedPolymorphicInline.Child):
@@ -44,6 +45,10 @@ class AParamInline(StackedPolymorphicInline.Child):
             'fields': extra_base_fields,
             'classes': ['collapse']
         }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
     ]
 
 
@@ -60,11 +65,11 @@ class TextParamInline(AParamInline):
             'classes': ['']
         }),
         ('Details', {
-            'fields': extra_base_fields,
+            'fields': extra_base_fields + ['max_length'],
             'classes': ['collapse']
         }),
-        ('Text params', {
-            'fields': ['max_length', ],
+        ('Dependencies', {
+            'fields': dependencies_fields,
             'classes': ['collapse']
         }),
     ]
@@ -79,15 +84,15 @@ class FileInputInline(AParamInline):
 
     fieldsets = [
         ('General', {
-            'fields': required_base_fields,
+            'fields': required_base_fields + ['max_size', 'allowed_extensions'],
             'classes': ['']
         }),
         ('Details', {
-            'fields': extra_base_fields,
+            'fields': extra_base_fields + ['regexp'],
             'classes': ['collapse']
         }),
-        ('File set up', {
-            'fields': ['max_size', 'allowed_extensions', 'regexp'],
+        ('Dependencies', {
+            'fields': dependencies_fields,
             'classes': ['collapse']
         }),
     ]
@@ -101,15 +106,15 @@ class IntegerFieldInline(AParamInline):
 
     fieldsets = [
         ('General', {
-            'fields': required_base_fields,
+            'fields': required_base_fields ,
             'classes': ['']
         }),
         ('Details', {
-            'fields': extra_base_fields,
+            'fields': extra_base_fields + ['min_val', 'max_val', 'step'],
             'classes': ['collapse']
         }),
-        ('Integer range params', {
-            'fields': ['min_val', 'max_val', 'step'],
+        ('Dependencies', {
+            'fields': dependencies_fields,
             'classes': ['collapse']
         }),
     ]
@@ -123,15 +128,15 @@ class BooleanFieldInline(AParamInline):
 
     fieldsets = [
         ('General', {
-            'fields': required_base_fields,
+            'fields': required_base_fields + ['true_value', 'false_value'],
             'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,
             'classes': ['collapse']
         }),
-        ('Boolean params', {
-            'fields': ['true_value', 'false_value'],
+        ('Dependencies', {
+            'fields': dependencies_fields,
             'classes': ['collapse']
         }),
     ]
@@ -149,11 +154,11 @@ class DecimalFieldInline(AParamInline):
             'classes': ['']
         }),
         ('Details', {
-            'fields': extra_base_fields,
+            'fields': extra_base_fields + ['min_val', 'max_val', 'step'],
             'classes': ['collapse']
         }),
-        ('Decimal range params', {
-            'fields': ['min_val', 'max_val', 'step'],
+        ('Dependencies', {
+            'fields': dependencies_fields,
             'classes': ['collapse']
         }),
     ]
@@ -167,17 +172,17 @@ class ListFieldInline(AParamInline):
 
     fieldsets = [
         ('General', {
-            'fields': required_base_fields,
+            'fields': required_base_fields + ['list_mode', 'list_elements'],
             'classes': ['']
         }),
         ('Details', {
             'fields': extra_base_fields,
             'classes': ['collapse']
         }),
-        ('List params', {
-            'fields': ['list_mode', 'list_elements'],
+        ('Dependencies', {
+            'fields': dependencies_fields,
             'classes': ['collapse']
-        }),
+        })
     ]
 
 
@@ -199,15 +204,4 @@ class OrganizeInputInline(StackedPolymorphicInline):
         ListFieldInline,
     )
     classes = ["collapse", ]
-
-    base_fieldsets = [
-        ('General', {
-            'fields': required_base_fields,
-            'classes': ['']
-        }),
-        ('Details', {
-            'fields': extra_base_fields,
-            'classes': ['collapse']
-        })
-    ]
 

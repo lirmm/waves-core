@@ -1,17 +1,18 @@
 from __future__ import unicode_literals
 
-from crispy_forms.bootstrap import *
-from crispy_forms.helper import FormHelper
+from crispy_forms import bootstrap
+from crispy_forms.helper import FormHelper as CrispyFormHelper
 from crispy_forms.layout import *
 
+from waves.wcore.settings import waves_settings
 from waves.wcore.models.inputs import *
 from waves.wcore.models.inputs import FileInputSample
 from waves.wcore.forms.helper import WFormHelper
 
-__all__ = ['WFormHelper', 'FormLayout']
+__all__ = ['FormHelper', 'FormLayout']
 
 
-class FormHelper(FormHelper, WFormHelper):
+class FormHelper(CrispyFormHelper, WFormHelper):
     """
     Extended WFormHelper based on crispy WFormHelper,
     Dynamic form fields according to inputs types and parameters
@@ -23,7 +24,7 @@ class FormHelper(FormHelper, WFormHelper):
         form_class = kwargs.pop('form_class', 'form-horizontal')
         label_class = kwargs.pop('label_class', 'col-lg-4')
         field_class = kwargs.pop('field_class', 'col-lg-8 text-left')
-        template_pack = kwargs.pop('template_pack', 'bootstrap3')
+        template_pack = kwargs.pop('template_pack', waves_settings.TEMPLATE_PACK)
         self.form_obj = form
         super(FormHelper, self).__init__(form)
         self.form_tag = form_tag
@@ -63,7 +64,7 @@ class FormHelper(FormHelper, WFormHelper):
         input_field = Field(service_input.name, **field_dict)
         if isinstance(service_input, FileInput) and not service_input.multiple:
             cp_input_field = Field('cp_' + service_input.name, css_id='id_' + 'cp_' + service_input.name)
-            tab_input = Tab(
+            tab_input = bootstrap.Tab(
                 "File Upload",
                 input_field,
                 css_id='tab_' + service_input.name
@@ -75,9 +76,9 @@ class FormHelper(FormHelper, WFormHelper):
                 tab_input.extend(all_sample)
             self.layout.append(
                 Div(
-                    TabHolder(
+                    bootstrap.TabHolder(
                         tab_input,
-                        Tab(
+                        bootstrap.Tab(
                             "Copy/paste content",
                             cp_input_field,
                             css_class='copypaste',
@@ -107,7 +108,7 @@ class FormHelper(FormHelper, WFormHelper):
     def end_layout(self):
         self.layout.extend([
             HTML('<HR/>'),
-            FormActions(
+            bootstrap.FormActions(
                 Reset('reset', 'Reset form'),
                 Submit('save', 'Submit a job')
             )
