@@ -15,7 +15,7 @@ from waves.wcore.models.base import ApiModel
 from waves.wcore.models.inputs import *
 from waves.wcore.models.jobs import Job, JobOutput
 from waves.wcore.models.runners import *
-# from waves.wcore.models.services import *
+from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.models.services import SubmissionExitCode, Submission
 from waves.wcore.utils import get_all_subclasses
 
@@ -151,3 +151,38 @@ for subclass in get_all_subclasses(ApiModel):  # .__subclasses__():
 
 for subclass in get_all_subclasses(Job):
     post_save.connect(job_post_save_handler, subclass)
+
+
+@receiver(post_delete, sender=ServiceBinaryFile)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    """
+    Deletes file from filesystem
+    when corresponding `MediaFile` object is deleted.
+    """
+    if instance.binary:
+        dir_name = os.path.dirname(instance.binary.path)
+        if os.path.isfile(instance.binary.path):
+            os.remove(instance.binary.path)
+        if not os.listdir(dir_name):
+            os.rmdir(dir_name)
+
+
+@receiver(pre_save, sender=ServiceBinaryFile)
+def auto_delete_file_on_change(sender, instance, **kwargs):
+    """
+    Deletes old file from filesystem
+    when corresponding `MediaFile` object is updated
+    with new file.
+    """
+    if not instance.pk:
+        return False
+
+    try:
+        old_file = ServiceBinaryFile.objects.get(pk=instance.pk).binary
+    except ServiceBinaryFile.DoesNotExist:
+        return False
+
+    new_file = instance.binary
+    if not old_file == new_file:
+        if os.path.isfile(old_file.path):
+            os.remove(old_file.path)

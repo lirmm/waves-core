@@ -169,3 +169,11 @@ div.inline-group fieldset div.inline-related fieldset{
     margin-left:1.5em;
     margin-bottom:1em;
 }
+.warningtext {
+    color:darkred;
+    font-style: italic;
+}
+
+.object-tools a {
+    border-radius: 0;
+}
