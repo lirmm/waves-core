@@ -1,10 +1,6 @@
 import os
 from setuptools import find_packages, setup
 
-with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
-    README = readme.read()
-
-
 def import_version():
     from waves.wcore import __version__
     return __version__
