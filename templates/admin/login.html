@@ -1,18 +1,28 @@
 {% extends 'admin/login.html' %}
-
-{% block extrastyle %}{{ block.super }}
+{% load static %}
+{% block extrastyle %}
+    {{ block.super }}
     <style>
-        body.login {
+        html {
             background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1),
             rgba(255, 255, 255, 0.2),
             rgba(255, 255, 255, 0)),
-            url('/static/waves/img/banner.png') no-repeat fixed 80% center;
+            url('{% static 'waves/img/banner.png' %}') no-repeat center center fixed;
             -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
             background-size: cover;
-            padding: 10em 0;
+            padding: 15em 0;
             margin-bottom: 0;
             height: 100%;
         }
+        .login {
+            background: transparent!important;
+        }
+        #branding {
+            float: none!important;
+        }
+
     </style>
 {% endblock %}
 
