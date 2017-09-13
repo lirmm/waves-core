@@ -11,6 +11,8 @@ from waves.wcore.admin.adaptors import SubmissionRunnerParamInLine
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.services import *
 from waves.wcore.compat import CompactInline, organize_input_class
+
+
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import Submission, SubmissionOutput, SubmissionExitCode
 
@@ -130,7 +132,7 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     form = ServiceSubmissionForm
     exclude = ['order']
     list_display = ['get_name', 'service', 'runner_link', 'available_online', 'available_api', 'runner']
-    readonly_fields = ['available_online', 'available_api']
+    readonly_fields = ['available_online', 'available_api', 'get_command_line_pattern']
     list_filter = (
         'service__name',
         'availability'
@@ -138,7 +140,11 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     search_fields = ('service__name', 'label', 'override_runner__name', 'service__runner__name')
     fieldsets = [
         ('General', {
-            'fields': ['service', 'name', 'availability', 'api_name', 'runner', 'binary_file'],
+            'fields': ['service', 'name', 'availability', 'api_name'],
+            'classes': ['collapse']
+        }),
+        ('Run Config', {
+            'fields': ['runner', 'binary_file', 'get_command_line_pattern'],
             'classes': ['collapse']
         }),
     ]
@@ -169,9 +175,6 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     def get_form(self, request, obj=None, **kwargs):
         request.current_obj = obj
         form = super(ServiceSubmissionAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['runner'].widget.can_add_related = False
-        form.base_fields['runner'].widget.can_change_related = False
-        form.base_fields['runner'].widget.can_delete_related = False
         form.base_fields['runner'].required = False
         return form
 
@@ -189,6 +192,11 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
         return mark_safe("<span title='Edit submission'>%s (%s)</span>" % (obj.name, obj.service))
 
     get_name.short_description = "Name"
+
+    def get_command_line_pattern(self, obj):
+        if not obj.adaptor:
+            return "N/A"
+        return obj.adaptor.command + " " + obj.service.command.create_command_line(job_inputs=obj.inputs.all())
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super(ServiceSubmissionAdmin, self).get_readonly_fields(request, obj))

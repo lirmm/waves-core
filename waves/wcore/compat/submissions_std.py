@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django import forms
 from polymorphic.admin import StackedPolymorphicInline
 from waves.wcore.models.inputs import *
-
+from adminsortable.admin import NonSortableParentAdmin, SortableStackedInline
 
 class OrganizeInputForm(forms.ModelForm):
     class Meta:
@@ -39,7 +39,7 @@ class AParamInline(StackedPolymorphicInline.Child):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['']
+            'classes': ['collapse']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -62,7 +62,7 @@ class TextParamInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['']
+            'classes': ['collapse']
         }),
         ('Details', {
             'fields': extra_base_fields + ['max_length'],
@@ -85,7 +85,7 @@ class FileInputInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields + ['max_size', 'allowed_extensions'],
-            'classes': ['']
+            'classes': ['collapse']
         }),
         ('Details', {
             'fields': extra_base_fields + ['regexp'],
@@ -107,7 +107,7 @@ class IntegerFieldInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields ,
-            'classes': ['']
+            'classes': ['collapse']
         }),
         ('Details', {
             'fields': extra_base_fields + ['min_val', 'max_val', 'step'],
@@ -129,7 +129,7 @@ class BooleanFieldInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields + ['true_value', 'false_value'],
-            'classes': ['']
+            'classes': ['collapse']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -151,7 +151,7 @@ class DecimalFieldInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields,
-            'classes': ['']
+            'classes': ['collapse']
         }),
         ('Details', {
             'fields': extra_base_fields + ['min_val', 'max_val', 'step'],
@@ -173,7 +173,7 @@ class ListFieldInline(AParamInline):
     fieldsets = [
         ('General', {
             'fields': required_base_fields + ['list_mode', 'list_elements'],
-            'classes': ['']
+            'classes': ['collapse']
         }),
         ('Details', {
             'fields': extra_base_fields,
@@ -186,7 +186,7 @@ class ListFieldInline(AParamInline):
     ]
 
 
-class OrganizeInputInline(StackedPolymorphicInline):
+class OrganizeInputInline(StackedPolymorphicInline, SortableStackedInline):
     """
     An inline for a polymorphic model.
     The actual form appearance of each row is determined by

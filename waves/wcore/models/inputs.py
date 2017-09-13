@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel, PolymorphicManager
-
+from adminsortable.models import SortableMixin
 from waves.wcore.models import WavesBaseModel
 from waves.wcore.models.base import Ordered, ApiModel
 from waves.wcore.settings import waves_settings
@@ -34,7 +34,7 @@ class RepeatedGroup(Ordered):
         return '[%s]' % self.name
 
 
-class AParam(PolymorphicModel, ApiModel):
+class AParam(PolymorphicModel, ApiModel, SortableMixin):
     class Meta:
         ordering = ['order']
         verbose_name_plural = "Inputs"
@@ -102,6 +102,8 @@ class AParam(PolymorphicModel, ApiModel):
                                null=True, blank=True, help_text='Input is associated to')
     regexp = models.CharField('Validation Regexp', max_length=255, null=True, blank=True)
 
+    command_line_value = "-user_value-"
+
     def save(self, *args, **kwargs):
         if self.parent is not None and self.required is True:
             self.required = False
@@ -147,6 +149,32 @@ class AParam(PolymorphicModel, ApiModel):
     @property
     def format(self):
         return ""
+
+    @property
+    def command_line_element(self):
+        """For each job input, according to related SubmissionParam, return command line part for this parameter
+
+        :param forced_value: Any forced value if needed
+        :return: depends on parameter type
+        """
+        cmd_value = "[" + self.name
+        if self.default:
+            cmd_value += "|default:" + self.default
+        cmd_value += "]"
+        if self.cmd_format == AParam.OPT_TYPE_VALUATED:
+            return '--%s=%s' % (self.name, cmd_value)
+        elif self.cmd_format == AParam.OPT_TYPE_SIMPLE:
+            return '-%s %s' % (self.name, cmd_value)
+        elif self.cmd_format == AParam.OPT_TYPE_OPTION:
+            return '-%s' % self.name
+        elif self.cmd_format == AParam.OPT_TYPE_NAMED_OPTION:
+            return '--%s' % self.name
+        elif self.cmd_format == AParam.OPT_TYPE_POSIX:
+            return '%s' % cmd_value
+        elif self.cmd_format == AParam.OPT_TYPE_NONE:
+            return ''
+        # By default it's OPT_TYPE_SIMPLE way
+        return '-%s %s' % (self.name, cmd_value)
 
 
 class TextParam(AParam):

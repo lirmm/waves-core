@@ -528,7 +528,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
                          service_input.name, service_input.default)
             self.job_inputs.add(JobInput.objects.create(job=self, name=service_input.name,
                                                         param_type=service_input.type,
-                                                        command_type=AParam.OPT_TYPE_NONE,
+                                                        command_type=service_input.cmd_format,
                                                         label=service_input.label,
                                                         order=service_input.order,
                                                         value=service_input.default))

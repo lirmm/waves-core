@@ -10,6 +10,7 @@ import swapper
 
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import Submission, SubmissionOutput, SubmissionExitCode
+from waves.wcore.models.runners import Runner
 from waves.wcore.settings import waves_settings as config
 
 Service = swapper.load_model("wcore", "Service")
@@ -59,9 +60,8 @@ class ServiceSubmissionForm(forms.ModelForm):
     class Meta:
         model = Submission
         fields = '__all__'
-        help_texts = {
-            'binary_file': "If set, 'Execution parameter' param line:'command' will be ignored"
-        }
+
+    runner = forms.ModelChoiceField(queryset=Runner.objects.all(), empty_label="----- use service configuration -----")
 
 
 class ServiceForm(forms.ModelForm):
@@ -75,9 +75,6 @@ class ServiceForm(forms.ModelForm):
         widgets = {
             'edam_topics': forms.TextInput(attrs={'size': 50}),
             'edam_operations': forms.TextInput(attrs={'size': 50}),
-        }
-        help_texts = {
-            'binary_file': "If set, 'Execution parameter' param line:'command' will be ignored"
         }
 
     def __init__(self, *args, **kwargs):

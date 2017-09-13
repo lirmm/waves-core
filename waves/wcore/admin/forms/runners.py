@@ -32,9 +32,6 @@ class RunnerForm(ModelForm):
         """ Metas """
         model = Runner
         exclude = ['id']
-        help_texts = {
-            'binary_file': "If set, 'Execution parameter' param line:'command' will be ignored"
-        }
 
     class Media:
         """ Medias """

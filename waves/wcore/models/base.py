@@ -49,7 +49,7 @@ class Ordered(WavesBaseModel):
         ordering = ['order']
 
     #: positive integer field (default to 0)
-    order = models.PositiveIntegerField(default=0)
+    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
 
 class Described(WavesBaseModel):
