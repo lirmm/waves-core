@@ -7,7 +7,7 @@ import logging
 import os
 
 import swapper
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
 from django.core.urlresolvers import reverse
@@ -16,16 +16,12 @@ from django.db import transaction
 from django.db.models import Q
 
 import waves.wcore.adaptors.const
-
 from waves.wcore.models.adaptors import *
 from waves.wcore.models.base import *
 from waves.wcore.models.runners import Runner
-from waves.wcore.models.inputs import *
 from waves.wcore.settings import waves_settings
 
-User = get_user_model()
-
-__all__ = ['ServiceRunParam', 'ServiceManager', 'Service', 'BaseService', 'Submission', "SubmissionExitCode",
+__all__ = ['ServiceRunParam', 'ServiceManager', 'BaseService', 'Submission', "SubmissionExitCode",
            'SubmissionOutput', 'SubmissionRunParam', 'HasRunnerParamsMixin']
 
 logger = logging.getLogger(__name__)
@@ -189,7 +185,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     name = models.CharField('Service name', max_length=255, help_text='Service displayed name')
     version = models.CharField('Current version', max_length=10, null=True, blank=True, default='1.0',
                                help_text='Service displayed version')
-    restricted_client = models.ManyToManyField(User, related_name='%(app_label)s_%(class)s_restricted_services',
+    restricted_client = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='%(app_label)s_%(class)s_restricted_services',
                                                blank=True, verbose_name='Restricted clients',
                                                help_text='By default access is granted to everyone, '
                                                          'you may restrict access here.')
@@ -202,7 +198,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
                                    help_text='This service sends notification email')
     partial = models.BooleanField('Dynamic outputs', default=False,
                                   help_text='Set whether some service outputs are dynamic (not known in advance)')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     remote_service_id = models.CharField('Remote service tool ID', max_length=255, editable=False, null=True)
     edam_topics = models.TextField('Edam topics', null=True, blank=True,
                                    help_text='Comma separated list of Edam ontology topics')

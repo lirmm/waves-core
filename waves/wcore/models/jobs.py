@@ -475,6 +475,10 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 except Exception as e:
                     logger.error('Mail error: %s %s', e.__class__.__name__, e.message)
                     pass
+            else:
+                logger.warn('Job %s email not set', self.slug)
+        else:
+            logger.debug('Jobs notification are not activated')
 
     def get_absolute_url(self):
         """Reverse url for this Job according to Django urls configuration

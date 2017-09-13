@@ -154,13 +154,20 @@ LOGGING = {
             'format': '[%(levelname)s] - %(message)s'
         },
         'trace': {
-            'format': '%(message)s'
+            'format': '[%(levelname)s][%(asctime)s] - %(message)s'
         },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
+        },
+        'daemon_log_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'daemon.log'),
+            'formatter': 'verbose',
+            'backupCount': 10,
+            'maxBytes': 1024*1024*5
         },
     },
     'root': {
@@ -179,6 +186,19 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'waves.daemon': {
+            'handlers': ['daemon_log_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+
+        },
+        'daemons': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'formatter': 'trace',
+            'propagate': False,
+
+        }
     }
 }
 logging.config.dictConfig(LOGGING)

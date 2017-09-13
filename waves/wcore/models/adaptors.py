@@ -81,7 +81,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
                              help_text="This is the concrete class used to perform job execution")
     adaptor_params = GenericRelation(AdaptorInitParam)
 
-    binary_file = models.ForeignKey(ServiceBinaryFile, null=True, blank=True, on_delete=models.SET_NULL)
+    binary_file = models.ForeignKey('ServiceBinaryFile', null=True, blank=True, on_delete=models.SET_NULL)
 
     def set_run_params_defaults(self):
         """Set runs params with defaults issued from concrete class object """
