@@ -22,9 +22,3 @@ class ServiceBinaryFileAdmin(admin.ModelAdmin):
         if isfile(obj.binary.path):
             return obj.binary.path
         return "N/A"
-
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}

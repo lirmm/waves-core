@@ -34,8 +34,10 @@ class ServiceSubmissionForm(forms.ModelForm):
         template_pack = kwargs.pop('template_pack', 'bootstrap3')
         super(ServiceSubmissionForm, self).__init__(*args, **kwargs)
         self.helper = self.get_helper(form_tag=True, template_pack=template_pack)
-        self.helper.init_layout(fields=('title', 'email', 'slug'))
-        # Always add "title" / "slug" to submitted jobs
+        init_fields = ['title', 'slug']
+        if self.instance.service.email_on:
+            init_fields.append('email')
+        self.helper.init_layout(fields=init_fields)
         self.fields['title'].initial = 'Job %s' % random_analysis_name()
         self.fields['slug'].initial = str(self.instance.slug)
         self.list_inputs = list(self.instance.expected_inputs.order_by('-required', 'order'))

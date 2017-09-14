@@ -55,11 +55,6 @@ class SampleDependentInputInline(CompactInline):
     extra = 0
     classes = ('grp-collapse grp-closed', 'collapse')
 
-    def has_add_permission(self, request):
-        if request.current_obj is not None and request.current_obj.sample_dependencies.count() > 0:
-            return True
-        return False
-
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "related_to" and request.current_obj is not None:
             kwargs['queryset'] = AParam.objects.filter(submission=request.current_obj.submission,
@@ -248,12 +243,6 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
             return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
         else:
             return super(ServiceSubmissionAdmin, self).response_change(request, obj)
-
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}
 
 
 admin.site.register(RepeatedGroup, RepeatGroupAdmin)

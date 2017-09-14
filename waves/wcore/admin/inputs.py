@@ -9,6 +9,7 @@ from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
 from django.core.urlresolvers import reverse
+from django.db import models
 from django.http import HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
 from django.utils import six
@@ -17,41 +18,42 @@ from django.utils.html import format_html
 from django.utils.http import urlquote
 from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
+from waves.wcore.admin.base import WavesModelAdmin
 from waves.wcore.admin.submissions import FileInputSampleInline, SampleDependentInputInline
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import Submission
 
 __all__ = ['AllParamModelAdmin']
 
+required_base_fields = ['label', 'name', 'cmd_format', 'required']
+extra_base_fields = ['help_text', 'multiple', 'api_name', 'default']
+dependencies_fields = ['parent', 'when_value']
 
-class AParamAdmin(PolymorphicChildModelAdmin):
+
+class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
     """ Base Input admin """
     base_model = AParam
+
     exclude = ['order', 'repeat_group']
 
-    base_fieldsets = (
+    # TODO NEXT VERSION
+    readonly_fields = []
+    _object = None
+
+    fieldsets = [
         ('General', {
-            'fields': ('label', 'name', 'api_name', 'cmd_format', 'default', 'required', 'submission'),
-            'classes': []
+            'fields': required_base_fields,
+            'classes': ['collapse', 'open']
         }),
-        ('Details', {
-            'fields': ('help_text', 'regexp', 'edam_formats', 'edam_datas', 'multiple'),
+        ('More', {
+            'fields': extra_base_fields,
             'classes': ['collapse']
         }),
         ('Dependencies', {
-            'fields': ('parent', 'when_value'),
+            'fields': dependencies_fields,
             'classes': ['collapse']
         }),
-    )
-    # TODO NEXT VERSION
-    """
-    ('Grouping', {
-        'fields': ('repeat_group',),
-        'classes': ['collapse']
-    })
-    """
-    readonly_fields = []
-    _object = None
+    ]
 
     @property
     def popup_response_template(self):
@@ -199,6 +201,20 @@ class FileInputAdmin(AParamAdmin):
     # TODO activate sample selection dependencies (both on forms and on submission)
     # TOD, SampleDependentInputInline,]
     readonly_fields = ['regexp', ]
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields + ['max_size', 'allowed_extensions'],
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields + ['regexp'],
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
 
 
 @admin.register(TextParam)
@@ -206,6 +222,20 @@ class TextParamAdmin(AParamAdmin):
     """ BaseParam subclass Admin """
     base_model = TextParam
     extra_fieldset_title = 'Text input params'
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields + ['max_length'],
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields,
+            'classes': ['collapse', 'open']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
 
 
 @admin.register(BooleanParam)
@@ -213,6 +243,20 @@ class BooleanParamAdmin(AParamAdmin):
     """ BooleanParam subclass Admin """
     base_model = BooleanParam
     extra_fieldset_title = 'Boolean params'
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields + ['true_value', 'false_value'],
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
 
 
 @admin.register(ListParam)
@@ -222,6 +266,23 @@ class ListParamAdmin(AParamAdmin):
     show_in_index = False
     # fields = ('list_mode', 'list_elements')
     extra_fieldset_title = 'List params'
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'rows': 2, 'cols': 50, 'class': 'span8'})}
+    }
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields + ['list_mode', 'list_elements'],
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        })
+    ]
 
 
 @admin.register(IntegerParam)
@@ -230,6 +291,21 @@ class IntegerParamAdmin(AParamAdmin):
     base_model = IntegerParam
     extra_fieldset_title = 'Integer range'
 
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields + ['min_val', 'max_val', 'step'],
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
+
 
 @admin.register(DecimalParam)
 class DecimalParamAdmin(AParamAdmin):
@@ -237,6 +313,20 @@ class DecimalParamAdmin(AParamAdmin):
 
     base_model = DecimalParam
     extra_fieldset_title = 'Decimal range'
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields + ['min_val', 'max_val', 'step'],
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
 
 
 @admin.register(AParam)
