@@ -34,7 +34,7 @@ class SubmissionOutputInline(CompactInline):
     fieldsets = [
         ('General', {
             'fields': ['label', 'file_pattern', 'extension'],
-            'classes': ['collapse']
+            'classes': ['collapse', 'open']
         }),
         ('More', {
             'fields': ['api_name', 'edam_format', 'edam_data', 'from_input', 'help_text'],
@@ -156,7 +156,7 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     fieldsets = [
         ('General', {
             'fields': ['service', 'name', 'availability', 'api_name'],
-            'classes': ['collapse']
+            'classes': ['collapse', 'open']
         }),
         ('Run Config', {
             'fields': ['runner', 'get_command_line_pattern', 'binary_file'],
@@ -248,6 +248,12 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
             return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
         else:
             return super(ServiceSubmissionAdmin, self).response_change(request, obj)
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 
 admin.site.register(RepeatedGroup, RepeatGroupAdmin)

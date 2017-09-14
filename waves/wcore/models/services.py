@@ -165,7 +165,8 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     class Meta:
         abstract = True
         ordering = ['name']
-        verbose_name = 'Service'
+        verbose_name = 'WAVES Service'
+        verbose_name_plural = "WAVES Services"
         unique_together = (('api_name', 'version', 'status'),)
 
     SRV_DRAFT = 0
@@ -353,13 +354,15 @@ class Service(BaseService):
     """
 
     class Meta:
+        verbose_name = 'Online Service'
+        verbose_name_plural = "Online Services"
         swappable = swapper.swappable_setting('wcore', 'Service')
 
 
 class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     class Meta:
-        verbose_name = 'Submission'
-        verbose_name_plural = 'Submissions'
+        verbose_name = 'Submission form'
+        verbose_name_plural = 'Submission forms'
         unique_together = ('service', 'api_name')
         ordering = ('order',)
 
@@ -371,10 +374,10 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
                                 related_name='submissions')
     availability = models.IntegerField('Availability', default=3,
                                        choices=((NOT_AVAILABLE, "Not Available"),
-                                                (AVAILABLE_WEB_ONLY, "Available on web only"),
-                                                (AVAILABLE_API_ONLY, "Available on api only"),
-                                                (AVAILABLE_BOTH, "Available on both api and web")))
-    name = models.CharField('Submission title', max_length=255, null=False, blank=False)
+                                                (AVAILABLE_WEB_ONLY, "Available web only"),
+                                                (AVAILABLE_API_ONLY, "Available api only"),
+                                                (AVAILABLE_BOTH, "Available api and web")))
+    name = models.CharField('Form title', max_length=255, null=False, blank=False)
 
     @property
     def config_changed(self):
@@ -470,8 +473,8 @@ class SubmissionOutput(TimeStamped, ApiModel):
     """
 
     class Meta:
-        verbose_name = 'Output'
-        verbose_name_plural = 'Outputs'
+        verbose_name = 'Excpected output'
+        verbose_name_plural = 'Excpected outputs'
         ordering = ['-created']
 
     field_api_name = 'label'

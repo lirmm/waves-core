@@ -17,11 +17,11 @@ def duplicate_in_mass(modeladmin, request, queryset):
         try:
             new = obj.duplicate()
             messages.add_message(request, level=messages.SUCCESS, message="Object %s successfully duplicated" % obj)
+            if queryset.count() == 1:
+                return redirect(
+                    reverse('admin:%s_%s_change' % (new._meta.app_label, new._meta.model_name), args=[new.id]))
         except StandardError as e:
             messages.add_message(request, level=messages.ERROR, message="Object %s error %s " % (obj, e.message))
-    if queryset.count() == 1:
-        return redirect(
-            reverse('admin:%s_%s_change' % (new._meta.app_label, new._meta.model_name), args=[new.id]))
 
 
 def export_in_mass(modeladmin, request, queryset):
@@ -78,6 +78,7 @@ class MarkPublicInMassMixin(admin.ModelAdmin):
 
 class WavesModelAdmin(ModelAdmin):
     """ Base models admin including global medias """
+
     class Media:
         js = (
             'admin/waves/js/admin.js',
@@ -87,6 +88,18 @@ class WavesModelAdmin(ModelAdmin):
             'screen': ('admin/waves/css/admin.css',
                        'admin/waves/css/modal.css')
         }
+
+    def add_view(self, request, form_url='', extra_context=None):
+        model = self.model
+        opts = model._meta
+        extra_context = extra_context or {}
+        extra_context.update({'title': 'Add a new \'%s\'' % opts.verbose_name})
+        return super(WavesModelAdmin, self).add_view(request, form_url, extra_context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        extra_context.update({'title': ''})
+        return super(WavesModelAdmin, self).change_view(request, object_id, form_url, extra_context)
 
 
 class DynamicInlinesAdmin(ModelAdmin):

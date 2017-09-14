@@ -22,9 +22,8 @@
             modalContent.find('.modal-body').load($(this).attr('href'), function () {
                 console.log('open modal');
                 $('#popup_modal').modal('toggle');
-            });
-        });
-        $('fieldset.collapse.open').removeClass('collapsed');
+            })
+        })
         $('#modal_alert').on('show.bs.modal', function () {
             console.log('opened !');
             $(this).find('.modal-dialog').css({
@@ -35,6 +34,13 @@
             console.log("closed");
         });
     });
+    $(window).load(function(){
+        $('fieldset.collapse.open').each(function(){
+            $(this).removeClass('collapsed');
+            $(this).find('a.collapse-toggle').html('Hide');
+        })
+    })
+
 })(django.jQuery || jQuery );
 
 

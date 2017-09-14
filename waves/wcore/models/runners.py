@@ -29,7 +29,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     class Meta:
         ordering = ['name']
         verbose_name = 'Execution environment'
-        verbose_name_plural = "Executions"
+        verbose_name_plural = "Executions environments"
     objects = RunnerManager()
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
     enabled = models.BooleanField('Enabled', default=True, null=False, blank=True,

@@ -24,6 +24,7 @@ else:
 
     class RichTextField(models.TextField):
         """ Override RichTextField """
+
         pass
 
 if 'bootstrap_themes' in settings.INSTALLED_APPS:

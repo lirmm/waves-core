@@ -1,7 +1,6 @@
 import logging
 
 from django.core.management.base import BaseCommand, CommandError
-from daemons.prefab import run
 
 
 class DaemonCommand(BaseCommand):

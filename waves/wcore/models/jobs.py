@@ -216,6 +216,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     class Meta(TimeStamped.Meta):
         verbose_name = 'Job'
+        verbose_name_plural = "Jobs"
         ordering = ['-updated', '-created']
 
     objects = JobManager()

@@ -8,7 +8,7 @@ from django.contrib.admin import register
 from waves.wcore.models.binaries import ServiceBinaryFile
 
 
-# @register(ServiceBinaryFile)
+@register(ServiceBinaryFile)
 class ServiceBinaryFileAdmin(admin.ModelAdmin):
     model = ServiceBinaryFile
     list_display = ('label', 'created', 'updated', 'file_size', 'file_path')
@@ -22,3 +22,9 @@ class ServiceBinaryFileAdmin(admin.ModelAdmin):
         if isfile(obj.binary.path):
             return obj.binary.path
         return "N/A"
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}

@@ -29,6 +29,11 @@ class SubmissionInlineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SubmissionInlineForm, self).__init__(*args, **kwargs)
 
+    runner = forms.ModelChoiceField(queryset=Runner.objects.all(), label="Execution environment",
+                                    empty_label="----- use service configuration -----",
+                                    required=False,
+                                    help_text="Changing value need form configuration")
+
 
 class ImportForm(forms.Form):
     """

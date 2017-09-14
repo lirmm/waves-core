@@ -1,14 +1,15 @@
 from __future__ import unicode_literals
 
 import swapper
+from adminsortable2.admin import SortableInlineAdminMixin
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
 
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
 from waves.wcore.admin.base import *
-from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
+from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.models.services import Submission
 from waves.wcore.utils import url_to_edit_object
 
@@ -18,7 +19,7 @@ User = get_user_model()
 __all__ = ['ServiceAdmin', 'ServiceSubmissionInline']
 
 
-class ServiceSubmissionInline(admin.TabularInline):
+class ServiceSubmissionInline(SortableInlineAdminMixin, admin.TabularInline):
     """ Service Submission Inline (included in ServiceAdmin) """
     model = Submission
     form = SubmissionInlineForm
@@ -27,14 +28,8 @@ class ServiceSubmissionInline(admin.TabularInline):
     sortable = 'order'
     sortable_field_name = "order"
     classes = ('grp-collapse grp-closed', 'collapse')
-    fields = ['name', 'availability', 'api_name', 'get_runner']
-    readonly_fields = ['api_name', 'get_runner']
+    fields = ['name', 'availability', 'api_name', 'runner']
     show_change_link = True
-
-    def get_runner(self, obj):
-        return obj.runner or "-"
-
-    get_runner.short_description = "Overridden runner"
 
 
 class ServiceBinaryInline(admin.TabularInline):
@@ -50,6 +45,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
               'admin/waves/js/connect.js')
 
     form = ServiceForm
+
     filter_horizontal = ['restricted_client']
     readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link']
     list_display = ('name', 'api_name', 'runner', 'version', 'status', 'created_by',
@@ -59,7 +55,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     fieldsets = [
         ('General', {
-            'fields': ['name', 'created_by', 'version', 'created', 'updated', 'short_description'],
+            'fields': ['name', 'created_by', 'status', 'short_description'],
             'classes': ('grp-collapse grp-closed', 'collapse', 'open')
 
         }),
@@ -67,13 +63,13 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
             'fields': ['runner', 'binary_file'],
             'classes': ('collapse', )
         }),
-        ('Access', {
+        ('Manage Access', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['status', 'restricted_client', 'api_on', 'web_on', 'email_on', ]
+            'fields': ['restricted_client', 'api_on', 'web_on', 'email_on', ]
         }),
         ('Details', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['api_name', 'description', 'edam_topics',
+            'fields': ['api_name', 'version', 'created', 'updated', 'description', 'edam_topics',
                        'edam_operations', 'remote_service_id', ]
         }),
     ]
