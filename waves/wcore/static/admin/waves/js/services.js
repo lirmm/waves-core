@@ -33,7 +33,6 @@
                 $('#popup_modal').modal('toggle');
             });
         });
-
         $('input[id^="id_service_outputs"][id$="from_input"]').each(function () {
             console.log(this.id);
         });

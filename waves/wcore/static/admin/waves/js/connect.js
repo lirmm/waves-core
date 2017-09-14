@@ -15,7 +15,6 @@
             })
         });
 
-
         var $loading = $('#loading').hide();
         $(document)
             .ajaxStart(function () {
@@ -24,22 +23,6 @@
             .ajaxStop(function () {
                 $loading.hide();
             });
-
-        $('fieldset.collapse.open').removeClass('collapsed');
-        var rel1 = new RelatedInlinePopup();
-        rel1.findPopupResponse();
-        $('fieldset.show-change-link-popup a.inlinechangelink').click(function (e) {
-            var rel = new RelatedInlinePopup();
-            e.preventDefault();
-            rel.popupInline(e.target.href)
-        });
-        $('#add_submission_link').click(function (e) {
-            e.preventDefault();
-            console.log("submission link " + $(this) + ' / ' + e.target);
-            var rel = new RelatedInlinePopup();
-            rel.popupInline(e.target.href);
-        });
-
     });
 
 })(jQuery || django.jQuery);

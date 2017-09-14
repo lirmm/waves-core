@@ -8,7 +8,7 @@ from django.contrib.admin import register
 from waves.wcore.models.binaries import ServiceBinaryFile
 
 
-@register(ServiceBinaryFile)
+# @register(ServiceBinaryFile)
 class ServiceBinaryFileAdmin(admin.ModelAdmin):
     model = ServiceBinaryFile
     list_display = ('label', 'created', 'updated', 'file_size', 'file_path')

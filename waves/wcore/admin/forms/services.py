@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from django import forms
+from django.conf import settings
 import swapper
 
 from waves.wcore.models.inputs import *
@@ -60,6 +61,14 @@ class ServiceSubmissionForm(forms.ModelForm):
     class Meta:
         model = Submission
         fields = '__all__'
+
+    @property
+    def media(self):
+        if 'jet' in settings.INSTALLED_APPS:
+            js = ('admin/waves/js/submission_jet.js',)
+        else:
+            js = ('admin/waves/js/submissions.js',)
+        return forms.Media(js=js)
 
     runner = forms.ModelChoiceField(queryset=Runner.objects.all(), empty_label="----- use service configuration -----")
 

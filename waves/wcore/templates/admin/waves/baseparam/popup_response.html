@@ -1,24 +1,18 @@
-{% load i18n static jet_tags %}
+{% load i18n static %}
 <!DOCTYPE html>
 <html>
-  <head>
-      <title>{% trans 'My Popup closing...' %}</title>
-      <script src="{% static "jet/js/build/bundle.min.js" %}"></script>
-      <script src="{% static "admin/js/jquery.init.js" %}"></script>
-    <script src="{% static "admin/waves/js/admin.js" %}"></script>
-  </head>
-  <body>
-    {% jet_popup_response_data as data %}
-    <div id="django-waves-admin-inline-popup-response-constants"
-         data-popup-response="{{ data|escape }}">
-    </div>
-  <script>
-      (function ($) {
-          var rel1 = new RelatedInlinePopup();
-          rel1.findPopupResponse();
-      }) (django.jQuery);
+<head>
+    <title>{% trans 'My Popup closing...' %}</title>
+</head>
+<body>
+<div id="django-waves-admin-inline-popup-response-constants"
+     data-popup-response="{{ data|escape }}">
+</div>
+<script language="JavaScript">
+    // TODO just add a new inline with related data retrieved from popup.
+    window.opener.location.reload();
+    window.close()
+</script>
 
-  </script>
-
-  </body>
+</body>
 </html>

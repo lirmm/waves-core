@@ -42,7 +42,10 @@ INSTALLED_APPS = (
     'waves.front',
     'crispy_forms',
     'rest_framework',
+    'adminsortable2',
 )
+INSTALLED_APPS += (
+    'debug_toolbar',)
 
 
 MIDDLEWARE = [
@@ -53,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+MIDDLEWARE += [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'waves_core.urls'
@@ -127,7 +133,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "waves", "wcore", "static"),
-    os.path.join(BASE_DIR, "static")
+    # os.path.join(BASE_DIR, "static")
 ]
 
 STATICFILES_FINDERS = (

@@ -1,0 +1,24 @@
+{% load i18n static jet_tags %}
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>{% trans 'My Popup closing...' %}</title>
+      <script src="{% static "jet/js/build/bundle.min.js" %}"></script>
+      <script src="{% static "admin/js/jquery.init.js" %}"></script>
+      <script src="{% static "admin/waves/js/submission_jet.js" %}"></script>
+  </head>
+  <body>
+    {% jet_popup_response_data as data %}
+    <div id="django-waves-admin-inline-popup-response-constants"
+         data-popup-response="{{ data|escape }}">
+    </div>
+  <script>
+      (function ($) {
+          var rel1 = new RelatedInlinePopup();
+          rel1.findPopupResponse();
+      }) (django.jQuery);
+
+  </script>
+
+  </body>
+</html>

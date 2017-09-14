@@ -1,18 +1,16 @@
 """ Service Submission administration classes """
 from __future__ import unicode_literals
 
+from adminsortable2.admin import SortableInlineAdminMixin
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
-from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from waves.wcore.admin.adaptors import SubmissionRunnerParamInLine
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.services import *
-from waves.wcore.compat import CompactInline, organize_input_class
-
-
+from waves.wcore.compat import CompactInline
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import Submission, SubmissionOutput, SubmissionExitCode
 
@@ -29,7 +27,7 @@ class SubmissionOutputInline(CompactInline):
     sortable_field_name = "order"
     sortable_options = []
     fk_name = 'submission'
-    fields = ['label', 'file_pattern', 'api_name', 'extension', 'edam_format', 'edam_data', 'from_input', 'help_text']
+    # fields = ['label', 'file_pattern', 'api_name', 'extension', 'edam_format', 'edam_data', 'from_input', 'help_text']
     verbose_name_plural = "Outputs"
     classes = ('grp-collapse', 'grp-closed', 'collapse')
 
@@ -101,13 +99,6 @@ class FileInputSampleInline(CompactInline):
     classes = ('grp-collapse grp-closed', 'collapse')
 
 
-class FileInputSampleAdmin(WavesModelAdmin):
-    model = FileInputSample
-    form = InputSampleForm2
-
-    inlines = [SampleDependentInputInline2, ]
-
-
 class RepeatGroupAdmin(WavesModelAdmin):
     # readonly_fields = ['submission']
     # readonly_fields = ['submission']
@@ -124,6 +115,30 @@ class OrgRepeatGroupInline(CompactInline):
     exclude = ['order']
     verbose_name_plural = "Input groups"
     classes = ('grp-collapse grp-closed', 'collapse')
+
+
+class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
+    model = AParam
+    classes = ["collapse", ]
+    fields = ['class_label', 'label', 'name', 'multiple', 'required', 'default']
+    readonly_fields = ['class_label']
+    ordering = ('order', '-required')
+    extra = 0
+    show_change_link = True
+
+    def class_label(self, obj):
+        if obj.parent:
+            level = 0
+            init = obj.parent
+            while init:
+                level += 1
+                init = init.parent
+            return mark_safe("<span class='icon-arrow-right'></span>" * level +
+                             "%s (%s)" % (obj._meta.verbose_name, obj.when_value))
+        return obj._meta.verbose_name
+
+    def get_queryset(self, request):
+        return super(OrganizeInputInline, self).get_queryset(request).order_by('-required', 'order')
 
 
 class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, DynamicInlinesAdmin):
@@ -144,26 +159,25 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
             'classes': ['collapse']
         }),
         ('Run Config', {
-            'fields': ['runner', 'binary_file', 'get_command_line_pattern'],
+            'fields': ['runner', 'get_command_line_pattern', 'binary_file'],
             'classes': ['collapse']
         }),
     ]
     show_full_result_count = True
     change_form_template = "admin/waves/submission/change_form.html"
 
-    def get_inlines(self, request, obj=None):
-        organize_input_inline = import_string(organize_input_class)
-        _inlines = [
-            organize_input_inline,
-            # OrgRepeatGroupInline,
-            SubmissionOutputInline,
-            ExitCodeInline,
-        ]
-        self.current_obj = obj
-        self.inlines = _inlines
-        if obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
-            self.inlines.append(SubmissionRunnerParamInLine)
-        return self.inlines
+    inlines = (
+        OrganizeInputInline,
+        # OrgRepeatGroupInline,
+        SubmissionOutputInline,
+        ExitCodeInline
+    )
+
+    def get_inline_instances(self, request, obj=None):
+        inline_instances = [inline(self.model, self.admin_site) for inline in self.inlines]
+        if obj and obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
+            inline_instances.append(SubmissionRunnerParamInLine(self.model, self.admin_site))
+        return inline_instances
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}
@@ -196,7 +210,7 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     def get_command_line_pattern(self, obj):
         if not obj.adaptor:
             return "N/A"
-        return obj.adaptor.command + " " + obj.service.command.create_command_line(job_inputs=obj.inputs.all())
+        return "%s %s" % (obj.adaptor.command, obj.service.command.create_command_line(job_inputs=obj.inputs.all()))
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(super(ServiceSubmissionAdmin, self).get_readonly_fields(request, obj))
@@ -238,4 +252,3 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
 
 admin.site.register(RepeatedGroup, RepeatGroupAdmin)
 admin.site.register(Submission, ServiceSubmissionAdmin)
-admin.site.register(FileInputSample, FileInputSampleAdmin)

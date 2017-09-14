@@ -59,9 +59,13 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     fieldsets = [
         ('General', {
-            'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['name', 'created_by', 'runner', 'version', 'created', 'updated', 'binary_file',
-                       'short_description']
+            'fields': ['name', 'created_by', 'version', 'created', 'updated', 'short_description'],
+            'classes': ('grp-collapse grp-closed', 'collapse', 'open')
+
+        }),
+        ('Run Config', {
+            'fields': ['runner', 'binary_file'],
+            'classes': ('collapse', )
         }),
         ('Access', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
@@ -86,15 +90,17 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
             field_sets = base_fieldsets
         return field_sets
 
+    inlines = (ServiceRunnerParamInLine,
+               ServiceSubmissionInline)
+
+    def get_inline_instances(self, request, obj=None):
+        inline_instances = []
+        if obj and obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
+            inline_instances.append(ServiceRunnerParamInLine(self.model, self.admin_site))
+        inline_instances.append(ServiceSubmissionInline(self.model, self.admin_site))
+        return inline_instances
+
     # Override admin class and set this list to add your inlines to service admin
-    def get_inlines(self, request, obj=None):
-        _inlines = []
-        self.inlines = _inlines
-        if obj:
-            if obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
-                self.inlines.append(ServiceRunnerParamInLine)
-            self.inlines.append(ServiceSubmissionInline)
-        return self.inlines
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}

@@ -11,7 +11,7 @@ Version 1.1.2 - 2017-09-30
     - Simplify overrides for front templates
     - Cleaning code to PEP8 standards
     - Updated install documentation
-
+    - Changed daemon command to fit new version (depends now on daemons package `̀https://pypi.python.org/pypi/daemons/1.3.0`)
 
 
 Version 1.1.1 - 2017-07-30

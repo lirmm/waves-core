@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel, PolymorphicManager
-from adminsortable.models import SortableMixin
 from waves.wcore.models import WavesBaseModel
 from waves.wcore.models.base import Ordered, ApiModel
 from waves.wcore.settings import waves_settings
@@ -34,12 +33,12 @@ class RepeatedGroup(Ordered):
         return '[%s]' % self.name
 
 
-class AParam(PolymorphicModel, ApiModel, SortableMixin):
+class AParam(PolymorphicModel, ApiModel, Ordered):
     class Meta:
-        ordering = ['order']
         verbose_name_plural = "Inputs"
         verbose_name = "Input"
         base_manager_name = 'base_objects'
+        ordering = ('order',)
 
     OPT_TYPE_NONE = 0
     OPT_TYPE_VALUATED = 1
@@ -71,7 +70,7 @@ class AParam(PolymorphicModel, ApiModel, SortableMixin):
     ]
 
     objects = PolymorphicManager()
-    order = models.PositiveIntegerField('Ordering in forms', default=0)
+    # order = models.PositiveIntegerField('Ordering in forms', default=0)
     #: Input Label
     label = models.CharField('Label', max_length=100, blank=False, null=False, help_text='Input displayed label')
     #: Input submission name
@@ -109,6 +108,8 @@ class AParam(PolymorphicModel, ApiModel, SortableMixin):
             self.required = False
         if self.repeat_group is not None:
             self.multiple = True
+        if not self.order:
+            self.order = AParam.objects.filter(submission=self.submission).count() + 1
         super(AParam, self).save(*args, **kwargs)
 
     @property

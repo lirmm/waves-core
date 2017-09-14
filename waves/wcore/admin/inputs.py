@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import json
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
@@ -51,6 +52,14 @@ class AParamAdmin(PolymorphicChildModelAdmin):
     """
     readonly_fields = []
     _object = None
+
+    @property
+    def popup_response_template(self):
+        print "jet in apps ", ('jet' in settings.INSTALLED_APPS)
+        if 'jet' in settings.INSTALLED_APPS:
+            return 'admin/waves/baseparam/jet_popup_response.html'
+        else:
+            return 'admin/waves/baseparam/popup_response.html'
 
     def get_model_perms(self, request):
         return {}  # super(AllParamModelAdmin, self).get_model_perms(request)
@@ -133,7 +142,7 @@ class AParamAdmin(PolymorphicChildModelAdmin):
                 'value': six.text_type(value),
                 'obj': six.text_type(obj),
             })
-            return SimpleTemplateResponse('admin/waves/baseparam/popup_response.html', {
+            return SimpleTemplateResponse(self.popup_response_template, {
                 'popup_response_data': popup_response_data,
             })
         elif "_addanother" in request.POST:
@@ -156,7 +165,7 @@ class AParamAdmin(PolymorphicChildModelAdmin):
                 'obj': six.text_type(obj),
                 'new_value': six.text_type(new_value),
             })
-            return SimpleTemplateResponse('admin/waves/baseparam/popup_response.html', {
+            return SimpleTemplateResponse(self.popup_response_template, {
                 'popup_response_data': popup_response_data,
             })
         elif "_addanother" in request.POST:
@@ -177,7 +186,6 @@ class AParamAdmin(PolymorphicChildModelAdmin):
             return HttpResponseRedirect(
                 reverse('admin:wcore_submission_change', args=[obj.submission.pk]) + '#/tab/inline_0/')
         return super(AParamAdmin, self).response_change(request, obj)
-
 
 
 @admin.register(FileInput)
@@ -235,7 +243,7 @@ class DecimalParamAdmin(AParamAdmin):
 class AllParamModelAdmin(PolymorphicParentModelAdmin):
     """ Main polymorphic params Admin """
     base_model = AParam
-
+    exclude = ('order',)
     child_models = (
         (TextParam, TextParamAdmin),
         (FileInput, FileInputAdmin),
@@ -259,6 +267,7 @@ class AllParamModelAdmin(PolymorphicParentModelAdmin):
         return super(AllParamModelAdmin, self).changeform_view(request, object_id, form_url, extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
+        print "in change form view"
         return super(AllParamModelAdmin, self).change_view(request, object_id, form_url, extra_context)
 
     def response_change(self, request, obj):
