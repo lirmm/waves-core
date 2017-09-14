@@ -2,6 +2,7 @@ apache-libcloud==2.0.0
 appdirs==1.4.3
 colorama==0.3.9
 Django==1.11.1
+django-admin-sortable2>=0.6.16
 django-crispy-forms==1.6.1
 django-polymorphic==1.2
 djangorestframework==3.6.2

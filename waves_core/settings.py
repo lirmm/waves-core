@@ -218,7 +218,7 @@ REST_FRAMEWORK = {
 ALLOWED_TEMPLATE_PACKS = ['bootstrap', 'bootstrap3', 'bootstrap4']
 
 MESSAGE_TAGS = {
-    messages.ERROR: 'danger'
+    messages.ERROR: 'error'
 }
 
 INTERNAL_IPS = ("127.0.0.1", )
