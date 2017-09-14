@@ -13,6 +13,12 @@ Welcome to WAVES's documentation!
     user_doc/user_guide
 
 .. toctree::
+    :caption: Changelog
+    :maxdepth: 1
+
+    changelog
+
+.. toctree::
     :maxdepth: 1
     :caption: WAVES' Insider
 
