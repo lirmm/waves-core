@@ -1,5 +1,5 @@
-Welcome to WAVES's documentation!
-=================================
+Welcome to WAVES's CORE Documentation !
+=======================================
 
 .. toctree::
     :maxdepth: 1

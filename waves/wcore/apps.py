@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 from django.apps import AppConfig
 from django.core.checks import Error, register
-
+from django.conf import settings
 
 class WavesConfig(AppConfig):
     """
@@ -49,7 +49,7 @@ def check_waves_config(app_configs=('waves.wcore',), **kwargs):
                      '...'
                      '}',
                 obj=waves_settings,
-                id='waves.wcore.E002',
+                id='waves.wcore.E001',
             )
         )
     elif len(waves_settings.ADAPTORS_CLASSES) == 0:
@@ -58,7 +58,16 @@ def check_waves_config(app_configs=('waves.wcore',), **kwargs):
                 'You set ADAPTORS_CLASSES but empty, WAVES needs ADAPTORS tu run JOB',
                 hint='Either remove your empty entry or setup your classes',
                 obj=waves_settings,
-                id='waves.wcore.E003',
+                id='waves.wcore.E002',
+            )
+        )
+    elif settings.CRISPY_TEMPLATE_PACK not in waves_settings.TEMPLATES_PACKS:
+        errors.append(
+            Error(
+                'Your crispy template pack is not yet supported in WAVES,',
+                hint='Currently, only: %s are supported.' % waves_settings.TEMPLATES_PACKS,
+                obj=settings,
+                id="waves.wcore.E003"
             )
         )
     return errors

@@ -77,6 +77,7 @@ DEFAULTS = {
         'waves.wcore.adaptors.cluster.SshClusterAdaptor',
         'waves.wcore.adaptors.cluster.SshKeyClusterAdaptor',
     ),
+    'TEMPLATES_PACKS': ['bootstrap3', 'bootstrap2'],
     'PERMISSION_CLASSES': (),
     'MAILER_CLASS': 'waves.wcore.mails.JobMailer',
 }

@@ -2,18 +2,19 @@ Version 1.1.2 - 2017-09-30
 --------------------------
 
     - Added changeLog in documentation
-    - Still corrected bugs
-        - Corrected JsPopupInlines for Django-jet admin layout
-        - Corrected workflow Runner tests
     - Added BinaryFile upload and association with Runners / Services / Submission for command lines
     - Added standard Django inclusion tags to display Submissions forms templates
-        - templates directories structure in order to use all available crispy templates packs
-        - dynamic includes tags for related css and js from cdnjs
+        - Templates directories structure in order to use all available crispy templates packs
+        - Check crispy configuration on startup
+        - Dynamic includes tags for related css and js from cdnjs
     - Simplify overrides for front templates
     - Cleaning code to PEP8 standards
     - Updated install documentation
-    - Changed daemon command to fit new version (depends now on daemons package `̀https://pypi.python.org/pypi/daemons/1.3.0`)
-    - Added Popup Edit functionalities for Submission params Model Admin
+    - Added Popup Edit for Submission params Model Admin
+    - Corrected bugs
+        - JsPopupInlines for Django-jet admin layout
+        - workflow Runner tests
+        - daemon command failed with SQLite DB (depends now on daemons package `̀https://pypi.python.org/pypi/daemons/1.3.0`)
 
 
 Version 1.1.1 - 2017-07-30
