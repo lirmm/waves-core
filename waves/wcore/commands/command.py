@@ -19,9 +19,7 @@ class BaseCommand(object):
 
     @staticmethod
     def get_command_line_element_list(job_inputs):
-        print "job inputs ? ", job_inputs
         if len(job_inputs) > 0:
-            print "job_inputs ", job_inputs
             return filter(None, [e.command_line_element for e in job_inputs])
         else:
             return []

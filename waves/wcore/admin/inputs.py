@@ -353,13 +353,6 @@ class AllParamModelAdmin(PolymorphicParentModelAdmin):
 
     get_class_label.short_description = 'Parameter type'
 
-    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
-        return super(AllParamModelAdmin, self).changeform_view(request, object_id, form_url, extra_context)
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        print "in change form view"
-        return super(AllParamModelAdmin, self).change_view(request, object_id, form_url, extra_context)
-
     def response_change(self, request, obj):
         from django.contrib.admin.options import IS_POPUP_VAR
         if IS_POPUP_VAR in request.POST:
