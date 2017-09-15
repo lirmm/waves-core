@@ -458,10 +458,6 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         """ Get current Service Jobs """
         return self.service_jobs.filter(status__in=waves.wcore.adaptors.const.PENDING_STATUS)
 
-    def duplicate_api_name(self):
-        """ Check is another entity is set with same api_name """
-        return BaseSubmission.objects.filter(api_name__startswith=self.api_name, service=self.service)
-
 
 class Submission(BaseSubmission):
     class Meta:
