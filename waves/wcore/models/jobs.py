@@ -351,11 +351,14 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @property
     def output_files(self):
-        """ Return list of all outputs files, whether they exist or not on disk
-        .. note::
-            Use :func:`output_files_exists` for only existing outputs instead
-        :return: a list of JobOuput objects
+        """
+        Return list of all outputs files, whether they exist or not on disk
+            .. note::
+                Use :func:`output_files_exists` for only existing outputs instead
+
+        :return: a list of JobOutput objects
         :rtype: list
+
         """
         all_files = self.outputs.all()
         return all_files
@@ -517,10 +520,12 @@ class Job(TimeStamped, Slugged, UrlMixin):
         return 'job.stderr'
 
     def create_non_editable_inputs(self, service_submission):
-        """ Create non editable (i.e not submitted anywhere and used for run)
-        .. seealso::
-            Used in post_save signals
-        :param service_submission:
+        """
+        Create non editable (i.e not submitted anywhere and used for run)
+            .. seealso::
+                Used in post_save signals
+
+        :param service_submission
         :return: None
         """
         for service_input in service_submission.inputs.filter(required=None):

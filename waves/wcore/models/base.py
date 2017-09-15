@@ -21,10 +21,12 @@ class WavesBaseModel(models.Model):
 
 
 class TimeStamped(WavesBaseModel):
-    """Time stamped 'able' models objects, add fields to inherited objects
+    """
+    Time stamped 'able' models objects, add fields to inherited objects
 
     .. note::
         This class add also default ordering by -updated, -created (reverse order)
+
     """
 
     class Meta:
@@ -41,7 +43,7 @@ class Ordered(WavesBaseModel):
     """ Order-able models objects,
 
     .. note::
-        Default ordering is set to 'order'
+        Default ordering field is set to 'order'
     """
 
     class Meta:
@@ -53,7 +55,9 @@ class Ordered(WavesBaseModel):
 
 
 class Described(WavesBaseModel):
-    """ A model object which inherit from this class add two description fields to model objects
+    """
+    A model object which inherit from this class add two description fields to model objects
+
     """
 
     class Meta:
@@ -79,7 +83,8 @@ class Slugged(WavesBaseModel):
 
 
 class ApiModel(WavesBaseModel):
-    """ An API-able model object need a 'api_name', in order to setup dedicated url for this model object
+    """
+    An API-able model object need a 'api_name', in order to setup dedicated url for this model object
     """
 
     class Meta:

@@ -439,25 +439,23 @@ class FileInputSample(WavesBaseModel):
 
 
 class SampleDepParam(WavesBaseModel):
-    """ When a file sample is selected, some params may be set accordingly. This class represent this behaviour"""
+    """
+    When a file sample is selected, some params may be set accordingly.
+    This class represent this behaviour
+    """
 
     class Meta:
         verbose_name_plural = "Sample dependencies"
         verbose_name = "Sample dependency"
 
-    # submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name='sample_dependent_params')
+    #: Related file input when sample is selected
     file_input = models.ForeignKey('FileInput', null=True, on_delete=models.CASCADE, related_name="sample_dependencies")
+    #: Related sample File
     sample = models.ForeignKey(FileInputSample, on_delete=models.CASCADE, related_name='dependent_inputs')
+    #: Related impacted submission input
     related_to = models.ForeignKey('AParam', on_delete=models.CASCADE, related_name='related_samples')
+    #: Value to set in case of Sample selected
     set_default = models.CharField('Set value to ', max_length=200, null=False, blank=False)
-
-    """
-    def clean(self):
-        if (isinstance(self.related_to, BooleanParam) or isinstance(self.related_to, ListParam)) \
-                and self.set_default not in self.related_to.values:
-            raise ValidationError({'set_default': 'This value is not possible for related input [%s]' % ', '.join(
-                self.related_to.values)})
-    """
 
     def __str__(self):
         return "%s > %s=%s" % (self.sample.label, self.related_to.name, self.set_default)

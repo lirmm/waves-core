@@ -469,27 +469,36 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
 
 class SubmissionOutput(TimeStamped, ApiModel):
     """
-    Represents usual service parameters output values (share same attributes with ServiceParameters)
+    Represents usual service expected output files
     """
-
     class Meta:
-        verbose_name = 'Excpected output'
-        verbose_name_plural = 'Excpected outputs'
+        verbose_name = 'Expected output'
+        verbose_name_plural = 'Expected outputs'
         ordering = ['-created']
 
+    #: Source field for api_name
     field_api_name = 'label'
+    #: Displayed label
     label = models.CharField('Label', max_length=255, null=True, blank=False, help_text="Label")
+    #: Output Name (internal)
     name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Label")
+    #: Related Submission
     submission = models.ForeignKey(Submission, related_name='outputs', on_delete=models.CASCADE)
+    #: Associated Submission Input if needed
     from_input = models.ForeignKey('AParam', null=True, blank=True, default=None, related_name='to_outputs',
                                    help_text='Is valuated from an input')
+    #: Pattern to apply to associated input
     file_pattern = models.CharField('File name or name pattern', max_length=100, blank=False,
                                     help_text="Pattern is used to match input value (%s to retrieve value from input)")
+    #: EDAM format
     edam_format = models.CharField('Edam format', max_length=255, null=True, blank=True,
                                    help_text="Edam ontology format")
+    #: EDAM data type
     edam_data = models.CharField('Edam data', max_length=255, null=True, blank=True,
                                  help_text="Edam ontology data")
+    #: Help text displayed on results
     help_text = models.TextField('Help Text', null=True, blank=True, )
+    #: File extension
     extension = models.CharField('Extension', max_length=5, blank=True, default="",
                                  help_text="Leave blank for *, or set in file pattern")
 
@@ -509,7 +518,9 @@ class SubmissionOutput(TimeStamped, ApiModel):
 
     @property
     def ext(self):
-        """ return expected file output extension """
+        """
+        return expected file output extension
+        """
         file_name = None
         if self.name and '%s' in self.name and self.from_input and self.from_input.default:
             file_name = self.name % self.from_input.default

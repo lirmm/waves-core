@@ -176,11 +176,7 @@ LOGGING = {
             'maxBytes': 1024*1024*5
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'propagate': True,
-        'level': 'WARNING',
-    },
+
     'loggers': {
         'django': {
             'handlers': ['console'],

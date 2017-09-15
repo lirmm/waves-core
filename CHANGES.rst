@@ -2,8 +2,10 @@ Version 1.1.2 - 2017-09-30
 --------------------------
 
     - Added changeLog in documentation
-    - Added BinaryFile upload and association with Runners / Services / Submission for command lines
+    - Added BinaryFile upload:
+        - Association with Runners / Services / Submission for command lines
     - Added standard Django inclusion tags to display Submissions forms templates
+        - {% load waves_tags %} => {% submission_form %}, {% service_inc "css" %}, {% service_inc "js" %}
         - Templates directories structure in order to use all available crispy templates packs
         - Check crispy configuration on startup
         - Dynamic includes tags for related css and js from cdnjs
