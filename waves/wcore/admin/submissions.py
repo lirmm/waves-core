@@ -162,19 +162,18 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
     show_full_result_count = True
     change_form_template = "admin/waves/submission/change_form.html"
 
-    def get_inlines(self, request, obj=None):
-        _inlines = [
-            OrganizeInputInline,
-            # OrgRepeatGroupInline,
-            SubmissionOutputInline,
-            ExitCodeInline,
-        ]
-        self.current_obj = obj
-        self.inlines = _inlines
-        if obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
-            self.inlines.append(SubmissionRunnerParamInLine)
-        return self.inlines
+    inlines = (
+        OrganizeInputInline,
+        # OrgRepeatGroupInline,
+        SubmissionOutputInline,
+        ExitCodeInline,
+    )
 
+    def get_inline_instances(self, request, obj=None):
+        inline_instances = [inline(self.model, self.admin_site) for inline in self.inlines]
+        if not request.POST and obj and obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
+            inline_instances.append(SubmissionRunnerParamInLine(self.model, self.admin_site))
+        return inline_instances
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}
