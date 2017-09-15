@@ -89,18 +89,6 @@ class WavesModelAdmin(ModelAdmin):
                        'admin/waves/css/modal.css')
         }
 
-    def add_view(self, request, form_url='', extra_context=None):
-        model = self.model
-        opts = model._meta
-        extra_context = extra_context or {}
-        extra_context.update({'title': 'Add a new \'%s\'' % opts.verbose_name})
-        return super(WavesModelAdmin, self).add_view(request, form_url, extra_context)
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        extra_context = extra_context or {}
-        extra_context.update({'title': ''})
-        return super(WavesModelAdmin, self).change_view(request, object_id, form_url, extra_context)
-
 
 class DynamicInlinesAdmin(ModelAdmin):
     """ ModelAdmin class with dynamic inlines setup in form """

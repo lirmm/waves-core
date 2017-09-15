@@ -382,7 +382,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     def set_run_params_defaults(self):
         if self.config_changed and self._runner:
             self.adaptor_params.all().delete()
-        super(Submission, self).set_run_params_defaults()
+        super(BaseSubmission, self).set_run_params_defaults()
 
     @property
     def run_params(self):
@@ -391,10 +391,10 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         elif self.runner.pk == self.service.runner.pk:
             # same runner but still overriden in bo, so merge params (submission params prevents)
             service_run_params = self.service.run_params
-            object_run_params = super(Submission, self).run_params
+            object_run_params = super(BaseSubmission, self).run_params
             service_run_params.update(object_run_params)
             return service_run_params
-        return super(Submission, self).run_params
+        return super(BaseSubmission, self).run_params
 
     def get_runner(self):
         if self.runner:
@@ -460,7 +460,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
 
     def duplicate_api_name(self):
         """ Check is another entity is set with same api_name """
-        return Submission.objects.filter(api_name__startswith=self.api_name, service=self.service)
+        return BaseSubmission.objects.filter(api_name__startswith=self.api_name, service=self.service)
 
 
 class Submission(BaseSubmission):
