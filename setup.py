@@ -1,6 +1,7 @@
 import os
 from setuptools import find_packages, setup
 
+
 def import_version():
     from waves.wcore import __version__
     return __version__

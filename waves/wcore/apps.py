@@ -61,7 +61,7 @@ def check_waves_config(app_configs=('waves.wcore',), **kwargs):
                 id='waves.wcore.E002',
             )
         )
-    elif settings.CRISPY_TEMPLATE_PACK not in waves_settings.TEMPLATES_PACKS:
+    elif 'crispy' in settings.INSTALLED_APPS and settings.CRISPY_TEMPLATE_PACK not in waves_settings.TEMPLATES_PACKS:
         errors.append(
             Error(
                 'Your crispy template pack is not yet supported in WAVES,',

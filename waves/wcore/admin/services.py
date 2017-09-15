@@ -23,7 +23,7 @@ class ServiceSubmissionInline(SortableInlineAdminMixin, admin.TabularInline):
     """ Service Submission Inline (included in ServiceAdmin) """
     model = Submission
     form = SubmissionInlineForm
-    extra = 1
+    extra = 0
     fk_name = 'service'
     sortable = 'order'
     sortable_field_name = "order"
