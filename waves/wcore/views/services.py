@@ -6,6 +6,7 @@ import swapper
 from django.contrib import messages
 from django.urls import reverse
 from django.views import generic
+from django.db import models, transaction
 
 from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.forms.services import ServiceSubmissionForm
@@ -24,6 +25,7 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
     # template_name = 'waves/services/bootstrap/submission_form.html'
     form_class = ServiceSubmissionForm
     view_mode = ''
+    job = None
 
     def get_template_names(self):
         if self.template_name is None:
@@ -83,6 +85,7 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         else:
             return self.form_invalid(**{'form': form})
 
+    @transaction.atomic
     def form_valid(self, form):
         # create job in database
         ass_email = form.cleaned_data.pop('email')
@@ -90,13 +93,13 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
             ass_email = self.request.user.email
         user = self.request.user if self.request.user.is_authenticated() else None
         try:
-            job = Job.objects.create_from_submission(submission=self._get_selected_submission(),
-                                                     email_to=ass_email,
-                                                     submitted_inputs=form.cleaned_data,
-                                                     user=user)
+            self.job = Job.objects.create_from_submission(submission=self._get_selected_submission(),
+                                                          email_to=ass_email,
+                                                          submitted_inputs=form.cleaned_data,
+                                                          user=user)
             messages.success(
                 self.request,
-                "Job successfully submitted %s" % job.slug
+                "Job successfully submitted %s" % self.job.slug
             )
         except JobException as e:
             messages.error(

@@ -103,6 +103,8 @@ ENV/
 /media/*
 !/media/.gitkeep
 *.sqlite3
+/waves/wcore/migrations/*
+!/waves/wcore/migrations/.gitkeep
 !/waves/templates/waves/parts/
 !/waves/forms/lib/
 /waves/tests/settings.ini

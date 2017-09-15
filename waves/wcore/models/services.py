@@ -164,10 +164,6 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
 class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
     class Meta:
         abstract = True
-        ordering = ['name']
-        verbose_name = 'WAVES Service'
-        verbose_name_plural = "WAVES Services"
-        unique_together = (('api_name', 'version', 'status'),)
 
     SRV_DRAFT = 0
     SRV_TEST = 1
@@ -186,7 +182,8 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     name = models.CharField('Service name', max_length=255, help_text='Service displayed name')
     version = models.CharField('Current version', max_length=10, null=True, blank=True, default='1.0',
                                help_text='Service displayed version')
-    restricted_client = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='%(app_label)s_%(class)s_restricted_services',
+    restricted_client = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                               related_name='%(app_label)s_%(class)s_restricted_services',
                                                blank=True, verbose_name='Restricted clients',
                                                help_text='By default access is granted to everyone, '
                                                          'you may restrict access here.')
@@ -354,17 +351,16 @@ class Service(BaseService):
     """
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Online Service'
         verbose_name_plural = "Online Services"
+        unique_together = (('api_name', 'version', 'status'),)
         swappable = swapper.swappable_setting('wcore', 'Service')
 
 
-class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
+class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     class Meta:
-        verbose_name = 'Submission form'
-        verbose_name_plural = 'Submission forms'
-        unique_together = ('service', 'api_name')
-        ordering = ('order',)
+        abstract = True
 
     NOT_AVAILABLE = 0
     AVAILABLE_WEB_ONLY = 1
@@ -467,10 +463,20 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
         return Submission.objects.filter(api_name__startswith=self.api_name, service=self.service)
 
 
+class Submission(BaseSubmission):
+    class Meta:
+        verbose_name = 'Submission form'
+        verbose_name_plural = 'Submission forms'
+        ordering = ('order',)
+        unique_together = ('service', 'api_name')
+        swappable = swapper.swappable_setting('wcore', 'Submission')
+
+
 class SubmissionOutput(TimeStamped, ApiModel):
     """
     Represents usual service expected output files
     """
+
     class Meta:
         verbose_name = 'Expected output'
         verbose_name_plural = 'Expected outputs'

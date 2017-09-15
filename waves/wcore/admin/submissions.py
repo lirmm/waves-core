@@ -114,6 +114,7 @@ class OrgRepeatGroupInline(CompactInline):
 
 class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
     model = AParam
+    form = InputInlineForm
     classes = ["collapse", ]
     fields = ['class_label', 'label', 'name', 'multiple', 'required', 'default']
     readonly_fields = ['class_label']

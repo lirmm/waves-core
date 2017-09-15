@@ -15,10 +15,6 @@ from waves.wcore.utils.validators import ServiceInputValidator
 logger = logging.getLogger(__name__)
 
 
-class ServiceForm(forms.ModelForm):
-    pass
-
-
 class ServiceSubmissionForm(forms.ModelForm):
     class Meta:
         model = Submission

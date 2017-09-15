@@ -120,7 +120,8 @@ class ServiceInputValidator(object):
 
 def validate_list_comma(value):
     import re
-    return re.match("(\w,)*", value)
+    if not re.match("(\w,)*", value):
+        raise ValidationError('Wrong format for list: comma separated only')
 
 
 def validate_list_param(value):

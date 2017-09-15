@@ -17,7 +17,7 @@ from waves.wcore.settings import waves_settings as config
 Service = swapper.load_model("wcore", "Service")
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm', 'InputInlineForm', 'SubmissionExitCodeForm',
-           'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'InputSampleForm2', 'SampleDepForm2',
+           'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'SampleDepForm2',
            'ServiceSubmissionForm']
 
 
@@ -122,6 +122,8 @@ class InputInlineForm(forms.ModelForm):
         if isinstance(self.instance, ListParam) or isinstance(self.instance, BooleanParam):
             self.fields['default'] = forms.ChoiceField(choices=self.instance.choices, initial=self.instance.default)
             self.fields['default'].required = False
+        if isinstance(self.instance, FileInput):
+            self.fields['default'].widget.attrs['readonly'] = True
         if self.instance.parent is not None:
             self.fields['required'].widget.attrs['disabled'] = 'disabled'
             self.fields['required'].widget.attrs['title'] = 'Inputs with dependencies must be optional'
@@ -142,14 +144,6 @@ class InputSampleForm(forms.ModelForm):
 class InputSampleModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return '(%s - %s) %s' % (obj.submission.service.name, obj.submission.name, obj)
-
-
-class InputSampleForm2(forms.ModelForm):
-    file_input = InputSampleModelChoiceField(queryset=FileInput.objects.all())
-
-    class Meta:
-        model = FileInputSample
-        fields = '__all__'
 
 
 def get_related_to():

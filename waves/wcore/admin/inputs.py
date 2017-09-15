@@ -9,7 +9,7 @@ from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
 from django.core.urlresolvers import reverse
-from django.db import models
+from django.db import models, DatabaseError
 from django.http import HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
 from django.utils import six
@@ -25,7 +25,7 @@ from waves.wcore.models.services import Submission
 
 __all__ = ['AllParamModelAdmin']
 
-required_base_fields = ['label', 'name', 'cmd_format', 'required']
+required_base_fields = ['label', 'name', 'cmd_format', 'required', 'submission']
 extra_base_fields = ['help_text', 'multiple', 'api_name', 'default']
 dependencies_fields = ['parent', 'when_value']
 
@@ -57,7 +57,6 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
 
     @property
     def popup_response_template(self):
-        print "jet in apps ", ('jet' in settings.INSTALLED_APPS)
         if 'jet' in settings.INSTALLED_APPS:
             return 'admin/waves/baseparam/jet_popup_response.html'
         else:
@@ -94,7 +93,8 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
             obj.submission = request.submission
         try:
             super(AParamAdmin, self).save_model(request, obj, form, change)
-        except BaseException:
+        except DatabaseError as e:
+            messages.error(request, "Error occurred saving param %s" % e.message)
             pass
         else:
             messages.success(request, "Param successfully saved")
@@ -112,7 +112,6 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
         form.base_fields['submission'].widget = forms.HiddenInput()
         if request.submission or (obj and obj.submission):
             form.base_fields['submission'].initial = request.submission.pk if request.submission else obj.submission.pk
-        # form.fields['submission'].initial = request.submission
         return form
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -144,8 +143,8 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
                 'value': six.text_type(value),
                 'obj': six.text_type(obj),
             })
-            return SimpleTemplateResponse(self.popup_response_template, {
-                'popup_response_data': popup_response_data,
+            return SimpleTemplateResponse(self.popup_response_template, context={
+                'popup_response_data': popup_response_data
             })
         elif "_addanother" in request.POST:
             # TODO add new param and setup submission foreign key
@@ -200,7 +199,7 @@ class FileInputAdmin(AParamAdmin):
     inlines = [FileInputSampleInline, SampleDependentInputInline]
     # TODO activate sample selection dependencies (both on forms and on submission)
     # TOD, SampleDependentInputInline,]
-    readonly_fields = ['regexp', ]
+    # readonly_fields = ['default', ]
     fieldsets = [
         ('General', {
             'fields': required_base_fields + ['max_size', 'allowed_extensions'],

@@ -11,11 +11,10 @@ from os.path import join
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import TemporaryUploadedFile, InMemoryUploadedFile
+from django.core.files.base import File
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.html import format_html
-from django.core.files.base import File
 
 import waves.wcore.adaptors.const
 import waves.wcore.adaptors.exceptions
@@ -757,7 +756,7 @@ class JobInputManager(models.Manager):
         :return: return the newly created JobInput
         :rtype: :class:`waves.wcore.models.jobs.JobInput`
         """
-        from waves.wcore.models.inputs import AParam, FileInput
+        from waves.wcore.models.inputs import AParam
         input_dict = dict(job=job,
                           order=order,
                           name=service_input.name,
