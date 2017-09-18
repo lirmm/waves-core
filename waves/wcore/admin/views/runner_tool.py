@@ -130,7 +130,7 @@ class RunnerTestConnectionView(JSONDetailView):
 
     def get_object(self, queryset=None):
         obj = super(RunnerTestConnectionView, self).get_object(queryset)
-        self.adaptor = self.object.adaptor
+        self.adaptor = obj.adaptor
         return obj
 
     def get_object_name(self):
