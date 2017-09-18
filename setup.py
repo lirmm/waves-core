@@ -34,7 +34,8 @@ setup(
         'psutil==5.2.2',
         'swapper==1.1.0',
         'setproctitle==1.1.10',
-        'django-admin-sortable2>=0.6.16'
+        'django-admin-sortable2>=0.6.16',
+        'daemons>=1.3.0'
     ],
     classifiers=[
         'Environment :: Web Environment',
