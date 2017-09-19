@@ -12,6 +12,7 @@ Version 1.1.2 - 2017-09-30
     - Simplify overrides for front templates
     - Cleaning code to PEP8 standards
     - Updated install documentation
+    - Make Submission model swappable as well
     - Added Popup Edit for Submission params Model Admin
     - Corrected bugs
         - JsPopupInlines for Django-jet admin layout

@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import swapper
 from adminsortable2.admin import SortableInlineAdminMixin
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -9,11 +8,12 @@ from django.utils.safestring import mark_safe
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
 from waves.wcore.admin.base import *
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
+from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.models.binaries import ServiceBinaryFile
-from waves.wcore.models.services import Submission
 from waves.wcore.utils import url_to_edit_object
 
-Service = swapper.load_model("wcore", "Service")
+Service = get_service_model()
+Submission = get_submission_model()
 User = get_user_model()
 
 __all__ = ['ServiceAdmin', 'ServiceSubmissionInline']
@@ -47,7 +47,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     form = ServiceForm
 
     filter_horizontal = ['restricted_client']
-    readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link']
+    readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link', 'display_run_params']
     list_display = ('name', 'api_name', 'runner', 'version', 'status', 'created_by',
                     'submission_link')
     list_filter = ('status', 'name', 'created_by')
@@ -60,8 +60,8 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
         }),
         ('Run Config', {
-            'fields': ['runner', 'binary_file'],
-            'classes': ('collapse', )
+            'fields': ['runner', 'binary_file', 'display_run_params'],
+            'classes': ('collapse',)
         }),
         ('Manage Access', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
@@ -73,18 +73,6 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
                        'edam_operations', 'remote_service_id', ]
         }),
     ]
-    extra_fieldsets = None
-    override_fieldsets = False
-
-    def get_fieldsets(self, request, obj=None):
-        base_fieldsets = super(ServiceAdmin, self).get_fieldsets(request, obj)
-        if self.override_fieldsets:
-            field_sets = self.extra_fieldsets
-        elif self.extra_fieldsets is not None:
-            field_sets = base_fieldsets + self.extra_fieldsets
-        else:
-            field_sets = base_fieldsets
-        return field_sets
 
     inlines = (ServiceRunnerParamInLine,
                ServiceSubmissionInline)
@@ -97,6 +85,10 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         return inline_instances
 
     # Override admin class and set this list to add your inlines to service admin
+    def display_run_params(self, obj):
+        return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
+
+    display_run_params.short_description = "Runner initial params"
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}

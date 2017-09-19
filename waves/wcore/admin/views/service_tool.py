@@ -9,13 +9,13 @@ from django.views import generic
 from django.views.generic import View
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-import swapper
 from waves.wcore.settings import waves_settings
+from waves.wcore.models import get_service_model
 from waves.wcore.views.services import SubmissionFormView, Service
 from waves.wcore.admin.views.export import ModelExportView
 from waves.wcore.admin.views.runner_tool import RunnerImportToolView, ObjectDoesNotExist, RunnerTestConnectionView
 
-Service = swapper.load_model("wcore", "Service")
+Service = get_service_model()
 
 
 # TODO in manage permission

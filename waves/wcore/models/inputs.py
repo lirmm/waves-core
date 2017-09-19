@@ -4,10 +4,12 @@ from __future__ import unicode_literals
 from decimal import Decimal
 from os.path import basename
 
+import swapper
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel, PolymorphicManager
+
 from waves.wcore.models import WavesBaseModel
 from waves.wcore.models.base import Ordered, ApiModel
 from waves.wcore.settings import waves_settings
@@ -21,7 +23,8 @@ __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam
 class RepeatedGroup(Ordered):
     """ Some input may be grouped, and group could be repeated"""
 
-    submission = models.ForeignKey('Submission', related_name='submission_groups', null=True,
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
+                                   related_name='submission_groups', null=True,
                                    on_delete=models.CASCADE)
     name = models.CharField('Group name', max_length=255, null=False, blank=False)
     title = models.CharField('Group title', max_length=255, null=False, blank=False)
@@ -78,7 +81,7 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
                             help_text='Input runner\'s job param command line name')
     multiple = models.BooleanField('Multiple', default=False, help_text="Can hold multiple values")
     help_text = models.TextField('Help Text', null=True, blank=True)
-    submission = models.ForeignKey('Submission', on_delete=models.CASCADE, null=False, related_name='inputs')
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), on_delete=models.CASCADE, null=False, related_name='inputs')
     required = models.NullBooleanField('Required', choices={(False, "Optional"), (True, "Required"),
                                                             (None, "Not submitted")},
                                        default=True, help_text="Submitted and/or Required")

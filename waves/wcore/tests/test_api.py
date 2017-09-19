@@ -3,20 +3,21 @@ from __future__ import unicode_literals
 import logging
 from urlparse import urlparse
 
-import swapper
-import waves.wcore.adaptors.const
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from waves.wcore.models import Job
+
+import waves.wcore.adaptors.const
+from waves.wcore.models import Job, get_service_model
 from waves.wcore.models.inputs import AParam
 from waves.wcore.tests.base import WavesBaseTestCase
 from waves.wcore.tests.utils import create_test_file
 
+Service = get_service_model()
+
 logger = logging.getLogger(__name__)
 User = get_user_model()
-Service = swapper.load_model("wcore", "Service")
 
 
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):

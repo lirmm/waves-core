@@ -7,14 +7,16 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field
 from django import forms
 from django.conf import settings
-import swapper
 
+from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.models.inputs import *
-from waves.wcore.models.services import Submission, SubmissionOutput, SubmissionExitCode
 from waves.wcore.models.runners import Runner
+from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode
 from waves.wcore.settings import waves_settings as config
+Submission = get_submission_model()
 
-Service = swapper.load_model("wcore", "Service")
+
+Service = get_service_model()
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm', 'InputInlineForm', 'SubmissionExitCodeForm',
            'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'SampleDepForm2',

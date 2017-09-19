@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import logging
 
-import swapper
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -17,10 +16,10 @@ from waves.wcore.api.v1.serializers import ServiceSerializer, JobSerializer, Ser
     ServiceSubmissionSerializer
 from waves.wcore.api.views.base import WavesAuthenticatedView
 from waves.wcore.exceptions.jobs import JobException
-from waves.wcore.models import Job
-from waves.wcore.models.services import Submission as ServiceSubmission
+from waves.wcore.models import Job, get_service_model, get_submission_model
 
-Service = swapper.load_model("wcore", "Service")
+Service = get_service_model()
+ServiceSubmission = get_submission_model()
 
 logger = logging.getLogger(__name__)
 

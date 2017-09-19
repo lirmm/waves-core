@@ -8,8 +8,7 @@ import os
 
 import swapper
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
@@ -17,12 +16,12 @@ from django.db.models import Q
 
 import waves.wcore.adaptors.const
 from waves.wcore.models.adaptors import *
+from waves.wcore.models.adaptors import HasRunnerParamsMixin
 from waves.wcore.models.base import *
-from waves.wcore.models.runners import Runner
 from waves.wcore.settings import waves_settings
 
-__all__ = ['ServiceRunParam', 'ServiceManager', 'BaseService', 'Submission', "SubmissionExitCode",
-           'SubmissionOutput', 'SubmissionRunParam', 'HasRunnerParamsMixin']
+__all__ = ['ServiceRunParam', 'ServiceManager', "SubmissionExitCode",
+           'SubmissionOutput', 'SubmissionRunParam']
 
 logger = logging.getLogger(__name__)
 
@@ -85,82 +84,6 @@ class ServiceRunParam(AdaptorInitParam):
         proxy = True
 
 
-class HasRunnerParamsMixin(HasAdaptorClazzMixin):
-    """ Model mixin to manage params overriding and shortcut method to retrieve concrete classes """
-
-    class Meta:
-        abstract = True
-
-    _runner = None
-    runner = models.ForeignKey(Runner, related_name='%(app_label)s_%(class)s_runs', null=True, blank=False,
-                               on_delete=models.SET_NULL,
-                               help_text='Service job runs adapter')
-
-    @classmethod
-    def from_db(cls, db, field_names, values):
-        """ Executed each time a Service is restored from DB layer"""
-        instance = super(HasRunnerParamsMixin, cls).from_db(db, field_names, values)
-        instance._runner = instance.runner
-        return instance
-
-    def set_run_params_defaults(self):
-        """ Set runs params with defaults issued from concrete class object """
-        if self.runner:
-            if self.adaptor_params.count() > 0:
-                self.adaptor_params.all().delete()
-            runners_defaults = self.runner.run_params
-            current_defaults = self.run_params
-            [runners_defaults.pop(k, None) for k in current_defaults if k == 'protocol']
-            queryset = self.runner.adaptor_params.filter(name__in=runners_defaults.keys()) \
-                if runners_defaults else self.runner.adaptor_params.all()
-            queryset = queryset.exclude(prevent_override=True)
-            for runner_param in queryset:
-                if runner_param.prevent_override:
-                    try:
-                        self.adaptor_params.get(name=runner_param.name).delete()
-                    except ObjectDoesNotExist:
-                        continue
-                    except MultipleObjectsReturned:
-                        self.adaptor_params.filter(name=runner_param.name).delete()
-                else:
-                    defaults = {'value': runner_param.value, 'prevent_override': runner_param.prevent_override,
-                                'crypt': runner_param.crypt}
-                    object_ctype = ContentType.objects.get_for_model(self)
-                    obj, created = AdaptorInitParam.objects.update_or_create(defaults=defaults,
-                                                                             content_type=object_ctype,
-                                                                             object_id=self.pk, name=runner_param.name)
-                    logger.debug('Object %s, %s', obj, created)
-
-    @property
-    def clazz(self):
-        return self.get_runner().clazz if self.get_runner() else None
-
-    @property
-    def config_changed(self):
-        return self._runner != self.runner
-
-    @property
-    def run_params(self):
-        """
-        Return a list of tuples representing current service adaptor init params
-        :return: a Dictionary (param_name=param_service_value or runner_param_default if not set
-        :rtype: dict
-        """
-        object_params = super(HasRunnerParamsMixin, self).run_params
-        runners_default = self.get_runner().run_params
-        runners_default.update(object_params)
-        return runners_default
-
-    @property
-    def adaptor_defaults(self):
-        """ Retrieve init params defined associated concrete class (from runner attribute) """
-        return self.get_runner().run_params if self.get_runner() else {}
-
-    def get_runner(self):
-        """ Return effective runner (could be overridden is any subclasses) """
-        return self.runner
-
-
 class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
     class Meta:
         abstract = True
@@ -211,10 +134,10 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def __str__(self):
         return "%s v(%s)" % (self.name, self.version)
 
-    def set_run_params_defaults(self):
-        super(BaseService, self).set_run_params_defaults()
+    def set_defaults(self):
+        super(BaseService, self).set_defaults()
         for sub in self.submissions.all():
-            sub.set_run_params_defaults()
+            sub.set_defaults()
 
     @property
     def jobs(self):
@@ -366,6 +289,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     AVAILABLE_WEB_ONLY = 1
     AVAILABLE_API_ONLY = 2
     AVAILABLE_BOTH = 3
+
     service = models.ForeignKey(swapper.get_model_name('wcore', 'Service'), on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
     availability = models.IntegerField('Availability', default=3,
@@ -375,32 +299,24 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
                                                 (AVAILABLE_BOTH, "Available api and web")))
     name = models.CharField('Form title', max_length=255, null=False, blank=False)
 
-    @property
-    def config_changed(self):
-        return self.runner != self.get_runner() or self._runner != self.runner
-
-    def set_run_params_defaults(self):
-        if self.config_changed and self._runner:
-            self.adaptor_params.all().delete()
-        super(BaseSubmission, self).set_run_params_defaults()
-
-    @property
-    def run_params(self):
-        if not self.runner:
-            return self.service.run_params
-        elif self.runner.pk == self.service.runner.pk:
-            # same runner but still overriden in bo, so merge params (submission params prevents)
-            service_run_params = self.service.run_params
-            object_run_params = super(BaseSubmission, self).run_params
-            service_run_params.update(object_run_params)
-            return service_run_params
-        return super(BaseSubmission, self).run_params
-
     def get_runner(self):
         if self.runner:
             return self.runner
         else:
             return self.service.runner
+
+    @property
+    def run_params(self):
+        if self.runner:
+            return super(BaseSubmission, self).run_params
+            object_params = {init.name: init.get_value() for init in self.adaptor_params.all()}
+            # Retrieve the ones defined for runner
+            runners_params = self.get_runner().run_params
+            # Merge them
+            runners_params.update(object_params)
+            return runners_params
+        else:
+            return self.service.run_params
 
     @property
     def available_online(self):
@@ -456,7 +372,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     @property
     def pending_jobs(self):
         """ Get current Service Jobs """
-        return self.service_jobs.filter(status__in=waves.wcore.adaptors.const.PENDING_STATUS)
+        return self.service_jobs.filter(_status__in=waves.wcore.adaptors.const.PENDING_STATUS)
 
 
 class Submission(BaseSubmission):
@@ -465,6 +381,7 @@ class Submission(BaseSubmission):
         verbose_name_plural = 'Submission forms'
         ordering = ('order',)
         unique_together = ('service', 'api_name')
+
         swappable = swapper.swappable_setting('wcore', 'Submission')
 
 
@@ -485,7 +402,9 @@ class SubmissionOutput(TimeStamped, ApiModel):
     #: Output Name (internal)
     name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Label")
     #: Related Submission
-    submission = models.ForeignKey(Submission, related_name='outputs', on_delete=models.CASCADE)
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
+                                   related_name='outputs',
+                                   on_delete=models.CASCADE)
     #: Associated Submission Input if needed
     from_input = models.ForeignKey('AParam', null=True, blank=True, default=None, related_name='to_outputs',
                                    help_text='Is valuated from an input')
@@ -543,7 +462,9 @@ class SubmissionExitCode(WavesBaseModel):
 
     exit_code = models.IntegerField('Exit code value')
     message = models.CharField('Exit code message', max_length=255)
-    submission = models.ForeignKey(Submission, related_name='exit_codes', on_delete=models.CASCADE)
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
+                                   related_name='exit_codes',
+                                   on_delete=models.CASCADE)
     is_error = models.BooleanField('Is an Error', default=False, blank=False)
 
     def __str__(self):

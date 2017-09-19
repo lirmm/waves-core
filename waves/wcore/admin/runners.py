@@ -11,13 +11,10 @@ from base import ExportInMassMixin
 from waves.wcore.admin.adaptors import RunnerParamInline
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.runners import RunnerForm
-from waves.wcore.models import Runner
+from waves.wcore.models import Runner, get_service_model, get_submission_model
 
-from waves.wcore.models.services import Submission
-import swapper
-
-Service = swapper.load_model("wcore", "Service")
-
+Service = get_service_model()
+Submission = get_submission_model()
 
 __all__ = ['RunnerAdmin']
 
@@ -51,7 +48,7 @@ class SubmissionRunInline(TabularInline):
     fields = ['name', 'availability', 'created', 'updated', 'service', ]
     readonly_fields = ['label', 'availability', 'created', 'updated', 'service', ]
     show_change_link = True
-    verbose_name_plural = "Running Submissions"
+    verbose_name_plural = "Overriding Submissions"
 
     def has_delete_permission(self, request, obj=None):
         """ No delete permission for runners params
@@ -92,10 +89,10 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
         ]
         if obj and IS_POPUP_VAR not in request.GET:
             self.inlines = _inlines
-            if obj.running_submissions.count() > 0:
-                self.inlines.append(SubmissionRunInline)
             if obj.running_services.count() > 0:
                 self.inlines.append(ServiceRunInline)
+            if obj.running_submissions.count() > 0:
+                self.inlines.append(SubmissionRunInline)
         elif IS_POPUP_VAR not in request.GET:
             self.inlines = [_inlines[0], ]
         return self.inlines
@@ -119,11 +116,13 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
             if 'update_init_params' in form.changed_data:
                 for service in obj.runs:
                     message = 'Related %s has been reset' % service
-                    service.set_run_params_defaults()
+                    service.set_defaults()
+                    """
                     for job in service.pending_jobs.all():
                         if job.adaptor is not None:
                             job.run_cancel()
                         message += '<br/>- Related pending job %s has been cancelled' % job.title
+                    """
                     messages.info(request, message)
 
     def connexion_string(self, obj):

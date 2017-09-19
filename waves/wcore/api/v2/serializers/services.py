@@ -3,15 +3,16 @@ from __future__ import unicode_literals
 
 import collections
 
-import swapper
 from rest_framework import serializers
 from rest_framework.reverse import reverse as reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
-from waves.wcore.models.services import Submission, SubmissionOutput
+from waves.wcore.models import get_service_model, get_submission_model
+from waves.wcore.models.services import SubmissionOutput
 from .inputs import InputSerializer as DetailInputSerializer
+Service = get_service_model()
+Submission = get_submission_model()
 
-Service = swapper.load_model("wcore", "Service")
 
 __all__ = ['OutputSerializer', 'ServiceSerializer', 'ServiceSubmissionSerializer']
 

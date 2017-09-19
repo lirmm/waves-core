@@ -1,1 +1,380 @@
-[{"model": "wcore.adaptorinitparam", "pk": 1, "fields": {"name": "protocol", "value": "fork", "crypt": false, "prevent_override": true, "content_type": 14, "object_id": 1}}, {"model": "wcore.adaptorinitparam", "pk": 2, "fields": {"name": "host", "value": "localhost", "crypt": false, "prevent_override": false, "content_type": 14, "object_id": 1}}, {"model": "wcore.adaptorinitparam", "pk": 3, "fields": {"name": "command", "value": null, "crypt": false, "prevent_override": false, "content_type": 14, "object_id": 1}}, {"model": "wcore.adaptorinitparam", "pk": 65, "fields": {"name": "command", "value": "echo \"dummy\"", "crypt": false, "prevent_override": false, "content_type": 13, "object_id": 1}}, {"model": "wcore.adaptorinitparam", "pk": 66, "fields": {"name": "host", "value": "localhost", "crypt": false, "prevent_override": false, "content_type": 13, "object_id": 1}}, {"model": "wcore.runner", "pk": 1, "fields": {"description": "", "short_description": "", "clazz": "waves.wcore.adaptors.shell.LocalShellAdaptor", "name": "LocalShellAdaptor 33", "enabled": true}}, {"model": "wcore.aparam", "pk": 3, "fields": {"polymorphic_ctype": 26, "api_name": "input_1", "order": 0, "label": "Text Input 1", "name": "input1", "multiple": false, "help_text": "This is input 1 help text", "submission": 1, "required": true, "default": null, "cmd_format": 2, "edam_formats": null, "edam_datas": null, "repeat_group": null, "when_value": null, "parent": null, "regexp": null}}, {"model": "wcore.aparam", "pk": 4, "fields": {"polymorphic_ctype": 25, "api_name": "fileinput1", "order": 0, "label": "File Input 1", "name": "fileinput1", "multiple": false, "help_text": "", "submission": 1, "required": true, "default": null, "cmd_format": 2, "edam_formats": null, "edam_datas": null, "repeat_group": null, "when_value": null, "parent": null, "regexp": null}}, {"model": "wcore.aparam", "pk": 5, "fields": {"polymorphic_ctype": 25, "api_name": "input1", "order": 0, "label": "Input Sequence", "name": "input1", "multiple": false, "help_text": "", "submission": 2, "required": true, "default": null, "cmd_format": 2, "edam_formats": null, "edam_datas": null, "repeat_group": null, "when_value": null, "parent": null, "regexp": null}}, {"model": "wcore.aparam", "pk": 6, "fields": {"polymorphic_ctype": 23, "api_name": "choice1", "order": 0, "label": "Choice 1", "name": "choice1", "multiple": false, "help_text": "", "submission": 1, "required": true, "default": null, "cmd_format": 2, "edam_formats": null, "edam_datas": null, "repeat_group": null, "when_value": null, "parent": null, "regexp": null}}, {"model": "wcore.textparam", "pk": 3, "fields": {"max_length": "255"}}, {"model": "wcore.booleanparam", "pk": 6, "fields": {"true_value": "True", "false_value": "False"}}, {"model": "wcore.fileinput", "pk": 4, "fields": {"max_size": 20480, "allowed_extensions": "*"}}, {"model": "wcore.fileinput", "pk": 5, "fields": {"max_size": 20480, "allowed_extensions": "*"}}, {"model": "wcore.fileinputsample", "pk": 1, "fields": {"label": "The Label", "help_text": "The Help Text", "file": "sample/service_1/db9a6761-081c-4d2e-b820-02d9af297b7c/16_COX1.phy", "file_input": 4}}, {"model": "wcore.fileinputsample", "pk": 2, "fields": {"label": "Second One", "help_text": "TEst", "file": "sample/service_1/ca375aec-7c3d-436c-b3c0-2294e94ad41c/phyml.txt", "file_input": 5}}, {"model": "wcore.sampledepparam", "pk": 1, "fields": {"file_input": 5, "sample": 2, "related_to": 3, "set_default": "Toto"}}, {"model": "wcore.service", "pk": 1, "fields": {"created": "2017-07-21T14:35:55.478Z", "updated": "2017-09-08T13:55:20.817Z", "description": "", "short_description": "This is short description", "api_name": "service_1", "runner": 1, "name": "Service 1", "version": "1.0", "status": 3, "api_on": true, "web_on": true, "email_on": true, "partial": false, "created_by": 1, "remote_service_id": null, "edam_topics": "", "edam_operations": "", "restricted_client": [1]}}, {"model": "wcore.submission", "pk": 1, "fields": {"created": "2017-07-21T14:35:55.479Z", "updated": "2017-09-08T13:11:20.349Z", "order": 0, "slug": "db9a6761-081c-4d2e-b820-02d9af297b7c", "api_name": "default", "runner": null, "service": 1, "availability": 3, "name": "Simple"}}, {"model": "wcore.submission", "pk": 2, "fields": {"created": "2017-09-06T09:06:43.472Z", "updated": "2017-09-07T14:14:54.655Z", "order": 0, "slug": "ca375aec-7c3d-436c-b3c0-2294e94ad41c", "api_name": "second_one", "runner": null, "service": 1, "availability": 3, "name": "Title Second"}}, {"model": "wcore.submissionoutput", "pk": 1, "fields": {"created": "2017-09-06T10:26:11.394Z", "updated": "2017-09-06T10:26:11.394Z", "api_name": "output_1", "label": "Label Output 1", "name": "Label Output 1", "submission": 1, "from_input": null, "file_pattern": "output1.txt", "edam_format": null, "edam_data": null, "help_text": "", "extension": ""}}, {"model": "wcore.submissionoutput", "pk": 2, "fields": {"created": "2017-09-06T10:26:11.416Z", "updated": "2017-09-08T13:11:20.354Z", "api_name": "output_2", "label": "Label Output 2", "name": "Label Output 2", "submission": 1, "from_input": 3, "file_pattern": "output2.txt", "edam_format": null, "edam_data": null, "help_text": "this is output help text", "extension": ""}}, {"model": "wcore.submissionexitcode", "pk": 1, "fields": {"exit_code": 0, "message": "Process exit normally", "submission": 1, "is_error": false}}, {"model": "wcore.submissionexitcode", "pk": 2, "fields": {"exit_code": 1, "message": "Process exit error", "submission": 1, "is_error": true}}, {"model": "wcore.submissionexitcode", "pk": 3, "fields": {"exit_code": 0, "message": "Process exit normally", "submission": 2, "is_error": false}}, {"model": "wcore.submissionexitcode", "pk": 4, "fields": {"exit_code": 1, "message": "Process exit error", "submission": 2, "is_error": true}}, {"model": "wcore.servicebinaryfile", "pk": 2, "fields": {"created": "2017-09-07T12:13:58.361Z", "updated": "2017-09-07T12:35:32.846Z", "slug": "b31e9dc0-a3f8-4a67-80fb-6dd0c6b177e0", "label": "Genome", "binary": "b31e9dc0-a3f8-4a67-80fb-6dd0c6b177e0/16_COX1.phy"}}, {"model": "wcore.servicebinaryfile", "pk": 3, "fields": {"created": "2017-09-07T12:25:51.348Z", "updated": "2017-09-07T12:29:38.107Z", "slug": "c41a9d52-e762-451f-bcbf-c09b2f49a3ac", "label": "qdqdqsd", "binary": "c41a9d52-e762-451f-bcbf-c09b2f49a3ac/multigene_marsupials2.xml"}}]
+[
+  {
+    "model": "wcore.adaptorinitparam",
+    "pk": 1,
+    "fields": {
+      "name": "protocol",
+      "value": "fork",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": 14,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "wcore.adaptorinitparam",
+    "pk": 2,
+    "fields": {
+      "name": "host",
+      "value": "localhost",
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 14,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "wcore.adaptorinitparam",
+    "pk": 3,
+    "fields": {
+      "name": "command",
+      "value": null,
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 14,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "wcore.adaptorinitparam",
+    "pk": 65,
+    "fields": {
+      "name": "command",
+      "value": "echo \"dummy\"",
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 13,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "wcore.adaptorinitparam",
+    "pk": 66,
+    "fields": {
+      "name": "host",
+      "value": "localhost",
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": 13,
+      "object_id": 1
+    }
+  },
+  {
+    "model": "wcore.runner",
+    "pk": 1,
+    "fields": {
+      "description": "",
+      "short_description": "",
+      "clazz": "waves.wcore.adaptors.shell.LocalShellAdaptor",
+      "name": "LocalShellAdaptor 33",
+      "enabled": true
+    }
+  },
+  {
+    "model": "wcore.aparam",
+    "pk": 3,
+    "fields": {
+      "polymorphic_ctype": 26,
+      "api_name": "input_1",
+      "order": 0,
+      "label": "Text Input 1",
+      "name": "input1",
+      "multiple": false,
+      "help_text": "This is input 1 help text",
+      "submission": 1,
+      "required": true,
+      "default": null,
+      "cmd_format": 2,
+      "edam_formats": null,
+      "edam_datas": null,
+      "repeat_group": null,
+      "when_value": null,
+      "parent": null,
+      "regexp": null
+    }
+  },
+  {
+    "model": "wcore.aparam",
+    "pk": 4,
+    "fields": {
+      "polymorphic_ctype": 25,
+      "api_name": "fileinput1",
+      "order": 0,
+      "label": "File Input 1",
+      "name": "fileinput1",
+      "multiple": false,
+      "help_text": "",
+      "submission": 1,
+      "required": true,
+      "default": null,
+      "cmd_format": 2,
+      "edam_formats": null,
+      "edam_datas": null,
+      "repeat_group": null,
+      "when_value": null,
+      "parent": null,
+      "regexp": null
+    }
+  },
+  {
+    "model": "wcore.aparam",
+    "pk": 5,
+    "fields": {
+      "polymorphic_ctype": 25,
+      "api_name": "input1",
+      "order": 0,
+      "label": "Input Sequence",
+      "name": "input1",
+      "multiple": false,
+      "help_text": "",
+      "submission": 2,
+      "required": true,
+      "default": null,
+      "cmd_format": 2,
+      "edam_formats": null,
+      "edam_datas": null,
+      "repeat_group": null,
+      "when_value": null,
+      "parent": null,
+      "regexp": null
+    }
+  },
+  {
+    "model": "wcore.aparam",
+    "pk": 6,
+    "fields": {
+      "polymorphic_ctype": 23,
+      "api_name": "choice1",
+      "order": 0,
+      "label": "Choice 1",
+      "name": "choice1",
+      "multiple": false,
+      "help_text": "",
+      "submission": 1,
+      "required": true,
+      "default": null,
+      "cmd_format": 2,
+      "edam_formats": null,
+      "edam_datas": null,
+      "repeat_group": null,
+      "when_value": null,
+      "parent": null,
+      "regexp": null
+    }
+  },
+  {
+    "model": "wcore.textparam",
+    "pk": 3,
+    "fields": {
+      "max_length": "255"
+    }
+  },
+  {
+    "model": "wcore.booleanparam",
+    "pk": 6,
+    "fields": {
+      "true_value": "True",
+      "false_value": "False"
+    }
+  },
+  {
+    "model": "wcore.fileinput",
+    "pk": 4,
+    "fields": {
+      "max_size": 20480,
+      "allowed_extensions": "*"
+    }
+  },
+  {
+    "model": "wcore.fileinput",
+    "pk": 5,
+    "fields": {
+      "max_size": 20480,
+      "allowed_extensions": "*"
+    }
+  },
+  {
+    "model": "wcore.fileinputsample",
+    "pk": 1,
+    "fields": {
+      "label": "The Label",
+      "help_text": "The Help Text",
+      "file": "sample/service_1/db9a6761-081c-4d2e-b820-02d9af297b7c/16_COX1.phy",
+      "file_input": 4
+    }
+  },
+  {
+    "model": "wcore.fileinputsample",
+    "pk": 2,
+    "fields": {
+      "label": "Second One",
+      "help_text": "TEst",
+      "file": "sample/service_1/ca375aec-7c3d-436c-b3c0-2294e94ad41c/phyml.txt",
+      "file_input": 5
+    }
+  },
+  {
+    "model": "wcore.sampledepparam",
+    "pk": 1,
+    "fields": {
+      "file_input": 5,
+      "sample": 2,
+      "related_to": 3,
+      "set_default": "Toto"
+    }
+  },
+  {
+    "model": "wcore.service",
+    "pk": 1,
+    "fields": {
+      "created": "2017-07-21T14:35:55.478Z",
+      "updated": "2017-09-08T13:55:20.817Z",
+      "description": "",
+      "short_description": "This is short description",
+      "api_name": "service_1",
+      "runner": 1,
+      "name": "Service 1",
+      "version": "1.0",
+      "status": 3,
+      "api_on": true,
+      "web_on": true,
+      "email_on": true,
+      "partial": false,
+      "created_by": 1,
+      "remote_service_id": null,
+      "edam_topics": "",
+      "edam_operations": "",
+      "restricted_client": [
+        1
+      ]
+    }
+  },
+  {
+    "model": "wcore.submission",
+    "pk": 1,
+    "fields": {
+      "created": "2017-07-21T14:35:55.479Z",
+      "updated": "2017-09-08T13:11:20.349Z",
+      "order": 0,
+      "slug": "db9a6761-081c-4d2e-b820-02d9af297b7c",
+      "api_name": "default",
+      "runner": null,
+      "service": 1,
+      "availability": 3,
+      "name": "Simple"
+    }
+  },
+  {
+    "model": "wcore.submission",
+    "pk": 2,
+    "fields": {
+      "created": "2017-09-06T09:06:43.472Z",
+      "updated": "2017-09-07T14:14:54.655Z",
+      "order": 0,
+      "slug": "ca375aec-7c3d-436c-b3c0-2294e94ad41c",
+      "api_name": "second_one",
+      "runner": null,
+      "service": 1,
+      "availability": 3,
+      "name": "Title Second"
+    }
+  },
+  {
+    "model": "wcore.submissionoutput",
+    "pk": 1,
+    "fields": {
+      "created": "2017-09-06T10:26:11.394Z",
+      "updated": "2017-09-06T10:26:11.394Z",
+      "api_name": "output_1",
+      "label": "Label Output 1",
+      "name": "Label Output 1",
+      "submission": 1,
+      "from_input": null,
+      "file_pattern": "output1.txt",
+      "edam_format": null,
+      "edam_data": null,
+      "help_text": "",
+      "extension": ""
+    }
+  },
+  {
+    "model": "wcore.submissionoutput",
+    "pk": 2,
+    "fields": {
+      "created": "2017-09-06T10:26:11.416Z",
+      "updated": "2017-09-08T13:11:20.354Z",
+      "api_name": "output_2",
+      "label": "Label Output 2",
+      "name": "Label Output 2",
+      "submission": 1,
+      "from_input": 3,
+      "file_pattern": "output2.txt",
+      "edam_format": null,
+      "edam_data": null,
+      "help_text": "this is output help text",
+      "extension": ""
+    }
+  },
+  {
+    "model": "wcore.submissionexitcode",
+    "pk": 1,
+    "fields": {
+      "exit_code": 0,
+      "message": "Process exit normally",
+      "submission": 1,
+      "is_error": false
+    }
+  },
+  {
+    "model": "wcore.submissionexitcode",
+    "pk": 2,
+    "fields": {
+      "exit_code": 1,
+      "message": "Process exit error",
+      "submission": 1,
+      "is_error": true
+    }
+  },
+  {
+    "model": "wcore.submissionexitcode",
+    "pk": 3,
+    "fields": {
+      "exit_code": 0,
+      "message": "Process exit normally",
+      "submission": 2,
+      "is_error": false
+    }
+  },
+  {
+    "model": "wcore.submissionexitcode",
+    "pk": 4,
+    "fields": {
+      "exit_code": 1,
+      "message": "Process exit error",
+      "submission": 2,
+      "is_error": true
+    }
+  },
+  {
+    "model": "wcore.servicebinaryfile",
+    "pk": 2,
+    "fields": {
+      "created": "2017-09-07T12:13:58.361Z",
+      "updated": "2017-09-07T12:35:32.846Z",
+      "slug": "b31e9dc0-a3f8-4a67-80fb-6dd0c6b177e0",
+      "label": "Genome",
+      "binary": "b31e9dc0-a3f8-4a67-80fb-6dd0c6b177e0/16_COX1.phy"
+    }
+  },
+  {
+    "model": "wcore.servicebinaryfile",
+    "pk": 3,
+    "fields": {
+      "created": "2017-09-07T12:25:51.348Z",
+      "updated": "2017-09-07T12:29:38.107Z",
+      "slug": "c41a9d52-e762-451f-bcbf-c09b2f49a3ac",
+      "label": "qdqdqsd",
+      "binary": "c41a9d52-e762-451f-bcbf-c09b2f49a3ac/multigene_marsupials2.xml"
+    }
+  }
+]

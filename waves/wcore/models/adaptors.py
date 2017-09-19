@@ -6,6 +6,7 @@ import logging
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.utils.module_loading import import_string
 
@@ -34,7 +35,7 @@ class AdaptorInitParam(WavesBaseModel):
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey(for_concrete_model=False)
+    content_object = GenericForeignKey(for_concrete_model=True)
 
     def __str__(self):
         if self.crypt:
@@ -84,16 +85,12 @@ class HasAdaptorClazzMixin(WavesBaseModel):
     binary_file = models.ForeignKey(ServiceBinaryFile, null=True, blank=True, on_delete=models.SET_NULL,
                                     help_text="If set, 'Execution parameter' param line:'command' will be ignored")
 
-    def set_run_params_defaults(self):
-        """Set runs params with defaults issued from concrete class object """
+    def set_defaults(self):
+        """Set runs params with defaults issued from adaptor class object """
+        # Reset all old values
+        self.adaptor_params.all().delete()
         object_ctype = ContentType.objects.get_for_model(self)
-        # Delete keyx not present in new configuration
-        self.adaptor_params.exclude(name__in=self.adaptor.init_params.keys()).delete()
-        # keep old values set for runner if key is the same
-        adaptors_defaults = self.adaptor.init_params
-        current_defaults = self.run_params
-        [adaptors_defaults.pop(k, None) for k in current_defaults if k != 'protocol']
-        for name, default in adaptors_defaults.items():
+        for name, default in self.adaptor_defaults.items():
             if name == 'password':
                 defaults = {'name': name[6:], 'crypt': True}
             else:
@@ -101,9 +98,14 @@ class HasAdaptorClazzMixin(WavesBaseModel):
             if type(default) in (tuple, list, dict):
                 default = default[0][0]
                 defaults['prevent_override'] = True
+            else:
+                defaults['prevent_override'] = False
             defaults['value'] = default
-            AdaptorInitParam.objects.update_or_create(defaults=defaults, content_type=object_ctype,
-                                                      object_id=self.pk, name=name)
+            AdaptorInitParam.objects.create(name=defaults['name'],
+                                            value=defaults['value'],
+                                            prevent_override=defaults['prevent_override'],
+                                            content_type=object_ctype,
+                                            object_id=self.pk)
 
     @property
     def run_params(self):
@@ -136,7 +138,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
         :return: a subclass JobAdaptor object instance
         :rtype: JobAdaptor
         """
-        if self.clazz is not '' and (self._adaptor is None or self.config_changed):
+        if self.clazz and (self._adaptor is None or self.config_changed):
             try:
                 self._adaptor = import_string(self.clazz)(**self.run_params)
             except ImportError as e:
@@ -150,3 +152,79 @@ class HasAdaptorClazzMixin(WavesBaseModel):
         self._adaptor = adaptor
 
 
+class HasRunnerParamsMixin(HasAdaptorClazzMixin):
+    """ Model mixin to manage params overriding and shortcut method to retrieve concrete classes """
+
+    class Meta:
+        abstract = True
+
+    _runner = None
+    runner = models.ForeignKey('Runner', related_name='%(app_label)s_%(class)s_runs', null=True, blank=False,
+                               on_delete=models.SET_NULL,
+                               help_text='Service job runs adapter')
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        """ Executed each time a Service is restored from DB layer"""
+        instance = super(HasRunnerParamsMixin, cls).from_db(db, field_names, values)
+        instance._runner = instance.runner
+        return instance
+
+    @property
+    def clazz(self):
+        """ Return associated runner clazz setup """
+        return self.get_runner().clazz if self.get_runner() else None
+
+    @clazz.setter
+    def clazz(self):
+        # Do nothing when setting clazz attribute, not set in DB
+        pass
+
+    @property
+    def config_changed(self):
+        return self._runner != self.get_runner() or self._clazz != self.clazz
+
+    @property
+    def run_params(self):
+        """
+        Return a list of tuples representing current service adaptor init params
+        :return: a Dictionary (param_name=param_service_value or runner_param_default if not set
+        :rtype: dict
+        """
+        # Retrieve the ones defined in DB
+        object_params = super(HasRunnerParamsMixin, self).run_params
+        # Retrieve the ones defined for runner
+        runners_params = self.get_runner().run_params
+        # Merge them
+        runners_params.update(object_params)
+        return runners_params
+
+    @property
+    def adaptor_defaults(self):
+        """ Retrieve init params defined associated concrete class (from runner attribute) """
+        return self.get_runner().run_params if self.get_runner() else {}
+
+    def get_runner(self):
+        """ Return effective runner (could be overridden is any subclasses) """
+        return self.runner
+
+    def set_defaults(self):
+        """Set runs params with defaults issued from adaptor class object """
+        # Reset all old values
+        self.adaptor_params.all().delete()
+        object_ctype = ContentType.objects.get_for_model(self)
+        for runner_param in self.get_runner().adaptor_params.filter(prevent_override=False):
+            if runner_param.name == 'password':
+                name = runner_param.name[6:]
+                crypt = True
+            else:
+                name = runner_param.name
+                crypt = False
+            default = runner_param.value
+            prevent_override = False
+            AdaptorInitParam.objects.create(name=name,
+                                            value=default,
+                                            crypt=crypt,
+                                            prevent_override=prevent_override,
+                                            content_type=object_ctype,
+                                            object_id=self.pk)

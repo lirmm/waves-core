@@ -18,13 +18,13 @@ from django.utils.html import format_html
 
 import waves.wcore.adaptors.const
 import waves.wcore.adaptors.exceptions
+import swapper
 from waves.wcore.adaptors.const import JobRunDetails
 from waves.wcore.exceptions import WavesException
 from waves.wcore.exceptions.jobs import *
 from waves.wcore.mails import JobMailer
-from waves.wcore.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
-from waves.wcore.models.inputs import AParam, FileInputSample
-from waves.wcore.models.services import Submission, SubmissionOutput
+from waves.wcore.models import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel, AParam, FileInputSample, \
+    SubmissionOutput
 from waves.wcore.settings import waves_settings
 from waves.wcore.utils import normalize_value
 from waves.wcore.utils.storage import allow_display_online
@@ -37,6 +37,7 @@ __all__ = ['Job', 'JobInput', 'JobOutput', 'JobManager']
 class JobManager(models.Manager):
     """ Job Manager add few shortcut function to default Django models objects Manager
     """
+
     def get_by_natural_key(self, slug, service):
         return self.get(slug=slug, service=service)
 
@@ -92,16 +93,16 @@ class JobManager(models.Manager):
         if user and not user.is_anonymous:
             if user.is_superuser or user.is_staff:
                 # return all pending jobs
-                return self.filter(status__in=(
+                return self.filter(_status__in=(
                     waves.wcore.adaptors.const.JOB_CREATED,
                     waves.wcore.adaptors.const.JOB_PREPARED,
                     waves.wcore.adaptors.const.JOB_QUEUED,
                     waves.wcore.adaptors.const.JOB_RUNNING))
             # get only user jobs
-            return self.filter(status__in=(waves.wcore.adaptors.const.JOB_CREATED,
-                                           waves.wcore.adaptors.const.JOB_PREPARED,
-                                           waves.wcore.adaptors.const.JOB_QUEUED,
-                                           waves.wcore.adaptors.const.JOB_RUNNING),
+            return self.filter(_status__in=(waves.wcore.adaptors.const.JOB_CREATED,
+                                            waves.wcore.adaptors.const.JOB_PREPARED,
+                                            waves.wcore.adaptors.const.JOB_QUEUED,
+                                            waves.wcore.adaptors.const.JOB_RUNNING),
                                client=user)
         # User is not supposed to be None
         return self.none()
@@ -118,7 +119,7 @@ class JobManager(models.Manager):
             self.filter(status=waves.wcore.adaptors.const.JOB_CREATED,
                         client=user,
                         **extra_filter).order_by('-created')
-        return self.filter(status=waves.wcore.adaptors.const.JOB_CREATED,
+        return self.filter(_status=waves.wcore.adaptors.const.JOB_CREATED,
                            **extra_filter).order_by('-created').all()
 
     @transaction.atomic
@@ -222,7 +223,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     #: Job Title, automatic or set by user upon submission
     title = models.CharField('Job title', max_length=255, null=True, blank=True)
     #: Job related Service
-    submission = models.ForeignKey(Submission, related_name='service_jobs', null=True, on_delete=models.SET_NULL)
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), related_name='service_jobs', null=True, on_delete=models.SET_NULL)
     #: Job status issued from last retrieve on DB
     _status = models.IntegerField('Job status', choices=waves.wcore.adaptors.const.STATUS_LIST,
                                   default=waves.wcore.adaptors.const.JOB_CREATED)

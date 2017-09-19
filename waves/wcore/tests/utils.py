@@ -5,7 +5,6 @@ import shutil
 import time
 from os.path import join, dirname, realpath, isfile, basename
 
-import swapper
 from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import localtime
 
@@ -13,8 +12,6 @@ import waves.wcore.adaptors.const
 from waves.wcore.adaptors.loader import AdaptorLoader
 from waves.wcore.models import *
 from waves.wcore.settings import waves_settings
-
-Service = swapper.load_model("wcore", "Service")
 
 logger = logging.getLogger(__name__)
 

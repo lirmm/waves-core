@@ -9,8 +9,9 @@ from django.core.exceptions import ValidationError
 from waves.wcore.forms.crispy import FormHelper
 from waves.wcore.utils import random_analysis_name
 from waves.wcore.models.inputs import *
-from waves.wcore.models.services import Submission
+from waves.wcore.models import get_submission_model
 from waves.wcore.utils.validators import ServiceInputValidator
+Submission = get_submission_model()
 
 logger = logging.getLogger(__name__)
 

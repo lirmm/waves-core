@@ -33,15 +33,20 @@
             $(this).find('.modal-body').html("");
             console.log("closed");
         });
+
+
     });
-    $(window).load(function(){
-        $('fieldset.collapse.open').each(function(){
+    $(window).load(function () {
+        $('fieldset.collapse.open').each(function () {
             $(this).removeClass('collapsed');
             $(this).find('a.collapse-toggle').html('Hide');
         })
+        $('.errorlist').parents('fieldset.collapsed').each(function () {
+            $(this).removeClass('collapsed');
+        });
     })
 
-})(django.jQuery || jQuery );
+})(django.jQuery || jQuery);
 
 
 

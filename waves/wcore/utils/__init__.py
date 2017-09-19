@@ -5,7 +5,6 @@ import logging
 import random
 import string
 
-import swapper
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
@@ -38,13 +37,6 @@ def url_to_edit_object(obj):
     else:
         logger.warn('Trying to view a NoneType object link %s ', obj.__class__.__name__)
         return "#"
-
-
-def get_service_model():
-    """
-    Returns the User model that is active in this project.
-    """
-    return swapper.load_model("wcore", "Service")
 
 
 def random_analysis_name():

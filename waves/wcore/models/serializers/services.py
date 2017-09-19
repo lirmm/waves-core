@@ -1,7 +1,6 @@
 """WAVES models export module for Services """
 from __future__ import unicode_literals
 
-import swapper
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from rest_framework import serializers as rest_serializer
@@ -12,12 +11,10 @@ from waves.wcore.api.v2.serializers import ServiceSerializer as BaseServiceSeria
 from waves.wcore.models import *
 from waves.wcore.models.serializers.base import RelatedSerializerMixin
 from waves.wcore.models.serializers.runners import RunnerSerializer, RunnerParamSerializer
-from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode, SubmissionRunParam, Submission
 from waves.wcore.settings import waves_settings
 
-Service = swapper.load_model("wcore", "Service")
-
-
+Submission = get_submission_model()
+Service = get_service_model()
 __all__ = ['ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
 
 

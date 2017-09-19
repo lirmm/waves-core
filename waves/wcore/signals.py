@@ -5,21 +5,21 @@ from __future__ import unicode_literals
 
 import os
 import shutil
-import swapper
 
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
+from waves.wcore.models import ApiModel, get_service_model, get_submission_model
 from waves.wcore.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
-from waves.wcore.models.base import ApiModel
+from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.models.inputs import *
 from waves.wcore.models.jobs import Job, JobOutput
 from waves.wcore.models.runners import *
-from waves.wcore.models.binaries import ServiceBinaryFile
-from waves.wcore.models.services import SubmissionExitCode, Submission
+from waves.wcore.models.services import SubmissionExitCode
 from waves.wcore.utils import get_all_subclasses
 
-Service = swapper.load_model("wcore", "Service")
+Service = get_service_model()
+Submission = get_submission_model()
 
 
 @receiver(pre_save, sender=Job)
@@ -96,13 +96,13 @@ def service_input_post_delete_handler(sender, instance, **kwargs):
 @receiver(post_save, sender=Runner)
 def runner_post_save_handler(sender, instance, created, **kwargs):
     if created or instance.config_changed:
-        instance.set_run_params_defaults()
+        instance.set_defaults()
 
 
 @receiver(post_save, sender=HasAdaptorClazzMixin)
 def adaptor_mixin_post_save_handler(sender, instance, created, **kwargs):
     if not kwargs.get('raw', False) and (instance.config_changed or created):
-        instance.set_run_params_defaults()
+        instance.set_defaults()
 
 
 for subclass in get_all_subclasses(HasAdaptorClazzMixin):

@@ -14,7 +14,7 @@ from daemons.prefab import run
 import waves.wcore.adaptors.const
 import waves.wcore.exceptions
 from waves.wcore.adaptors.exceptions import AdaptorException
-from waves.wcore.models import Job, Submission
+from waves.wcore.models import Job
 from waves.wcore.settings import waves_settings
 from waves.wcore.settings import waves_settings as config
 
@@ -22,7 +22,6 @@ logger = logging.getLogger('waves.daemon')
 
 
 class BaseRunDaemon(run.RunDaemon):
-
     def __init__(self, *args, **kwargs):
         super(BaseRunDaemon, self).__init__(*args, **kwargs)
         self._handlers = {

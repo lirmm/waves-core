@@ -5,14 +5,16 @@ from adminsortable2.admin import SortableInlineAdminMixin
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
-from polymorphic.admin import PolymorphicInlineSupportMixin
 
 from waves.wcore.admin.adaptors import SubmissionRunnerParamInLine
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.services import *
 from waves.wcore.compat import CompactInline
+from waves.wcore.models import get_submission_model
 from waves.wcore.models.inputs import *
-from waves.wcore.models.services import Submission, SubmissionOutput, SubmissionExitCode
+from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode
+
+Submission = get_submission_model()
 
 __all__ = ['SubmissionOutputInline', 'SampleDependentInputInline', 'ExitCodeInline', 'FileInputSampleInline',
            'RepeatGroupAdmin', 'OrgRepeatGroupInline', 'ServiceSubmissionAdmin']
@@ -137,13 +139,13 @@ class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
         return super(OrganizeInputInline, self).get_queryset(request).order_by('-required', 'order')
 
 
-class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, DynamicInlinesAdmin):
+class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     """ Submission process administration -- Model Submission """
     current_obj = None
     form = ServiceSubmissionForm
     exclude = ['order']
     list_display = ['get_name', 'service', 'runner_link', 'available_online', 'available_api', 'runner']
-    readonly_fields = ['available_online', 'available_api', 'get_command_line_pattern']
+    readonly_fields = ['available_online', 'available_api', 'get_command_line_pattern', 'display_run_params']
     list_filter = (
         'service__name',
         'availability'
@@ -154,32 +156,36 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
             'fields': ['service', 'name', 'availability', 'api_name'],
             'classes': ['collapse', 'open']
         }),
-        ('Run Config', {
-            'fields': ['runner', 'get_command_line_pattern', 'binary_file'],
+        ('Run ', {
+            'fields': ['runner', 'display_run_params', 'get_command_line_pattern', 'binary_file'],
             'classes': ['collapse']
         }),
     ]
     show_full_result_count = True
     change_form_template = "admin/waves/submission/change_form.html"
 
-    inlines = (
-        OrganizeInputInline,
-        # OrgRepeatGroupInline,
-        SubmissionOutputInline,
-        ExitCodeInline,
-    )
+    # Override admin class and set this list to add your inlines to service admin
+    def display_run_params(self, obj):
+        return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
 
-    def get_inline_instances(self, request, obj=None):
-        inline_instances = [inline(self.model, self.admin_site) for inline in self.inlines]
-        if not request.POST and obj and obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
-            inline_instances.append(SubmissionRunnerParamInLine(self.model, self.admin_site))
-        return inline_instances
+    display_run_params.short_description = "Runner initial params"
+
+    def get_inlines(self, request, obj=None):
+        _inlines = [
+            OrganizeInputInline,
+            # OrgRepeatGroupInline,
+            SubmissionOutputInline,
+            ExitCodeInline,
+        ]
+        self.current_obj = obj
+        self.inlines = _inlines
+        if obj.runner is not None \
+                and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
+            self.inlines.insert(0, SubmissionRunnerParamInLine)
+        return self.inlines
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}
-        context['show_save_as_new'] = False
-        context['show_save_and_add_another'] = False
-        context['show_save'] = False
         return super(ServiceSubmissionAdmin, self).add_view(request, form_url, context)
 
     def get_form(self, request, obj=None, **kwargs):
@@ -208,22 +214,13 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
             return "N/A"
         return "%s %s" % (obj.adaptor.command, obj.service.command.create_command_line(job_inputs=obj.inputs.all()))
 
-    def get_readonly_fields(self, request, obj=None):
-        readonly_fields = list(super(ServiceSubmissionAdmin, self).get_readonly_fields(request, obj))
-        if obj is not None:
-            readonly_fields.append('service')
-        return readonly_fields
+    get_command_line_pattern.short_description = "Command line pattern"
 
     def available_api(self, obj):
         return obj.available_api
 
     def available_online(self, obj):
         return obj.available_online
-
-    def save_model(self, request, obj, form, change):
-        if not obj.runner:
-            obj.adaptor_params.all().delete()
-        super(ServiceSubmissionAdmin, self).save_model(request, obj, form, change)
 
     def has_add_permission(self, request):
         return False
@@ -244,6 +241,13 @@ class ServiceSubmissionAdmin(PolymorphicInlineSupportMixin, WavesModelAdmin, Dyn
             return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
         else:
             return super(ServiceSubmissionAdmin, self).response_change(request, obj)
+
+    def save_model(self, request, obj, form, change):
+        if obj and not obj.runner:
+            obj.adaptor_params.all().delete()
+        super(ServiceSubmissionAdmin, self).save_model(request, obj, form, change)
+
+
 
 
 admin.site.register(RepeatedGroup, RepeatGroupAdmin)

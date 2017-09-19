@@ -19,6 +19,14 @@
     </li>
     {% if original.runner %}
         <li>
+            <a type="button" href="{% url 'admin:wcore_runner_change' original.runner.pk %}"
+               title="View online"
+               class="btn btn-high btn-info"
+               id="view runner">
+                Execution
+            </a>
+        </li>
+        <li>
             <a type="button" href="{% url 'wcore:service_preview' original.pk %}"
                class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
                 Preview

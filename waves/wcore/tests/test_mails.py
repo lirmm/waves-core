@@ -2,22 +2,19 @@ from __future__ import unicode_literals
 
 import logging
 
-import swapper
 from django.conf import settings
 from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
 
 import waves.wcore.adaptors.const
-from waves.wcore.models import Job, JobInput, JobOutput
-from waves.wcore.models.services import Submission
+from waves.wcore.models import Job, JobInput, JobOutput, get_service_model, get_submission_model
 from waves.wcore.settings import waves_settings as config
 from waves.wcore.tests.base import WavesBaseTestCase
 
-Service = swapper.load_model("wcore", "Service")
-
-
 logger = logging.getLogger(__name__)
+Service = get_service_model()
+Submission = get_submission_model()
 
 
 @override_settings(

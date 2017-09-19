@@ -1,11 +1,8 @@
 from __future__ import unicode_literals
 
-import swapper
 from django.contrib.staticfiles.storage import staticfiles_storage
 
 from waves.wcore.views.services import SubmissionFormView
-
-Service = swapper.load_model("wcore", "Service")
 
 
 class JobSubmissionView(SubmissionFormView):

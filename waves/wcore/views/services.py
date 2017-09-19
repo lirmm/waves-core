@@ -2,19 +2,18 @@ from __future__ import unicode_literals
 
 from uuid import UUID
 
-import swapper
 from django.contrib import messages
+from django.db import transaction
 from django.urls import reverse
 from django.views import generic
-from django.db import models, transaction
 
 from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.forms.services import ServiceSubmissionForm
-from waves.wcore.models.jobs import Job
-from waves.wcore.models.services import Submission
+from waves.wcore.models import Job, get_submission_model, get_service_model
 from waves.wcore.settings import waves_settings
 
-Service = swapper.load_model("wcore", "Service")
+Submission = get_submission_model()
+Service = get_service_model()
 
 
 class SubmissionFormView(generic.FormView, generic.DetailView):

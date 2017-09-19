@@ -1,14 +1,12 @@
 """ Job Runners related models """
 from __future__ import unicode_literals
 
-import swapper
 from itertools import chain
 
 from django.db import models
 
 from waves.wcore.models.adaptors import HasAdaptorClazzMixin
 from waves.wcore.models.base import Described, ExportAbleMixin
-
 
 __all__ = ['Runner']
 
@@ -65,10 +63,12 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
     @property
     def running_services(self):
-        Service = swapper.load_model("wcore", "Service")
+        from waves.wcore.models import get_service_model
+        Service = get_service_model()
         return Service.objects.filter(runner=self)
 
     @property
     def running_submissions(self):
-        from waves.wcore.models.services import Submission
+        from waves.wcore.models import get_submission_model
+        Submission = get_submission_model()
         return Submission.objects.filter(runner=self)

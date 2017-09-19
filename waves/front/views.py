@@ -2,15 +2,15 @@ from __future__ import unicode_literals
 
 from uuid import UUID
 
-import swapper
 from django.urls import reverse
 from django.views import generic
 
 from waves.wcore.forms.services import ServiceSubmissionForm
 from waves.wcore.views.services import SubmissionFormView
-from waves.wcore.models import Submission, Job
+from waves.wcore.models import get_service_model, Job, get_submission_model
 
-Service = swapper.load_model("wcore", "Service")
+Service = get_service_model()
+Submission = get_submission_model()
 
 
 class ServiceListView(generic.ListView):
@@ -72,7 +72,6 @@ class JobSubmissionView(ServiceDetailView, SubmissionFormView):
         if slug is None:
             return self.get_object().default_submission  # Submission.objects.get(default=True, service=)
         else:
-            submission = Submission.objects.get(slug=UUID(slug))
             return Submission.objects.get(slug=UUID(slug))
 
 
