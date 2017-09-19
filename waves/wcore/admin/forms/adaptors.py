@@ -53,7 +53,9 @@ class AdaptorInitParamForm(ModelForm):
                 raise ValidationError({'value': 'Value is mandatory'})
             elif self.cleaned_data['prevent_override'] is True:
                 raise ValidationError({'value': 'Value is mandatory when override is prevented'})
-            elif Submission.objects.filter(runner__isnull=True, service=self.instance.content_object).count() > 0:
+            elif isinstance(self.instance.content_object, Service) \
+                    and Submission.objects.filter(runner__isnull=True,
+                                                  service=self.instance.content_object).count() > 0:
                 raise ValidationError({'value': 'Value is mandatory for forms with no overrides'})
 
         return super(AdaptorInitParamForm, self).clean()

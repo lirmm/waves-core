@@ -21,10 +21,10 @@
                     // for Django jet widget, reset text label
                     $('#select2-id_runner-container').text($("#id_runner option:selected").text());
                 }
-            } else {
+            }/* else {
                 console.log('changed ?');
                 $("input[type='submit'][name='_continue']").trigger('click');
-            }
+            }*/
         });
 
         $('#open_import_form').click(function (e) {

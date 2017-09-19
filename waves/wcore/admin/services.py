@@ -74,15 +74,15 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         }),
     ]
 
-    inlines = (ServiceRunnerParamInLine,
-               ServiceSubmissionInline)
-
-    def get_inline_instances(self, request, obj=None):
-        inline_instances = []
-        if obj and obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
-            inline_instances.append(ServiceRunnerParamInLine(self.model, self.admin_site))
-        inline_instances.append(ServiceSubmissionInline(self.model, self.admin_site))
-        return inline_instances
+    def get_inlines(self, request, obj=None):
+        _inlines = [
+            ServiceSubmissionInline,
+        ]
+        self.inlines = _inlines
+        if obj.runner is not None \
+                and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
+            self.inlines.insert(0, ServiceRunnerParamInLine)
+        return self.inlines
 
     # Override admin class and set this list to add your inlines to service admin
     def display_run_params(self, obj):

@@ -20,7 +20,7 @@
                 if ($("#id_name").val() == "") {
                     $("#id_name").val($(this).val().substring($(this).val().lastIndexOf('.') + 1));
                 }
-                $("input[type='submit'][name='_continue']").trigger('click');
+                //$("input[type='submit'][name='_continue']").trigger('click');
             }
         });
         $('#open_import_form').click(function (e) {

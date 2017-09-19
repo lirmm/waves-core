@@ -98,7 +98,7 @@ class JobOutputRawView(SingleObjectMixin, View):
         try:
             with open(instance.file_path) as fp:
                 file_content = fp.read()
-                o_content = file_content.decode()
+                o_content = file_content.decode('utf-8')
         except IOError as e:
             return HttpResponseNotFound('Content not available')
         return HttpResponse(content=o_content, content_type="text/plain; charset=utf8")
