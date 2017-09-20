@@ -16,7 +16,7 @@ from django.db.models import Q
 
 import waves.wcore.adaptors.const
 from waves.wcore.models.adaptors import *
-from waves.wcore.models.adaptors import HasRunnerParamsMixin
+from waves.wcore.models.runners import HasRunnerParamsMixin
 from waves.wcore.models.base import *
 from waves.wcore.settings import waves_settings
 

@@ -31,6 +31,10 @@ class ServiceSubmissionInline(SortableInlineAdminMixin, admin.TabularInline):
     fields = ['name', 'availability', 'api_name', 'runner']
     show_change_link = True
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        print "db_field ", db_field.name
+        return super(ServiceSubmissionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class ServiceBinaryInline(admin.TabularInline):
     model = ServiceBinaryFile

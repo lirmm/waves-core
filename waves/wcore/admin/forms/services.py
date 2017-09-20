@@ -13,8 +13,8 @@ from waves.wcore.models.inputs import *
 from waves.wcore.models.runners import Runner
 from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode
 from waves.wcore.settings import waves_settings as config
-Submission = get_submission_model()
 
+Submission = get_submission_model()
 
 Service = get_service_model()
 
@@ -31,10 +31,9 @@ class SubmissionInlineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SubmissionInlineForm, self).__init__(*args, **kwargs)
 
-    runner = forms.ModelChoiceField(queryset=Runner.objects.all(), label="Execution environment",
+    runner = forms.ModelChoiceField(queryset=Runner.objects.all(),
                                     empty_label="----- use service configuration -----",
-                                    required=False,
-                                    help_text="Changing value need form configuration")
+                                    help_text="Changing value need more configuration")
 
 
 class ImportForm(forms.Form):

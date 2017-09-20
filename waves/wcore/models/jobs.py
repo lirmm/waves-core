@@ -423,7 +423,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: unicode
         """
         if self._command_line is None:
-            self.command_line = "%s" % self.command.create_command_line(job_inputs=self.job_inputs.all())
+            self.command_line = "%s" % self.command.create_command_line(job_inputs=self.job_inputs.all().order_by('order'))
         return self._command_line
 
     @command_line.setter
@@ -720,6 +720,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
         self.job_history.all().update(is_admin=True)
         self.job_history.create(message='Marked for re-run', status=self.status)
         self.status = waves.wcore.adaptors.const.JOB_CREATED
+        self._command_line = None
+
         for job_out in self.outputs.all():
             open(job_out.file_path, 'w').close()
         self.save()
