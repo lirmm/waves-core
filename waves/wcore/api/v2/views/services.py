@@ -155,14 +155,15 @@ class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIVie
 class ServiceSubmissionViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSubmissionSerializer
     lookup_field = 'api_name'
-    # http_method_names = ['get', 'post', 'options']
+    http_method_names = ['get', 'post', 'options']
 
     def get_queryset(self):
         """ Retrieve for service, current submissions available for API """
         return Submission.objects.filter(service__api_name=self.kwargs.get('service'),
-                                         availability__gt=2)
+                                         api_name=self.kwargs.get('api_name'),
+                                         availability__gte=2)
 
-    @detail_route(methods=['get'], url_path="form")
+    @detail_route(methods=['get'])
     def submission_form(self, request, service=None, api_name=None, **kwargs):
         """ Retrieve service form """
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
@@ -187,20 +188,21 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
                 logger.debug(request.data[param])
             logger.debug('Request Data %s', request.data)
         service_submission = self.get_object()
-        ass_email = request.data.pop('email', None)
+        passed_data = request.data.copy()
+        ass_email = passed_data.pop('email', None)
         try:
-            request.data.pop('api_key', None)
+            passed_data.pop('api_key', None)
             from waves.wcore.api.v2.serializers.jobs import JobCreateSerializer
             from django.db.models import Q
             job = Job.objects.create_from_submission(submission=service_submission, email_to=ass_email,
-                                                     submitted_inputs=request.data, user=request.user)
+                                                     submitted_inputs=passed_data, user=request.user)
             # Now job is created (or raise an exception),
             serializer = JobSerializer(job, many=False, context={'request': request},
                                        fields=('slug', 'url', 'created', 'status',))
             logger.debug('Job created %s ' % job.slug)
             return Response(serializer.data, status=201)
         except ValidationError as e:
-            logger.warning("Validation error " + e)
+            logger.warning("Validation error %s", e)
             raise DRFValidationError(e.message_dict)
         except JobException as e:
             logger.fatal("Create Error %s", e.message)

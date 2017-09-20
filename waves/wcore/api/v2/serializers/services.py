@@ -28,16 +28,17 @@ class OutputSerializer(DynamicFieldsModelSerializer):
         """ Representation for a output """
         to_repr = {}
         for output in instance.all():
-            to_repr[output.api_name] = collections.OrderedDict([
+            tmp_repr = [
                 ('label', output.label),
                 ('name', output.name),
                 ('file_name', output.file_pattern),
                 ('help_text', output.help_text),
                 ('edam_format', output.edam_format),
                 ('edam_data', output.edam_data)
-            ])
+            ]
             if hasattr(output, 'from_input') and output.from_input is not None:
-                to_repr.update(('issued_from', output.from_input.api_name))
+                tmp_repr.append(('issued_from', output.from_input.api_name))
+        to_repr[output.api_name] = collections.OrderedDict(tmp_repr)
         return to_repr
 
 
@@ -56,13 +57,14 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
 
     class Meta:
         model = Submission
-        fields = ('service', 'name', 'api_name', 'form', 'inputs', 'outputs')
+        fields = ('service', 'name', 'api_name', 'form', 'inputs', 'outputs', 'title')
 
     view_name = 'wapi:api_v2:waves-submission-detail'
     inputs = InputSerializer(many=False, source="expected_inputs")
     form = serializers.SerializerMethodField()
     service = serializers.SerializerMethodField()
     outputs = OutputSerializer(read_only=True, many=False)
+    title = serializers.CharField(write_only=True)
 
     def get_form(self, obj):
         """ Return Service form endpoint uri"""
@@ -105,7 +107,7 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
 
     def get_submissions(self, obj):
         return [reverse(viewname='wapi:api_v2:waves-submission-detail', request=self.context['request'],
-                        kwargs={'service': obj.api_name, 'api_name': sub.api_name}) for sub in obj.submissions.all()]
+                        kwargs={'service': obj.api_name, 'api_name': sub.api_name}) for sub in obj.submissions_api.all()]
 
     def get_form(self, obj):
         return reverse(viewname='wapi:api_v2:waves-services-detail', request=self.context['request'],

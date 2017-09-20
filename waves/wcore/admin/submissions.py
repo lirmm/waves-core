@@ -118,7 +118,7 @@ class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
     model = AParam
     form = InputInlineForm
     classes = ["collapse", ]
-    fields = ['class_label', 'label', 'name', 'multiple', 'required', 'default']
+    fields = ['class_label', 'label', 'name', 'api_name', 'multiple', 'required', 'default']
     readonly_fields = ['class_label']
     ordering = ('order', '-required')
     extra = 0

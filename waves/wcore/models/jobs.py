@@ -26,7 +26,7 @@ from waves.wcore.mails import JobMailer
 from waves.wcore.models import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel, AParam, FileInputSample, \
     SubmissionOutput
 from waves.wcore.settings import waves_settings
-from waves.wcore.utils import normalize_value
+from waves.wcore.utils import normalize_value, random_analysis_name
 from waves.wcore.utils.storage import allow_display_online
 
 logger = logging.getLogger(__name__)
@@ -136,17 +136,15 @@ class JobManager(models.Manager):
         :return: a newly create Job instance
         :rtype: :class:`waves.wcore.models.jobs.Job`
         """
-        try:
-            job_title = submitted_inputs.pop('title', 'New Job')
-        except KeyError:
-            job_title = ""
+        if 'title' not in submitted_inputs:
+            submitted_inputs['title'] = random_analysis_name()
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug('Received data :')
             for key in submitted_inputs:
                 logger.debug('Param %s: %s', key, submitted_inputs[key])
         client = user if user is not None and not user.is_anonymous() else None
         if update is None:
-            job = self.create(email_to=email_to, client=client, title=job_title,
+            job = self.create(email_to=email_to, client=client, title=submitted_inputs['title'],
                               submission=submission, service=submission.service.name,
                               _adaptor=submission.adaptor.serialize(),
                               notify=submission.service.email_on)
@@ -158,15 +156,17 @@ class JobManager(models.Manager):
             job.service = submission.service.name
         job.create_non_editable_inputs(submission)
         mandatory_params = submission.expected_inputs.filter(required=True)
-        missing = {m.name: '%s (:%s:) is required field' % (m.label, m.name) for m in mandatory_params if
-                   m.name not in submitted_inputs.keys()}
+        missing = {m.name: '%s (:%s:) is required field' % (m.label, m.api_name) for m in mandatory_params if
+                   m.api_name not in submitted_inputs.keys()}
         if len(missing) > 0:
+            logger.warning("received keys %s", submitted_inputs.keys())
+            logger.warning("Expected mandatory %s", [(m.label, m.api_name) for m in mandatory_params])
             raise ValidationError(missing)
         # First create inputs
-        submission_inputs = submission.inputs.filter(name__in=submitted_inputs.keys()).exclude(required=None)
+        submission_inputs = submission.inputs.filter(api_name__in=submitted_inputs.keys()).exclude(required=None)
         for service_input in submission_inputs:
             # Treat only non dependent inputs first
-            incoming_input = submitted_inputs.get(service_input.name, None)
+            incoming_input = submitted_inputs.get(service_input.api_name, None)
             logger.debug("current Service Input: %s, %s, %s", service_input, service_input.required, incoming_input)
             # test service input mandatory, without default and no value
             if service_input.required and not service_input.default and incoming_input is None:
@@ -190,7 +190,7 @@ class JobManager(models.Manager):
         if logger.isEnabledFor(logging.DEBUG):
             # LOG full command line
             logger.debug('Job %s command will be :', job.title)
-            logger.debug('%s', job.command_line)
+            logger.debug('%s %s', job.adaptor.command,  job.command_line)
             logger.debug('Expected outputs will be:')
             for j_output in job.outputs.all():
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
@@ -973,15 +973,20 @@ class JobOutputManager(models.Manager):
                            api_name=submission_output.api_name)
         if hasattr(submission_output, 'from_input') and submission_output.from_input:
             # issued from a input value
-            srv_submission_output = submission_output.from_input
-            value_to_normalize = submitted_inputs.get(srv_submission_output.name,
-                                                      srv_submission_output.default)
-            if srv_submission_output.param_type == AParam.TYPE_FILE:
+            from_input = submission_output.from_input
+            logger.debug("Output issued from input %s[%s]", from_input.name, from_input.api_name)
+            value_to_normalize = submitted_inputs.get(from_input.api_name,
+                                                      from_input.default)
+            logger.debug('Value to normalize init 1 %s', value_to_normalize)
+            if from_input.param_type == AParam.TYPE_FILE:
+                logger.debug('From input is defined as a file')
                 if type(value_to_normalize) is file or isinstance(value_to_normalize, File):
+                    logger.debug('Value to normalize is a real file %s', value_to_normalize.name)
                     value_to_normalize = value_to_normalize.name
                 elif isinstance(value_to_normalize, (str, unicode)):
-                    value_to_normalize = srv_submission_output.default
-
+                    logger.debug('Value to normalize is str %s', from_input.default)
+                    value_to_normalize = from_input.default
+            logger.debug("value to normalize %s", value_to_normalize)
             input_value = normalize_value(value_to_normalize)
             formatted_value = submission_output.file_pattern % input_value
             output_dict.update(dict(value=formatted_value))

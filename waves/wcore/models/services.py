@@ -222,7 +222,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     @property
     def submissions_api(self):
         """ Returned submissions available on API """
-        return self.submissions.filter(availability__gt=2)
+        return self.submissions.filter(availability__gte=2)
 
     def available_for_user(self, user):
         """ Access rules for submission form according to user
@@ -334,7 +334,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     @property
     def expected_inputs(self):
         """ Retrieve only expected inputs to submit a job """
-        return self.inputs.filter(parent__isnull=True, required__isnull=False)
+        return self.inputs.filter(parent__isnull=True, required__isnull=False).order_by('order', '-required')
 
     def duplicate(self, service):
         """ Duplicate a submission with all its inputs """
