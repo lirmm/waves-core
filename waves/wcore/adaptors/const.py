@@ -14,6 +14,7 @@ __all__ = [
     'JOB_COMPLETED',
     'JOB_TERMINATED',
     'JOB_CANCELLED',
+    'JOB_WARNING',
     'JOB_ERROR',
 
     'STR_JOB_UNDEFINED',
@@ -25,6 +26,7 @@ __all__ = [
     'STR_JOB_TERMINATED',
     'STR_JOB_CANCELLED',
     'STR_JOB_SUSPENDED',
+    'STR_JOB_WARNING',
     'STR_JOB_ERROR',
     'STATUS_LIST',
     'NEXT_STATUS',
@@ -50,6 +52,8 @@ JOB_COMPLETED = 5
 JOB_TERMINATED = 6
 #: Job has been cancelled
 JOB_CANCELLED = 7
+#: Job is completed (exit_code is 0), but there is stderr
+JOB_WARNING = 8
 #: Job is in error
 JOB_ERROR = 9
 
@@ -58,10 +62,11 @@ STR_JOB_CREATED = _('Created')
 STR_JOB_PREPARED = _('Prepared')
 STR_JOB_QUEUED = _('Queued')
 STR_JOB_RUNNING = _('Running')
-STR_JOB_COMPLETED = _('Run completed')
-STR_JOB_TERMINATED = _('Completed')
+STR_JOB_COMPLETED = _('Run completed, pending data retrieval')
+STR_JOB_TERMINATED = _('Results data retrieved')
 STR_JOB_CANCELLED = _('Cancelled')
 STR_JOB_SUSPENDED = _('Suspended')
+STR_JOB_WARNING = _('Warnings')
 STR_JOB_ERROR = _('Error')
 
 STATUS_LIST = [
@@ -74,6 +79,7 @@ STATUS_LIST = [
     (JOB_COMPLETED, STR_JOB_COMPLETED),
     (JOB_TERMINATED, STR_JOB_TERMINATED),
     (JOB_CANCELLED, STR_JOB_CANCELLED),
+    (JOB_WARNING, STR_JOB_WARNING),
     (JOB_ERROR, STR_JOB_ERROR),
 ]
 NEXT_STATUS = {

@@ -2,6 +2,7 @@
 """ Jobs API serializers """
 from __future__ import unicode_literals
 
+import codecs
 from os import stat
 from os.path import getsize, isfile
 
@@ -124,9 +125,9 @@ class JobOutputSerializer(serializers.ModelSerializer):
         if not isfile(file_path) or stat(file_path).st_size == 0:
             return None
         if getsize(file_path) < 500:
-            with open(file_path) as fp:
+            with codecs.open(file_path, 'r') as fp:
                 file_content = fp.read()
-            return file_content.decode()
+            return file_content.decode('ascii', 'ignore')
         return ""
 
     def to_representation(self, instance):
