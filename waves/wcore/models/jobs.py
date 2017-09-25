@@ -672,8 +672,12 @@ class Job(TimeStamped, Slugged, UrlMixin):
             self.message = "Error detected in job.stderr"
             self.status = waves.wcore.adaptors.const.JOB_ERROR
         else:
-            self.message = "Data retrieved"
-            self.status = waves.wcore.adaptors.const.JOB_TERMINATED
+            if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
+                self.status = waves.wcore.adaptors.const.JOB_WARNING
+                logger.warning('Exit Code %s but found stderr %s ', self.exit_code, self.stderr_txt.decode('ascii', errors="replace"))
+            else:
+                self.message = "Data retrieved"
+                self.status = waves.wcore.adaptors.const.JOB_TERMINATED
 
     def run_details(self):
         """ Ask job adaptor to get JobRunDetails information (started, finished, exit_code ...)"""
@@ -989,7 +993,8 @@ class JobOutputManager(models.Manager):
                     logger.debug('Value to normalize is str %s', from_input.default)
                     value_to_normalize = from_input.default
             logger.debug("value to normalize %s", value_to_normalize)
-            input_value = normalize_value(value_to_normalize)
+            # input_value = normalize_value(value_to_normalize)
+            input_value = value_to_normalize
             formatted_value = submission_output.file_pattern % input_value
             output_dict.update(dict(value=formatted_value))
         else:

@@ -4,7 +4,6 @@ from django.conf.urls import url
 from django.contrib.admin.views.decorators import staff_member_required
 
 from waves.wcore.admin.views import *
-from waves.wcore.admin.views.service_tool import ServiceModalPreview
 
 # TODO change auth decorators to specific WAVES ones
 urlpatterns = [
