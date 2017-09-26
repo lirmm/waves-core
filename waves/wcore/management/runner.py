@@ -134,3 +134,4 @@ class PurgeDaemon(BaseRunDaemon):
             logger.info('Deleting job %s created on %s', job.slug, job.created)
             job.delete()
         logger.info("Purge job terminated at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
+        time.sleep(self.SLEEP_TIME)

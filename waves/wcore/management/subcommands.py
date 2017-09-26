@@ -9,22 +9,19 @@ import sys
 import uuid
 from shutil import rmtree
 
-from django.conf import settings
 from django.conf.urls import RegexURLPattern, RegexURLResolver
 from django.core import urlresolvers
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import BaseCommand
 from django.core.management import CommandError
-from django.core.urlresolvers import reverse
 from django.db import (
     DEFAULT_DB_ALIAS, transaction,
 )
 from rest_framework.exceptions import ValidationError
 
-from waves.wcore.settings import waves_settings as config
 from waves.wcore.models import Job
 from waves.wcore.models.serializers.services import ServiceSerializer
-from waves.wcore.settings import waves_settings
+from waves.wcore.settings import waves_settings as config
 
 __all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand', 'ShowUrlsCommand']
 
@@ -100,7 +97,7 @@ class CleanUpCommand(BaseCommand):
 
     def handle(self, *args, **options):
         removed = []
-        for dir_name in os.listdir(settings.JOB_BASE_DIR):
+        for dir_name in os.listdir(config.JOB_BASE_DIR):
             try:
                 # DO nothing, job exists in DB
                 Job.objects.get(slug=uuid.UUID('{%s}' % dir_name))
@@ -119,12 +116,12 @@ class CleanUpCommand(BaseCommand):
                 if choice == 1:
                     self.stdout.write("Directories to delete: ")
                     for dir_name in removed:
-                        self.stdout.write(os.path.join(waves_settings.JOB_BASE_DIR, dir_name))
+                        self.stdout.write(os.path.join(config.JOB_BASE_DIR, dir_name))
                 elif choice == 2:
                     for dir_name in removed:
                         self.stdout.write('Removed directory: %s' % dir_name)
                         # onerror(os.path.islink, path, sys.exc_info())
-                        rmtree(os.path.join(waves_settings.JOB_BASE_DIR, dir_name),
+                        rmtree(os.path.join(config.JOB_BASE_DIR, dir_name),
                                onerror=self.print_file_error)
                     removed = []
                 else:
@@ -169,7 +166,7 @@ class ImportCommand(BaseCommand):
                     raise NotImplementedError('Currently only services can be imported')
                 try:
                     db_version = json_srv.pop('db_version', None)
-                    if db_version != waves_settings.DB_VERSION:
+                    if db_version != config.DB_VERSION:
                         raise ValidationError('Uncompatible db versions')
                     if serializer.is_valid(raise_exception=True):
                         self.stdout.write("Service import from file %s ...." % exported_file)
