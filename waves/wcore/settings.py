@@ -4,6 +4,7 @@ These settings may be overridden in your Django main configuration file
 """
 from __future__ import unicode_literals
 
+import logging
 import socket
 from importlib import import_module
 from os.path import join
@@ -62,6 +63,7 @@ DEFAULTS = {
     'ALLOW_JOB_SUBMISSION': True,
     'APP_NAME': 'WAVES',
     'JOBS_MAX_RETRY': 5,
+    'JOB_LOG_LEVEL': logging.WARNING,
     'KEEP_ANONYMOUS_JOBS': 30,
     'KEEP_REGISTERED_JOBS': 120,
     'NOTIFY_RESULTS': True,

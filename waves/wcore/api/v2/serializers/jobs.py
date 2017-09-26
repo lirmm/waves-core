@@ -12,6 +12,7 @@ from rest_framework.reverse import reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
 from waves.wcore.models import JobInput, Job, JobOutput, AParam, JobHistory, get_service_model
+from waves.wcore.models.const import *
 
 Service = get_service_model()
 User = get_user_model()
@@ -82,7 +83,7 @@ class JobInputSerializer(DynamicFieldsModelSerializer):
                 'param_type': j_input.type,
                 "value": j_input.value,
             }
-            if j_input.type == AParam.TYPE_FILE:
+            if j_input.type == TYPE_FILE:
                 repres["download_uri"] = self.get_download_url(j_input.slug)
             to_repr.append(repres)
         return to_repr

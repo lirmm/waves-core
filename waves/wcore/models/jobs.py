@@ -251,6 +251,19 @@ class Job(TimeStamped, Slugged, UrlMixin):
     _adaptor = models.TextField('Adaptor classed used for this Job', editable=False, null=True)
     service = models.CharField('Issued from service', max_length=255, editable=False, null=True, default="")
     notify = models.BooleanField("Notify this result", default=False, editable=False)
+    _logger = None
+
+    @property
+    def logger(self):
+        if self._logger is None:
+            print "in init logger"
+            hdlr = logging.FileHandler(os.path.join(self.working_dir, 'job.log'))
+            formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+            hdlr.setFormatter(formatter)
+            self._logger = logging.getLogger()
+            self._logger.addHandler(hdlr)
+            self._logger.setLevel(waves_settings.JOB_LOG_LEVEL)
+        return self._logger
 
     @property
     def status(self):
@@ -394,7 +407,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
                 return adaptor
             except Exception as e:
-                logger.exception("Unable to load %s adaptor %s", self._adaptor, e.message)
+                self.logger.exception("Unable to load %s adaptor %s", self._adaptor, e.message)
         elif self.submission:
             return self.submission.adaptor
         else:
@@ -613,10 +626,10 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 self.nb_retry = 0
                 return returned
         except waves.wcore.adaptors.exceptions.AdaptorException as exc:
-            logger.debug('Retry execution - non fatal error')
+            self.logger.debug('Retry execution - non fatal error')
             self.retry(exc.message)
         except WavesException as exc:
-            logger.debug("Abort execution - Waves Exception")
+            self.logger.debug("Abort execution - Waves Exception")
             self.error(exc.message)
             raise exc
         except BaseException as exc:
@@ -624,7 +637,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
             self.fatal_error(exc)
             raise exc
         finally:
-            logger.debug("Always save job in DB")
+            self.logger.debug("Always save job in DB")
             self.save()
 
     @property

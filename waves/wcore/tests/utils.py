@@ -9,9 +9,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import localtime
 
 import waves.wcore.adaptors.const
+from waves.wcore.models.const import *
 from waves.wcore.adaptors.loader import AdaptorLoader
 from waves.wcore.models import *
 from waves.wcore.settings import waves_settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -42,9 +44,9 @@ def create_cp_job(source_file):
     job = create_base_job('Sample CP job')
     shutil.copy(source_file, job.working_dir)
     job.inputs = [JobInput.objects.create(label="File To copy", name='source',
-                                          value=basename(source_file), param_type=AParam.TYPE_FILE, job=job),
+                                          value=basename(source_file), param_type=TYPE_FILE, job=job),
                   JobInput.objects.create(label="Destination Dir", name="dest",
-                                          value='dest_copy.txt', param_type=AParam.TYPE_TEXT, job=job)]
+                                          value='dest_copy.txt', param_type=TYPE_TEXT, job=job)]
     job.outputs = [JobOutput.objects.create(_name='Copied File', name='dest', value=job.inputs[1].value, job=job)]
     return job
 

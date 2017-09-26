@@ -210,4 +210,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'error'
 }
 
+WAVES_CORE = {
+    'JOB_LOG_LEVEL': logging.DEBUG,
+}
 INTERNAL_IPS = ("127.0.0.1",)

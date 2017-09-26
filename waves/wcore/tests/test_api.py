@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 import waves.wcore.adaptors.const
+from waves.wcore.models.const import *
 from waves.wcore.models import Job, get_service_model
 from waves.wcore.models.inputs import AParam
 from waves.wcore.tests.base import WavesBaseTestCase
@@ -91,22 +92,22 @@ class WavesAPITestCase(APITestCase, WavesBaseTestCase):
                 logger.debug(submissions)
                 for submission in submissions:
                     for job_input in submission['inputs']:
-                        if job_input['type'] == AParam.TYPE_FILE:
+                        if job_input['type'] == TYPE_FILE:
                             i += 1
                             input_data = create_test_file(job_input['name'], i)
                             logger.debug('file input %s', input_data)
-                        elif job_input['type'] == AParam.TYPE_INT:
+                        elif job_input['type'] == TYPE_INT:
                             input_data = int(random.randint(0, 199))
                             logger.debug('number input%s', input_data)
-                        elif job_input['type'] == AParam.TYPE_DECIMAL:
+                        elif job_input['type'] == TYPE_DECIMAL:
                             input_data = int(random.randint(0, 199))
                             logger.debug('number input%s', input_data)
-                        elif job_input['type'] == AParam.TYPE_BOOLEAN:
+                        elif job_input['type'] == TYPE_BOOLEAN:
                             input_data = random.randrange(100) < 50
-                        elif job_input['type'] == AParam.TYPE_TEXT:
+                        elif job_input['type'] == TYPE_TEXT:
                             input_data = ''.join(random.sample(string.letters, 15))
                             logger.debug('text input %s', input_data)
-                        elif job_input['type'] == AParam.TYPE_LIST:
+                        elif job_input['type'] == TYPE_LIST:
                             input_data = ''.join(random.sample(string.letters, 15))
                         else:
                             input_data = ''.join(random.sample(string.letters, 15))
