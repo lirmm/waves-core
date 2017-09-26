@@ -23,7 +23,7 @@ class ServiceInputSerializer(DynamicFieldsModelSerializer, RelatedSerializerMixi
 
     class Meta:
         model = AParam
-        fields = ('order', 'label', 'name', 'default', 'type', 'command_type', 'format',
+        fields = ('order', 'label', 'name', 'default', 'type', 'cmd_format', 'format',
                   'mandatory', 'multiple', 'display', 'description', 'short_description')
         # 'dependents_inputs')
 

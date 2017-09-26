@@ -32,7 +32,6 @@ class ServiceSubmissionInline(SortableInlineAdminMixin, admin.TabularInline):
     show_change_link = True
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        print "db_field ", db_field.name
         return super(ServiceSubmissionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -83,7 +82,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
             ServiceSubmissionInline,
         ]
         self.inlines = _inlines
-        if obj.runner is not None \
+        if obj and obj.runner is not None \
                 and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
             self.inlines.insert(0, ServiceRunnerParamInLine)
         return self.inlines

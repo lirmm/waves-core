@@ -118,9 +118,9 @@ class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
     model = AParam
     form = InputInlineForm
     classes = ["collapse", ]
-    fields = ['class_label', 'label', 'name', 'api_name', 'multiple', 'required', 'default']
+    fields = ['class_label', 'label', 'name', 'api_name', 'multiple', 'required', 'cmd_format', 'default']
     readonly_fields = ['class_label']
-    ordering = ('order', '-required')
+    ordering = ('order', )
     extra = 0
     show_change_link = True
 
@@ -212,7 +212,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     def get_command_line_pattern(self, obj):
         if not obj.adaptor:
             return "N/A"
-        return "%s %s" % (obj.adaptor.command, obj.service.command.create_command_line(job_inputs=obj.inputs.all()))
+        return "%s %s" % (obj.adaptor.command, obj.service.command.create_command_line(inputs=obj.inputs.all()))
 
     get_command_line_pattern.short_description = "Command line pattern"
 

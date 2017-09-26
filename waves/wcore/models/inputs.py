@@ -10,11 +10,11 @@ from django.db import models
 from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel, PolymorphicManager
 
-from waves.wcore.models import WavesBaseModel
-from waves.wcore.models.base import Ordered, ApiModel
+from waves.wcore.models.base import WavesBaseModel, Ordered, ApiModel
 from waves.wcore.settings import waves_settings
 from waves.wcore.utils.storage import file_sample_directory, waves_storage
 from waves.wcore.utils.validators import validate_list_comma, validate_list_param
+from waves.wcore.models.const import *
 
 __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam', 'NumberParam',
            'ListParam', 'IntegerParam', 'TextParam', 'FileInputSample', 'SampleDepParam']
@@ -43,35 +43,6 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
         base_manager_name = 'base_objects'
         ordering = ('order',)
 
-    OPT_TYPE_NONE = 0
-    OPT_TYPE_VALUATED = 1
-    OPT_TYPE_SIMPLE = 2
-    OPT_TYPE_OPTION = 3
-    OPT_TYPE_POSIX = 4
-    OPT_TYPE_NAMED_OPTION = 5
-    OPT_TYPE = [
-        (OPT_TYPE_NONE, "Not used in command"),
-        (OPT_TYPE_SIMPLE, '-[name] value'),
-        (OPT_TYPE_VALUATED, '--[name]=value'),
-        (OPT_TYPE_OPTION, '-[name]'),
-        (OPT_TYPE_NAMED_OPTION, '--[name]'),
-        (OPT_TYPE_POSIX, 'Posix')
-    ]
-    TYPE_BOOLEAN = 'boolean'
-    TYPE_FILE = 'file'
-    TYPE_LIST = 'list'
-    TYPE_DECIMAL = 'decimal'
-    TYPE_TEXT = 'text'
-    TYPE_INT = 'int'
-    IN_TYPE = [
-        (TYPE_FILE, 'Input file'),
-        (TYPE_LIST, 'List of values'),
-        (TYPE_BOOLEAN, 'Boolean'),
-        (TYPE_DECIMAL, 'Decimal'),
-        (TYPE_INT, 'Integer'),
-        (TYPE_TEXT, 'Text')
-    ]
-
     objects = PolymorphicManager()
     # order = models.PositiveIntegerField('Ordering in forms', default=0)
     #: Input Label
@@ -81,9 +52,10 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
                             help_text='Input runner\'s job param command line name')
     multiple = models.BooleanField('Multiple', default=False, help_text="Can hold multiple values")
     help_text = models.TextField('Help Text', null=True, blank=True)
-    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), on_delete=models.CASCADE, null=False, related_name='inputs')
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), on_delete=models.CASCADE, null=False,
+                                   related_name='inputs')
     required = models.NullBooleanField('Required', choices={(False, "Optional"), (True, "Required"),
-                                                            (None, "Not submitted")},
+                                                            (None, "Not submitted by user")},
                                        default=True, help_text="Submitted and/or Required")
     default = models.CharField('Default value', max_length=50, null=True, blank=True)
     cmd_format = models.IntegerField('Command line format', choices=OPT_TYPE,
@@ -129,10 +101,11 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
 
     @property
     def param_type(self):
-        return AParam.TYPE_TEXT
+        return TYPE_TEXT
 
     def clean(self):
-        if self.required is None and not self.default:
+        if self.required is None and not self.default and self.cmd_format not in (
+                OPT_TYPE_NAMED_OPTION, OPT_TYPE_OPTION, OPT_TYPE_NONE):
             # param is mandatory
             raise ValidationError('Not displayed parameters must have a default value %s:%s' % (self.name, self.label))
         if self.parent and not self.when_value:
@@ -155,30 +128,8 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
         return ""
 
     @property
-    def command_line_element(self):
-        """For each job input, according to related SubmissionParam, return command line part for this parameter
-
-        :param forced_value: Any forced value if needed
-        :return: depends on parameter type
-        """
-        cmd_value = "[" + self.name
-        if self.default:
-            cmd_value += "|default:" + self.default
-        cmd_value += "]"
-        if self.cmd_format == AParam.OPT_TYPE_VALUATED:
-            return '--%s=%s' % (self.name, cmd_value)
-        elif self.cmd_format == AParam.OPT_TYPE_SIMPLE:
-            return '-%s %s' % (self.name, cmd_value)
-        elif self.cmd_format == AParam.OPT_TYPE_OPTION:
-            return '-%s' % self.name
-        elif self.cmd_format == AParam.OPT_TYPE_NAMED_OPTION:
-            return '--%s' % self.name
-        elif self.cmd_format == AParam.OPT_TYPE_POSIX:
-            return '%s' % cmd_value
-        elif self.cmd_format == AParam.OPT_TYPE_NONE:
-            return ''
-        # By default it's OPT_TYPE_SIMPLE way
-        return '-%s %s' % (self.name, cmd_value)
+    def value(self):
+        return "%s_value" % self.name
 
 
 class TextParam(AParam):
@@ -190,7 +141,7 @@ class TextParam(AParam):
 
     @property
     def param_type(self):
-        return AParam.TYPE_TEXT
+        return TYPE_TEXT
 
 
 class BooleanParam(AParam):
@@ -206,7 +157,7 @@ class BooleanParam(AParam):
 
     @property
     def param_type(self):
-        return AParam.TYPE_BOOLEAN
+        return TYPE_BOOLEAN
 
     @property
     def choices(self):
@@ -295,14 +246,14 @@ class DecimalParam(NumberParam, AParam):
 
     @property
     def param_type(self):
-        return AParam.TYPE_DECIMAL
+        return TYPE_DECIMAL
 
 
 class IntegerParam(NumberParam, AParam):
     """ Integer param """
 
     class Meta:
-    # TODO add specific validator
+        # TODO add specific validator
         verbose_name = "Integer"
         verbose_name_plural = "Integer"
 
@@ -315,7 +266,7 @@ class IntegerParam(NumberParam, AParam):
 
     @property
     def param_type(self):
-        return AParam.TYPE_INT
+        return TYPE_INT
 
 
 class ListParam(AParam):
@@ -359,14 +310,14 @@ class ListParam(AParam):
     def choices(self):
         choice_init = [(None, '----')] if self.list_mode == ListParam.DISPLAY_SELECT and self.required is False else []
         try:
-            return  choice_init + \
+            return choice_init + \
                    [(line.split('|')[1], line.split('|')[0]) for line in self.list_elements.splitlines()]
         except ValueError:
             raise RuntimeError('Wrong list element format')
 
     @property
     def param_type(self):
-        return AParam.TYPE_LIST
+        return TYPE_LIST
 
     @property
     def labels(self):
@@ -387,8 +338,8 @@ class FileInput(AParam):
 
     class Meta:
         ordering = ['order', ]
-        verbose_name = "File"
-        verbose_name_plural = "Files input"
+        verbose_name = "File input"
+        verbose_name_plural = "Files inputs"
 
     class_label = "File Input"
 
@@ -401,7 +352,7 @@ class FileInput(AParam):
 
     @property
     def param_type(self):
-        return AParam.TYPE_FILE
+        return TYPE_FILE
 
 
 class FileInputSample(WavesBaseModel):

@@ -25,6 +25,7 @@ from waves.wcore.exceptions.jobs import *
 from waves.wcore.mails import JobMailer
 from waves.wcore.models import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel, AParam, FileInputSample, \
     SubmissionOutput
+from waves.wcore.models.const import *
 from waves.wcore.settings import waves_settings
 from waves.wcore.utils import normalize_value, random_analysis_name
 from waves.wcore.utils.storage import allow_display_online
@@ -190,7 +191,7 @@ class JobManager(models.Manager):
         if logger.isEnabledFor(logging.DEBUG):
             # LOG full command line
             logger.debug('Job %s command will be :', job.title)
-            logger.debug('%s %s', job.adaptor.command,  job.command_line)
+            logger.debug('%s %s', job.adaptor.command, job.command_line)
             logger.debug('Expected outputs will be:')
             for j_output in job.outputs.all():
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
@@ -223,7 +224,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
     #: Job Title, automatic or set by user upon submission
     title = models.CharField('Job title', max_length=255, null=True, blank=True)
     #: Job related Service
-    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), related_name='service_jobs', null=True, on_delete=models.SET_NULL)
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), related_name='service_jobs',
+                                   null=True, on_delete=models.SET_NULL)
     #: Job status issued from last retrieve on DB
     _status = models.IntegerField('Job status', choices=waves.wcore.adaptors.const.STATUS_LIST,
                                   default=waves.wcore.adaptors.const.JOB_CREATED)
@@ -329,7 +331,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: list of JobInput models instance
         :rtype: QuerySet
         """
-        return self.job_inputs.filter(param_type=AParam.TYPE_FILE)
+        return self.job_inputs.filter(param_type=TYPE_FILE)
 
     @property
     def output_files_exists(self):
@@ -369,7 +371,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: list of `JobInput` models instance
         :rtype: [list of JobInput objects]
         """
-        return self.job_inputs.exclude(param_type=AParam.TYPE_FILE)
+        return self.job_inputs.exclude(param_type=TYPE_FILE)
 
     @property
     def working_dir(self):
@@ -423,7 +425,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: unicode
         """
         if self._command_line is None:
-            self.command_line = "%s" % self.command.create_command_line(job_inputs=self.job_inputs.all().order_by('order'))
+            self.command_line = "%s" % self.command.create_command_line(inputs=self.job_inputs.all().order_by('order'))
         return self._command_line
 
     @command_line.setter
@@ -534,7 +536,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
                          service_input.name, service_input.default)
             self.job_inputs.add(JobInput.objects.create(job=self, name=service_input.name,
                                                         param_type=service_input.type,
-                                                        command_type=service_input.cmd_format,
+                                                        cmd_format=service_input.cmd_format,
                                                         label=service_input.label,
                                                         order=service_input.order,
                                                         value=service_input.default))
@@ -674,7 +676,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
         else:
             if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
                 self.status = waves.wcore.adaptors.const.JOB_WARNING
-                logger.warning('Exit Code %s but found stderr %s ', self.exit_code, self.stderr_txt.decode('ascii', errors="replace"))
+                logger.warning('Exit Code %s but found stderr %s ', self.exit_code,
+                               self.stderr_txt.decode('ascii', errors="replace"))
             else:
                 self.message = "Data retrieved"
                 self.status = waves.wcore.adaptors.const.JOB_TERMINATED
@@ -750,7 +753,7 @@ class JobInputManager(models.Manager):
         # Backward compatibility hack
         sin = kwargs.pop('srv_input', None)
         if sin:
-            kwargs.update(dict(name=sin.name, param_type=sin.type, command_type=sin.cmd_line_type, label=sin.label))
+            kwargs.update(dict(name=sin.name, param_type=sin.type, cmd_format=sin.cmd_line_type, label=sin.label))
         return super(JobInputManager, self).create(**kwargs)
 
     @transaction.atomic
@@ -763,24 +766,15 @@ class JobInputManager(models.Manager):
         :return: return the newly created JobInput
         :rtype: :class:`waves.wcore.models.jobs.JobInput`
         """
-        from waves.wcore.models.inputs import AParam
         input_dict = dict(job=job,
                           order=order,
                           name=service_input.name,
                           param_type=service_input.param_type,
                           api_name=service_input.api_name,
-                          command_type=service_input.cmd_format if hasattr(service_input,
-                                                                           'cmd_format') else service_input.param_type,
+                          cmd_format=service_input.cmd_format,
                           label=service_input.label,
                           value=str(submitted_input))
-        """try:
-            if isinstance(service_input, FileInput) and service_input.to_outputs.filter(
-                    submission=service_input.submission).exists():
-                input_dict['value'] = normalize_value(input_dict['value'])
-        except ObjectDoesNotExist:
-            pass
-        """
-        if service_input.param_type == AParam.TYPE_FILE:
+        if service_input.param_type == TYPE_FILE:
             if isinstance(submitted_input, File):
                 # classic uploaded file
                 filename = path.join(job.working_dir, submitted_input.name)
@@ -831,10 +825,10 @@ class JobInput(Ordered, Slugged, ApiModel):
                              help_text='Input value (filename, boolean value, int value etc.)')
     #: Each input may have its own identifier on remote adaptor
     remote_input_id = models.CharField('Remote input ID (on adaptor)', max_length=255, editable=False, null=True)
-    param_type = models.CharField('Param param_type', choices=AParam.IN_TYPE, max_length=50, editable=False, null=True)
+    param_type = models.CharField('Param param_type', choices=IN_TYPE, max_length=50, editable=False, null=True)
     name = models.CharField('Param name', max_length=200, editable=False, null=True)
-    command_type = models.IntegerField('Parameter Type', choices=AParam.OPT_TYPE, editable=False, null=True,
-                                       default=AParam.OPT_TYPE_POSIX)
+    cmd_format = models.IntegerField('Parameter Type', choices=OPT_TYPE, editable=False, null=True,
+                                     default=OPT_TYPE_POSIX)
     label = models.CharField('Label', max_length=100, editable=False, null=True)
 
     def natural_key(self):
@@ -853,7 +847,7 @@ class JobInput(Ordered, Slugged, ApiModel):
         :return: path to file
         :rtype: unicode
         """
-        if self.param_type == AParam.TYPE_FILE:
+        if self.param_type == TYPE_FILE:
             return os.path.join(self.job.working_dir, str(self.value))
         else:
             return ""
@@ -864,17 +858,15 @@ class JobInput(Ordered, Slugged, ApiModel):
 
         :return: determined from related SubmissionParam type
         """
-        if self.param_type == AParam.TYPE_FILE:
+        if self.param_type in (TYPE_FILE, TYPE_TEXT):
             return self.value
-        elif self.param_type == AParam.TYPE_BOOLEAN:
+        elif self.param_type == TYPE_BOOLEAN:
             return bool(self.value)
-        elif self.param_type == AParam.TYPE_TEXT:
-            return self.value
-        elif self.param_type == AParam.TYPE_INT:
+        elif self.param_type == TYPE_INT:
             return int(self.value)
-        elif self.param_type == AParam.TYPE_DECIMAL:
+        elif self.param_type == TYPE_DECIMAL:
             return float(self.value)
-        elif self.param_type == AParam.TYPE_LIST:
+        elif self.param_type == TYPE_LIST:
             if self.value == 'None':
                 return False
             return self.value
@@ -889,39 +881,6 @@ class JobInput(Ordered, Slugged, ApiModel):
         if self.srv_input.mandatory and not self.srv_input.default and not self.value:
             raise ValidationError('Input %(input) is mandatory', params={'input': self.srv_input.label})
         super(JobInput, self).clean()
-
-    @property
-    def command_line_element(self, forced_value=None):
-        """For each job input, according to related SubmissionParam, return command line part for this parameter
-
-        :param forced_value: Any forced value if needed
-        :return: depends on parameter type
-        """
-        value = self.validated_value if forced_value is None else forced_value
-        if self.command_type == AParam.OPT_TYPE_VALUATED:
-            return '--%s=%s' % (self.name, value)
-        elif self.command_type == AParam.OPT_TYPE_SIMPLE:
-            if value:
-                return '-%s %s' % (self.name, value)
-            else:
-                return ''
-        elif self.command_type == AParam.OPT_TYPE_OPTION:
-            if value:
-                return '-%s' % self.name
-            return ''
-        elif self.command_type == AParam.OPT_TYPE_NAMED_OPTION:
-            if value:
-                return '--%s' % self.name
-            return ''
-        elif self.command_type == AParam.OPT_TYPE_POSIX:
-            if value:
-                return '%s' % value
-            else:
-                return ''
-        elif self.command_type == AParam.OPT_TYPE_NONE:
-            return ''
-        # By default it's OPT_TYPE_SIMPLE way
-        return '-%s %s' % (self.name, self.value)
 
     @property
     def get_label_for_choice(self):
@@ -949,7 +908,7 @@ class JobInput(Ordered, Slugged, ApiModel):
 
     @property
     def available(self):
-        return self.param_type == AParam.TYPE_FILE and os.path.isfile(self.file_path) \
+        return self.param_type == TYPE_FILE and os.path.isfile(self.file_path) \
                and os.path.getsize(self.file_path) > 0
 
     def get_absolute_url(self):
@@ -984,7 +943,7 @@ class JobOutputManager(models.Manager):
             value_to_normalize = submitted_inputs.get(from_input.api_name,
                                                       from_input.default)
             logger.debug('Value to normalize init 1 %s', value_to_normalize)
-            if from_input.param_type == AParam.TYPE_FILE:
+            if from_input.param_type == TYPE_FILE:
                 logger.debug('From input is defined as a file')
                 if type(value_to_normalize) is file or isinstance(value_to_normalize, File):
                     logger.debug('Value to normalize is a real file %s', value_to_normalize.name)

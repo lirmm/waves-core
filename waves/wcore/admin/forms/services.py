@@ -32,6 +32,7 @@ class SubmissionInlineForm(forms.ModelForm):
         super(SubmissionInlineForm, self).__init__(*args, **kwargs)
 
     runner = forms.ModelChoiceField(queryset=Runner.objects.all(),
+                                    required=False,
                                     empty_label="----- use service configuration -----",
                                     help_text="Changing value need more configuration")
 
