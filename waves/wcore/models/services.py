@@ -5,9 +5,10 @@ from __future__ import unicode_literals
 
 import logging
 import os
-
+import collections
 import swapper
 from django.conf import settings
+from django import forms
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -297,7 +298,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
                                                 (AVAILABLE_WEB_ONLY, "Available web only"),
                                                 (AVAILABLE_API_ONLY, "Available api only"),
                                                 (AVAILABLE_BOTH, "Available api and web")))
-    name = models.CharField('Form title', max_length=255, null=False, blank=False)
+    name = models.CharField('Title', max_length=255, null=False, blank=False)
 
     def get_runner(self):
         if self.runner:
@@ -373,6 +374,16 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     def pending_jobs(self):
         """ Get current Service Jobs """
         return self.service_jobs.filter(_status__in=waves.wcore.adaptors.const.PENDING_STATUS)
+
+    def form_fields(self, data):
+        form_fields = collections.OrderedDict({
+            'title': forms.CharField(max_length=200),
+            'email': forms.EmailField()
+        })
+        for in_param in self.expected_inputs.all().order_by('-required', 'order'):
+            form_fields.update(in_param.form_widget(data=data.get(in_param.name, None)))
+        print form_fields
+        return form_fields
 
 
 class Submission(BaseSubmission):

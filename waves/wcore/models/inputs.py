@@ -7,6 +7,7 @@ from os.path import basename
 import swapper
 from django.core.exceptions import ValidationError
 from django.db import models
+from django import forms
 from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel, PolymorphicManager
 
@@ -131,6 +132,17 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
     def value(self):
         return "%s_value" % self.name
 
+    def field_dict(self, data=None):
+        return dict(
+            label=self.label,
+            required=self.mandatory,
+            help_text=self.help_text,
+            initial=data if data else self.default
+        )
+
+    def form_widget(self, data=None):
+        return {self.name: forms.CharField(**self.field_dict(data))}
+
 
 class TextParam(AParam):
     class Meta:
@@ -142,6 +154,11 @@ class TextParam(AParam):
     @property
     def param_type(self):
         return TYPE_TEXT
+
+    def field_dict(self, data=None):
+        initial = super(TextParam, self).field_dict(data)
+        initial.update(dict(max_length=self.max_length))
+        return initial
 
 
 class BooleanParam(AParam):
@@ -180,6 +197,9 @@ class BooleanParam(AParam):
         if value not in self.values:
             raise ValidationError({'when_value': 'This value is not possible for related input [%s]' % ', '.join(
                 self.values)})
+
+    def form_widget(self, data=None):
+        return {self.name: forms.BooleanField(**self.field_dict(data))}
 
 
 class NumberParam(object):
@@ -228,6 +248,14 @@ class NumberParam(object):
             raise ValidationError({'when_value': 'This value is not possible for related input range [%s, %s]' % (
                 min_val, max_val)})
 
+    def field_dict(self, data=None):
+        initial = super(NumberParam, self).field_dict(data)
+        initial.update(dict(
+            min_value=self.min_val,
+            max_value=self.max_val
+        ))
+        return initial
+
 
 class DecimalParam(NumberParam, AParam):
     """ Number param (decimal or float) """
@@ -248,6 +276,11 @@ class DecimalParam(NumberParam, AParam):
     def param_type(self):
         return TYPE_DECIMAL
 
+    def form_widget(self, data=None):
+        widget = forms.DecimalField(**self.field_dict(data))
+        # widget.attrs['step'] = self.step
+        return {self.name: widget}
+
 
 class IntegerParam(NumberParam, AParam):
     """ Integer param """
@@ -267,6 +300,11 @@ class IntegerParam(NumberParam, AParam):
     @property
     def param_type(self):
         return TYPE_INT
+
+    def form_widget(self, data=None):
+        widget = forms.IntegerField(**self.field_dict(data))
+        # widget.attrs['step'] = self.step
+        return {self.name: widget}
 
 
 class ListParam(AParam):
@@ -332,6 +370,24 @@ class ListParam(AParam):
             raise ValidationError({'when_value': 'This value is not possible for related input [%s]' % ', '.join(
                 self.values)})
 
+    def field_dict(self, data=None):
+        initial = super(ListParam, self).field_dict(data)
+        initial.update(dict(
+            choices=self.choices,
+        ))
+        if not self.multiple:
+            if self.list_mode == self.DISPLAY_RADIO:
+                initial['widget'] = forms.RadioSelect()
+        else:
+            initial['widget'] = forms.CheckboxSelectMultiple()
+
+        return initial
+
+    def form_widget(self, data=None):
+        if self.multiple:
+            return {self.name: forms.MultipleChoiceField(**self.field_dict(data))}
+        return {self.name: forms.ChoiceField(**self.field_dict(data))}
+
 
 class FileInput(AParam):
     """ Submission file inputs """
@@ -353,6 +409,18 @@ class FileInput(AParam):
     @property
     def param_type(self):
         return TYPE_FILE
+
+    def form_widget(self, data=None):
+        initial_fields = self.field_dict(data)
+        initial_fields['required'] = False
+        initial = {self.name: forms.FileField(**initial_fields),
+                   'cp_%s' % self.name: forms.CharField(label='Copy/paste content',
+                                                        required=False,
+                                                        widget=forms.Textarea(attrs={'cols': 20, 'rows': 10})
+                                                        )}
+        for sample in self.input_samples.all():
+            initial['sp_%s_%s' % (self.name, sample.pk)] = sample.form_widget()
+        return initial
 
 
 class FileInputSample(WavesBaseModel):
@@ -391,6 +459,16 @@ class FileInputSample(WavesBaseModel):
     def default(self):
         return ""
 
+    def form_widget(self):
+        field_dict = dict(
+            label=self.label,
+            required=False,
+            help_text=self.help_text,
+            initial=False
+        )
+        form_field = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'no-switch'}), **field_dict)
+        return form_field
+
 
 class SampleDepParam(WavesBaseModel):
     """
@@ -403,7 +481,8 @@ class SampleDepParam(WavesBaseModel):
         verbose_name = "Sample dependency"
 
     #: Related file input when sample is selected
-    file_input = models.ForeignKey('FileInput', null=True, on_delete=models.CASCADE, related_name="sample_dependencies")
+    file_input = models.ForeignKey('FileInput', null=True, on_delete=models.CASCADE,
+                                   related_name="sample_dependencies")
     #: Related sample File
     sample = models.ForeignKey(FileInputSample, on_delete=models.CASCADE, related_name='dependent_inputs')
     #: Related impacted submission input

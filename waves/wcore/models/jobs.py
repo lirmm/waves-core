@@ -8,6 +8,7 @@ import os
 from os import path as path
 from os.path import join
 
+import swapper
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
@@ -18,16 +19,15 @@ from django.utils.html import format_html
 
 import waves.wcore.adaptors.const
 import waves.wcore.adaptors.exceptions
-import swapper
 from waves.wcore.adaptors.const import JobRunDetails
 from waves.wcore.exceptions import WavesException
 from waves.wcore.exceptions.jobs import *
 from waves.wcore.mails import JobMailer
-from waves.wcore.models import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel, AParam, FileInputSample, \
+from waves.wcore.models import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel, FileInputSample, \
     SubmissionOutput
 from waves.wcore.models.const import *
 from waves.wcore.settings import waves_settings
-from waves.wcore.utils import normalize_value, random_analysis_name
+from waves.wcore.utils import random_analysis_name
 from waves.wcore.utils.storage import allow_display_online
 
 logger = logging.getLogger(__name__)
@@ -161,14 +161,14 @@ class JobManager(models.Manager):
                    m.api_name not in submitted_inputs.keys()}
         if len(missing) > 0:
             logger.warning("received keys %s", submitted_inputs.keys())
-            logger.warning("Expected mandatory %s", [(m.label, m.api_name) for m in mandatory_params])
+            job.logger.warning("Expected mandatory %s missing", [(m.label, m.api_name) for m in mandatory_params])
             raise ValidationError(missing)
         # First create inputs
         submission_inputs = submission.inputs.filter(api_name__in=submitted_inputs.keys()).exclude(required=None)
         for service_input in submission_inputs:
             # Treat only non dependent inputs first
             incoming_input = submitted_inputs.get(service_input.api_name, None)
-            logger.debug("current Service Input: %s, %s, %s", service_input, service_input.required, incoming_input)
+            logger.debug("Current Service Input: %s, %s, %s", service_input, service_input.required, incoming_input)
             # test service input mandatory, without default and no value
             if service_input.required and not service_input.default and incoming_input is None:
                 raise JobMissingMandatoryParam(service_input.label, job)
@@ -178,7 +178,6 @@ class JobManager(models.Manager):
                 # transform single incoming into list to keep process iso
                 if type(incoming_input) != list:
                     incoming_input = [incoming_input]
-
                 for in_input in incoming_input:
                     job.job_inputs.add(
                         JobInput.objects.create_from_submission(job, service_input, service_input.order, in_input))
@@ -191,10 +190,12 @@ class JobManager(models.Manager):
         if logger.isEnabledFor(logging.DEBUG):
             # LOG full command line
             logger.debug('Job %s command will be :', job.title)
+            job.logger.debug('Job %s command will be :', job.title)
             logger.debug('%s %s', job.adaptor.command, job.command_line)
             logger.debug('Expected outputs will be:')
             for j_output in job.outputs.all():
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
+                job.logger.debug('Output %s: %s', j_output.name, j_output.value)
         job._command_line = job.command_line
         if force_status is not None and force_status in waves.wcore.adaptors.const.STATUS_MAP.keys():
             job.status = force_status
@@ -256,12 +257,11 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def logger(self):
         if self._logger is None:
-            print "in init logger"
-            hdlr = logging.FileHandler(os.path.join(self.working_dir, 'job.log'))
-            formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-            hdlr.setFormatter(formatter)
+            file_handler = logging.FileHandler(os.path.join(self.working_dir, 'job.log'))
+            formatter = logging.Formatter('%(levelname)s %(asctime)s %(message)s')
+            file_handler.setFormatter(formatter)
             self._logger = logging.getLogger()
-            self._logger.addHandler(hdlr)
+            self._logger.addHandler(file_handler)
             self._logger.setLevel(waves_settings.JOB_LOG_LEVEL)
         return self._logger
 
@@ -274,7 +274,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         if value != self._status:
             if self.message:
                 message = self.message.decode('utf8', errors='replace')
-                logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
+                self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
             else:
                 message = ""
             self.job_history.create(message=message, status=value)
@@ -285,12 +285,10 @@ class Job(TimeStamped, Slugged, UrlMixin):
         Format a row depending on current Job Status
         :return: Html unicode string
         """
-        return format_html('<span class="{}">{}</span>',
-                           self.label_class,
-                           self.get_status_display())
+        return format_html('<span class="{}">{}</span>', self.label_class, self.get_status_display())
 
     def job_service_back_url(self):
-        if self.submission:
+        if self.submission and self.submission.service:
             return self.submission.service.get_admin_url()
         else:
             return "#"
@@ -302,10 +300,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 self.service = self.submission.service.name
             if not self.notify:
                 self.notify = self.submission.service.email_on
-            if not self.title:
-                self.title = "%s %s" % (self.service, self.slug)
         if not self.title:
-            self.title = '%s' % self.slug
+            self.title = random_analysis_name()
         super(Job, self).save(*args, **kwargs)
 
     def make_job_dirs(self):
@@ -411,7 +407,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         elif self.submission:
             return self.submission.adaptor
         else:
-            logger.exception("None adaptor ...")
+            self.logger.exception("None adaptor ...")
         return None
 
     @adaptor.setter
@@ -484,7 +480,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
                         nb_sent = mailer.send_job_cancel_email(self)
                     # Avoid resending emails when last status mail already sent
                     self.status_mail = self.status
-                    logger.debug("Sending email to %s ", self.email_to)
+                    self.logger.debug("Sending email to %s ", self.email_to)
                     if nb_sent > 0:
                         self.job_history.create(message='Sent notification email', status=self.status, is_admin=True)
                     else:
@@ -831,17 +827,19 @@ class JobInput(Ordered, Slugged, ApiModel):
     objects = JobInputManager()
     #: Reference to related :class:`waves.wcore.models.jobs.Job`
     job = models.ForeignKey(Job, related_name='job_inputs', on_delete=models.CASCADE)
-    #: Reference to related :class:`waves.wcore.models.services.SubmissionParam`
-    # srv_input = models.ForeignKey('SubmissionParam', null=True, on_delete=models.CASCADE)
     #: Value set to this service input for this job
     value = models.CharField('Input content', max_length=255, null=True, blank=True,
                              help_text='Input value (filename, boolean value, int value etc.)')
     #: Each input may have its own identifier on remote adaptor
     remote_input_id = models.CharField('Remote input ID (on adaptor)', max_length=255, editable=False, null=True)
+    #: retrieved upon creation from related AParam object
     param_type = models.CharField('Param param_type', choices=IN_TYPE, max_length=50, editable=False, null=True)
+    #: retrieved upon creation from related AParam object
     name = models.CharField('Param name', max_length=200, editable=False, null=True)
+    #: retrieved upon creation from related AParam object
     cmd_format = models.IntegerField('Parameter Type', choices=OPT_TYPE, editable=False, null=True,
                                      default=OPT_TYPE_POSIX)
+    #: retrieved upon creation from related AParam object
     label = models.CharField('Label', max_length=100, editable=False, null=True)
 
     def natural_key(self):
