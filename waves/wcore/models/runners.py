@@ -138,17 +138,9 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
         self.adaptor_params.all().delete()
         object_ctype = ContentType.objects.get_for_model(self)
         for runner_param in self.get_runner().adaptor_params.filter(prevent_override=False):
-            if runner_param.name == 'password':
-                name = runner_param.name[6:]
-                crypt = True
-            else:
-                name = runner_param.name
-                crypt = False
-            default = runner_param.value
-            prevent_override = False
-            AdaptorInitParam.objects.create(name=name,
-                                            value=default,
-                                            crypt=crypt,
-                                            prevent_override=prevent_override,
+            AdaptorInitParam.objects.create(name=runner_param.name,
+                                            value=runner_param.value,
+                                            crypt=(runner_param.name == 'password'),
+                                            prevent_override=False,
                                             content_type=object_ctype,
                                             object_id=self.pk)

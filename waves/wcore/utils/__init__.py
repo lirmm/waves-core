@@ -40,5 +40,4 @@ def url_to_edit_object(obj):
 
 
 def random_analysis_name():
-    return "analysis " + ''.join(
-        random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))

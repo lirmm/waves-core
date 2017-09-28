@@ -1,18 +1,22 @@
 from __future__ import unicode_literals
 
+import sys
 from rest_framework import serializers
 from rest_framework.fields import empty
 
 from waves.wcore.models.inputs import *
 from waves.wcore.models.const import *
-from waves.wcore.api.share import DynamicFieldsModelSerializer, RecursiveField
+from waves.wcore.api.share import DynamicFieldsModelSerializer # , RecursiveField
 from .fields import ListElementField
+from rest_framework_recursive.fields import RecursiveField
+
+base_fields = ['label', 'name', 'default', 'format', 'type', 'mandatory', 'short_description', 'multiple',
+               'when']
 
 
 class AParamSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['label', 'name', 'default', 'format', 'type', 'mandatory', 'short_description', 'multiple',
-                  'when']
+        fields = base_fields
         model = AParam
 
     mandatory = serializers.NullBooleanField(source='required')
@@ -43,47 +47,47 @@ class AParamSerializer(serializers.ModelSerializer):
 
 
 class TextParamSerializer(AParamSerializer):
-    class Meta(AParamSerializer.Meta):
+    class Meta:
         model = TextParam
-        fields = AParamSerializer.Meta.fields + ['max_length']
+        fields = base_fields + ['max_length']
 
     max_length = serializers.IntegerField()
 
 
 class IntegerSerializer(AParamSerializer):
-    class Meta(AParamSerializer.Meta):
+    class Meta:
         model = IntegerParam
-        fields = AParamSerializer.Meta.fields
+        fields = base_fields
 
     default = serializers.IntegerField()
 
 
 class BooleanSerializer(AParamSerializer):
-    class Meta(AParamSerializer.Meta):
+    class Meta:
         model = BooleanParam
-        fields = AParamSerializer.Meta.fields
+        fields = base_fields
 
 
 class DecimalSerializer(AParamSerializer):
     class Meta:
         model = DecimalParam
-        fields = AParamSerializer.Meta.fields
+        fields = base_fields
 
     default = serializers.DecimalField(decimal_places=3, max_digits=50, coerce_to_string=False)
 
 
 class FileSerializer(AParamSerializer):
-    class Meta(AParamSerializer.Meta):
+    class Meta:
         model = FileInput
-        fields = AParamSerializer.Meta.fields
+        fields = base_fields
 
     format = serializers.CharField(source='allowed_extensions')
 
 
 class ListSerialzer(AParamSerializer):
-    class Meta(AParamSerializer.Meta):
+    class Meta:
         model = ListParam
-        fields = AParamSerializer.Meta.fields + ['format']
+        fields = base_fields + ['format']
 
     format = ListElementField(source='list_elements')
 
@@ -96,7 +100,7 @@ class InputSerializer(DynamicFieldsModelSerializer):
         queryset = AParam.objects.all()
         fields = ('label', 'name', 'default', 'param_type', 'mandatory', 'description', 'multiple')
         extra_kwargs = {
-            'url': {'view_name': 'wapi:api_v2:waves-services-detail', 'lookup_field': 'api_name'}
+            'url': {'view_name': 'wapi:api_v1:waves-services-detail', 'lookup_field': 'api_name'}
         }
 
     description = serializers.CharField(source='help_text')
@@ -119,7 +123,7 @@ class InputSerializer(DynamicFieldsModelSerializer):
         elif isinstance(obj, TextParam):
             return TextParamSerializer(obj, context=self.context).to_representation(obj)
         else:
-            return AParamSerializer(obj, context=self.context).to_representation(obj)
+            raise RuntimeError('Unable to fin a suitable Serializer for obj %s' % obj)
 
 
 class RelatedInputSerializer(InputSerializer):

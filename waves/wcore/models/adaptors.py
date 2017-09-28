@@ -92,7 +92,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
         object_ctype = ContentType.objects.get_for_model(self)
         for name, default in self.adaptor_defaults.items():
             if name == 'password':
-                defaults = {'name': name[6:], 'crypt': True}
+                defaults = {'name': name, 'crypt': True}
             else:
                 defaults = {'name': name, 'crypt': False}
             if type(default) in (tuple, list, dict):

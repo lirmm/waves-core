@@ -25,6 +25,13 @@ Submission = get_submission_model()
 @receiver(pre_save, sender=Job)
 def job_pre_save_handler(sender, instance, **kwargs):
     """ job presave handler """
+    if instance.submission:
+        if not instance.service:
+            instance.service = instance.submission.service.name
+        if not instance.notify:
+            instance.notify = instance.submission.service.email_on
+    if not instance.title:
+        instance.title = instance.random_title
     if not instance.message:
         instance.message = instance.get_status_display()
 
@@ -36,6 +43,7 @@ def job_post_save_handler(sender, instance, created, **kwargs):
         if created:
             # create job working dirs locally
             instance.make_job_dirs()
+            instance.create_non_editable_inputs()
             instance.create_default_outputs()
             instance.job_history.create(message="Job Defaults created", status=instance.status)
 

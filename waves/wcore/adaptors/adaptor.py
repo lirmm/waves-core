@@ -152,7 +152,7 @@ class JobAdaptor(object):
         """
         self.connect()
         job.status = self._states_map[self._job_status(job)]
-        job.logger.debug('Current remote state %s mapped to %s', self._job_status(job),
+        logger.debug('Current remote state %s mapped to %s', self._job_status(job),
                          waves.wcore.adaptors.const.STATUS_MAP.get(job.status, 'Undefined'))
         return job
 

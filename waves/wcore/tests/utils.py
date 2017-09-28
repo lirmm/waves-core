@@ -9,11 +9,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.timezone import localtime
 
 import waves.wcore.adaptors.const
-from waves.wcore.models.const import *
 from waves.wcore.adaptors.loader import AdaptorLoader
 from waves.wcore.models import *
+from waves.wcore.models.const import *
 from waves.wcore.settings import waves_settings
-
 
 logger = logging.getLogger(__name__)
 
@@ -35,13 +34,13 @@ def get_sample_dir():
     return join(dirname(dirname(realpath(__file__))), 'data', 'sample')
 
 
-def create_base_job(title="Sample Empty Job -- Test"):
-    job = Job.objects.create(title=title)
+def create_base_job(title="Sample Empty Job -- Test", submission=None):
+    job = Job.objects.create(title=title, submission=submission)
     return job
 
 
-def create_cp_job(source_file):
-    job = create_base_job('Sample CP job')
+def create_cp_job(source_file, submission):
+    job = create_base_job('Sample CP job', submission)
     shutil.copy(source_file, job.working_dir)
     job.inputs = [JobInput.objects.create(label="File To copy", name='source',
                                           value=basename(source_file), param_type=TYPE_FILE, job=job),
@@ -122,6 +121,7 @@ def create_runners():
 def create_service_for_runners():
     """ initialize a empty service for each defined runner """
     services = []
+    Service = get_service_model()
     for runner in create_runners():
         srv = Service.objects.create(name="Service %s " % runner.name, runner=runner)
         services.append(srv)
@@ -171,6 +171,8 @@ def sample_job(service):
 
 def sample_service(runner, init_params=None):
     """ Create a sample service for this runner """
+    Service = get_service_model()
+    Submission = get_submission_model()
     service = Service.objects.create(name='Sample Service', runner=runner)
     if init_params:
         for name, value in init_params:

@@ -31,7 +31,9 @@ __all__ = [
     'STATUS_LIST',
     'NEXT_STATUS',
     'PENDING_STATUS',
-    'STATUS_MAP'
+    'STATUS_MAP',
+
+    'JobRunDetails'
 ]
 
 #: Undefined status, can be considered as an error status

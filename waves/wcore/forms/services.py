@@ -7,10 +7,10 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from waves.wcore.forms.crispy import FormHelper
-from waves.wcore.utils import random_analysis_name
-from waves.wcore.models.inputs import *
 from waves.wcore.models import get_submission_model
-from waves.wcore.utils.validators import ServiceInputValidator
+from waves.wcore.models.inputs import *
+from waves.wcore.utils import random_analysis_name
+
 Submission = get_submission_model()
 
 logger = logging.getLogger(__name__)
@@ -61,9 +61,7 @@ class ServiceSubmissionForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(ServiceSubmissionForm, self).clean()
-        validator = ServiceInputValidator()
         for data in copy.copy(cleaned_data):
-
             srv_input = next((x for x in self.list_inputs if x.name == data), None)
             sample_selected = False
             if srv_input:

@@ -81,6 +81,7 @@ class LocalShellAdaptor(JobAdaptor):
             logger.debug('Connection to %s', self.saga_host)
             self.connector = self._init_service()
             self._connected = self.connector is not None and self.connector.valid and self.connector.session is not None
+            logger.debug('Connected to %s', self.connector.session)
         except saga.SagaException as exc:
             self._connected = False
             # logger.exception(exc.message)
@@ -106,7 +107,7 @@ class LocalShellAdaptor(JobAdaptor):
 
     def _prepare_job(self, job):
         # Nothing to do here
-        job.logger.debug('Nothing to prepare, we are local')
+        logger.debug('Nothing to prepare, we are local')
         return job
 
     def _run_job(self, job):
@@ -116,16 +117,16 @@ class LocalShellAdaptor(JobAdaptor):
             job:
         """
         try:
-            job.logger.debug('Creating job descriptor')
+            logger.debug('Creating job descriptor')
             jd_dict = self._job_description(job)
             jd = saga.job.Description()
             for key in jd_dict.keys():
                 setattr(jd, key, jd_dict[key])
             new_job = self.connector.create_job(jd)
             new_job.run()
-            job.logger.debug('Job Descriptor %s', jd)
+            logger.debug('Job Descriptor %s', jd)
             job.remote_job_id = new_job.id
-            job.logger.debug('New saga job %s ', new_job)
+            logger.debug('New saga job %s ', new_job)
             return job
         except saga.SagaException as exc:
             raise AdaptorJobException(exc.message)
@@ -259,7 +260,7 @@ class SshShellAdaptor(LocalShellAdaptor):
                 wrapper = saga.filesystem.File(
                     saga.Url('file://localhost/%s' % join(job.working_dir, input_file.value)))
                 wrapper.copy(work_dir.get_url())
-                job.logger.debug("Uploaded file %s to %s", join(job.working_dir, input_file.value), work_dir.get_url())
+                logger.debug("Uploaded file %s to %s", join(job.working_dir, input_file.value), work_dir.get_url())
             return job
         except saga.SagaException as exc:
             raise AdaptorJobException(exc.message)
@@ -274,7 +275,7 @@ class SshShellAdaptor(LocalShellAdaptor):
             work_dir = self.job_work_dir(job)
             for remote_file in work_dir.list('*'):
                 work_dir.copy(remote_file, 'file://localhost/%s/' % job.working_dir)
-                job.logger.debug("Retrieved file from %s to %s", remote_file, job.working_dir)
+                logger.debug("Retrieved file from %s to %s", remote_file, job.working_dir)
             return super(SshShellAdaptor, self)._job_results(job)
         except saga.SagaException as exc:
             raise AdaptorJobException(exc.message)

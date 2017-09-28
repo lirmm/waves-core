@@ -11,6 +11,7 @@ from waves.wcore.adaptors.cluster import LocalClusterAdaptor, SshClusterAdaptor
 from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.adaptors.shell import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.wcore.tests.utils import *
+from waves.wcore.tests.base import WavesBaseTestCase
 from waves.wcore.utils.encrypt import Encrypt
 
 logger = logging.getLogger('tests')
@@ -25,7 +26,7 @@ def skip_unless_sge():
     return lambda f: f
 
 
-class RunnerTestCase(TestCase, TestJobWorkflowMixin):
+class RunnerTestCase(WavesBaseTestCase, TestJobWorkflowMixin):
     tests_dir = dirname(__file__)
     loader = AdaptorLoader
     adaptors = [
@@ -106,7 +107,7 @@ class RunnerTestCase(TestCase, TestJobWorkflowMixin):
         adaptor = self.adaptors[0]
         logger.debug('Connecting to %s', adaptor.name)
         sample_file = join(self.tests_dir, 'data', 'sample', 'test_copy.txt')
-        job = create_cp_job(source_file=sample_file)
+        job = create_cp_job(source_file=sample_file, submission=self._create_random_service().default_submission)
         job.adaptor = adaptor
         logger.info('job command line %s ', job.command_line)
         copied_file = join(job.working_dir, 'dest_copy.txt')
@@ -123,7 +124,7 @@ class RunnerTestCase(TestCase, TestJobWorkflowMixin):
                 if adaptor.available:
                     logger.debug('Connecting to %s', adaptor.name)
                     sample_file = join(self.tests_dir, 'data', 'sample', 'test_copy.txt')
-                    job = create_cp_job(source_file=sample_file)
+                    job = create_cp_job(source_file=sample_file, submission=self._create_random_service().default_submission)
                     adaptor.command = 'cp'
                     job.adaptor = adaptor
                     self.run_job_workflow(job)

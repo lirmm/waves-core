@@ -1,7 +1,9 @@
+from __future__ import unicode_literals
+
 import waves.wcore.adaptors.const
 
 
-class AdaptorException(BaseException):
+class AdaptorException(Exception):
     """ Base Adaptor exception class, should be raise upon specific Adaptor class exception catch
     this exception class is supposed to be catched
     """

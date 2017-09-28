@@ -56,12 +56,23 @@ class BaseRunDaemon(run.RunDaemon):
             logger.debug("Starting loopback...")
             while True:
                 self.loop_callback()
-        except (SystemExit, KeyboardInterrupt):
+        except (SystemExit, KeyboardInterrupt) as exc:
             # Normal exit getting a signal from the parent process
             pass
         except Exception as exc:
             # Something unexpected happened?
-            logger.exception("Unexpected Exception %s", exc.message)
+            logger.exception("Unexpected Exception %s", exc)
+
+    def status(self):
+        if self.pid < 0 or self.pid is None:
+            print "Stopped"
+            return
+        try:
+            os.kill(self.pid, 0)
+        except OSError:
+            print 'Stopped'
+        else:
+            print 'Running'
 
 
 class JobQueueRunDaemon(BaseRunDaemon):

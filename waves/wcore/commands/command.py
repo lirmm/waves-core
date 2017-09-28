@@ -40,11 +40,6 @@ class BaseCommand(object):
     @staticmethod
     def get_command_line_element_list(inputs):
         if len(inputs) > 0:
-            print "overhere !!!!", inputs
-            print [e.cmd_format for e in inputs]
-            print [e.name for e in inputs]
-            print [e.value for e in inputs]
-
             return [command_line_element(e.cmd_format, e.name, e.value) for e in inputs]
         else:
             return []

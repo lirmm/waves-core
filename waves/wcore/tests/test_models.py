@@ -9,7 +9,7 @@ from django.utils.module_loading import import_string
 
 import waves.wcore.adaptors.const
 from waves.wcore.adaptors.adaptor import JobAdaptor
-from waves.wcore.models import Job, get_service_model, get_submission_model
+from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.tests.base import WavesBaseTestCase
 from waves.wcore.tests.utils import create_runners, create_service_for_runners
 
@@ -57,17 +57,11 @@ class TestServices(WavesBaseTestCase):
 
 
 class TestJobs(WavesBaseTestCase):
-    def setUp(self):
-        super(TestJobs, self).setUp()
-
-    def tearDown(self):
-        super(TestJobs, self).tearDown()
 
     def test_jobs_signals(self):
-        job = Job.objects.create(submission=Submission.objects.create(name="Sample Sub", service=Service.objects.create(
-            name='SubmissionSample Service')))
+        job = self._create_random_job()
         self.assertIsNotNone(job.title)
-        self.assertEqual(job.outputs.count(), 2)
+        self.assertEqual(job.outputs.count(), 4)
         self.assertTrue(os.path.isdir(job.working_dir))
         logger.debug('Job directories has been created %s ', job.working_dir)
         self.assertEqual(job.status, waves.wcore.adaptors.const.JOB_CREATED)
@@ -81,8 +75,7 @@ class TestJobs(WavesBaseTestCase):
         logger.debug('Job directories has been deleted')
 
     def test_job_history(self):
-        job = Job.objects.create(submission=Submission.objects.create(name="Sample Sub", service=Service.objects.create(
-            name='SubmissionSample Service')))
+        job = self._create_random_job()
         job.job_history.create(message="Test Admin message", status=job.status, is_admin=True)
         job.job_history.create(message="Test public message", status=job.status)
         try:
