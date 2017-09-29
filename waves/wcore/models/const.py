@@ -27,13 +27,13 @@ OPT_TYPE_POSIX = 4
 OPT_TYPE_NAMED_OPTION = 5
 OPT_TYPE_NAMED_PARAM = 6
 OPT_TYPE = [
-    (OPT_TYPE_NONE, "Not used in final command"),
-    (OPT_TYPE_NAMED_PARAM, '[name]=value'),
-    (OPT_TYPE_SIMPLE, '-[name] value'),
-    (OPT_TYPE_VALUATED, '--[name]=value'),
-    (OPT_TYPE_OPTION, '-[name]'),
-    (OPT_TYPE_NAMED_OPTION, '--[name]'),
-    (OPT_TYPE_POSIX, 'value')
+    (OPT_TYPE_NONE, "-- Not used in job command line--"),
+    (OPT_TYPE_NAMED_PARAM, 'Named parameter: [name]=value'),
+    (OPT_TYPE_SIMPLE, 'Named parameter: -[name] value'),
+    (OPT_TYPE_VALUATED, 'Named parameter: --[name]=value'),
+    (OPT_TYPE_OPTION, 'Named option: -[name]'),
+    (OPT_TYPE_NAMED_OPTION, 'Named option: --[name]'),
+    (OPT_TYPE_POSIX, 'Positional parameter: value')
 ]
 TYPE_BOOLEAN = 'boolean'
 TYPE_FILE = 'file'
