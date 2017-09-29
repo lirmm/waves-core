@@ -179,24 +179,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'waves.wcore.adaptors': {
-            'handlers': ['daemon_log_file'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'waves.daemon': {
-            'handlers': ['daemon_log_file'],
-            'level': 'DEBUG',
-            'propagate': False,
 
-        },
-        'daemons': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'formatter': 'trace',
-            'propagate': False,
-
-        }
     }
 }
 logging.config.dictConfig(LOGGING)
