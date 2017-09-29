@@ -14,7 +14,7 @@ setup(
     name='waves-core',
     version=import_version(),
     packages=find_packages(),
-    provides=['waves.wcore', 'waves.front'],
+    provides=['waves', 'waves'],
     include_package_data=True,
     license='GPLv3',
     description='WAVES - core ',
@@ -22,7 +22,7 @@ setup(
     author='Marc Chakiachvili',
     author_email='marc.chakiachvili@lirmm.fr, marc@archi-logic.fr',
     install_requires=[
-        'saga-python==0.46.1',
+        'saga-python==0.46',
         'django==1.11.1',
         'django-crispy-forms==1.6.1',
         'djangorestframework==3.5.4',

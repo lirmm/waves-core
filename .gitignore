@@ -103,9 +103,6 @@ ENV/
 /media/*
 !/media/.gitkeep
 *.sqlite3
-/waves/wcore/migrations/*
-!/waves/wcore/migrations/.gitkeep
-!/waves/wcore/migrations/0001_initial.py
 !/waves/templates/waves/parts/
 !/waves/forms/lib/
 /waves/tests/settings.ini
@@ -113,3 +110,4 @@ ENV/
 !/waves/wcore/forms/lib/
 !/bin/fastme-2.1.5-linux64
 
+!/waves/wcore/migrations/
