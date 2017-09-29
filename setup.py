@@ -30,13 +30,11 @@ setup(
         'inflection==0.3.1',
         'pycrypto==2.6.1',
         'python-magic==0.4.13',
-        'python-daemon==2.1.1',
         'psutil==5.2.2',
         'swapper==1.1.0',
         'setproctitle==1.1.10',
         'django-admin-sortable2>=0.6.16',
         'daemons>=1.3.0',
-        'python-daemon==2.1.1'
     ],
     classifiers=[
         'Environment :: Web Environment',
