@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.test import override_settings, TestCase
 
 from waves.wcore.models import get_service_model, Job, JobInput, JobOutput
-from waves.wcore.tests.utils import get_sample_dir, create_runners
+from waves.wcore.tests.tests_utils import get_sample_dir, create_runners
 
 Service = get_service_model()
 

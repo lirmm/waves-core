@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import collections
 
 from rest_framework import serializers
-from rest_framework.reverse import reverse as reverse
+from rest_framework.reverse import reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
 from waves.wcore.models import get_service_model, get_submission_model

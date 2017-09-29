@@ -28,6 +28,7 @@ class ServiceSubmissionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         parent = kwargs.pop('parent', None)
         user = kwargs.pop('user', None)
+        form_action = kwargs.pop('form_action', None)
         template_pack = kwargs.pop('template_pack', 'bootstrap3')
         super(ServiceSubmissionForm, self).__init__(*args, **kwargs)
         self.helper = self.get_helper(form_tag=True, template_pack=template_pack)
@@ -54,6 +55,8 @@ class ServiceSubmissionForm(forms.ModelForm):
                 self.helper.set_layout(dependent_input)
         self.list_inputs.extend(extra_fields)
         self.helper.end_layout()
+        if form_action:
+            self.helper.form_action = form_action
 
     def get_helper(self, **helper_args):
         # TODO add dynamic Helper class loading

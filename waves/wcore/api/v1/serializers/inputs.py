@@ -1,14 +1,12 @@
 from __future__ import unicode_literals
 
-import sys
 from rest_framework import serializers
 from rest_framework.fields import empty
 
-from waves.wcore.models.inputs import *
+from waves.wcore.api.share import DynamicFieldsModelSerializer, RecursiveField
 from waves.wcore.models.const import *
-from waves.wcore.api.share import DynamicFieldsModelSerializer # , RecursiveField
+from waves.wcore.models.inputs import *
 from .fields import ListElementField
-from rest_framework_recursive.fields import RecursiveField
 
 base_fields = ['label', 'name', 'default', 'format', 'type', 'mandatory', 'short_description', 'multiple',
                'when']

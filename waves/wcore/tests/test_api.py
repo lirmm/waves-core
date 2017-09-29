@@ -13,7 +13,7 @@ from waves.wcore.models.const import *
 from waves.wcore.models import Job, get_service_model
 from waves.wcore.models.inputs import AParam
 from waves.wcore.tests.base import WavesBaseTestCase
-from waves.wcore.tests.utils import create_test_file
+from waves.wcore.tests.tests_utils import create_test_file
 from waves.wcore.models.const import *
 
 Service = get_service_model()

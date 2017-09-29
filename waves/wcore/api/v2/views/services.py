@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
+from rest_framework.reverse import reverse
 from rest_framework import status
 from rest_framework import viewsets, generics
 from rest_framework.decorators import detail_route
@@ -83,7 +84,14 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         from waves.wcore.forms.services import ServiceSubmissionForm
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
         form = [{'submission': service_submission,
-                 'form': ServiceSubmissionForm(instance=service_submission, parent=service_tool)}
+                 'form': ServiceSubmissionForm(instance=service_submission,
+                                               parent=service_tool,
+                                               form_action=request.build_absolute_uri(
+                                                   reverse('wapi:api_v2:waves-submission-detail',
+                                                           kwargs=dict(
+                                                               service=self.kwargs.get('api_name'),
+                                                               api_name=service_submission.api_name)
+                                                           )))}
                 for service_submission in
                 service_tool.submissions.all()]
         content = render(request=self.request,
@@ -118,7 +126,8 @@ class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIVie
     def get_queryset(self):
         """ Retrieve for service, current submissions available for API """
         return Submission.objects.filter(api_name=self.kwargs.get('api_name'),
-                                         service__api_name=self.kwargs.get('service'), availability__gt=2)
+                                         service__api_name=self.kwargs.get('service'),
+                                         availability__gt=2)
 
     def get_object(self):
         """ Retrieve object or redirect to 404 """
@@ -127,7 +136,7 @@ class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIVie
     # TODO add check authorization
     def post(self, request, *args, **kwargs):
         """ Create a new job from submitted params """
-        logger.debug("Entering base post data")
+        logger.debug("Post ServiceJobSubmission")
         if logger.isEnabledFor(logging.DEBUG):
             for param in request.data:
                 logger.debug('param key ' + param)
@@ -139,8 +148,10 @@ class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIVie
             request.data.pop('api_key', None)
             from waves.wcore.api.v2.serializers.jobs import JobCreateSerializer
             from django.db.models import Q
-            job = Job.objects.create_from_submission(submission=service_submission, email_to=ass_email,
-                                                     submitted_inputs=request.data, user=request.user)
+            job = Job.objects.create_from_submission(submission=service_submission,
+                                                     email_to=ass_email,
+                                                     submitted_inputs=request.data,
+                                                     user=request.user)
             # Now job is created (or raise an exception),
             serializer = JobSerializer(job, many=False, context={'request': request},
                                        fields=('slug', 'url', 'created', 'status',))
@@ -166,11 +177,19 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['get'])
     def submission_form(self, request, service=None, api_name=None, **kwargs):
         """ Retrieve service form """
+        logger.debug("Submission_form")
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
         template_pack = self.request.GET.get('tp', 'bootstrap3')
         form = [{'submission': service_tool,
-                 'form': ServiceSubmissionForm(instance=self.get_object(), parent=service_tool,
-                                               template_pack=template_pack)}]
+                 'form': ServiceSubmissionForm(instance=self.get_object(),
+                                               parent=service_tool,
+                                               template_pack=template_pack,
+                                               form_action=request.build_absolute_uri(
+                                                   reverse('wapi:api_v2:waves-submission-detail',
+                                                           kwargs=dict(
+                                                               service=self.kwargs.get('service'),
+                                                               api_name=self.kwargs.get('api_name')
+                                                           ))))}]
         content = render(request=self.request,
                          template_name='waves/api/service_api_form.html',
                          context={'submissions': form,
@@ -181,7 +200,7 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['post'])
     def create_job(self, request, *args, **kwargs):
         """ Create a new job from submitted params """
-        logger.debug("in detail route")
+        logger.debug("Create Job")
         if logger.isEnabledFor(logging.DEBUG):
             for param in request.data:
                 logger.debug('param key ' + param)

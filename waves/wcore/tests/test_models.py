@@ -11,7 +11,7 @@ import waves.wcore.adaptors.const
 from waves.wcore.adaptors.adaptor import JobAdaptor
 from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.tests.base import WavesBaseTestCase
-from waves.wcore.tests.utils import create_runners, create_service_for_runners
+from waves.wcore.tests.tests_utils import create_runners, create_service_for_runners
 
 logger = logging.getLogger(__name__)
 Service = get_service_model()
