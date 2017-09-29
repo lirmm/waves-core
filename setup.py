@@ -35,7 +35,8 @@ setup(
         'swapper==1.1.0',
         'setproctitle==1.1.10',
         'django-admin-sortable2>=0.6.16',
-        'daemons>=1.3.0'
+        'daemons>=1.3.0',
+        'python-daemon==2.1.1'
     ],
     classifiers=[
         'Environment :: Web Environment',
