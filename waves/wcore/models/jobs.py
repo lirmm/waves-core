@@ -7,27 +7,26 @@ import os
 from os import path as path
 from os.path import join
 
-
 import swapper
-from django.utils.encoding import smart_text
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
 from django.core.files.base import File
 from django.db import models, transaction
 from django.db.models import Q
+from django.utils.encoding import smart_text
 from django.utils.html import format_html
 
 import waves.wcore.adaptors.exceptions
+from waves.wcore.adaptors.const import *
+from waves.wcore.adaptors.mails import JobMailer
 from waves.wcore.exceptions import WavesException
 from waves.wcore.exceptions.jobs import *
-from waves.wcore.mails import JobMailer
 from waves.wcore.models import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel, FileInputSample, \
     SubmissionOutput
 from waves.wcore.models.const import *
-from waves.wcore.adaptors.const import *
-from waves.wcore.utils import random_analysis_name
 from waves.wcore.settings import waves_settings
+from waves.wcore.utils import random_analysis_name
 from waves.wcore.utils.storage import allow_display_online
 
 logger = logging.getLogger(__name__)
@@ -137,10 +136,6 @@ class JobManager(models.Manager):
         :return: a newly create Job instance
         :rtype: :class:`waves.wcore.models.jobs.Job`
         """
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug('Received data :')
-            for key in submitted_inputs:
-                logger.debug('Param %s: %s', key, submitted_inputs[key])
         client = user if user is not None and not user.is_anonymous() else None
         if update is None:
             job = self.create(email_to=email_to, client=client,
@@ -155,6 +150,10 @@ class JobManager(models.Manager):
             job.adaptor = submission.adaptor
             job.notify = submission.service.email_on
             job.service = submission.service.name
+        if job.logger.isEnabledFor(logging.DEBUG):
+            job.logger.debug('Received data :')
+            for key in submitted_inputs:
+                job.logger.debug('Param %s: %s', key, submitted_inputs[key])
         mandatory_params = submission.expected_inputs.filter(required=True)
         missing = {m.name: '%s (:%s:) is required field' % (m.label, m.api_name) for m in mandatory_params if
                    m.api_name not in submitted_inputs.keys()}
@@ -185,8 +184,8 @@ class JobManager(models.Manager):
         for service_output in submission.outputs.all():
             job.outputs.add(
                 JobOutput.objects.create_from_submission(job, service_output, submitted_inputs))
-        logger.debug('Job %s created with %i inputs', job.slug, job.job_inputs.count())
-        if logger.isEnabledFor(logging.DEBUG):
+        job.logger.debug('Job %s created with %i inputs', job.slug, job.job_inputs.count())
+        if job.logger.isEnabledFor(logging.DEBUG):
             # LOG full command line
             logger.debug('Job %s command will be :', job.title)
             logger.debug('Job %s command will be :', job.title)
@@ -255,6 +254,25 @@ class Job(TimeStamped, Slugged, UrlMixin):
     #: Should Waves Notify client about Job Status
     notify = models.BooleanField("Notify this result", default=False, editable=False)
 
+    _logger = None
+
+    @property
+    def log_file(self):
+        return os.path.join(self.working_dir, 'job.log')
+
+    @property
+    def logger(self):
+        self._logger = logging.getLogger('waves.job.%s' % str(self.slug))
+        if not len(self._logger.handlers):
+            # Add handler only once !
+            hdlr = logging.FileHandler(self.log_file)
+            formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+            hdlr.setFormatter(formatter)
+            self._logger.propagate = False
+            self._logger.addHandler(hdlr)
+            self._logger.setLevel(waves_settings.JOB_LOG_LEVEL)
+        return self._logger
+
     @property
     def random_title(self):
         return "Job %s-%s" % (self.service,
@@ -267,9 +285,9 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @status.setter
     def status(self, value):
         if value != self._status:
-            message = self.message.decode('utf8', errors='replace') or ""
-            logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(),
-                         message)
+            message = smart_text(self.message) or ""
+            self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(),
+                              message)
             self.job_history.create(message=message, status=value)
         self._status = value
 
@@ -389,11 +407,11 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
                 return adaptor
             except Exception as e:
-                logger.exception("Unable to load %s adaptor %s", self._adaptor, e.message)
+                self.logger.exception("Unable to load %s adaptor %s", self._adaptor, e.message)
         elif self.submission:
             return self.submission.adaptor
         else:
-            logger.exception("None adaptor ...")
+            self.logger.exception("None adaptor ...")
         return None
 
     @adaptor.setter
@@ -466,7 +484,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
                         nb_sent = mailer.send_job_cancel_email(self)
                     # Avoid resending emails when last status mail already sent
                     self.status_mail = self.status
-                    logger.debug("Sending email to %s ", self.email_to)
+                    self.logger.info("Try to send email to %s [%s]", self.email_to, self.status)
                     if nb_sent > 0:
                         self.job_history.create(message='Sent notification email', status=self.status, is_admin=True)
                     else:
@@ -476,10 +494,10 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 except Exception as e:
                     logger.error('Mail error: %s %s', e.__class__.__name__, e.message)
                     pass
-            else:
-                logger.warn('Job %s email not set', self.slug)
+            elif not self.email_to:
+                self.logger.warn('Job %s email not set', self.slug)
         else:
-            logger.debug('Jobs notification are not activated')
+            self.logger.info('Jobs notification are not activated')
 
     def get_absolute_url(self):
         """Reverse url for this Job according to Django urls configuration
@@ -528,8 +546,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
         for service_input in self.submission.inputs.filter(required=None):
             # Create fake "submitted_inputs" with non editable ones with default value if not already set
-            logger.debug('Created non editable job input: %s (%s, %s)', service_input.label,
-                         service_input.name, service_input.default)
+            self.logger.debug('Created non editable job input: %s (%s, %s)', service_input.label,
+                              service_input.name, service_input.default)
             self.job_inputs.add(JobInput.objects.create(job=self, name=service_input.name,
                                                         param_type=service_input.type,
                                                         cmd_format=service_input.cmd_format,
@@ -570,7 +588,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     def error(self, message):
         """ Set job Status to ERROR, save error reason in JobAdminHistory, save job"""
-        logger.error('Job error: %s', smart_text(message))
+        self.logger.error('Job error: %s', smart_text(message))
         self.message = '[Error]%s' % smart_text(message)
         self.status = JOB_ERROR
 
@@ -615,12 +633,12 @@ class Job(TimeStamped, Slugged, UrlMixin):
             logger.debug("Abort execution - Waves Exception %s " % smart_text(exc.message))
             self.error(exc.message)
             raise exc
-        except BaseException as exc:
+        except Exception as exc:
             logger.debug("Abort execution - Fatal unexpected error %s " % smart_text(exc.message))
             self.fatal_error(exc)
             raise exc
         finally:
-            logger.debug("Always save job in DB")
+            self.logger.debug("Saving Job in DB [%s]" % self.get_status_display())
             self.save()
 
     @property
@@ -644,7 +662,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     def run_status(self):
         """ Ask job adaptor current job status """
         self._run_action('job_status')
-        logger.debug('job current state :%s', self.status)
+        self.logger.debug('job current state :%s', self.status)
         if self.status == JOB_COMPLETED:
             self.run_results()
         if self.status == JOB_UNDEFINED and self.nb_retry > waves_settings.JOBS_MAX_RETRY:
@@ -662,18 +680,18 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """ Ask job adaptor to get results files (dowload files if needed) """
         self._run_action('job_results')
         self.run_details()
-        logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
-                     os.stat(join(self.working_dir, self.stderr)).st_size)
+        self.logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
+                          os.stat(join(self.working_dir, self.stderr)).st_size)
         if self.exit_code != 0:
             if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
-                logger.error('Error found %s %s ', self.exit_code, self.stderr_txt.decode('ascii', errors="replace"))
+                logger.error('Error found %s %s ', self.exit_code, smart_text(self.stderr_txt))
             self.message = "Error detected in job.stderr"
             self.status = JOB_ERROR
         else:
             if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
                 self.status = JOB_WARNING
                 logger.warning('Exit Code %s but found stderr %s ', self.exit_code,
-                               self.stderr_txt.decode('ascii', errors="replace"))
+                               smart_text(self.stderr_txt))
             else:
                 self.message = "Data retrieved"
                 self.status = JOB_TERMINATED
@@ -689,7 +707,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
                     details = JobRunDetails(*json.load(fp))
                 return details
             except TypeError:
-                logger.error("Unable to retrieve data from file %s", file_run_details)
+                self.logger.error("Unable to retrieve data from file %s", file_run_details)
                 return self.default_run_details()
         else:
             try:
@@ -727,6 +745,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
         for job_out in self.outputs.all():
             open(job_out.file_path, 'w').close()
+        # Reset logs
+        open(self.log_file, 'w').close()
         self.save()
 
     def default_run_details(self):

@@ -5,7 +5,6 @@ import datetime
 import logging
 import os
 import signal
-import tempfile
 import time
 from itertools import chain
 
@@ -16,9 +15,9 @@ import waves.wcore.exceptions
 from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.models import Job
 from waves.wcore.settings import waves_settings
-from waves.wcore.settings import waves_settings as config
 
 logger = logging.getLogger('waves.daemon')
+LOG = logging.getLogger('daemons.django.wcore')
 
 
 class BaseRunDaemon(run.RunDaemon):
@@ -65,14 +64,14 @@ class BaseRunDaemon(run.RunDaemon):
 
     def status(self):
         if self.pid < 0 or self.pid is None:
-            print "Stopped"
+            LOG.warning("Process pid does not exists")
             return
         try:
             os.kill(self.pid, 0)
         except OSError:
-            print 'Stopped'
+            LOG.info("Process is stopped.")
         else:
-            print 'Running'
+            LOG.info("Process is running.")
 
 
 class JobQueueRunDaemon(BaseRunDaemon):
@@ -81,7 +80,7 @@ class JobQueueRunDaemon(BaseRunDaemon):
     """
     help = 'Managing WAVES job queue states'
     SLEEP_TIME = 2
-    pidfile = os.path.join(tempfile.gettempdir(), 'waves_queue.pid')
+    pidfile = os.path.join(waves_settings.DATA_ROOT, 'waves_queue.pid')
     pidfile_timeout = 5
 
     def loop_callback(self):
@@ -94,7 +93,7 @@ class JobQueueRunDaemon(BaseRunDaemon):
         .. todo::
             Implement this as separated forked processes for each jobs, inspired by Galaxy queue treatment.
 
-        :return: Nothing
+        :return: None
         """
         jobs = Job.objects.prefetch_related('job_inputs'). \
             prefetch_related('outputs').filter(_status__lt=waves.wcore.adaptors.const.JOB_TERMINATED)
@@ -137,8 +136,8 @@ class PurgeDaemon(BaseRunDaemon):
 
     def loop_callback(self):
         logger.info("Purge job launched at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
-        date_anonymous = datetime.date.today() - datetime.timedelta(config.KEEP_ANONYMOUS_JOBS)
-        date_registered = datetime.date.today() - datetime.timedelta(config.KEEP_REGISTERED_JOBS)
+        date_anonymous = datetime.date.today() - datetime.timedelta(waves_settings.KEEP_ANONYMOUS_JOBS)
+        date_registered = datetime.date.today() - datetime.timedelta(waves_settings.KEEP_REGISTERED_JOBS)
         anonymous = Job.objects.filter(client__isnull=True, updated__lt=date_anonymous)
         registered = Job.objects.filter(client__isnull=False, updated__lt=date_registered)
         for job in list(chain(*[anonymous, registered])):

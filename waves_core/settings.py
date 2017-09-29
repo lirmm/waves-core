@@ -43,7 +43,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'rest_framework',
     'adminsortable2',
-    'debug_toolbar'
+    # 'debug_toolbar'
 )
 
 MIDDLEWARE = [
@@ -54,9 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
-MIDDLEWARE += [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'waves_core.urls'
@@ -181,6 +179,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'waves.wcore.adaptors': {
+            'handlers': ['daemon_log_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'waves.daemon': {
             'handlers': ['daemon_log_file'],
             'level': 'DEBUG',
@@ -204,7 +207,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     )
 }
-ALLOWED_TEMPLATE_PACKS = ['bootstrap', 'bootstrap3', 'bootstrap4']
+ALLOWED_TEMPLATE_PACKS = ['bootstrap3', 'bootstrap4']
 
 MESSAGE_TAGS = {
     messages.ERROR: 'error'
