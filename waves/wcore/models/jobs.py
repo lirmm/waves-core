@@ -842,7 +842,7 @@ class JobInput(Ordered, Slugged, ApiModel):
     #: retrieved upon creation from related AParam object
     param_type = models.CharField('Param param_type', choices=IN_TYPE, max_length=50, editable=False, null=True)
     #: retrieved upon creation from related AParam object
-    name = models.CharField('Param name', max_length=200, editable=False, null=True)
+    name = models.CharField('Param name', max_length=50, editable=False, null=True)
     #: retrieved upon creation from related AParam object
     cmd_format = models.IntegerField('Parameter Type', choices=OPT_TYPE, editable=False, null=True,
                                      default=OPT_TYPE_POSIX)
@@ -996,7 +996,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     value = models.CharField('Output value', max_length=200, null=True, blank=True, default="")
     #: Each output may have its own identifier on remote adaptor
     remote_output_id = models.CharField('Remote output ID (on adaptor)', max_length=255, editable=False, null=True)
-    _name = models.CharField('Name', max_length=200, null=False, blank=False, help_text='Output displayed name')
+    _name = models.CharField('Name', max_length=50, null=False, blank=False, help_text='Output displayed name')
     extension = models.CharField('File extension', max_length=5, null=False, default="")
 
     @property

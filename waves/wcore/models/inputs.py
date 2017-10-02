@@ -27,8 +27,8 @@ class RepeatedGroup(Ordered):
     submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
                                    related_name='submission_groups', null=True,
                                    on_delete=models.CASCADE)
-    name = models.CharField('Group name', max_length=255, null=False, blank=False)
-    title = models.CharField('Group title', max_length=255, null=False, blank=False)
+    name = models.CharField('Group name', max_length=50, null=False, blank=False)
+    title = models.CharField('Group title', max_length=200, null=False, blank=False)
     max_repeat = models.IntegerField("Max repeat", null=True, blank=True)
     min_repeat = models.IntegerField('Min repeat', default=0)
     default = models.IntegerField('Default repeat', default=0)

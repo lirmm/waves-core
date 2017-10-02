@@ -471,7 +471,7 @@ class SubmissionExitCode(WavesBaseModel):
         verbose_name = 'Exit Code'
         unique_together = ('exit_code', 'submission')
 
-    exit_code = models.IntegerField('Exit code value')
+    exit_code = models.IntegerField('Exit code value', default=0)
     message = models.CharField('Exit code message', max_length=255)
     submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
                                    related_name='exit_codes',
