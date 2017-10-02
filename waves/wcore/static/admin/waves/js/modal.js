@@ -14,7 +14,7 @@
   if ((version[0] < 2 && version[1] < 9) || (version[0] == 1 && version[1] == 9 && version[2] < 1) || (version[0] > 3)) {
     throw new Error('Bootstrap\'s JavaScript requires jQuery version 1.9.1 or higher, but lower than version 4')
   }
-}(django.jQuery);
+}(jQuery || django.jQuery);
 
 /* ========================================================================
  * Bootstrap: modal.js v3.3.7
@@ -354,4 +354,4 @@
     Plugin.call($target, option, this)
   })
 
-}(django.jQuery);
+}(jQuery || django.jQuery);

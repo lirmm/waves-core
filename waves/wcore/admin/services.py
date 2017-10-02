@@ -77,6 +77,12 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         }),
     ]
 
+    extra_fieldsets = []
+
+    def get_fieldsets(self, request, obj=None):
+        base_fieldsets = super(ServiceAdmin, self).get_fieldsets(request, obj)
+        return base_fieldsets + self.extra_fieldsets
+
     def get_inlines(self, request, obj=None):
         _inlines = [
             ServiceSubmissionInline,
