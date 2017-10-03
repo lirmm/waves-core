@@ -475,6 +475,7 @@ class SubmissionExitCode(WavesBaseModel):
     message = models.CharField('Exit code message', max_length=255)
     submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
                                    related_name='exit_codes',
+                                   null=True,
                                    on_delete=models.CASCADE)
     is_error = models.BooleanField('Is an Error', default=False, blank=False)
 
