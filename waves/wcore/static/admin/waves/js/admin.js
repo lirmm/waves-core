@@ -46,7 +46,7 @@
         });
     })
 
-})(django.jQuery || jQuery);
+})(jQuery || django.jQuery);
 
 
 

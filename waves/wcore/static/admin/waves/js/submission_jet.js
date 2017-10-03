@@ -96,5 +96,4 @@ var RelatedInlinePopup = function () {
             rel.popupInline(e.target.href)
         })
     })
-})
-(django.jQuery || jQuery);
+})(jQuery || django.jQuery);
