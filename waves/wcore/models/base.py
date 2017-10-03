@@ -92,7 +92,7 @@ class ApiModel(WavesBaseModel):
 
     field_api_name = 'name'
     #: A char field, must be unique for a model instance
-    api_name = models.CharField(max_length=100, null=True, blank=True,
+    api_name = models.CharField(max_length=100, null=True, blank=True, unique=True,
                                 help_text='Api short code, must be unique, leave blank for automatic setup')
 
     def duplicate_api_name(self):

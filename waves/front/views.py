@@ -4,6 +4,9 @@ from uuid import UUID
 
 from django.urls import reverse
 from django.views import generic
+from django.http import Http404
+from django.template.loader import select_template, get_template
+from django.template import TemplateDoesNotExist
 
 from waves.wcore.forms.services import ServiceSubmissionForm
 from waves.wcore.views.services import SubmissionFormView
@@ -24,10 +27,11 @@ class ServiceListView(generic.ListView):
 
 class ServiceDetailView(generic.DetailView):
     model = Service
-    template_name = 'waves/services/service_details.html'
+    # template_name = 'waves/services/service_details.html'
     context_object_name = 'service'
     queryset = Service.objects.all().prefetch_related('submissions')
     object = None
+    slug_field = 'api_name'
 
     def get_context_data(self, **kwargs):
         context = super(ServiceDetailView, self).get_context_data(**kwargs)
@@ -41,11 +45,28 @@ class ServiceDetailView(generic.DetailView):
             raise PermissionDenied()
         return obj
 
+    def get_template_names(self):
+        try:
+            get_template(
+                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_details.html')
+            print "res1"
+            return [
+                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_details.html']
+        except TemplateDoesNotExist:
+            try:
+                get_template('waves/override/service_' + self.get_object().api_name + '_details.html')
+                print "res2"
+                return ['waves/override/service_' + self.get_object().api_name + '_details.html']
+            except TemplateDoesNotExist:
+                print "res3"
+                return ['waves/services/service_details.html']
+
 
 class JobSubmissionView(ServiceDetailView, SubmissionFormView):
     model = Service
     template_name = 'waves/services/service_form.html'
     form_class = ServiceSubmissionForm
+    slug_field = 'api_name'
 
     def get_template_names(self):
         return super(JobSubmissionView, self).get_template_names()
@@ -73,6 +94,19 @@ class JobSubmissionView(ServiceDetailView, SubmissionFormView):
             return self.get_object().default_submission  # Submission.objects.get(default=True, service=)
         else:
             return Submission.objects.get(slug=UUID(slug))
+
+    def get_template_names(self):
+        try:
+            get_template(
+                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_form.html')
+            return [
+                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_form.html']
+        except TemplateDoesNotExist:
+            try:
+                get_template('waves/override/service_' + self.get_object().api_name + '_form.html')
+                return ['waves/override/service_' + self.get_object().api_name + '_form.html']
+            except TemplateDoesNotExist:
+                return ['waves/services/service_form.html']
 
 
 class JobView(generic.DetailView):

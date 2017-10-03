@@ -14,6 +14,7 @@ Version 1.1.2 - 2017-09-30
     - Updated install documentation
     - Make Submission model swappable as well
     - Added Popup Edit for Submission params Model Admin
+    - Added quick and dirty solution to override services templates for specific service
     - Corrected bugs
         - JsPopupInlines for Django-jet admin layout
         - workflow Runner tests
