@@ -1,6 +1,7 @@
 Version 1.1.2 - 2017-09-30
 --------------------------
 
+    - Added pip package (waves-core) - updated 2017/10/03
     - Added changeLog in documentation
     - Added BinaryFile upload:
         - Association with Runners / Services / Submission for command lines
