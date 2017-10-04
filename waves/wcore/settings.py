@@ -59,7 +59,7 @@ DEFAULTS = {
     'UPLOAD_MAX_SIZE': 20 * 1024 * 1024,
     'HOST': HOSTNAME,
     'ACCOUNT_ACTIVATION_DAYS': 7,
-    'ADMIN_EMAIL': 'admin@atgc-montpellier.fr',
+    'ADMIN_EMAIL': 'admin@your-site.com',
     'ALLOW_JOB_SUBMISSION': True,
     'APP_NAME': 'WAVES',
     'JOBS_MAX_RETRY': 5,
@@ -68,7 +68,7 @@ DEFAULTS = {
     'KEEP_REGISTERED_JOBS': 120,
     'NOTIFY_RESULTS': True,
     'REGISTRATION_ALLOWED': True,
-    'SERVICES_EMAIL': 'waves@atgc-montpellier.fr',
+    'SERVICES_EMAIL': 'waves@your-site.com',
     'TEMPLATE_PACK': getattr(settings, 'CRISPY_TEMPLATE_PACK', 'bootstrap3'),
     'SECRET_KEY': getattr(settings, 'SECRET_KEY', '')[0:32],
     'ADAPTORS_CLASSES': (

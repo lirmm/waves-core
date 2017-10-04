@@ -63,3 +63,4 @@ GET a WAVES web-app online following the next few steps, WAVES can run on Apache
         python manage.py makemigrations
         python manage.py migrate
         python manage.py check
+
