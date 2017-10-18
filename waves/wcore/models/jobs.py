@@ -1064,4 +1064,4 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     @property
     def available(self):
-        return os.path.isfile(self.file_path)
+        return os.path.isfile(self.file_path) and os.path.getsize(self.file_path) > 0

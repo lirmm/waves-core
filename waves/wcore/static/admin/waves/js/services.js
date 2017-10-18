@@ -30,7 +30,7 @@
         $('#open_import_form').click(function (e) {
             e.preventDefault();
             $('#popup_modal_content').load($(this).attr('href'), function () {
-                $('#popup_modal').modal('toggle');
+                $('#popup_modal').modal({backdrop: 'static', keyboard: false, show:true});
             });
         });
         $('input[id^="id_service_outputs"][id$="from_input"]').each(function () {

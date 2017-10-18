@@ -7,9 +7,9 @@ from waves.wcore.admin.views import *
 
 # TODO change auth decorators to specific WAVES ones
 urlpatterns = [
-    url(r'^service/(?P<service_id>\d+)/import$', staff_member_required(ServiceParamImportView.as_view()),
+    url(r'^service/(?P<pk>\d+)/import/$', staff_member_required(ServiceParamImportView.as_view()),
         name="service_import_form"),
-    url(r'^runner/(?P<runner_id>\d+)/import$', staff_member_required(RunnerImportToolView.as_view()),
+    url(r'^runner/(?P<pk>\d+)/import/$', staff_member_required(RunnerImportToolView.as_view()),
         name="runner_import_form"),
     url(r'^service/(?P<service_id>\d+)/duplicate$', staff_member_required(ServiceDuplicateView.as_view()),
         name="service_duplicate"),

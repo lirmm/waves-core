@@ -120,7 +120,7 @@ class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
     classes = ["collapse", ]
     fields = ['class_label', 'label', 'name', 'api_name', 'multiple', 'required', 'cmd_format', 'default']
     readonly_fields = ['class_label']
-    ordering = ('order', )
+    ordering = ('order',)
     extra = 0
     show_change_link = True
 
@@ -144,7 +144,8 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     current_obj = None
     form = ServiceSubmissionForm
     exclude = ['order']
-    list_display = ['get_name', 'service', 'runner_link', 'available_online', 'available_api', 'runner']
+    list_display = ['get_name', 'service', 'api_name', 'availability', 'runner', 'created',
+                    'updated']
     readonly_fields = ['available_online', 'available_api', 'get_command_line_pattern', 'display_run_params']
     list_filter = (
         'service__name',

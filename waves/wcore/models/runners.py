@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from itertools import chain
-
+from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
@@ -14,7 +14,6 @@ __all__ = ['Runner']
 
 
 class RunnerManager(models.Manager):
-
     def create_default(self, **kwargs):
         return super(RunnerManager, self).create(**kwargs)
 
@@ -24,12 +23,14 @@ class RunnerManager(models.Manager):
 
 class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     """ Represents a generic job adaptor meta information (resolved at runtime via clazz attribute) """
+
     # TODO manage cleanly change in actual clazz value (when changed)
 
     class Meta:
         ordering = ['name']
         verbose_name = 'Execution environment'
         verbose_name_plural = "Executions environments"
+
     objects = RunnerManager()
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
     enabled = models.BooleanField('Enabled', default=True, null=False, blank=True,
@@ -43,7 +44,9 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
         """
         # TODO recheck importer
         if self.adaptor is not None:
-            return self.adaptor.importer
+            importer = self.adaptor.importer
+            importer._runner = self
+            return importer
         else:
             return None
 
@@ -66,14 +69,15 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     @property
     def running_services(self):
         from waves.wcore.models import get_service_model
-        Service = get_service_model()
-        return Service.objects.filter(runner=self)
+        return get_service_model().objects.filter(runner=self)
 
     @property
     def running_submissions(self):
         from waves.wcore.models import get_submission_model
-        Submission = get_submission_model()
-        return Submission.objects.filter(runner=self)
+        return get_submission_model().objects.filter(runner=self)
+
+    def get_admin_url(self):
+        return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
 
 
 class HasRunnerParamsMixin(HasAdaptorClazzMixin):
@@ -137,10 +141,11 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
         # Reset all old values
         self.adaptor_params.all().delete()
         object_ctype = ContentType.objects.get_for_model(self)
-        for runner_param in self.get_runner().adaptor_params.filter(prevent_override=False):
-            AdaptorInitParam.objects.create(name=runner_param.name,
-                                            value=runner_param.value,
-                                            crypt=(runner_param.name == 'password'),
-                                            prevent_override=False,
-                                            content_type=object_ctype,
-                                            object_id=self.pk)
+        if self.get_runner() is not None:
+            for runner_param in self.get_runner().adaptor_params.filter(prevent_override=False):
+                AdaptorInitParam.objects.create(name=runner_param.name,
+                                                value=runner_param.value,
+                                                crypt=(runner_param.name == 'password'),
+                                                prevent_override=False,
+                                                content_type=object_ctype,
+                                                object_id=self.pk)

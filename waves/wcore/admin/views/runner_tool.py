@@ -4,24 +4,29 @@ from __future__ import unicode_literals
 from crispy_forms.utils import render_crispy_form
 from django.conf import settings
 from django.contrib import messages
+from django.utils.safestring import mark_safe
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import JsonResponse
-from django.views.generic import FormView
+from django.views.generic import DetailView, FormView
 from json_view import JSONDetailView
 from waves.wcore.adaptors.exceptions import AdaptorConnectException
 from waves.wcore.exceptions import *
 from waves.wcore.admin.forms.services import ImportForm
 from waves.wcore.models import Runner
 from waves.wcore.admin.views.export import ModelExportView
+from waves.wcore.models import get_service_model
+
+Service = get_service_model()
 
 
-class RunnerImportToolView(FormView):
+class RunnerImportToolView(DetailView, FormView):
     """ Import a new service for a runner """
     template_name = 'admin/waves/import/service_modal_form.html'
     form_class = ImportForm
+    model = Runner
     # success_url = '/admin/import/tools/2'
     success_message = "Data successfully imported"
     service = None
@@ -30,28 +35,25 @@ class RunnerImportToolView(FormView):
     object = None
     context_object_name = 'context_object'
 
-    def get_object(self, request):
-        try:
-            self.object = Runner.objects.get(id=self.kwargs.get('runner_id'))
-        except ObjectDoesNotExist as e:
-            messages.error(request, message='Unable to retrieve runner from request')
-
     def get_context_data(self, **kwargs):
-        context = super(FormView, self).get_context_data(**kwargs)
-        context['context_object_name'] = self.object.name
+        context = super(RunnerImportToolView, self).get_context_data(**kwargs)
+        self.tool_list = self.get_tool_list()
         return context
 
     def get_success_url(self):
         return self.service.get_admin_url()
 
     def get_tool_list(self):
-        return [(x[0], [(y.remote_service_id, y.name + ' ' + y.version) for y in x[1]]) for x in
-                self.object.importer.list_services()]
+        return self.get_object().importer.list_services()
+
+    def get_service_list(self):
+        return self.get_object().running_services.all()
+
+    def get_form(self, form_class=None):
+        form = self.form_class(instance=self.get_object())
+        return form
 
     def get(self, request, *args, **kwargs):
-        self.get_object(request)
-        if self.object is None:
-            return super(FormView, self).get(request, *args, **kwargs)
         try:
             self.tool_list = self.get_tool_list()
             if len(self.tool_list) == 0:
@@ -66,51 +68,52 @@ class RunnerImportToolView(FormView):
             messages.error(request, message="Unexpected error %s " % e)
             if settings.DEBUG:
                 raise
-        return super(FormView, self).get(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        kwargs = super(FormView, self).get_form_kwargs()
-        extra_kwargs = {
-            'tool': self.tool_list
-        }
-        extra_kwargs.update(kwargs)
-        return extra_kwargs
+        return super(RunnerImportToolView, self).get(request, *args, **kwargs)
 
     def remote_service_id(self, request):
         return request.POST.get('tool')
 
+    def form_invalid(self, form):
+        return super(RunnerImportToolView, self).form_invalid(form)
+
     def post(self, request, *args, **kwargs):
-        if request.is_ajax():
-            self.get_object(request)
-            if self.object is None:
-                return super(FormView, self).get(request, *args, **kwargs)
-            self.tool_list = self.get_tool_list()
-            form = self.get_form()
-            if form.is_valid():
-                try:
-                    with transaction.atomic():
-                        new_service, new_submission = self.object.importer.import_service(
-                            self.remote_service_id(request))
-                        self.service = new_service
-                        self.service.runner = self.object
-                        self.service.created_by = self.request.user
-                        self.service.submissions.add(new_submission)
-                        self.service.save()
-                    data = {
-                        'url_redirect': reverse('admin:wcore_service_change', args=[self.service.id])
-                    }
-                    messages.add_message(request, level=messages.SUCCESS, message='Parameters successfully imported')
-                    return JsonResponse(data, status=200)
-                except Exception as e:
-                    form.add_error(None, ValidationError(message="Import Error: %s" % e))
-                    form_html = render_crispy_form(form)
-                    return JsonResponse({'form_html': form_html}, status=500)
-            else:
-                form.add_error(None, ValidationError(message="Missing data"))
-                form_html = render_crispy_form(form)
-                return JsonResponse({'form_html': form_html}, status=400)
-        else:
-            pass
+        runner = self.get_object()
+        try:
+            with transaction.atomic():
+                tool_id = self.remote_service_id(self.request)
+                importer = self.get_object().importer
+                if self.request.POST.get('running_services', None):
+                    service = Service.objects.get(pk=self.request.POST.get('running_services'))
+                else:
+                    service = None
+                self.service, new_submission = importer.import_service(tool_id, service)
+                if service is None:
+                    self.service.runner = runner
+                    self.service.created_by = request.user
+                new_submission.runner = runner
+                new_submission.runner.adaptor_params.filter(name='command').update(value=tool_id)
+                self.service.save()
+                data = {'url_redirect': new_submission.get_admin_url()}
+                if len(importer.warnings) > 0:
+                    message = "<b>Import with warnings :-( </b><br/>- "
+                    message += "<br/>- ".join(["%s" % warning.message for warning in importer.warnings])
+                    messages.add_message(self.request, level=messages.INFO, message=mark_safe(message))
+                if len(importer.errors) > 0:
+                    message = "<b>Import with errors :-( </b><br/>- "
+                    message += "<br/>- ".join(["%s" % err.message for err in importer.errors])
+                    messages.add_message(self.request, level=messages.ERROR, message=mark_safe(message))
+                if len(importer.warnings) == 0 and len(importer.errors) == 0:
+                    messages.add_message(self.request, level=messages.SUCCESS, message='All parameters imported :-)')
+                messages.add_message(self.request, level=messages.INFO,
+                                     message="Import log in %s" % importer.log_file(tool_id))
+                return JsonResponse(data, status=200)
+        except Exception as e:
+            data = {'url_redirect': runner.get_admin_url()}
+            messages.add_message(self.request, level=messages.ERROR,
+                                 message=mark_safe("Import failed :-( :<pre>%s</pre>" % e.message))
+            messages.add_message(self.request, level=messages.INFO,
+                                 message="Import log in %s" % importer.log_file(tool_id))
+            return JsonResponse(data, status=200)
 
 
 class RunnerExportView(ModelExportView):

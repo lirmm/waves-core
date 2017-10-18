@@ -45,10 +45,10 @@ class SubmissionRunInline(TabularInline):
     """ List of related services """
     model = Submission
     extra = 0
-    fields = ['name', 'availability', 'created', 'updated', 'service', ]
-    readonly_fields = ['label', 'availability', 'created', 'updated', 'service', ]
+    fields = ['name', 'availability', 'created', 'updated']
+    readonly_fields = ['name', 'availability', 'created', 'updated']
     show_change_link = True
-    verbose_name_plural = "Overriding Submissions"
+    verbose_name_plural = "Related Submissions"
 
     def has_delete_permission(self, request, obj=None):
         """ No delete permission for runners params
@@ -64,11 +64,11 @@ class SubmissionRunInline(TabularInline):
 
 
 @register(Runner)
-class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
+class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     """ Admin for Job Runner """
     model = Runner
     form = RunnerForm
-    # inlines = (RunnerParamInline, ServiceRunInline)
+    inlines = (RunnerParamInline, ServiceRunInline)
     list_display = ('name', 'get_runner_clazz', 'connexion_string', 'short_description', 'nb_services')
     list_filter = ('name', 'clazz')
     readonly_fields = ['connexion_string']
@@ -82,20 +82,6 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
         }),
     ]
     change_form_template = "admin/waves/runner/change_form.html"
-
-    def get_inlines(self, request, obj=None):
-        _inlines = [
-            RunnerParamInline,
-        ]
-        if obj and IS_POPUP_VAR not in request.GET:
-            self.inlines = _inlines
-            if obj.running_services.count() > 0:
-                self.inlines.append(ServiceRunInline)
-            if obj.running_submissions.count() > 0:
-                self.inlines.append(SubmissionRunInline)
-        elif IS_POPUP_VAR not in request.GET:
-            self.inlines = [_inlines[0], ]
-        return self.inlines
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}

@@ -6,7 +6,7 @@ import uuid
 
 import inflection
 from django.db import models
-
+from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
 from waves.wcore.compat import RichTextField
 from waves.wcore.settings import waves_settings as config
 
@@ -95,9 +95,21 @@ class ApiModel(WavesBaseModel):
     api_name = models.CharField(max_length=100, null=True, blank=True,
                                 help_text='Api short code, must be unique, leave blank for automatic setup')
 
-    def duplicate_api_name(self):
-        """ Check is another entity is set with same api_name """
-        return self.__class__.objects.filter(api_name__startswith=self.api_name)
+    @property
+    def base_api_name(self):
+        last_pos = self.api_name.rfind('_')
+        if last_pos != -1 and self.api_name[last_pos + 1:].isdigit():
+            print 'base_api_name 1', self.api_name[:last_pos+1]
+            return self.api_name[:last_pos+1]
+        else:
+            print "simple api_name ", self.api_name
+            return self.api_name
+
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return self.__class__.objects.filter(api_name=api_name).exclude(pk=self.pk)
 
     def create_api_name(self):
         """
@@ -105,6 +117,15 @@ class ApiModel(WavesBaseModel):
         :return:
         """
         return inflection.underscore(re.sub(r'[^\w]+', '_', getattr(self, self.field_api_name))).lower()
+
+    def clean(self):
+        try:
+            if self.duplicate_api_name(self.api_name).count() > 0:
+                raise ValidationError({'api_name': 'Value must be unique'})
+        except MultipleObjectsReturned:
+            raise ValidationError({'api_name': "Value is not unique"})
+        except ObjectDoesNotExist:
+            pass
 
 
 class UrlMixin(object):

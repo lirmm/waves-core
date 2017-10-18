@@ -5,6 +5,9 @@ from waves.wcore.adaptors.adaptor import JobAdaptor
 
 class PublicApiAdaptor(JobAdaptor):
     """ Base Class for remote public API calls"""
+    port = ''
+    api_endpoint = ''
+    api_base_path = ''
 
     def __init__(self, command=None, protocol='http', host="localhost", port='', api_base_path='', api_endpoint='',
                  **kwargs):

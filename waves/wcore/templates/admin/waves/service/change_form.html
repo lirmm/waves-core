@@ -40,6 +40,7 @@
                 Test Connection
             </a>
         </li>
+        {%  comment "Service Tool import needs update" %}
         {% if original.runner.adaptor.importer %}
             <li>
                 <a type="button" href="{% url 'wcore:service_import_form' original.pk %}"
@@ -53,6 +54,6 @@
                 </a>
             </li>
         {% endif %}
-
+        {% endcomment %}
     {% endif %}
 {% endblock %}

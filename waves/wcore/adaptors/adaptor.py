@@ -16,6 +16,8 @@ class JobAdaptor(object):
     """
     Abstract JobAdaptor class, declare expected behaviour from any WAVES's JobAdaptor dependent ?
     """
+    _required = {'command', 'protocol', 'host'}
+
     NOT_AVAILABLE_MESSAGE = "Adaptor is currently not available on platform"
     name = 'Abstract Adaptor name'
     #: Remote status need to be mapped with WAVES expected job status
@@ -133,6 +135,7 @@ class JobAdaptor(object):
         self.connect()
         try:
             self._cancel_job(job)
+            job.status = waves.wcore.adaptors.const.JOB_CANCELLED
         except AdaptorException as exc:
             job.job_history.create(
                 message="Job for %s '%s' could not be remotely cancelled: %s " % (self.__class__.__name__,
@@ -140,7 +143,6 @@ class JobAdaptor(object):
                                                                                   exc.message),
                 status=job.status,
                 is_admin=True)
-        job.status = waves.wcore.adaptors.const.JOB_CANCELLED
         return job
 
     @exception(logger)

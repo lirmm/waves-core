@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 from django.forms import ModelForm, ChoiceField, PasswordInput
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 
 from waves.wcore.adaptors.adaptor import JobAdaptor
 from waves.wcore.models import AdaptorInitParam, get_submission_model, get_service_model
@@ -51,8 +50,6 @@ class AdaptorInitParamForm(ModelForm):
         if not self.cleaned_data['value']:
             if isinstance(self.instance.content_object, Submission):
                 raise ValidationError({'value': 'Value is mandatory'})
-            elif self.cleaned_data['prevent_override'] is True:
-                raise ValidationError({'value': 'Value is mandatory when override is prevented'})
             elif isinstance(self.instance.content_object, Service) \
                     and Submission.objects.filter(runner__isnull=True,
                                                   service=self.instance.content_object).count() > 0:

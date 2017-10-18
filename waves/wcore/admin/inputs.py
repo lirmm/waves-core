@@ -208,7 +208,7 @@ class FileInputAdmin(AParamAdmin):
             'classes': ['collapse', 'open']
         }),
         ('More', {
-            'fields': extra_base_fields + ['regexp'],
+            'fields': extra_base_fields + ['edam_formats', 'edam_datas', 'regexp'],
             'classes': ['collapse']
         }),
         ('Dependencies', {

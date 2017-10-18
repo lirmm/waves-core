@@ -19,7 +19,7 @@ def get_app_version():
     return waves_settings.VERSION
 
 
-@register.inclusion_tag('waves/services/base_inc.html')
+@register.inclusion_tag('waves/services/service_inc.html')
 def service_inc(inc_type):
     return {'template': "waves/services/" + waves_settings.TEMPLATE_PACK + "/inc." + inc_type + ".html"}
 

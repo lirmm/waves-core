@@ -45,19 +45,19 @@ class AdaptorJobStateException(AdaptorJobException):
         super(AdaptorJobStateException, self).__init__(msg)
 
 
-class AdaptorNotReady(Exception):
+class AdaptorNotReady(AdaptorException):
     """ Adaptor is not properly initialized to be used """
     pass
 
 
-class AdaptorInitError(AttributeError):
+class AdaptorInitError(AdaptorException):
     """ Each adaptor expects some attributes for initialization, this exception should be raised when some mandatory
     parameters are missing
     """
     pass
 
 
-class ImporterException(BaseException):
+class ImporterException(AdaptorException):
     pass
 
 
@@ -77,14 +77,14 @@ class UnManagedAttributeException(UnmanagedException):
 
 
 class UnManagedAttributeTypeException(UnmanagedException):
-    base_msg = "Unmanaged Attribute type: "
+    base_msg = "Unmanaged Type: "
 
     def __init__(self, *args, **kwargs):
         super(UnManagedAttributeTypeException, self).__init__(*args, **kwargs)
 
 
 class UnmanagedInputTypeException(UnmanagedException):
-    base_msg = "Unmanaged Input type: "
+    base_msg = "Unmanaged Input: "
 
     def __init__(self, *args, **kwargs):
         super(UnmanagedInputTypeException, self).__init__(*args, **kwargs)

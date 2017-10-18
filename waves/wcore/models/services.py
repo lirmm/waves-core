@@ -285,6 +285,7 @@ class Service(BaseService):
 class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     class Meta:
         abstract = True
+        unique_together = ('service', 'api_name')
 
     NOT_AVAILABLE = 0
     AVAILABLE_WEB_ONLY = 1
@@ -382,8 +383,16 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         })
         for in_param in self.expected_inputs.all().order_by('-required', 'order'):
             form_fields.update(in_param.form_widget(data=data.get(in_param.name, None)))
-        print form_fields
         return form_fields
+
+    def get_admin_url(self):
+        return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return self.__class__.objects.filter(api_name=api_name, service=self.service).exclude(pk=self.pk)
 
 
 class Submission(BaseSubmission):
@@ -391,8 +400,6 @@ class Submission(BaseSubmission):
         verbose_name = 'Submission form'
         verbose_name_plural = 'Submission forms'
         ordering = ('order',)
-        unique_together = ('service', 'api_name')
-
         swappable = swapper.swappable_setting('wcore', 'Submission')
 
 
@@ -462,6 +469,12 @@ class SubmissionOutput(TimeStamped, ApiModel):
             return '.' + file_name.rsplit('.', 1)[1]
         else:
             return self.extension
+
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return SubmissionOutput.objects.filter(api_name=api_name, submission=self.submission).exclude(pk=self.pk)
 
 
 class SubmissionExitCode(WavesBaseModel):

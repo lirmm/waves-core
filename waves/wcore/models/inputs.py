@@ -88,6 +88,12 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
             self.order = AParam.objects.filter(submission=self.submission).count() + 1
         super(AParam, self).save(*args, **kwargs)
 
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name for the same submission
+        :param api_name:
+        """
+        return AParam.objects.filter(api_name=api_name, submission=self.submission).exclude(pk=self.pk)
+
     @property
     def related_to(self):
         return self.parent

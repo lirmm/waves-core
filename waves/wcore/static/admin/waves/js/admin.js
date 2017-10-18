@@ -21,7 +21,7 @@
             }
             modalContent.find('.modal-body').load($(this).attr('href'), function () {
                 console.log('open modal');
-                $('#popup_modal').modal('toggle');
+                $('#popup_modal').modal({backdrop: 'static', keyboard: false, show:true});
             })
         })
         $('#modal_alert').on('show.bs.modal', function () {

@@ -3,8 +3,6 @@ WAVES Service models forms
 """
 from __future__ import unicode_literals
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
 from django import forms
 from django.conf import settings
 
@@ -38,30 +36,30 @@ class SubmissionInlineForm(forms.ModelForm):
 
 
 class ImportForm(forms.Form):
+    class Meta:
+        model = Runner
+        fields = ('name', 'running_services', 'tool')
+        # fields = ('name', 'tool')
     """
     Service Import Form
     """
+    running_services = forms.ChoiceField()
     tool = forms.ChoiceField()
 
     def __init__(self, *args, **kwargs):
-        tool_list = kwargs.pop('tool', ())
-        selected = kwargs.pop('selected', None)
+        self.instance = kwargs.pop('instance')
         super(ImportForm, self).__init__(*args, **kwargs)
+        list_service = [(x.pk, x.name) for x in self.instance.running_services]
+        list_service.insert(0, (None, 'Create new service'))
         self.fields['tool'] = forms.ChoiceField(
-            choices=tool_list,
-            initial=selected,
-            disabled=('disabled' if selected is not None else ''),
-            widget=forms.widgets.Select(attrs={'size': '15', 'style': 'width:100%; height: auto;'}))
-
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.render_unmentioned_fields = False
-        self.helper.form_show_labels = True
-        self.helper.form_show_errors = True
-        self.helper.layout = Layout(
-            Field('tool'),
-        )
-        self.helper.disable_csrf = True
+            choices=self.instance.importer.list_services(),
+            widget=forms.widgets.Select(attrs={'size': '15', 'style': 'width:100%; height: auto;'}),
+            label="Available tools",
+            help_text="")
+        self.fields['running_services'] = forms.ChoiceField(
+            choices=list_service,
+            required=False,
+            label="Create submission for service")
 
 
 class ServiceSubmissionForm(forms.ModelForm):
