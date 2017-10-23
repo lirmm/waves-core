@@ -82,18 +82,25 @@ class RunnerImportToolView(DetailView, FormView):
             with transaction.atomic():
                 tool_id = self.remote_service_id(self.request)
                 importer = self.get_object().importer
+                update_service = self.request.POST.get('update_service', False)
                 if self.request.POST.get('running_services', None):
                     service = Service.objects.get(pk=self.request.POST.get('running_services'))
                 else:
                     service = None
-                self.service, new_submission = importer.import_service(tool_id, service)
+                self.service, new_submission = importer.import_service(tool_id, service, update_service)
                 if service is None:
+                    # New service, set up runner at service level
                     self.service.runner = runner
                     self.service.created_by = request.user
-                new_submission.runner = runner
-                new_submission.runner.adaptor_params.filter(name='command').update(value=tool_id)
-                self.service.save()
-                data = {'url_redirect': new_submission.get_admin_url()}
+                    self.service.runner.adaptor_params.filter(name='command').update(value=tool_id)
+                    self.service.save()
+                    data = {'url_redirect': self.service.get_admin_url()}
+                else:
+                    # Existing service, setup runner at submission level
+                    new_submission.runner = runner
+                    new_submission.runner.adaptor_params.filter(name='command').update(value=tool_id)
+                    new_submission.save()
+                    data = {'url_redirect': new_submission.get_admin_url()}
                 if len(importer.warnings) > 0:
                     message = "<b>Import with warnings :-( </b><br/>- "
                     message += "<br/>- ".join(["%s" % warning.message for warning in importer.warnings])

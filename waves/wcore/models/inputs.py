@@ -147,7 +147,7 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
         )
 
     def form_widget(self, data=None):
-        return {self.name: forms.CharField(**self.field_dict(data))}
+        return {self.api_name: forms.CharField(**self.field_dict(data))}
 
 
 class TextParam(AParam):
@@ -205,7 +205,7 @@ class BooleanParam(AParam):
                 self.values)})
 
     def form_widget(self, data=None):
-        return {self.name: forms.BooleanField(**self.field_dict(data))}
+        return {self.api_name: forms.BooleanField(**self.field_dict(data))}
 
 
 class NumberParam(object):
@@ -285,7 +285,7 @@ class DecimalParam(NumberParam, AParam):
     def form_widget(self, data=None):
         widget = forms.DecimalField(**self.field_dict(data))
         # widget.attrs['step'] = self.step
-        return {self.name: widget}
+        return {self.api_name: widget}
 
 
 class IntegerParam(NumberParam, AParam):
@@ -310,7 +310,7 @@ class IntegerParam(NumberParam, AParam):
     def form_widget(self, data=None):
         widget = forms.IntegerField(**self.field_dict(data))
         # widget.attrs['step'] = self.step
-        return {self.name: widget}
+        return {self.api_name: widget}
 
 
 class ListParam(AParam):
@@ -391,8 +391,8 @@ class ListParam(AParam):
 
     def form_widget(self, data=None):
         if self.multiple:
-            return {self.name: forms.MultipleChoiceField(**self.field_dict(data))}
-        return {self.name: forms.ChoiceField(**self.field_dict(data))}
+            return {self.api_name: forms.MultipleChoiceField(**self.field_dict(data))}
+        return {self.api_name: forms.ChoiceField(**self.field_dict(data))}
 
 
 class FileInput(AParam):
@@ -419,13 +419,13 @@ class FileInput(AParam):
     def form_widget(self, data=None):
         initial_fields = self.field_dict(data)
         initial_fields['required'] = False
-        initial = {self.name: forms.FileField(**initial_fields),
-                   'cp_%s' % self.name: forms.CharField(label='Copy/paste content',
-                                                        required=False,
-                                                        widget=forms.Textarea(attrs={'cols': 20, 'rows': 10})
-                                                        )}
+        initial = {self.api_name: forms.FileField(**initial_fields),
+                   'cp_%s' % self.api_name: forms.CharField(label='Copy/paste content',
+                                                            required=False,
+                                                            widget=forms.Textarea(attrs={'cols': 20, 'rows': 10})
+                                                            )}
         for sample in self.input_samples.all():
-            initial['sp_%s_%s' % (self.name, sample.pk)] = sample.form_widget()
+            initial['sp_%s_%s' % (self.api_name, sample.pk)] = sample.form_widget()
         return initial
 
 

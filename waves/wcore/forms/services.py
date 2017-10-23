@@ -44,14 +44,14 @@ class ServiceSubmissionForm(forms.ModelForm):
         extra_fields = []
         for service_input in self.list_inputs:
             assert isinstance(service_input, AParam)
-            self.fields.update(service_input.form_widget(self.data.get(service_input.name, None)))
+            self.fields.update(service_input.form_widget(self.data.get(service_input.api_name, None)))
             self.helper.set_layout(service_input)
 
             for dependent_input in service_input.dependents_inputs.exclude(required=None):
                 # conditional parameters must not be required to use classic django form validation process
                 dependent_input.required = False
                 logger.warn("current input %s %s ", dependent_input, dependent_input.label)
-                self.fields.update(dependent_input.form_widget(self.data.get(dependent_input.name, None)))
+                self.fields.update(dependent_input.form_widget(self.data.get(dependent_input.api_name, None)))
                 self.helper.set_layout(dependent_input)
         self.list_inputs.extend(extra_fields)
         self.helper.end_layout()

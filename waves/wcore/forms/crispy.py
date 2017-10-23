@@ -51,28 +51,28 @@ class FormHelper(CrispyFormHelper, WFormHelper):
             title=service_input.help_text,
         )
         if service_input.parent is not None:
-            field_id += '_' + service_input.parent.name + '_' + service_input.when_value
+            field_id += '_' + service_input.parent.api_name + '_' + service_input.when_value
             dependent_on = service_input.parent.name
             dependent_4_value = service_input.when_value
-            field_dict.update(dict(dependent_on=service_input.parent.name,
+            field_dict.update(dict(dependent_on=service_input.parent.api_name,
                                    dependent_4_value=service_input.when_value))
-            when_value = self.form_obj.data.get(service_input.parent.name, service_input.parent.default)
+            when_value = self.form_obj.data.get(service_input.parent.api_name, service_input.parent.default)
             if service_input.when_value != when_value:
                 field_dict.update(dict(wrapper_class="hid_dep_parameter", disabled="disabled"))
             else:
                 field_dict.update(dict(wrapper_class="dis_dep_parameter"))
-        input_field = Field(service_input.name, **field_dict)
+        input_field = Field(service_input.api_name, **field_dict)
         if isinstance(service_input, FileInput) and not service_input.multiple:
             cp_input_field = Field('cp_' + service_input.name, css_id='id_' + 'cp_' + service_input.name)
             tab_input = bootstrap.Tab(
                 "File Upload",
                 input_field,
-                css_id='tab_' + service_input.name
+                css_id='tab_' + service_input.api_name
             )
             if service_input.input_samples.count() > 0:
                 all_sample = []
                 for sample in service_input.input_samples.all():
-                    all_sample.append(Field('sp_' + service_input.name + '_' + str(sample.pk)))
+                    all_sample.append(Field('sp_' + service_input.api_name + '_' + str(sample.pk)))
                 tab_input.extend(all_sample)
             self.layout.append(
                 Div(
@@ -82,11 +82,11 @@ class FormHelper(CrispyFormHelper, WFormHelper):
                             "Copy/paste content",
                             cp_input_field,
                             css_class='copypaste',
-                            css_id='tab_cp_' + service_input.name,
+                            css_id='tab_cp_' + service_input.api_name,
                         ),
-                        css_id='tab_holder_' + service_input.name,
+                        css_id='tab_holder_' + service_input.api_name,
                     ),
-                    id='tab_pane_' + service_input.name,
+                    id='tab_pane_' + service_input.api_name,
                     css_class='copypaste',
                     dependent_on=dependent_on,
                     dependent_4_value=dependent_4_value

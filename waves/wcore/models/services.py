@@ -382,7 +382,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
             'email': forms.EmailField()
         })
         for in_param in self.expected_inputs.all().order_by('-required', 'order'):
-            form_fields.update(in_param.form_widget(data=data.get(in_param.name, None)))
+            form_fields.update(in_param.form_widget(data=data.get(in_param.api_name, None)))
         return form_fields
 
     def get_admin_url(self):

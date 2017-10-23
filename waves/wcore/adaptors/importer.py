@@ -1,17 +1,14 @@
 from __future__ import unicode_literals
 
-import os
 import logging
-import warnings
-import datetime
-import inflection
+import os
 import re
+import warnings
 
-from django.contrib.contenttypes.models import ContentType
+import inflection
+
 from waves.wcore.adaptors.exceptions import *
-from waves.wcore.models import Runner, get_service_model, get_submission_model
-from waves.wcore.models.adaptors import AdaptorInitParam
-from waves.wcore.utils.exception_logging_decorator import exception
+from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.settings import waves_settings
 
 Service = get_service_model()
@@ -43,7 +40,7 @@ class AdaptorImporter(object):
         self._formatter = InputFormat()
         self._logger = logging.getLogger(logger.name)
         self._logger.propagate = False
-        self._logger.setLevel(logging.INFO)
+        self._logger.setLevel(waves_settings.SRV_IMPORT_LOG_LEVEL)
 
     def __str__(self):
         return self.__class__.__name__
@@ -53,9 +50,8 @@ class AdaptorImporter(object):
         return self.adaptor.connected
 
     def log_file(self, tool_id):
-        today = datetime.datetime.today().strftime('%Y%m%d_%H%M%S')
-        return os.path.join(waves_settings.DATA_ROOT,
-                            "%s_%s.log" % (today, inflection.underscore(re.sub(r'[^\w]+', '_', tool_id))))
+        return os.path.join(waves_settings.DATA_ROOT, "%s_%s.log" % (
+                                self.adaptor, inflection.underscore(re.sub(r'[^\w]+', '_', tool_id))))
 
     def load_tool_params(self, tool_id, for_submission):
         """ Load tool params : Inputs / Outputs / ExitCodes
@@ -63,9 +59,10 @@ class AdaptorImporter(object):
         """
         raise NotImplementedError()
 
-    def import_service(self, tool_id, for_service=None):
+    def import_service(self, tool_id, for_service=None, update_service=False):
         """
         For specified Adaptor remote tool identifier, try to import submission params
+        :param update_service: update or not for_service if specified
         :param for_service: Specified is service should be updated or created
         :param tool_id: Adaptors provider remote tool identifier
         :return: Update service with new submission according to retrieved parameters
@@ -75,38 +72,44 @@ class AdaptorImporter(object):
             self.connect()
             self._warnings = []
             self._errors = []
-            fh = logging.FileHandler(self.log_file(tool_id))
-            formatter = logging.Formatter('[%(levelname)s] - %(message)s')
+            # setup dedicated log file
+            tool_detailed_info = self.load_tool_details(tool_id)
+            log_file = self.log_file(tool_id)
+            fh = logging.FileHandler(log_file, 'w+')
+            formatter = logging.Formatter('[%(asctime)s][%(levelname)s]: %(message)s')
             fh.setFormatter(formatter)
             self._logger.addHandler(fh)
             # First load remote service details
+            self._logger.info('------------------------------------')
+            self._logger.info('Import remote service: %s', tool_id)
             if for_service is None:
-                self.service = self.load_tool_details(tool_id)
+                self.service = tool_detailed_info
+                self._logger.info('=> to new service: %s', self.service.name)
                 # create from scratch a new one
                 # Submission has been created from signal
                 self.service.save()
                 self.submission = self.service.default_submission
+                self.submission.name = "Imported from Galaxy"
+                self.submission.availability = Submission.NOT_AVAILABLE
+                self.submission.save()
             else:
                 # Update service values
                 self.service = for_service
-                self.service.status = Service.SRV_TEST
-                self.submission = Submission(name="Imported from Galaxy",
-                                             api_name="galaxy",
-                                             service=self.service,
-                                             availability=Submission.AVAILABLE_BOTH)
-            self.submission.name = "Imported from Galaxy"
-            self.submission.api_name = "galaxy"
-            self.submission.save()
-            self.service.save()
-
-            self._logger.info('Import Service %s', tool_id)
-            self._logger.info('Service %s', self.service.name)
-
+                self._logger.info('=> to existing service: %s', self.service.name)
+                if update_service:
+                    self._logger.info('Updating service data from remote...')
+                    self.service.version = tool_detailed_info.version
+                    # save new updates
+                    self.service.save()
+                self.submission = Submission.objects.create(name="Imported from Galaxy",
+                                                            api_name="galaxy",
+                                                            service=self.service,
+                                                            availability=Submission.NOT_AVAILABLE)
+                self._logger.info("=> created new submission %s/%s", self.submission.name, self.submission.api_name)
+            self._logger.debug('----------- IMPORT PARAMS --------------')
             self.load_tool_params(tool_id, self.submission)
-            # Add file handler
-            self._logger.info('------------------------------------')
-            self._logger.info(self.service)
-            self._logger.info('------------------------------------')
+            self._logger.debug('----------- //IMPORT PARAMS ------------')
+            self._logger.info('------------- IMPORT REPORT ----------')
             if self.warnings:
                 self._logger.warn('*** // WARNINGS // ***')
                 for warn in self.warnings:
@@ -120,15 +123,15 @@ class AdaptorImporter(object):
             self._logger.info('------------')
             for service_input in self.submission.inputs.all():
                 self._logger.info("Name:%s;default:%s;required:%s", service_input, service_input.type,
-                                   service_input.get_required_display())
+                                  service_input.get_required_display())
                 self._logger.debug("Full input:")
-                [self._logger.debug('%s:%s', item, value) for (item, value) in vars(service_input).iteritems()]
+                [self._logger.debug('%s: %s', item, value) for (item, value) in vars(service_input).iteritems()]
             self._logger.info('-------------')
             self._logger.info('-- Outputs --')
             self._logger.info('-------------')
             for service_output in self.submission.outputs.all():
                 self._logger.info(service_output)
-                [self._logger.debug('%s:%s', item, value) for (item, value) in vars(service_output).iteritems()]
+                [self._logger.debug('%s: %s', item, value) for (item, value) in vars(service_output).iteritems()]
             self._logger.info('------------------------------------')
             self.adaptor.command = tool_id
             self.submission.save()

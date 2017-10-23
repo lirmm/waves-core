@@ -3,6 +3,7 @@ Version 1.1.3 - 2017-10-18
 
     - Corrected bugs in Galaxy tool import
     - Changed importer API to resolve problem with included runner / adaptor params
+    - added SRV_IMPORT_LOG_LEVEL to configuration
 
 Version 1.1.2 - 2017-09-30
 --------------------------
