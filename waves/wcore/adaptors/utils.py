@@ -7,7 +7,6 @@ from waves.wcore.adaptors.exceptions import AdaptorNotReady
 
 def check_ready(func):
     def inner(self, *args, **kwargs):
-        print [value is not None for init_param, value in self.init_params.items() if init_param in self._required]
         if not all(
                 [value is not None for init_param, value in self.init_params.items() if init_param in self._required]):
             # search missing values

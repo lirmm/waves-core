@@ -51,7 +51,7 @@ class JobMailer(object):
                 msg = EmailMessage(subject=mail_subject, body=message, to=[job.email_to],
                                    from_email=config.SERVICES_EMAIL)
                 msg.content_subtype = 'html'
-                msg.send(fail_silently=not settings.DEBUG)
+                msg.send(fail_silently=True)
             except Exception as e:
                 logger.exception("Failed to send mail to %s from %s :%s", job.email_to, config.SERVICES_EMAIL, e)
         else:

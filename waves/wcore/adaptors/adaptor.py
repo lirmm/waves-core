@@ -63,7 +63,7 @@ class JobAdaptor(object):
     def available(self):
         return True
 
-    @exception(logger)
+
     def connect(self):
         """
         Connect to remote platform adaptor
@@ -74,7 +74,7 @@ class JobAdaptor(object):
             self._connect()
         return self.connector
 
-    @exception(logger)
+
     def disconnect(self):
         """ Shut down connection to adaptor. Called after job adaptor execution to disconnect from remote
         :raise: :class:`waves.wcore.adaptors.exceptions.adaptors.AdaptorConnectException`
@@ -85,7 +85,7 @@ class JobAdaptor(object):
         self.connector = None
         self._connected = False
 
-    @exception(logger)
+
     @check_ready
     def prepare_job(self, job):
         """ Job execution preparation process, may store prepared data in a pickled object
@@ -103,7 +103,7 @@ class JobAdaptor(object):
         job.status = waves.wcore.adaptors.const.JOB_PREPARED
         return job
 
-    @exception(logger)
+
     @check_ready
     def run_job(self, job):
         """ Launch a previously 'prepared' job on the remote adaptor class
@@ -121,7 +121,7 @@ class JobAdaptor(object):
         job.status = waves.wcore.adaptors.const.JOB_QUEUED
         return job
 
-    @exception(logger)
+
     @check_ready
     def cancel_job(self, job):
         """ Cancel a running job on adaptor class, if possible
@@ -148,7 +148,7 @@ class JobAdaptor(object):
                 is_admin=True)
         return job
 
-    @exception(logger)
+
     @check_ready
     def job_status(self, job):
         """ Return current WAVES Job status
@@ -161,7 +161,7 @@ class JobAdaptor(object):
                         waves.wcore.adaptors.const.STATUS_MAP.get(job.status, 'Undefined'))
         return job
 
-    @exception(logger)
+
     @check_ready
     def job_results(self, job):
         """ If job is done, return results
@@ -172,7 +172,7 @@ class JobAdaptor(object):
         self._job_results(job)
         return job
 
-    @exception(logger)
+
     def job_run_details(self, job):
         """ Retrive job run details for job
         :param job: current Job

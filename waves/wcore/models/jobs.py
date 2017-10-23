@@ -632,11 +632,9 @@ class Job(TimeStamped, Slugged, UrlMixin):
         except WavesException as exc:
             logger.debug("Abort execution - Waves Exception %s " % smart_text(exc.message))
             self.error(exc.message)
-            raise exc
         except Exception as exc:
             logger.debug("Abort execution - Fatal unexpected error %s " % smart_text(exc.message))
             self.fatal_error(exc)
-            raise exc
         finally:
             self.logger.debug("Saving Job in DB [%s]" % self.get_status_display())
             self.save()
@@ -936,6 +934,12 @@ class JobInput(Ordered, Slugged, ApiModel):
         from django.core.urlresolvers import reverse
         return reverse('wfront:job_input', kwargs={'slug': self.slug})
 
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return self.__class__.objects.filter(api_name=api_name, job=self.job).exclude(pk=self.pk)
+
 
 class JobOutputManager(models.Manager):
     """ JobInput model Manager """
@@ -958,8 +962,7 @@ class JobOutputManager(models.Manager):
             # issued from a input value
             from_input = submission_output.from_input
             logger.debug("Output issued from input %s[%s]", from_input.name, from_input.api_name)
-            value_to_normalize = submitted_inputs.get(from_input.api_name,
-                                                      from_input.default)
+            value_to_normalize = submitted_inputs.get(from_input.api_name, from_input.default)
             logger.debug('Value to normalize init 1 %s', value_to_normalize)
             if from_input.param_type == TYPE_FILE:
                 logger.debug('From input is defined as a file')
@@ -984,7 +987,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     """
 
     class Meta:
-        unique_together = ('_name', 'job')
+        unique_together = ('api_name', 'job')
 
     objects = JobOutputManager()
     field_api_name = "value"
@@ -1065,3 +1068,9 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     @property
     def available(self):
         return os.path.isfile(self.file_path) and os.path.getsize(self.file_path) > 0
+
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return self.__class__.objects.filter(api_name=api_name, job=self.job).exclude(pk=self.pk)

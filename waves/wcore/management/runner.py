@@ -120,6 +120,9 @@ class JobQueueRunDaemon(BaseRunDaemon):
             except (waves.wcore.exceptions.WavesException, AdaptorException) as e:
                 logger.error("Error Job %s (adaptor:%s-state:%s): %s", job, runner, job.get_status_display(),
                              e.message)
+            except Exception as exc:
+                logger.error('Current job raised unrecoverable exception %s', exc)
+                job.fatal_error()
             finally:
                 logger.info("Queue job terminated at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
                 job.check_send_mail()

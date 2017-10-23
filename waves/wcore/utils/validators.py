@@ -124,7 +124,7 @@ def validate_list_comma(value):
 
 def validate_list_param(value):
     import re
-    pattern = re.compile(r"^.+\|[\w+;,:\"?']+$", re.MULTILINE)
+    pattern = re.compile(r"^.+\|[\w+;\-,:\"?']+$", re.MULTILINE)
     if not all([pattern.match(val) for val in value.splitlines()]):
         raise ValidationError('Wrong format for list elements : spaces allowed for labels, not for values')
 

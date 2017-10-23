@@ -3,6 +3,8 @@ import waves.wcore.models.const as wconst
 
 
 def command_line_element(cmd_format, name, cmd_value):
+    if cmd_value == 'None':
+        return ''
     if cmd_format == wconst.OPT_TYPE_VALUATED:
         return '--%s=%s' % (name, cmd_value)
     elif cmd_format == wconst.OPT_TYPE_SIMPLE:
