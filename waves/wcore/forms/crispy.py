@@ -40,7 +40,7 @@ class FormHelper(CrispyFormHelper, WFormHelper):
         Setup layout for displaying a form for a Service, append extra fields for forms if needed
         """
         css_class = ""
-        field_id = "id_" + service_input.name
+        field_id = "id_" + service_input.api_name
         dependent_on = ""
         dependent_4_value = ""
         if service_input.dependents_inputs.count() > 0:
@@ -52,7 +52,7 @@ class FormHelper(CrispyFormHelper, WFormHelper):
         )
         if service_input.parent is not None:
             field_id += '_' + service_input.parent.api_name + '_' + service_input.when_value
-            dependent_on = service_input.parent.name
+            dependent_on = service_input.parent.api_name
             dependent_4_value = service_input.when_value
             field_dict.update(dict(dependent_on=service_input.parent.api_name,
                                    dependent_4_value=service_input.when_value))
@@ -63,7 +63,7 @@ class FormHelper(CrispyFormHelper, WFormHelper):
                 field_dict.update(dict(wrapper_class="dis_dep_parameter"))
         input_field = Field(service_input.api_name, **field_dict)
         if isinstance(service_input, FileInput) and not service_input.multiple:
-            cp_input_field = Field('cp_' + service_input.name, css_id='id_' + 'cp_' + service_input.name)
+            cp_input_field = Field('cp_' + service_input.api_name, css_id='id_' + 'cp_' + service_input.api_name)
             tab_input = bootstrap.Tab(
                 "File Upload",
                 input_field,
@@ -83,6 +83,8 @@ class FormHelper(CrispyFormHelper, WFormHelper):
                             cp_input_field,
                             css_class='copypaste',
                             css_id='tab_cp_' + service_input.api_name,
+                            dependent_on=dependent_on,
+                            dependent_4_value=dependent_4_value,
                         ),
                         css_id='tab_holder_' + service_input.api_name,
                     ),
