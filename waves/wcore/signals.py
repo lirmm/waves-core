@@ -137,12 +137,13 @@ def api_able_pre_save_handler(sender, instance, **kwargs):
     """ Any ApiModel model object setup api_name if not already set in object data """
     if not instance.api_name or instance.api_name == '':
         instance.api_name = instance.create_api_name()
-    exists = instance.duplicate_api_name(instance.api_name).count()
-    if exists > 0:
-        deb = exists + 1
-        while instance.duplicate_api_name(api_name='%s_%s' % (instance.api_name, deb)).count() > 0:
-            deb += 1
-        instance.api_name = "%s_%s" % (instance.api_name, deb)
+    if not kwargs.get('raw', False):
+        exists = instance.duplicate_api_name(instance.api_name).count()
+        if exists > 0:
+            deb = exists + 1
+            while instance.duplicate_api_name(api_name='%s_%s' % (instance.api_name, deb)).count() > 0:
+                deb += 1
+            instance.api_name = "%s_%s" % (instance.api_name, deb)
 
 
 @receiver(post_save, sender=JobOutput)

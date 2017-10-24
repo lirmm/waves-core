@@ -1,3 +1,9 @@
+Version 1.1.4 - 2017-10-24
+--------------------------
+
+    - Corrected fixture loading conflict with signals on api_name duplicate check
+
+
 Version 1.1.3 - 2017-10-18
 --------------------------
 
