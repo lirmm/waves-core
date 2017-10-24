@@ -330,7 +330,7 @@ class ListParam(AParam):
     ]
 
     class_label = "List"
-    list_mode = models.CharField('List display mode', choices=LIST_DISPLAY_TYPE, default='select',
+    list_mode = models.CharField('List display mode', choices=LIST_DISPLAY_TYPE, default=DISPLAY_SELECT,
                                  max_length=100)
     list_elements = models.TextField('Elements', validators=[validate_list_param, ],
                                      help_text="One Element per line label|value")
