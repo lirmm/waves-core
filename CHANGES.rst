@@ -1,3 +1,8 @@
+Version 1.1.5 - 2017-11-30
+--------------------------
+    - Corrected .type property on JobInput
+
+
 Version 1.1.4 - 2017-10-24
 --------------------------
 

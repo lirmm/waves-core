@@ -22,19 +22,21 @@ class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Destro
     """
     API entry point for ServiceJobs
     """
-    queryset = Job.objects.all().order_by('-created')
+    queryset = Job.objects.all()
     serializer_class = JobSerializer
     parser_classes = (MultiPartParser, JSONParser)
     lookup_field = 'slug'
+    filter_fields = ('_status', 'updated')
 
     def get_queryset(self):
-        """ Basic job queryset """
+        """
+        Basic job queryset
+        :return: querySet
+        base_queryset = super(JobViewSet, self).get_queryset()
+        queryset = Job.objects.add_filter_user(base_queryset, self.request.user).order_by('-created')
+        return queryset
+        """
         return Job.objects.get_user_job(self.request.user).order_by('-created')
-
-    def list(self, request, *args, **kwargs):
-        """ List User's jobs (if any) from ListModelMixin """
-        serializer = JobSerializer(self.get_queryset(), many=True, context={'request': request})
-        return Response(serializer.data)
 
     def retrieve(self, request, slug=None, *args, **kwargs):
         """ Detailed job info """

@@ -80,10 +80,10 @@ class JobInputSerializer(DynamicFieldsModelSerializer):
             repres = {
                 'name': j_input.api_name,
                 "label": j_input.label,
-                'param_type': j_input.type,
+                'param_type': j_input.param_type,
                 "value": j_input.value,
             }
-            if j_input.type == TYPE_FILE:
+            if j_input.param_type == TYPE_FILE:
                 repres["download_uri"] = self.get_download_url(j_input.slug)
             to_repr.append(repres)
         return to_repr

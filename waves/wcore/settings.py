@@ -58,7 +58,6 @@ DEFAULTS = {
     'SAMPLE_DIR': join(getattr(settings, 'MEDIA_ROOT', '/tmp'), 'sample'),
     'UPLOAD_MAX_SIZE': 20 * 1024 * 1024,
     'HOST': HOSTNAME,
-    'ACCOUNT_ACTIVATION_DAYS': 7,
     'ADMIN_EMAIL': 'admin@your-site.com',
     'ALLOW_JOB_SUBMISSION': True,
     'APP_NAME': 'WAVES',

@@ -49,16 +49,13 @@ class ServiceDetailView(generic.DetailView):
         try:
             get_template(
                 'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_details.html')
-            print "res1"
             return [
                 'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_details.html']
         except TemplateDoesNotExist:
             try:
                 get_template('waves/override/service_' + self.get_object().api_name + '_details.html')
-                print "res2"
                 return ['waves/override/service_' + self.get_object().api_name + '_details.html']
             except TemplateDoesNotExist:
-                print "res3"
                 return ['waves/services/service_details.html']
 
 

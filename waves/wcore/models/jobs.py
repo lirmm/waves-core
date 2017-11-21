@@ -66,6 +66,16 @@ class JobManager(models.Manager):
             return self.filter(Q(service__created_by=user) | Q(client=user) | Q(email_to=user.email))
         return self.filter(client=user)
 
+    @staticmethod
+    def add_filter_user(queryset, user):
+        if not user or user.is_anonymous:
+            return queryset.none()
+        if user.is_superuser:
+            return queryset
+        if user.is_staff:
+            return queryset.filter(Q(service__created_by=user) | Q(client=user) | Q(email_to=user.email))
+        return queryset.filter(client=user)
+
     def get_service_job(self, user, service):
         """
         Returns jobs filtered by service, according to following access rule:
