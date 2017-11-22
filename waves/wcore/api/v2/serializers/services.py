@@ -10,6 +10,7 @@ from waves.wcore.api.share import DynamicFieldsModelSerializer
 from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.models.services import SubmissionOutput
 from .inputs import InputSerializer as DetailInputSerializer
+
 Service = get_service_model()
 Submission = get_submission_model()
 

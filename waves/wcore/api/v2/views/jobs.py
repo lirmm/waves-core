@@ -26,7 +26,7 @@ class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Destro
     serializer_class = JobSerializer
     parser_classes = (MultiPartParser, JSONParser)
     lookup_field = 'slug'
-    filter_fields = ('_status', 'updated')
+    filter_fields = ('_status', 'updated', 'submission')
 
     def get_queryset(self):
         """

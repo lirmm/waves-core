@@ -17,7 +17,6 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
         hidden = kwargs.pop('hidden', [])
         # Instantiate the superclass normally
         super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
-
         if fields:
             # Drop any fields that are not specified in the `fields` argument.
             allowed = set(fields)

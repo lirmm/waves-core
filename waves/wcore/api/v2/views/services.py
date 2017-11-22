@@ -167,6 +167,7 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSubmissionSerializer
     lookup_field = 'api_name'
     http_method_names = ['get', 'post', 'options']
+    job = None
 
     def get_queryset(self):
         """ Retrieve for service, current submissions available for API """
@@ -213,12 +214,13 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
             passed_data.pop('api_key', None)
             from waves.wcore.api.v2.serializers.jobs import JobCreateSerializer
             from django.db.models import Q
-            job = Job.objects.create_from_submission(submission=service_submission, email_to=ass_email,
+            self.job = Job.objects.create_from_submission(submission=service_submission, email_to=ass_email,
                                                      submitted_inputs=passed_data, user=request.user)
+
             # Now job is created (or raise an exception),
-            serializer = JobSerializer(job, many=False, context={'request': request},
+            serializer = JobSerializer(self.job, many=False, context={'request': request},
                                        fields=('slug', 'url', 'created', 'status',))
-            logger.debug('Job created %s ' % job.slug)
+            logger.debug('Job created %s ' % self.job.slug)
             return Response(serializer.data, status=201)
         except ValidationError as e:
             logger.warning("Validation error %s", e)

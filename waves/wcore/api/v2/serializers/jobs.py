@@ -11,6 +11,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
+from .services import ServiceSubmissionSerializer
 from waves.wcore.models import JobInput, Job, JobOutput, AParam, JobHistory, get_service_model
 from waves.wcore.models.const import *
 
@@ -186,9 +187,9 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
     class Meta:
         model = Job
         fields = ('url', 'slug', 'title', 'status_code', 'status_txt', 'created', 'updated', 'inputs', 'outputs',
-                  'history', 'client', 'service')
+                  'history', 'client', 'service', 'submission_title')
         read_only_fields = (
-            'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history')
+            'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history', 'submission_title')
         extra_kwargs = {
             'url': {'view_name': 'wapi:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}
         }
@@ -202,6 +203,7 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
     outputs = serializers.SerializerMethodField()
     inputs = serializers.SerializerMethodField()
     service = serializers.SerializerMethodField()
+    submission_title = serializers.SerializerMethodField()
 
     def get_service(self, obj):
         if obj.submission and obj.submission.service:
@@ -224,6 +226,9 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
         """ Link to job inputs wapi:api_v2 endpoint """
         return reverse(viewname='wapi:api_v2:waves-jobs-inputs', request=self.context['request'],
                        kwargs={'slug': obj.slug})
+
+    def get_submission_title(self, obj):
+        return obj.submission.name
 
     @staticmethod
     def get_status_txt(job):

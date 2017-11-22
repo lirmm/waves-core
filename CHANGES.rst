@@ -1,7 +1,10 @@
 Version 1.1.5 - 2017-11-30
 --------------------------
-    - Corrected .type property on JobInput
 
+    - Corrected: .type property on JobInput
+    - Added: filter_fields on job ViewSet
+    - Added: job instance attribute in JobSubmissionViewSet (create_job)
+    - Added: submission label in Job detail api results
 
 Version 1.1.4 - 2017-10-24
 --------------------------
