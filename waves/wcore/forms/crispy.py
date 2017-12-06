@@ -1,17 +1,18 @@
 from __future__ import unicode_literals
 
-from crispy_forms.bootstrap import *
-from crispy_forms.helper import FormHelper
+from crispy_forms import bootstrap
+from crispy_forms.helper import FormHelper as CrispyFormHelper
 from crispy_forms.layout import *
 
+from waves.wcore.settings import waves_settings
 from waves.wcore.models.inputs import *
 from waves.wcore.models.inputs import FileInputSample
 from waves.wcore.forms.helper import WFormHelper
 
-__all__ = ['WFormHelper', 'FormLayout']
+__all__ = ['FormHelper', 'FormLayout']
 
 
-class FormHelper(FormHelper, WFormHelper):
+class FormHelper(CrispyFormHelper, WFormHelper):
     """
     Extended WFormHelper based on crispy WFormHelper,
     Dynamic form fields according to inputs types and parameters
@@ -23,7 +24,7 @@ class FormHelper(FormHelper, WFormHelper):
         form_class = kwargs.pop('form_class', 'form-horizontal')
         label_class = kwargs.pop('label_class', 'col-lg-4')
         field_class = kwargs.pop('field_class', 'col-lg-8 text-left')
-        template_pack = kwargs.pop('template_pack', 'bootstrap3')
+        template_pack = kwargs.pop('template_pack', waves_settings.TEMPLATE_PACK)
         self.form_obj = form
         super(FormHelper, self).__init__(form)
         self.form_tag = form_tag
@@ -39,7 +40,7 @@ class FormHelper(FormHelper, WFormHelper):
         Setup layout for displaying a form for a Service, append extra fields for forms if needed
         """
         css_class = ""
-        field_id = "id_" + service_input.name
+        field_id = "id_" + service_input.api_name
         dependent_on = ""
         dependent_4_value = ""
         if service_input.dependents_inputs.count() > 0:
@@ -50,42 +51,44 @@ class FormHelper(FormHelper, WFormHelper):
             title=service_input.help_text,
         )
         if service_input.parent is not None:
-            field_id += '_' + service_input.parent.name + '_' + service_input.when_value
-            dependent_on = service_input.parent.name
+            field_id += '_' + service_input.parent.api_name + '_' + service_input.when_value
+            dependent_on = service_input.parent.api_name
             dependent_4_value = service_input.when_value
-            field_dict.update(dict(dependent_on=service_input.parent.name,
+            field_dict.update(dict(dependent_on=service_input.parent.api_name,
                                    dependent_4_value=service_input.when_value))
-            when_value = self.form_obj.data.get(service_input.parent.name, service_input.parent.default)
+            when_value = self.form_obj.data.get(service_input.parent.api_name, service_input.parent.default)
             if service_input.when_value != when_value:
                 field_dict.update(dict(wrapper_class="hid_dep_parameter", disabled="disabled"))
             else:
                 field_dict.update(dict(wrapper_class="dis_dep_parameter"))
-        input_field = Field(service_input.name, **field_dict)
+        input_field = Field(service_input.api_name, **field_dict)
         if isinstance(service_input, FileInput) and not service_input.multiple:
-            cp_input_field = Field('cp_' + service_input.name, css_id='id_' + 'cp_' + service_input.name)
-            tab_input = Tab(
+            cp_input_field = Field('cp_' + service_input.api_name, css_id='id_' + 'cp_' + service_input.api_name)
+            tab_input = bootstrap.Tab(
                 "File Upload",
                 input_field,
-                css_id='tab_' + service_input.name
+                css_id='tab_' + service_input.api_name
             )
             if service_input.input_samples.count() > 0:
                 all_sample = []
                 for sample in service_input.input_samples.all():
-                    all_sample.append(Field('sp_' + service_input.name + '_' + str(sample.pk)))
+                    all_sample.append(Field('sp_' + service_input.api_name + '_' + str(sample.pk)))
                 tab_input.extend(all_sample)
             self.layout.append(
                 Div(
-                    TabHolder(
+                    bootstrap.TabHolder(
                         tab_input,
-                        Tab(
+                        bootstrap.Tab(
                             "Copy/paste content",
                             cp_input_field,
                             css_class='copypaste',
-                            css_id='tab_cp_' + service_input.name,
+                            css_id='tab_cp_' + service_input.api_name,
+                            dependent_on=dependent_on,
+                            dependent_4_value=dependent_4_value,
                         ),
-                        css_id='tab_holder_' + service_input.name,
+                        css_id='tab_holder_' + service_input.api_name,
                     ),
-                    id='tab_pane_' + service_input.name,
+                    id='tab_pane_' + service_input.api_name,
                     css_class='copypaste',
                     dependent_on=dependent_on,
                     dependent_4_value=dependent_4_value
@@ -107,7 +110,7 @@ class FormHelper(FormHelper, WFormHelper):
     def end_layout(self):
         self.layout.extend([
             HTML('<HR/>'),
-            FormActions(
+            bootstrap.FormActions(
                 Reset('reset', 'Reset form'),
                 Submit('save', 'Submit a job')
             )

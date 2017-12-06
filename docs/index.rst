@@ -1,5 +1,5 @@
-Welcome to WAVES's documentation!
-=================================
+Welcome to WAVES's CORE Documentation !
+=======================================
 
 .. toctree::
     :maxdepth: 1
@@ -11,6 +11,12 @@ Welcome to WAVES's documentation!
     installation
     modules/settings
     user_doc/user_guide
+
+.. toctree::
+    :caption: Changelog
+    :maxdepth: 1
+
+    changelog
 
 .. toctree::
     :maxdepth: 1

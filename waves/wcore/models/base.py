@@ -6,7 +6,7 @@ import uuid
 
 import inflection
 from django.db import models
-
+from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
 from waves.wcore.compat import RichTextField
 from waves.wcore.settings import waves_settings as config
 
@@ -21,10 +21,12 @@ class WavesBaseModel(models.Model):
 
 
 class TimeStamped(WavesBaseModel):
-    """Time stamped 'able' models objects, add fields to inherited objects
+    """
+    Time stamped 'able' models objects, add fields to inherited objects
 
     .. note::
         This class add also default ordering by -updated, -created (reverse order)
+
     """
 
     class Meta:
@@ -41,7 +43,7 @@ class Ordered(WavesBaseModel):
     """ Order-able models objects,
 
     .. note::
-        Default ordering is set to 'order'
+        Default ordering field is set to 'order'
     """
 
     class Meta:
@@ -49,11 +51,13 @@ class Ordered(WavesBaseModel):
         ordering = ['order']
 
     #: positive integer field (default to 0)
-    order = models.PositiveIntegerField(default=0)
+    order = models.PositiveIntegerField(default=0, blank=False, null=False)
 
 
 class Described(WavesBaseModel):
-    """ A model object which inherit from this class add two description fields to model objects
+    """
+    A model object which inherit from this class add two description fields to model objects
+
     """
 
     class Meta:
@@ -79,7 +83,8 @@ class Slugged(WavesBaseModel):
 
 
 class ApiModel(WavesBaseModel):
-    """ An API-able model object need a 'api_name', in order to setup dedicated url for this model object
+    """
+    An API-able model object need a 'api_name', in order to setup dedicated url for this model object
     """
 
     class Meta:
@@ -90,9 +95,21 @@ class ApiModel(WavesBaseModel):
     api_name = models.CharField(max_length=100, null=True, blank=True,
                                 help_text='Api short code, must be unique, leave blank for automatic setup')
 
-    def duplicate_api_name(self):
-        """ Check is another entity is set with same api_name """
-        return self.__class__.objects.filter(api_name__startswith=self.api_name)
+    @property
+    def base_api_name(self):
+        last_pos = self.api_name.rfind('_')
+        if last_pos != -1 and self.api_name[last_pos + 1:].isdigit():
+            print 'base_api_name 1', self.api_name[:last_pos+1]
+            return self.api_name[:last_pos+1]
+        else:
+            print "simple api_name ", self.api_name
+            return self.api_name
+
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return self.__class__.objects.filter(api_name=api_name).exclude(pk=self.pk)
 
     def create_api_name(self):
         """
@@ -100,6 +117,15 @@ class ApiModel(WavesBaseModel):
         :return:
         """
         return inflection.underscore(re.sub(r'[^\w]+', '_', getattr(self, self.field_api_name))).lower()
+
+    def clean(self):
+        try:
+            if self.duplicate_api_name(self.api_name).count() > 0:
+                raise ValidationError({'api_name': 'Value must be unique'})
+        except MultipleObjectsReturned:
+            raise ValidationError({'api_name': "Value is not unique"})
+        except ObjectDoesNotExist:
+            pass
 
 
 class UrlMixin(object):

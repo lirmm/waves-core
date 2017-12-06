@@ -26,7 +26,7 @@ SECRET_KEY = '0jmf=ngd^2**h3km5@#&w21%hlj9kos($2=igsqh8-38_9g1$1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -42,8 +42,10 @@ INSTALLED_APPS = (
     'waves.front',
     'crispy_forms',
     'rest_framework',
+    'rest_framework_swagger',
+    'adminsortable2',
+    # 'debug_toolbar'
 )
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -53,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'waves_core.urls'
@@ -60,7 +63,9 @@ ROOT_URLCONF = 'waves_core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,17 +80,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'waves_core.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -105,7 +105,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -119,7 +118,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -127,7 +125,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "waves", "wcore", "static"),
-    os.path.join(BASE_DIR, "static")
+    # os.path.join(BASE_DIR, "static")
 ]
 
 STATICFILES_FINDERS = (
@@ -147,14 +145,14 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '[%(levelname)s][%(asctime)s][%(pathname)s:line %(lineno)s][%(name)s.%(funcName)s] - %(message)s',
+            'format': '[%(levelname)s][%(asctime)s][%(name)s.%(funcName)s:%(lineno)s] - %(message)s',
             'datefmt': "%H:%M:%S"
         },
         'simple': {
             'format': '[%(levelname)s] - %(message)s'
         },
         'trace': {
-            'format': '%(message)s'
+            'format': '[%(levelname)s][%(asctime)s] - %(message)s'
         },
     },
     'handlers': {
@@ -163,11 +161,7 @@ LOGGING = {
             'formatter': 'verbose'
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'propagate': True,
-        'level': 'WARNING',
-    },
+
     'loggers': {
         'django': {
             'handlers': ['console'],
@@ -176,9 +170,10 @@ LOGGING = {
         },
         'waves': {
             'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+            'level': 'DEBUG',
+            'propagate': True,
         },
+
     }
 }
 logging.config.dictConfig(LOGGING)
@@ -189,10 +184,13 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     )
 }
-ALLOWED_TEMPLATE_PACKS = ['bootstrap3', 'bootstrap4', 'foundation']
+ALLOWED_TEMPLATE_PACKS = ['bootstrap3', 'bootstrap4']
 
 MESSAGE_TAGS = {
-    messages.ERROR: 'danger'
+    messages.ERROR: 'error'
 }
 
-INTERNAL_IPS = ("127.0.0.1", )
+WAVES_CORE = {
+    'JOB_LOG_LEVEL': logging.DEBUG,
+}
+INTERNAL_IPS = ("127.0.0.1", "193.49.106.227")

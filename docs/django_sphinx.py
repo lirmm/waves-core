@@ -46,11 +46,11 @@ def process_docstring(app, what, name, obj, options, lines):
             if isinstance(field, models.ForeignKey):
                 to = field.rel.to
                 lines.append(u':type %s: %s to :class:`%s.%s`' % (
-                field.attname, type(field).__name__, to.__module__, to.__name__))
+                    field.attname, type(field).__name__, to.__module__, to.__name__))
             elif isinstance(field, models.ManyToManyField):
                 to = field.rel.to
                 lines.append(u':type %s: %s to :class:`%s.%s`' % (
-                field.attname, type(field).__name__, to.__module__, to.__name__))
+                    field.attname, type(field).__name__, to.__module__, to.__name__))
             elif isinstance(field, models.ManyToOneRel):
                 to = field.related_model
                 latelines.append(u'.. attribute:: %s' % (field.related_name or field.name + '_set'))

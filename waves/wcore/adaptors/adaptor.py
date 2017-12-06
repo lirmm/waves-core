@@ -16,10 +16,15 @@ class JobAdaptor(object):
     """
     Abstract JobAdaptor class, declare expected behaviour from any WAVES's JobAdaptor dependent ?
     """
+    _required = {'command', 'protocol', 'host'}
+
     NOT_AVAILABLE_MESSAGE = "Adaptor is currently not available on platform"
     name = 'Abstract Adaptor name'
     #: Remote status need to be mapped with WAVES expected job status
     _states_map = {}
+
+    def __str__(self):
+        return self.__class__.__name__
 
     def __init__(self, command='', protocol='fork', host="localhost", **kwargs):
         """ Initialize a adaptor
@@ -58,7 +63,7 @@ class JobAdaptor(object):
     def available(self):
         return True
 
-    @exception(logger)
+
     def connect(self):
         """
         Connect to remote platform adaptor
@@ -69,7 +74,7 @@ class JobAdaptor(object):
             self._connect()
         return self.connector
 
-    @exception(logger)
+
     def disconnect(self):
         """ Shut down connection to adaptor. Called after job adaptor execution to disconnect from remote
         :raise: :class:`waves.wcore.adaptors.exceptions.adaptors.AdaptorConnectException`
@@ -80,7 +85,7 @@ class JobAdaptor(object):
         self.connector = None
         self._connected = False
 
-    @exception(logger)
+
     @check_ready
     def prepare_job(self, job):
         """ Job execution preparation process, may store prepared data in a pickled object
@@ -98,7 +103,7 @@ class JobAdaptor(object):
         job.status = waves.wcore.adaptors.const.JOB_PREPARED
         return job
 
-    @exception(logger)
+
     @check_ready
     def run_job(self, job):
         """ Launch a previously 'prepared' job on the remote adaptor class
@@ -116,7 +121,7 @@ class JobAdaptor(object):
         job.status = waves.wcore.adaptors.const.JOB_QUEUED
         return job
 
-    @exception(logger)
+
     @check_ready
     def cancel_job(self, job):
         """ Cancel a running job on adaptor class, if possible
@@ -133,6 +138,7 @@ class JobAdaptor(object):
         self.connect()
         try:
             self._cancel_job(job)
+            job.status = waves.wcore.adaptors.const.JOB_CANCELLED
         except AdaptorException as exc:
             job.job_history.create(
                 message="Job for %s '%s' could not be remotely cancelled: %s " % (self.__class__.__name__,
@@ -140,10 +146,9 @@ class JobAdaptor(object):
                                                                                   exc.message),
                 status=job.status,
                 is_admin=True)
-        job.status = waves.wcore.adaptors.const.JOB_CANCELLED
         return job
 
-    @exception(logger)
+
     @check_ready
     def job_status(self, job):
         """ Return current WAVES Job status
@@ -152,11 +157,11 @@ class JobAdaptor(object):
         """
         self.connect()
         job.status = self._states_map[self._job_status(job)]
-        logger.debug('Current remote state %s mapped to %s', self._job_status(job),
-                     waves.wcore.adaptors.const.STATUS_MAP.get(job.status, 'Undefined'))
+        job.logger.info('Current remote state %s mapped to %s', self._job_status(job),
+                        waves.wcore.adaptors.const.STATUS_MAP.get(job.status, 'Undefined'))
         return job
 
-    @exception(logger)
+
     @check_ready
     def job_results(self, job):
         """ If job is done, return results
@@ -167,7 +172,7 @@ class JobAdaptor(object):
         self._job_results(job)
         return job
 
-    @exception(logger)
+
     def job_run_details(self, job):
         """ Retrive job run details for job
         :param job: current Job

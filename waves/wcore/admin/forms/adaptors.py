@@ -1,9 +1,13 @@
 from __future__ import unicode_literals
 
 from django.forms import ModelForm, ChoiceField, PasswordInput
+from django.core.exceptions import ValidationError
 
 from waves.wcore.adaptors.adaptor import JobAdaptor
-from waves.wcore.models.adaptors import AdaptorInitParam
+from waves.wcore.models import AdaptorInitParam, get_submission_model, get_service_model
+
+Service = get_service_model()
+Submission = get_submission_model()
 
 
 class AdaptorInitParamForm(ModelForm):
@@ -33,10 +37,22 @@ class AdaptorInitParamForm(ModelForm):
                         self.fields['value'] = ChoiceField(choices=choices, initial=initial)
                     if not concrete.init_value_editable(instance.name):
                         self.fields['value'].widget.attrs['readonly'] = True
-                        self.fields['prevent_override'].widget.attrs['checked'] = True
-                        self.fields['prevent_override'].widget.attrs['readonly'] = True
+                        if 'prevent_override' in self.fields:
+                            self.fields['prevent_override'].widget.attrs['checked'] = True
+                            self.fields['prevent_override'].widget.attrs['readonly'] = True
                 if instance.name == "password":
                     self.fields['value'].widget = PasswordInput(render_value="",
                                                                 attrs={'autocomplete': 'new-password'})
             except ValueError:
                 pass
+
+    def clean(self):
+        if not self.cleaned_data['value']:
+            if isinstance(self.instance.content_object, Submission):
+                raise ValidationError({'value': 'Value is mandatory'})
+            elif isinstance(self.instance.content_object, Service) \
+                    and Submission.objects.filter(runner__isnull=True,
+                                                  service=self.instance.content_object).count() > 0:
+                raise ValidationError({'value': 'Value is mandatory for forms with no overrides'})
+
+        return super(AdaptorInitParamForm, self).clean()

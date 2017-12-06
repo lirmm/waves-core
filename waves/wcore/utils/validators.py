@@ -4,6 +4,7 @@ import os
 
 import waves.wcore.models.services
 from django.core.exceptions import ValidationError
+from waves.wcore.models.const import *
 
 """
 Dynamic inputs fields validation for job creation
@@ -44,19 +45,18 @@ class ServiceInputValidator(object):
         except AssertionError as e:
             form.add_error(the_input.name, 'Wrong input "%s": %s' % (the_input, e.message))
         except AttributeError as e:
-            form.add_error(the_input.name, 'Unknown param_type for input: %s - param_type: %s' % (the_input, the_input.type))
+            form.add_error(the_input.name,
+                           'Unknown param_type for input: %s - param_type: %s' % (the_input, the_input.type))
 
     def _validate_input_boolean(self, the_input, value):
-        from waves.wcore.models.inputs import AParam
         # Add check format values
         self.specific_message = ' allowed values are "yes", "true", "1", "no", "false", "0", "None"'
         return str(value).lower() in ("yes", "true", "1", 'no', 'false', '0', 'none') and type(
-            value) == bool and the_input.type == AParam.TYPE_BOOLEAN
+            value) == bool and the_input.type == TYPE_BOOLEAN
 
     def _validate_input_file(self, the_input, value):
-        from waves.wcore.models.inputs import AParam
         from django.core.files.base import File
-        assert the_input.type == AParam.TYPE_FILE
+        assert the_input.type == TYPE_FILE
         self.specific_message = 'allowed extension are %s' % str([e[1] for e in the_input.choices])
         # TODO Check file consistency with BioPython ?
         filter_extension = the_input.choices
@@ -110,8 +110,7 @@ class ServiceInputValidator(object):
         return any(e[0] == value for e in the_input.choices)
 
     def _validate_input_text(self, the_input, value):
-        from waves.wcore.models.inputs import AParam
-        assert the_input.type == AParam.TYPE_TEXT
+        assert the_input.type == TYPE_TEXT
         assert isinstance(value, basestring) or value is None, 'value %s is not a valid string' % value
         self.specific_message = 'value %s is not a valid string' % value
         return True
@@ -119,14 +118,16 @@ class ServiceInputValidator(object):
 
 def validate_list_comma(value):
     import re
-    return re.match("(\w,)*", value)
+    if not re.match("(\w,)*", value):
+        raise ValidationError('Wrong format for list: comma separated only')
 
 
 def validate_list_param(value):
     import re
-    pattern = re.compile(r"^.+\|[\w+;,:\"?']+$", re.MULTILINE)
+    pattern = re.compile(r"^.+\|[\w+;\-,:\"?']+$", re.MULTILINE)
     if not all([pattern.match(val) for val in value.splitlines()]):
         raise ValidationError('Wrong format for list elements : spaces allowed for labels, not for values')
+
 
 def validate_name_param(value):
     import re

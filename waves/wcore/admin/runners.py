@@ -11,13 +11,10 @@ from base import ExportInMassMixin
 from waves.wcore.admin.adaptors import RunnerParamInline
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.runners import RunnerForm
-from waves.wcore.models import Runner
+from waves.wcore.models import Runner, get_service_model, get_submission_model
 
-from waves.wcore.models.services import Submission
-import swapper
-
-Service = swapper.load_model("wcore", "Service")
-
+Service = get_service_model()
+Submission = get_submission_model()
 
 __all__ = ['RunnerAdmin']
 
@@ -48,10 +45,10 @@ class SubmissionRunInline(TabularInline):
     """ List of related services """
     model = Submission
     extra = 0
-    fields = ['name', 'availability', 'created', 'updated', 'service', ]
-    readonly_fields = ['label', 'availability', 'created', 'updated', 'service', ]
+    fields = ['name', 'availability', 'created', 'updated']
+    readonly_fields = ['name', 'availability', 'created', 'updated']
     show_change_link = True
-    verbose_name_plural = "Running Submissions"
+    verbose_name_plural = "Related Submissions"
 
     def has_delete_permission(self, request, obj=None):
         """ No delete permission for runners params
@@ -67,17 +64,17 @@ class SubmissionRunInline(TabularInline):
 
 
 @register(Runner)
-class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
+class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     """ Admin for Job Runner """
     model = Runner
     form = RunnerForm
-    # inlines = (RunnerParamInline, ServiceRunInline)
+    inlines = (RunnerParamInline, ServiceRunInline)
     list_display = ('name', 'get_runner_clazz', 'connexion_string', 'short_description', 'nb_services')
     list_filter = ('name', 'clazz')
     readonly_fields = ['connexion_string']
     fieldsets = [
         ('Main', {
-            'fields': ['name', 'clazz', 'connexion_string', 'update_init_params']
+            'fields': ['name', 'clazz', 'connexion_string', 'binary_file', 'update_init_params']
         }),
         ('Description', {
             'fields': ['short_description', 'description'],
@@ -85,20 +82,6 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
         }),
     ]
     change_form_template = "admin/waves/runner/change_form.html"
-
-    def get_inlines(self, request, obj=None):
-        _inlines = [
-            RunnerParamInline,
-        ]
-        if obj and IS_POPUP_VAR not in request.GET:
-            self.inlines = _inlines
-            if obj.running_submissions.count() > 0:
-                self.inlines.append(SubmissionRunInline)
-            if obj.running_services.count() > 0:
-                self.inlines.append(ServiceRunInline)
-        elif IS_POPUP_VAR not in request.GET:
-            self.inlines = [_inlines[0], ]
-        return self.inlines
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}
@@ -119,11 +102,13 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin, DynamicInlinesAdmin):
             if 'update_init_params' in form.changed_data:
                 for service in obj.runs:
                     message = 'Related %s has been reset' % service
-                    service.set_run_params_defaults()
+                    service.set_defaults()
+                    """
                     for job in service.pending_jobs.all():
                         if job.adaptor is not None:
                             job.run_cancel()
                         message += '<br/>- Related pending job %s has been cancelled' % job.title
+                    """
                     messages.info(request, message)
 
     def connexion_string(self, obj):

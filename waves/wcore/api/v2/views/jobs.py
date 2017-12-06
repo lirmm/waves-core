@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins, status, generics
+from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import detail_route
 from rest_framework.parsers import MultiPartParser, JSONParser, BaseParser
 from rest_framework.response import Response
@@ -26,15 +26,17 @@ class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Destro
     serializer_class = JobSerializer
     parser_classes = (MultiPartParser, JSONParser)
     lookup_field = 'slug'
+    filter_fields = ('_status', 'updated', 'submission')
 
     def get_queryset(self):
-        """ Basic job queryset """
-        return Job.objects.get_user_job(self.request.user)
-
-    def list(self, request, *args, **kwargs):
-        """ List User's jobs (if any) from ListModelMixin """
-        serializer = JobSerializer(self.get_queryset(), many=True, context={'request': request})
-        return Response(serializer.data)
+        """
+        Basic job queryset
+        :return: querySet
+        base_queryset = super(JobViewSet, self).get_queryset()
+        queryset = Job.objects.add_filter_user(base_queryset, self.request.user).order_by('-created')
+        return queryset
+        """
+        return Job.objects.get_user_job(self.request.user).order_by('-created')
 
     def retrieve(self, request, slug=None, *args, **kwargs):
         """ Detailed job info """
@@ -98,7 +100,7 @@ class JobOutputRawView(SingleObjectMixin, View):
         try:
             with open(instance.file_path) as fp:
                 file_content = fp.read()
-                o_content = file_content.decode()
+                o_content = file_content.decode('utf-8')
         except IOError as e:
             return HttpResponseNotFound('Content not available')
         return HttpResponse(content=o_content, content_type="text/plain; charset=utf8")

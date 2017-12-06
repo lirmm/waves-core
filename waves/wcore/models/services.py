@@ -5,27 +5,24 @@ from __future__ import unicode_literals
 
 import logging
 import os
-
+import collections
 import swapper
-from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
+from django.conf import settings
+from django import forms
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
 from django.db.models import Q
 
 import waves.wcore.adaptors.const
-
 from waves.wcore.models.adaptors import *
+from waves.wcore.models.runners import HasRunnerParamsMixin
 from waves.wcore.models.base import *
-from waves.wcore.models.runners import Runner
 from waves.wcore.settings import waves_settings
 
-User = get_user_model()
-
-__all__ = ['ServiceRunParam', 'ServiceManager', 'Service', 'BaseService', 'Submission', "SubmissionExitCode",
-           'SubmissionOutput', 'SubmissionRunParam', 'HasRunnerParamsMixin']
+__all__ = ['ServiceRunParam', 'ServiceManager', "SubmissionExitCode",
+           'SubmissionOutput', 'SubmissionRunParam']
 
 logger = logging.getLogger(__name__)
 
@@ -88,88 +85,9 @@ class ServiceRunParam(AdaptorInitParam):
         proxy = True
 
 
-class HasRunnerParamsMixin(HasAdaptorClazzMixin):
-    """ Model mixin to manage params overriding and shortcut method to retrieve concrete classes """
-
-    class Meta:
-        abstract = True
-
-    _runner = None
-    runner = models.ForeignKey(Runner, related_name='%(app_label)s_%(class)s_runs', null=True, blank=False,
-                               on_delete=models.SET_NULL,
-                               help_text='Service job runs adapter')
-
-    @classmethod
-    def from_db(cls, db, field_names, values):
-        """ Executed each time a Service is restored from DB layer"""
-        instance = super(HasRunnerParamsMixin, cls).from_db(db, field_names, values)
-        instance._runner = instance.runner
-        return instance
-
-    def set_run_params_defaults(self):
-        """ Set runs params with defaults issued from concrete class object """
-        if self.runner:
-            if self.adaptor_params.count() > 0:
-                self.adaptor_params.all().delete()
-            runners_defaults = self.runner.run_params
-            current_defaults = self.run_params
-            [runners_defaults.pop(k, None) for k in current_defaults if k == 'protocol']
-            queryset = self.runner.adaptor_params.filter(name__in=runners_defaults.keys()) \
-                if runners_defaults else self.runner.adaptor_params.all()
-            queryset = queryset.exclude(prevent_override=True)
-            for runner_param in queryset:
-                if runner_param.prevent_override:
-                    try:
-                        self.adaptor_params.get(name=runner_param.name).delete()
-                    except ObjectDoesNotExist:
-                        continue
-                    except MultipleObjectsReturned:
-                        self.adaptor_params.filter(name=runner_param.name).delete()
-                else:
-                    defaults = {'value': runner_param.value, 'prevent_override': runner_param.prevent_override,
-                                'crypt': runner_param.crypt}
-                    object_ctype = ContentType.objects.get_for_model(self)
-                    obj, created = AdaptorInitParam.objects.update_or_create(defaults=defaults,
-                                                                             content_type=object_ctype,
-                                                                             object_id=self.pk, name=runner_param.name)
-                    logger.debug('Object %s, %s', obj, created)
-
-    @property
-    def clazz(self):
-        return self.get_runner().clazz if self.get_runner() else None
-
-    @property
-    def config_changed(self):
-        return self._runner != self.runner
-
-    @property
-    def run_params(self):
-        """
-        Return a list of tuples representing current service adaptor init params
-        :return: a Dictionary (param_name=param_service_value or runner_param_default if not set
-        :rtype: dict
-        """
-        object_params = super(HasRunnerParamsMixin, self).run_params
-        runners_default = self.get_runner().run_params
-        runners_default.update(object_params)
-        return runners_default
-
-    @property
-    def adaptor_defaults(self):
-        """ Retrieve init params defined associated concrete class (from runner attribute) """
-        return self.get_runner().run_params if self.get_runner() else {}
-
-    def get_runner(self):
-        """ Return effective runner (could be overridden is any subclasses) """
-        return self.runner
-
-
 class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
     class Meta:
         abstract = True
-        ordering = ['name']
-        verbose_name = 'Service'
-        unique_together = (('api_name', 'version', 'status'),)
 
     SRV_DRAFT = 0
     SRV_TEST = 1
@@ -188,7 +106,8 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     name = models.CharField('Service name', max_length=255, help_text='Service displayed name')
     version = models.CharField('Current version', max_length=10, null=True, blank=True, default='1.0',
                                help_text='Service displayed version')
-    restricted_client = models.ManyToManyField(User, related_name='%(app_label)s_%(class)s_restricted_services',
+    restricted_client = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                               related_name='%(app_label)s_%(class)s_restricted_services',
                                                blank=True, verbose_name='Restricted clients',
                                                help_text='By default access is granted to everyone, '
                                                          'you may restrict access here.')
@@ -201,7 +120,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
                                    help_text='This service sends notification email')
     partial = models.BooleanField('Dynamic outputs', default=False,
                                   help_text='Set whether some service outputs are dynamic (not known in advance)')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     remote_service_id = models.CharField('Remote service tool ID', max_length=255, editable=False, null=True)
     edam_topics = models.TextField('Edam topics', null=True, blank=True,
                                    help_text='Comma separated list of Edam ontology topics')
@@ -216,10 +135,10 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def __str__(self):
         return "%s v(%s)" % (self.name, self.version)
 
-    def set_run_params_defaults(self):
-        super(BaseService, self).set_run_params_defaults()
+    def set_defaults(self):
+        super(BaseService, self).set_defaults()
         for sub in self.submissions.all():
-            sub.set_run_params_defaults()
+            sub.set_defaults()
 
     @property
     def jobs(self):
@@ -246,7 +165,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def command(self):
         """ Return command parser for current Service """
         from waves.wcore.commands.command import BaseCommand
-        return BaseCommand(service=self)
+        return BaseCommand()
 
     def service_submission_inputs(self, submission=None):
         """
@@ -271,7 +190,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
             srv.validated_data['name'] += ' (copy)'
             new_object = srv.save()
         else:
-            messages.warning('Object could not be duplicated')
+            messages.warning(message='Object could not be duplicated')
             new_object = self
         return new_object
 
@@ -304,7 +223,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     @property
     def submissions_api(self):
         """ Returned submissions available on API """
-        return self.submissions.filter(availability__gt=2)
+        return self.submissions.filter(availability__gte=2)
 
     def available_for_user(self, user):
         """ Access rules for submission form according to user
@@ -324,7 +243,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
                user.is_superuser
 
     @property
-    def serializer(self):
+    def serializer(self, context=None):
         from waves.wcore.models.serializers.services import ServiceSerializer
         return ServiceSerializer
 
@@ -356,55 +275,50 @@ class Service(BaseService):
     """
 
     class Meta:
+        ordering = ['name']
+        verbose_name = 'Online Service'
+        verbose_name_plural = "Online Services"
+        unique_together = (('api_name', 'version', 'status'),)
         swappable = swapper.swappable_setting('wcore', 'Service')
 
 
-class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
+class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     class Meta:
-        verbose_name = 'Submission'
-        verbose_name_plural = 'Submissions'
+        abstract = True
         unique_together = ('service', 'api_name')
-        ordering = ('order',)
 
     NOT_AVAILABLE = 0
     AVAILABLE_WEB_ONLY = 1
     AVAILABLE_API_ONLY = 2
     AVAILABLE_BOTH = 3
+
     service = models.ForeignKey(swapper.get_model_name('wcore', 'Service'), on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
     availability = models.IntegerField('Availability', default=3,
-                                       choices=[(NOT_AVAILABLE, "Not Available"),
-                                                (AVAILABLE_WEB_ONLY, "Available on web only"),
-                                                (AVAILABLE_API_ONLY, "Available on api only"),
-                                                (AVAILABLE_BOTH, "Available on both")])
-    name = models.CharField('Submission title', max_length=255, null=False, blank=False)
-
-    @property
-    def config_changed(self):
-        return self.runner != self.get_runner() or self._runner != self.runner
-
-    def set_run_params_defaults(self):
-        if self.config_changed and self._runner:
-            self.adaptor_params.all().delete()
-        super(Submission, self).set_run_params_defaults()
-
-    @property
-    def run_params(self):
-        if not self.runner:
-            return self.service.run_params
-        elif self.runner.pk == self.service.runner.pk:
-            # same runner but still overriden in bo, so merge params (submission params prevents)
-            service_run_params = self.service.run_params
-            object_run_params = super(Submission, self).run_params
-            service_run_params.update(object_run_params)
-            return service_run_params
-        return super(Submission, self).run_params
+                                       choices=((NOT_AVAILABLE, "Not Available"),
+                                                (AVAILABLE_WEB_ONLY, "Available web only"),
+                                                (AVAILABLE_API_ONLY, "Available api only"),
+                                                (AVAILABLE_BOTH, "Available api and web")))
+    name = models.CharField('Title', max_length=255, null=False, blank=False)
 
     def get_runner(self):
         if self.runner:
             return self.runner
         else:
             return self.service.runner
+
+    @property
+    def run_params(self):
+        if self.runner:
+            return super(BaseSubmission, self).run_params
+            object_params = {init.name: init.get_value() for init in self.adaptor_params.all()}
+            # Retrieve the ones defined for runner
+            runners_params = self.get_runner().run_params
+            # Merge them
+            runners_params.update(object_params)
+            return runners_params
+        else:
+            return self.service.run_params
 
     @property
     def available_online(self):
@@ -422,7 +336,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     @property
     def expected_inputs(self):
         """ Retrieve only expected inputs to submit a job """
-        return self.inputs.filter(parent__isnull=True).exclude(required=None)
+        return self.inputs.filter(parent__isnull=True, required__isnull=False).order_by('order', '-required')
 
     def duplicate(self, service):
         """ Duplicate a submission with all its inputs """
@@ -460,36 +374,70 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     @property
     def pending_jobs(self):
         """ Get current Service Jobs """
-        return self.service_jobs.filter(status__in=waves.wcore.adaptors.const.PENDING_STATUS)
+        return self.service_jobs.filter(_status__in=waves.wcore.adaptors.const.PENDING_STATUS)
 
-    def duplicate_api_name(self):
-        """ Check is another entity is set with same api_name """
-        return Submission.objects.filter(api_name__startswith=self.api_name, service=self.service)
+    def form_fields(self, data):
+        form_fields = collections.OrderedDict({
+            'title': forms.CharField(max_length=200),
+            'email': forms.EmailField()
+        })
+        for in_param in self.expected_inputs.all().order_by('-required', 'order'):
+            form_fields.update(in_param.form_widget(data=data.get(in_param.api_name, None)))
+        return form_fields
+
+    def get_admin_url(self):
+        return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
+
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return self.__class__.objects.filter(api_name=api_name, service=self.service).exclude(pk=self.pk)
+
+
+class Submission(BaseSubmission):
+    class Meta:
+        verbose_name = 'Submission form'
+        verbose_name_plural = 'Submission forms'
+        ordering = ('order',)
+        swappable = swapper.swappable_setting('wcore', 'Submission')
 
 
 class SubmissionOutput(TimeStamped, ApiModel):
     """
-    Represents usual service parameters output values (share same attributes with ServiceParameters)
+    Represents usual service expected output files
     """
 
     class Meta:
-        verbose_name = 'Output'
-        verbose_name_plural = 'Outputs'
+        verbose_name = 'Expected output'
+        verbose_name_plural = 'Expected outputs'
         ordering = ['-created']
 
+    #: Source field for api_name
     field_api_name = 'label'
+    #: Displayed label
     label = models.CharField('Label', max_length=255, null=True, blank=False, help_text="Label")
+    #: Output Name (internal)
     name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Label")
-    submission = models.ForeignKey(Submission, related_name='outputs', on_delete=models.CASCADE)
-    from_input = models.ForeignKey('AParam', null=True, blank=True, related_name='to_outputs',
+    #: Related Submission
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
+                                   related_name='outputs',
+                                   on_delete=models.CASCADE)
+    #: Associated Submission Input if needed
+    from_input = models.ForeignKey('AParam', null=True, blank=True, default=None, related_name='to_outputs',
                                    help_text='Is valuated from an input')
+    #: Pattern to apply to associated input
     file_pattern = models.CharField('File name or name pattern', max_length=100, blank=False,
                                     help_text="Pattern is used to match input value (%s to retrieve value from input)")
+    #: EDAM format
     edam_format = models.CharField('Edam format', max_length=255, null=True, blank=True,
                                    help_text="Edam ontology format")
+    #: EDAM data type
     edam_data = models.CharField('Edam data', max_length=255, null=True, blank=True,
                                  help_text="Edam ontology data")
+    #: Help text displayed on results
     help_text = models.TextField('Help Text', null=True, blank=True, )
+    #: File extension
     extension = models.CharField('Extension', max_length=5, blank=True, default="",
                                  help_text="Leave blank for *, or set in file pattern")
 
@@ -509,7 +457,9 @@ class SubmissionOutput(TimeStamped, ApiModel):
 
     @property
     def ext(self):
-        """ return expected file output extension """
+        """
+        return expected file output extension
+        """
         file_name = None
         if self.name and '%s' in self.name and self.from_input and self.from_input.default:
             file_name = self.name % self.from_input.default
@@ -520,6 +470,12 @@ class SubmissionOutput(TimeStamped, ApiModel):
         else:
             return self.extension
 
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return SubmissionOutput.objects.filter(api_name=api_name, submission=self.submission).exclude(pk=self.pk)
+
 
 class SubmissionExitCode(WavesBaseModel):
     """ Services Extended exit code, when non 0/1 usual ones"""
@@ -528,9 +484,12 @@ class SubmissionExitCode(WavesBaseModel):
         verbose_name = 'Exit Code'
         unique_together = ('exit_code', 'submission')
 
-    exit_code = models.IntegerField('Exit code value')
+    exit_code = models.IntegerField('Exit code value', default=0)
     message = models.CharField('Exit code message', max_length=255)
-    submission = models.ForeignKey(Submission, related_name='exit_codes', on_delete=models.CASCADE)
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
+                                   related_name='exit_codes',
+                                   null=True,
+                                   on_delete=models.CASCADE)
     is_error = models.BooleanField('Is an Error', default=False, blank=False)
 
     def __str__(self):

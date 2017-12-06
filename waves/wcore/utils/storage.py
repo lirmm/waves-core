@@ -52,7 +52,7 @@ def allow_display_online(file_name):
         return display_file_online >= size > 0
     except os.error:
         return False
-    return False
+
 
 
 waves_storage = WavesStorage()

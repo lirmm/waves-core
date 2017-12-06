@@ -26,7 +26,7 @@
                 console.log('toggle fired' + $(this).prop('checked'));
                 toggleAutoRefresh($(this).prop('checked'));
             })
-        })
+        });
         // $("#reloadCB").onSwitchChange(toggleAutoRefresh($("#reloadCB")));
         window.onload = checkReloading;
 
@@ -50,7 +50,7 @@
                             </p>
                         </div>
                         <div class="panel-body">
-                            {% include "waves/parts/job_detail.html" with job=job %}
+                            {% include "waves/jobs/parts/job_detail.html" with job=job %}
                         </div>
                         <div class="panel-footer text-right">
                             <em>

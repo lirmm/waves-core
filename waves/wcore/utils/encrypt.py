@@ -16,7 +16,6 @@ class Encrypt(object):
     @staticmethod
     def encrypt(to_encode):
         """ Crypt 'to_encode'
-        :param secret: secret key use to encode/decode values
         :param to_encode: value to encode
         :return: base64 based encoded string
         """
@@ -29,7 +28,6 @@ class Encrypt(object):
     @staticmethod
     def decrypt(to_decode):
         """ Decrypt previously encoded 'to_decode'
-        :param secret: secret key used to encode/decode values
         :param to_decode: value to decode
         :return: string initial value
         """

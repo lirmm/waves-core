@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-import swapper
+from adminsortable2.admin import SortableInlineAdminMixin
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
@@ -8,32 +8,35 @@ from django.utils.safestring import mark_safe
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
 from waves.wcore.admin.base import *
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
-from waves.wcore.models.services import Submission
+from waves.wcore.models import get_service_model, get_submission_model
+from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.utils import url_to_edit_object
 
-Service = swapper.load_model("wcore", "Service")
+Service = get_service_model()
+Submission = get_submission_model()
 User = get_user_model()
 
 __all__ = ['ServiceAdmin', 'ServiceSubmissionInline']
 
 
-class ServiceSubmissionInline(admin.TabularInline):
+class ServiceSubmissionInline(SortableInlineAdminMixin, admin.TabularInline):
     """ Service Submission Inline (included in ServiceAdmin) """
     model = Submission
     form = SubmissionInlineForm
-    extra = 1
+    extra = 0
     fk_name = 'service'
     sortable = 'order'
     sortable_field_name = "order"
     classes = ('grp-collapse grp-closed', 'collapse')
-    fields = ['name', 'availability', 'api_name', 'get_runner']
-    readonly_fields = ['api_name', 'get_runner']
+    fields = ['name', 'availability', 'api_name', 'runner']
     show_change_link = True
 
-    def get_runner(self, obj):
-        return obj.runner or "-"
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        return super(ServiceSubmissionInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
-    get_runner.short_description = "Overridden runner"
+
+class ServiceBinaryInline(admin.TabularInline):
+    model = ServiceBinaryFile
 
 
 class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, WavesModelAdmin,
@@ -45,8 +48,9 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
               'admin/waves/js/connect.js')
 
     form = ServiceForm
+
     filter_horizontal = ['restricted_client']
-    readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link']
+    readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link', 'display_run_params']
     list_display = ('name', 'api_name', 'runner', 'version', 'status', 'created_by',
                     'submission_link')
     list_filter = ('status', 'name', 'created_by')
@@ -54,41 +58,46 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     fieldsets = [
         ('General', {
-            'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['name', 'created_by', 'runner', 'version', 'created', 'updated', 'short_description']
+            'fields': ['name', 'created_by', 'status', 'short_description'],
+            'classes': ('grp-collapse grp-closed', 'collapse', 'open')
+
         }),
-        ('Access', {
+        ('Run Config', {
+            'fields': ['runner', 'binary_file', 'display_run_params'],
+            'classes': ('collapse',)
+        }),
+        ('Manage Access', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['status', 'restricted_client', 'api_on', 'web_on', 'email_on', ]
+            'fields': ['restricted_client', 'api_on', 'web_on', 'email_on', ]
         }),
         ('Details', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['api_name', 'description', 'edam_topics',
+            'fields': ['api_name', 'version', 'created', 'updated', 'description', 'edam_topics',
                        'edam_operations', 'remote_service_id', ]
         }),
     ]
-    extra_fieldsets = None
-    override_fieldsets = False
+
+    extra_fieldsets = []
 
     def get_fieldsets(self, request, obj=None):
         base_fieldsets = super(ServiceAdmin, self).get_fieldsets(request, obj)
-        if self.override_fieldsets:
-            field_sets = self.extra_fieldsets
-        elif self.extra_fieldsets is not None:
-            field_sets = base_fieldsets + self.extra_fieldsets
-        else:
-            field_sets = base_fieldsets
-        return field_sets
+        return base_fieldsets + self.extra_fieldsets
+
+    def get_inlines(self, request, obj=None):
+        _inlines = [
+            ServiceSubmissionInline,
+        ]
+        self.inlines = _inlines
+        if obj and obj.runner is not None \
+                and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
+            self.inlines.insert(0, ServiceRunnerParamInLine)
+        return self.inlines
 
     # Override admin class and set this list to add your inlines to service admin
-    def get_inlines(self, request, obj=None):
-        _inlines = []
-        self.inlines = _inlines
-        if obj:
-            self.inlines.append(ServiceSubmissionInline)
-            if obj.runner is not None and obj.runner.adaptor_params.filter(prevent_override=False).count() > 0:
-                self.inlines.append(ServiceRunnerParamInLine)
-        return self.inlines
+    def display_run_params(self, obj):
+        return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
+
+    display_run_params.short_description = "Runner initial params"
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}
@@ -111,10 +120,8 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         readonly_fields = super(ServiceAdmin, self).get_readonly_fields(request, obj)
         if not request.user.is_superuser:
             readonly_fields.append('created_by')
-        if obj and obj.status > Service.SRV_TEST:
+        if obj and obj.status > Service.SRV_TEST and not 'api_name' in readonly_fields:
             readonly_fields.append('api_name')
-        else:
-            readonly_fields.remove('api_name') if 'api_name' in readonly_fields else None
         if obj is not None and obj.created_by != request.user:
             readonly_fields.append('clazz')
             readonly_fields.append('version')
@@ -125,9 +132,9 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         request.current_obj = obj
         form = super(ServiceAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
-        form.base_fields['runner'].widget.can_delete_related = False
-        form.base_fields['runner'].widget.can_add_related = False
-        form.base_fields['runner'].widget.can_change_related = False
+        # form.base_fields['runner'].widget.can_delete_related = False
+        # form.base_fields['runner'].widget.can_add_related = False
+        # form.base_fields['runner'].widget.can_change_related = False
         form.base_fields['created_by'].widget.can_change_related = False
         form.base_fields['created_by'].widget.can_add_related = False
         form.base_fields['created_by'].widget.can_delete_related = False

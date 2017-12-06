@@ -11,6 +11,7 @@ class AdaptorInitParamInline(GenericTabularInline):
     form = AdaptorInitParamForm
     model = AdaptorInitParam
     extra = 0
+    max_num = 0
     fields = ['name', 'value', 'default_value', 'prevent_override']
     readonly_fields = ('name', 'default_value')
     classes = ('collapse grp-collapse grp-closed',)
@@ -51,13 +52,21 @@ class ServiceRunnerParamInLine(AdaptorInitParamInline):
     """ Adaptors parameters for Service """
     model = AdaptorInitParam
 
+    def get_queryset(self, request):
+        queryset = super(ServiceRunnerParamInLine, self).get_queryset(request)
+        queryset = queryset.filter(prevent_override=False)
+        return queryset
+
+    def has_add_permission(self, request):
+        return False
+
 
 class SubmissionRunnerParamInLine(AdaptorInitParamInline):
     """ Adaptors parameters for submission when overridden """
     model = AdaptorInitParam
     fields = ['name', 'value', ]
 
-    def get_readonly_fields(self, request, obj=None):
-        if obj and not obj.runner:
-            self.readonly_fields = self.fields
-        return super(SubmissionRunnerParamInLine, self).get_readonly_fields(request, obj)
+    def get_queryset(self, request):
+        queryset = super(SubmissionRunnerParamInLine, self).get_queryset(request)
+        queryset = queryset.filter(prevent_override=False)
+        return queryset

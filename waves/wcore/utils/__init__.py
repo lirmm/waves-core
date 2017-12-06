@@ -5,7 +5,6 @@ import logging
 import random
 import string
 
-import swapper
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
@@ -25,8 +24,8 @@ def get_all_subclasses(cls):
 def normalize_value(value):
     import inflection
     import re
-    value = re.sub(r'[^\w\.]+', '_', value)
-    return inflection.underscore(value).lower()
+    value = re.sub(r'[^\w.]+', '_', value)
+    return inflection.underscore(value) # .lower()
 
 
 def url_to_edit_object(obj):
@@ -40,13 +39,5 @@ def url_to_edit_object(obj):
         return "#"
 
 
-def get_service_model():
-    """
-    Returns the User model that is active in this project.
-    """
-    return swapper.load_model("wcore", "Service")
-
-
 def random_analysis_name():
-    return "analysis " + ''.join(
-        random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))

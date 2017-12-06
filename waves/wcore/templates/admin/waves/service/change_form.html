@@ -9,15 +9,6 @@
             Jobs
         </a>
     </li>
-    <!--li>
-        <a type="button" href="{% url 'wcore:service_duplicate' original.pk %}"
-           target="_self"
-           title="Duplicate"
-           class="btn btn-high btn-info"
-           id="duplicate_service">
-            Duplicate
-        </a>
-    </li-->
     <li>
         <a type="button" href="{% url 'wcore:service_export_form' original.pk %}"
            title="View online"
@@ -26,13 +17,21 @@
             Export
         </a>
     </li>
-    <li>
-        <a type="button" href="{% url 'wcore:service_preview' original.pk %}"
-           class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
-            Preview
-        </a>
-    </li>
     {% if original.runner %}
+        <li>
+            <a type="button" href="{% url 'admin:wcore_runner_change' original.runner.pk %}"
+               title="View online"
+               class="btn btn-high btn-info"
+               id="view runner">
+                Execution
+            </a>
+        </li>
+        <li>
+            <a type="button" href="{% url 'wcore:service_preview' original.pk %}"
+               class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
+                Preview
+            </a>
+        </li>
         <li>
             <a type="button" href="{% url 'wcore:service_test_connection' original.pk %}"
                title="Connection Test"
@@ -41,6 +40,7 @@
                 Test Connection
             </a>
         </li>
+        {%  comment "Service Tool import needs update" %}
         {% if original.runner.adaptor.importer %}
             <li>
                 <a type="button" href="{% url 'wcore:service_import_form' original.pk %}"
@@ -54,6 +54,6 @@
                 </a>
             </li>
         {% endif %}
-
+        {% endcomment %}
     {% endif %}
 {% endblock %}

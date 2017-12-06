@@ -1,7 +1,9 @@
-import waves.wcore.adaptors
+from __future__ import unicode_literals
+
+import waves.wcore.adaptors.const
 
 
-class AdaptorException(BaseException):
+class AdaptorException(Exception):
     """ Base Adaptor exception class, should be raise upon specific Adaptor class exception catch
     this exception class is supposed to be catched
     """
@@ -34,27 +36,28 @@ class AdaptorJobException(AdaptorException):
 
 
 class AdaptorJobStateException(AdaptorJobException):
-    def __init__(self, status, expected, parent=None):
+    def __init__(self, status, expected):
         if expected is not list:
             expected = [expected]
-        msg = "Wrong job state, excepted %s, got %s" % ([waves.wcore.adaptors.const.STATUS_MAP[state] for state in expected],
-                                                        waves.wcore.adaptors.const.STATUS_MAP[status])
-        super(AdaptorJobStateException, self).__init__(msg, parent=parent)
+        msg = "Wrong job state, excepted %s, got %s" % (
+            [waves.wcore.adaptors.const.STATUS_MAP[state] for state in expected],
+            waves.wcore.adaptors.const.STATUS_MAP[status])
+        super(AdaptorJobStateException, self).__init__(msg)
 
 
-class AdaptorNotReady(Exception):
+class AdaptorNotReady(AdaptorException):
     """ Adaptor is not properly initialized to be used """
     pass
 
 
-class AdaptorInitError(AttributeError):
+class AdaptorInitError(AdaptorException):
     """ Each adaptor expects some attributes for initialization, this exception should be raised when some mandatory
     parameters are missing
     """
     pass
 
 
-class ImporterException(BaseException):
+class ImporterException(AdaptorException):
     pass
 
 
@@ -74,14 +77,14 @@ class UnManagedAttributeException(UnmanagedException):
 
 
 class UnManagedAttributeTypeException(UnmanagedException):
-    base_msg = "Unmanaged Attribute type: "
+    base_msg = "Unmanaged Type: "
 
     def __init__(self, *args, **kwargs):
         super(UnManagedAttributeTypeException, self).__init__(*args, **kwargs)
 
 
 class UnmanagedInputTypeException(UnmanagedException):
-    base_msg = "Unmanaged Input type: "
+    base_msg = "Unmanaged Input: "
 
     def __init__(self, *args, **kwargs):
         super(UnmanagedInputTypeException, self).__init__(*args, **kwargs)

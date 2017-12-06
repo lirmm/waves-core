@@ -4,6 +4,13 @@
 {% block extrahead %}
     {{ block.super }}
 {% endblock %}
+{% block content_title %}
+    {% if not title %}
+        <h1>Edit "{{ opts.verbose_name }} - {{ original }}"</h1>
+    {% else %}
+        {{ block.super }}
+    {% endif %}
+{% endblock %}
 {% block footer %}
     {{ block.super }}
     {% include 'admin/waves/modal_alert.html' %}

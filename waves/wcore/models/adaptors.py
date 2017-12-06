@@ -10,6 +10,7 @@ from django.db import models
 from django.utils.module_loading import import_string
 
 from waves.wcore.models.base import WavesBaseModel
+from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.utils.encrypt import Encrypt
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class AdaptorInitParam(WavesBaseModel):
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey(for_concrete_model=False)
+    content_object = GenericForeignKey(for_concrete_model=True)
 
     def __str__(self):
         if self.crypt:
@@ -51,9 +52,15 @@ class AdaptorInitParam(WavesBaseModel):
         instance = super(AdaptorInitParam, cls).from_db(db, field_names, values)
         if instance.name == "password" and instance.value:
             instance.value = Encrypt.decrypt(instance.value)
-        instance._value = instance.value
+        instance._value = instance.get_value()
         instance._override = instance.prevent_override
         return instance
+
+    def get_value(self):
+        if self.name == "command" and self.content_object is not None:
+            if self.content_object.binary_file is not None:
+                return self.content_object.binary_file.binary.path
+        return self.value
 
     @property
     def config_changed(self):
@@ -75,31 +82,35 @@ class HasAdaptorClazzMixin(WavesBaseModel):
                              help_text="This is the concrete class used to perform job execution")
     adaptor_params = GenericRelation(AdaptorInitParam)
 
-    def set_run_params_defaults(self):
-        """Set runs params with defaults issued from concrete class object """
+    binary_file = models.ForeignKey(ServiceBinaryFile, null=True, blank=True, on_delete=models.SET_NULL,
+                                    help_text="If set, 'Execution parameter' param line:'command' will be ignored")
+
+    def set_defaults(self):
+        """Set runs params with defaults issued from adaptor class object """
+        # Reset all old values
+        self.adaptor_params.all().delete()
         object_ctype = ContentType.objects.get_for_model(self)
-        # Delete keyx not present in new configuration
-        self.adaptor_params.exclude(name__in=self.adaptor.init_params.keys()).delete()
-        # keep old values set for runner if key is the same
-        adaptors_defaults = self.adaptor.init_params
-        current_defaults = self.run_params
-        [adaptors_defaults.pop(k, None) for k in current_defaults if k != 'protocol']
-        for name, default in adaptors_defaults.items():
+        for name, default in self.adaptor_defaults.items():
             if name == 'password':
-                defaults = {'name': name[6:], 'crypt': True}
+                defaults = {'name': name, 'crypt': True}
             else:
                 defaults = {'name': name, 'crypt': False}
             if type(default) in (tuple, list, dict):
                 default = default[0][0]
                 defaults['prevent_override'] = True
+            else:
+                defaults['prevent_override'] = False
             defaults['value'] = default
-            AdaptorInitParam.objects.update_or_create(defaults=defaults, content_type=object_ctype,
-                                                      object_id=self.pk, name=name)
+            AdaptorInitParam.objects.create(name=defaults['name'],
+                                            value=defaults['value'],
+                                            prevent_override=defaults['prevent_override'],
+                                            content_type=object_ctype,
+                                            object_id=self.pk)
 
     @property
     def run_params(self):
         """ Get defined params values from db """
-        return {init.name: init.value for init in self.adaptor_params.all()}
+        return {init.name: init.get_value() for init in self.adaptor_params.all()}
 
     @property
     def adaptor_defaults(self):
@@ -127,10 +138,11 @@ class HasAdaptorClazzMixin(WavesBaseModel):
         :return: a subclass JobAdaptor object instance
         :rtype: JobAdaptor
         """
-        if self.clazz is not '' and (self._adaptor is None or self.config_changed):
+        if self.clazz and (self._adaptor is None or self.config_changed):
             try:
                 self._adaptor = import_string(self.clazz)(**self.run_params)
             except ImportError as e:
+                logger.error('Import Adaptor error %s ' % e)
                 self._adaptor = None
         return self._adaptor
 

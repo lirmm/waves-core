@@ -5,14 +5,17 @@ from __future__ import unicode_literals
 from django.db import DatabaseError
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
+from django.views import generic
 from django.views.generic import View
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-import swapper
+from waves.wcore.settings import waves_settings
+from waves.wcore.models import get_service_model
+from waves.wcore.views.services import SubmissionFormView, Service
 from waves.wcore.admin.views.export import ModelExportView
 from waves.wcore.admin.views.runner_tool import RunnerImportToolView, ObjectDoesNotExist, RunnerTestConnectionView
 
-Service = swapper.load_model("wcore", "Service")
+Service = get_service_model()
 
 
 # TODO in manage permission
@@ -67,3 +70,25 @@ class ServiceTestConnectionView(RunnerTestConnectionView):
 
     def get_object_name(self):
         return self.object.runner.name
+
+
+class ServicePreviewForm(SubmissionFormView):
+    template_name = 'admin/waves/service/service_preview.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ServicePreviewForm, self).get_context_data(**kwargs)
+        context['template_pack'] = self.request.POST.get('template_pack', waves_settings.TEMPLATE_PACK)
+        return context
+
+
+class ServiceModalPreview(generic.DetailView):
+    model = Service
+    context_object_name = 'service'
+    queryset = Service.objects.all().prefetch_related('submissions')
+    object = None
+    template_name = 'admin/waves/service/service_modal.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ServiceModalPreview, self).get_context_data(**kwargs)
+        return context
+

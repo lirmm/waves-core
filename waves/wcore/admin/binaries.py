@@ -1,9 +1,11 @@
 from __future__ import unicode_literals
 
 from os.path import isfile
+
 from django.contrib import admin
 from django.contrib.admin import register
-from waves.wcore.models import ServiceBinaryFile
+
+from waves.wcore.models.binaries import ServiceBinaryFile
 
 
 @register(ServiceBinaryFile)

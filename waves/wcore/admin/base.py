@@ -6,7 +6,8 @@ from django.contrib.admin import ModelAdmin
 from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 
-__all__ = ['DuplicateInMassMixin', 'ExportInMassMixin', 'MarkPublicInMassMixin', 'WavesModelAdmin', 'DynamicInlinesAdmin']
+__all__ = ['DuplicateInMassMixin', 'ExportInMassMixin', 'MarkPublicInMassMixin', 'WavesModelAdmin',
+           'DynamicInlinesAdmin']
 
 
 def duplicate_in_mass(modeladmin, request, queryset):
@@ -16,11 +17,11 @@ def duplicate_in_mass(modeladmin, request, queryset):
         try:
             new = obj.duplicate()
             messages.add_message(request, level=messages.SUCCESS, message="Object %s successfully duplicated" % obj)
+            if queryset.count() == 1:
+                return redirect(
+                    reverse('admin:%s_%s_change' % (new._meta.app_label, new._meta.model_name), args=[new.id]))
         except StandardError as e:
             messages.add_message(request, level=messages.ERROR, message="Object %s error %s " % (obj, e.message))
-    if queryset.count() == 1:
-        return redirect(
-            reverse('admin:%s_%s_change' % (new._meta.app_label, new._meta.model_name), args=[new.id]))
 
 
 def export_in_mass(modeladmin, request, queryset):
@@ -77,6 +78,7 @@ class MarkPublicInMassMixin(admin.ModelAdmin):
 
 class WavesModelAdmin(ModelAdmin):
     """ Base models admin including global medias """
+
     class Media:
         js = (
             'admin/waves/js/admin.js',

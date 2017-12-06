@@ -36,7 +36,6 @@ class MockJobRunnerAdaptor(JobAdaptor):
     def _job_status(self, job):
         time.sleep(2)
         if job.status == waves.wcore.adaptors.const.JOB_RUNNING:
-            # print "job is running, set it to completed!"
             return waves.wcore.adaptors.const.JOB_COMPLETED
         job.updated = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%I')
         return job.next_status

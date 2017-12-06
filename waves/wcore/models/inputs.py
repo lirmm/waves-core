@@ -4,17 +4,18 @@ from __future__ import unicode_literals
 from decimal import Decimal
 from os.path import basename
 
+import swapper
 from django.core.exceptions import ValidationError
 from django.db import models
+from django import forms
 from django.utils.safestring import mark_safe
-from polymorphic.models import PolymorphicModel
+from polymorphic.models import PolymorphicModel, PolymorphicManager
 
-from waves.wcore.models import WavesBaseModel
-from waves.wcore.models.base import Ordered, ApiModel
-from waves.wcore.models.services import Submission
+from waves.wcore.models.base import WavesBaseModel, Ordered, ApiModel
 from waves.wcore.settings import waves_settings
 from waves.wcore.utils.storage import file_sample_directory, waves_storage
 from waves.wcore.utils.validators import validate_list_comma, validate_list_param
+from waves.wcore.models.const import *
 
 __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam', 'NumberParam',
            'ListParam', 'IntegerParam', 'TextParam', 'FileInputSample', 'SampleDepParam']
@@ -23,10 +24,11 @@ __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam
 class RepeatedGroup(Ordered):
     """ Some input may be grouped, and group could be repeated"""
 
-    submission = models.ForeignKey(Submission, related_name='submission_groups', null=True,
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
+                                   related_name='submission_groups', null=True,
                                    on_delete=models.CASCADE)
-    name = models.CharField('Group name', max_length=255, null=False, blank=False)
-    title = models.CharField('Group title', max_length=255, null=False, blank=False)
+    name = models.CharField('Group name', max_length=50, null=False, blank=False)
+    title = models.CharField('Group title', max_length=200, null=False, blank=False)
     max_repeat = models.IntegerField("Max repeat", null=True, blank=True)
     min_repeat = models.IntegerField('Min repeat', default=0)
     default = models.IntegerField('Default repeat', default=0)
@@ -35,44 +37,15 @@ class RepeatedGroup(Ordered):
         return '[%s]' % self.name
 
 
-class AParam(PolymorphicModel, ApiModel):
+class AParam(PolymorphicModel, ApiModel, Ordered):
     class Meta:
-        ordering = ['order']
-        verbose_name_plural = "Service params"
-        verbose_name = "Service param"
+        verbose_name_plural = "Inputs"
+        verbose_name = "Input"
         base_manager_name = 'base_objects'
+        ordering = ('order',)
 
-    OPT_TYPE_NONE = 0
-    OPT_TYPE_VALUATED = 1
-    OPT_TYPE_SIMPLE = 2
-    OPT_TYPE_OPTION = 3
-    OPT_TYPE_POSIX = 4
-    OPT_TYPE_NAMED_OPTION = 5
-    OPT_TYPE = [
-        (OPT_TYPE_NONE, "Not used in command"),
-        (OPT_TYPE_SIMPLE, '-[name] value'),
-        (OPT_TYPE_VALUATED, '--[name]=value'),
-        (OPT_TYPE_OPTION, '-[name]'),
-        (OPT_TYPE_NAMED_OPTION, '--[name]'),
-        (OPT_TYPE_POSIX, 'Posix')
-    ]
-    TYPE_BOOLEAN = 'boolean'
-    TYPE_FILE = 'file'
-    TYPE_LIST = 'list'
-    TYPE_DECIMAL = 'decimal'
-    TYPE_TEXT = 'text'
-    TYPE_INT = 'int'
-    IN_TYPE = [
-        (TYPE_FILE, 'Input file'),
-        (TYPE_LIST, 'List of values'),
-        (TYPE_BOOLEAN, 'Boolean'),
-        (TYPE_DECIMAL, 'Decimal'),
-        (TYPE_INT, 'Integer'),
-        (TYPE_TEXT, 'Text')
-    ]
-
-    # objects = PolymorphicManager()
-    order = models.PositiveIntegerField('Ordering in forms', default=0)
+    objects = PolymorphicManager()
+    # order = models.PositiveIntegerField('Ordering in forms', default=0)
     #: Input Label
     label = models.CharField('Label', max_length=100, blank=False, null=False, help_text='Input displayed label')
     #: Input submission name
@@ -80,9 +53,10 @@ class AParam(PolymorphicModel, ApiModel):
                             help_text='Input runner\'s job param command line name')
     multiple = models.BooleanField('Multiple', default=False, help_text="Can hold multiple values")
     help_text = models.TextField('Help Text', null=True, blank=True)
-    submission = models.ForeignKey(Submission, on_delete=models.CASCADE, null=False, related_name='inputs')
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), on_delete=models.CASCADE, null=False,
+                                   related_name='inputs')
     required = models.NullBooleanField('Required', choices={(False, "Optional"), (True, "Required"),
-                                                            (None, "Not submitted")},
+                                                            (None, "Not submitted by user")},
                                        default=True, help_text="Submitted and/or Required")
     default = models.CharField('Default value', max_length=50, null=True, blank=True)
     cmd_format = models.IntegerField('Command line format', choices=OPT_TYPE,
@@ -103,12 +77,22 @@ class AParam(PolymorphicModel, ApiModel):
                                null=True, blank=True, help_text='Input is associated to')
     regexp = models.CharField('Validation Regexp', max_length=255, null=True, blank=True)
 
+    command_line_value = "-user_value-"
+
     def save(self, *args, **kwargs):
         if self.parent is not None and self.required is True:
             self.required = False
         if self.repeat_group is not None:
             self.multiple = True
+        if not self.order:
+            self.order = AParam.objects.filter(submission=self.submission).count() + 1
         super(AParam, self).save(*args, **kwargs)
+
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name for the same submission
+        :param api_name:
+        """
+        return AParam.objects.filter(api_name=api_name, submission=self.submission).exclude(pk=self.pk)
 
     @property
     def related_to(self):
@@ -124,10 +108,11 @@ class AParam(PolymorphicModel, ApiModel):
 
     @property
     def param_type(self):
-        return AParam.TYPE_TEXT
+        return TYPE_TEXT
 
     def clean(self):
-        if self.required is None and not self.default:
+        if self.required is None and not self.default and self.cmd_format not in (
+                OPT_TYPE_NAMED_OPTION, OPT_TYPE_OPTION, OPT_TYPE_NONE):
             # param is mandatory
             raise ValidationError('Not displayed parameters must have a default value %s:%s' % (self.name, self.label))
         if self.parent and not self.when_value:
@@ -149,6 +134,21 @@ class AParam(PolymorphicModel, ApiModel):
     def format(self):
         return ""
 
+    @property
+    def value(self):
+        return "%s_value" % self.name
+
+    def field_dict(self, data=None):
+        return dict(
+            label=self.label,
+            required=self.mandatory,
+            help_text=self.help_text,
+            initial=data if data else self.default
+        )
+
+    def form_widget(self, data=None):
+        return {self.api_name: forms.CharField(**self.field_dict(data))}
+
 
 class TextParam(AParam):
     class Meta:
@@ -159,7 +159,12 @@ class TextParam(AParam):
 
     @property
     def param_type(self):
-        return AParam.TYPE_TEXT
+        return TYPE_TEXT
+
+    def field_dict(self, data=None):
+        initial = super(TextParam, self).field_dict(data)
+        initial.update(dict(max_length=self.max_length))
+        return initial
 
 
 class BooleanParam(AParam):
@@ -175,7 +180,7 @@ class BooleanParam(AParam):
 
     @property
     def param_type(self):
-        return AParam.TYPE_BOOLEAN
+        return TYPE_BOOLEAN
 
     @property
     def choices(self):
@@ -198,6 +203,9 @@ class BooleanParam(AParam):
         if value not in self.values:
             raise ValidationError({'when_value': 'This value is not possible for related input [%s]' % ', '.join(
                 self.values)})
+
+    def form_widget(self, data=None):
+        return {self.api_name: forms.BooleanField(**self.field_dict(data))}
 
 
 class NumberParam(object):
@@ -246,6 +254,14 @@ class NumberParam(object):
             raise ValidationError({'when_value': 'This value is not possible for related input range [%s, %s]' % (
                 min_val, max_val)})
 
+    def field_dict(self, data=None):
+        initial = super(NumberParam, self).field_dict(data)
+        initial.update(dict(
+            min_value=self.min_val,
+            max_value=self.max_val
+        ))
+        return initial
+
 
 class DecimalParam(NumberParam, AParam):
     """ Number param (decimal or float) """
@@ -264,14 +280,19 @@ class DecimalParam(NumberParam, AParam):
 
     @property
     def param_type(self):
-        return AParam.TYPE_DECIMAL
+        return TYPE_DECIMAL
+
+    def form_widget(self, data=None):
+        widget = forms.DecimalField(**self.field_dict(data))
+        # widget.attrs['step'] = self.step
+        return {self.api_name: widget}
 
 
 class IntegerParam(NumberParam, AParam):
     """ Integer param """
 
-    # TODO add specific validator
     class Meta:
+        # TODO add specific validator
         verbose_name = "Integer"
         verbose_name_plural = "Integer"
 
@@ -280,11 +301,16 @@ class IntegerParam(NumberParam, AParam):
                                   help_text="Leave blank if no min")
     max_val = models.IntegerField('Max value', default=None, null=True, blank=True,
                                   help_text="Leave blank if no max")
-    step = models.IntegerField('Step', default=1, blank=True)
+    step = models.IntegerField('Step', default=1, blank=True, help_text="Step to increment/decrement values")
 
     @property
     def param_type(self):
-        return AParam.TYPE_INT
+        return TYPE_INT
+
+    def form_widget(self, data=None):
+        widget = forms.IntegerField(**self.field_dict(data))
+        # widget.attrs['step'] = self.step
+        return {self.api_name: widget}
 
 
 class ListParam(AParam):
@@ -304,7 +330,7 @@ class ListParam(AParam):
     ]
 
     class_label = "List"
-    list_mode = models.CharField('List display mode', choices=LIST_DISPLAY_TYPE, default='select',
+    list_mode = models.CharField('List display mode', choices=LIST_DISPLAY_TYPE, default=DISPLAY_SELECT,
                                  max_length=100)
     list_elements = models.TextField('Elements', validators=[validate_list_param, ],
                                      help_text="One Element per line label|value")
@@ -326,15 +352,16 @@ class ListParam(AParam):
 
     @property
     def choices(self):
+        choice_init = [(None, '----')] if self.list_mode == ListParam.DISPLAY_SELECT and self.required is False else []
         try:
-            return [(None, '----')] + \
+            return choice_init + \
                    [(line.split('|')[1], line.split('|')[0]) for line in self.list_elements.splitlines()]
         except ValueError:
             raise RuntimeError('Wrong list element format')
 
     @property
     def param_type(self):
-        return AParam.TYPE_LIST
+        return TYPE_LIST
 
     @property
     def labels(self):
@@ -349,18 +376,36 @@ class ListParam(AParam):
             raise ValidationError({'when_value': 'This value is not possible for related input [%s]' % ', '.join(
                 self.values)})
 
+    def field_dict(self, data=None):
+        initial = super(ListParam, self).field_dict(data)
+        initial.update(dict(
+            choices=self.choices,
+        ))
+        if not self.multiple:
+            if self.list_mode == self.DISPLAY_RADIO:
+                initial['widget'] = forms.RadioSelect()
+        else:
+            initial['widget'] = forms.CheckboxSelectMultiple()
+
+        return initial
+
+    def form_widget(self, data=None):
+        if self.multiple:
+            return {self.api_name: forms.MultipleChoiceField(**self.field_dict(data))}
+        return {self.api_name: forms.ChoiceField(**self.field_dict(data))}
+
 
 class FileInput(AParam):
     """ Submission file inputs """
 
     class Meta:
         ordering = ['order', ]
-        verbose_name = "File"
-        verbose_name_plural = "Files input"
+        verbose_name = "File input"
+        verbose_name_plural = "Files inputs"
 
     class_label = "File Input"
 
-    max_size = models.BigIntegerField('Maximum allowed file size ', default=waves_settings.UPLOAD_MAX_SIZE / 1024,
+    max_size = models.BigIntegerField('Allowed file size ', default=waves_settings.UPLOAD_MAX_SIZE / 1024,
                                       help_text="in Ko")
     allowed_extensions = models.CharField('Filter by extensions', max_length=255,
                                           help_text="Comma separated list, * means no filter",
@@ -369,7 +414,19 @@ class FileInput(AParam):
 
     @property
     def param_type(self):
-        return AParam.TYPE_FILE
+        return TYPE_FILE
+
+    def form_widget(self, data=None):
+        initial_fields = self.field_dict(data)
+        initial_fields['required'] = False
+        initial = {self.api_name: forms.FileField(**initial_fields),
+                   'cp_%s' % self.api_name: forms.CharField(label='Copy/paste content',
+                                                            required=False,
+                                                            widget=forms.Textarea(attrs={'cols': 20, 'rows': 10})
+                                                            )}
+        for sample in self.input_samples.all():
+            initial['sp_%s_%s' % (self.api_name, sample.pk)] = sample.form_widget()
+        return initial
 
 
 class FileInputSample(WavesBaseModel):
@@ -408,27 +465,36 @@ class FileInputSample(WavesBaseModel):
     def default(self):
         return ""
 
+    def form_widget(self):
+        field_dict = dict(
+            label=self.label,
+            required=False,
+            help_text=self.help_text,
+            initial=False
+        )
+        form_field = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'no-switch'}), **field_dict)
+        return form_field
+
 
 class SampleDepParam(WavesBaseModel):
-    """ When a file sample is selected, some params may be set accordingly. This class represent this behaviour"""
+    """
+    When a file sample is selected, some params may be set accordingly.
+    This class represent this behaviour
+    """
 
     class Meta:
         verbose_name_plural = "Sample dependencies"
         verbose_name = "Sample dependency"
 
-    # submission = models.ForeignKey(Submission, on_delete=models.CASCADE, related_name='sample_dependent_params')
-    file_input = models.ForeignKey('FileInput', null=True, on_delete=models.CASCADE, related_name="sample_dependencies")
+    #: Related file input when sample is selected
+    file_input = models.ForeignKey('FileInput', null=True, on_delete=models.CASCADE,
+                                   related_name="sample_dependencies")
+    #: Related sample File
     sample = models.ForeignKey(FileInputSample, on_delete=models.CASCADE, related_name='dependent_inputs')
+    #: Related impacted submission input
     related_to = models.ForeignKey('AParam', on_delete=models.CASCADE, related_name='related_samples')
+    #: Value to set in case of Sample selected
     set_default = models.CharField('Set value to ', max_length=200, null=False, blank=False)
-
-    """
-    def clean(self):
-        if (isinstance(self.related_to, BooleanParam) or isinstance(self.related_to, ListParam)) \
-                and self.set_default not in self.related_to.values:
-            raise ValidationError({'set_default': 'This value is not possible for related input [%s]' % ', '.join(
-                self.related_to.values)})
-    """
 
     def __str__(self):
         return "%s > %s=%s" % (self.sample.label, self.related_to.name, self.set_default)

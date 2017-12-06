@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 import logging
-import swapper
 from os import stat
 from os.path import getsize, isfile
 
@@ -12,11 +11,9 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
-from waves.wcore.models import JobHistory, JobInput, Job, JobOutput
+from waves.wcore.models import JobHistory, JobInput, Job, JobOutput, get_service_model
 
-
-Service = swapper.load_model("wcore", "Service")
-
+Service = get_service_model()
 User = get_user_model()
 logger = logging.getLogger(__name__)
 

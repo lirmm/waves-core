@@ -7,13 +7,17 @@ from waves.wcore.adaptors.exceptions import AdaptorNotReady
 
 def check_ready(func):
     def inner(self, *args, **kwargs):
-        if not all([value is not None for init_param, value in self.init_params.items()]):
+        if not all(
+                [value is not None for init_param, value in self.init_params.items() if init_param in self._required]):
             # search missing values
             raise AdaptorNotReady(
-                "Missing required parameter(s) for initialization: %s " % [init_param for init_param, value in
-                                                                           self.init_params.items() if value is None])
+                "Missing required parameter(s) for initialization: %s " %
+                [init_param for init_param, value in
+                 self.init_params.items() if
+                 value is None and init_param in self._required])
         else:
             return func(self, *args, **kwargs)
+
     return inner
 
 
@@ -44,9 +48,9 @@ def import_string(dotted_path):
         msg = "%s doesn't look like a module path" % dotted_path
         raise ImportError(msg)
 
-    module = importlib.import_module(module_path)
+    mod = importlib.import_module(module_path)
     try:
-        return getattr(module, class_name)
+        return getattr(mod, class_name)
     except AttributeError:
         msg = 'Module "%s" does not define a "%s" attribute/class' % (
             module_path, class_name)

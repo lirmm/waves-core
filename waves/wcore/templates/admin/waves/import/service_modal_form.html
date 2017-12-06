@@ -1,4 +1,3 @@
-{% load crispy_forms_tags %}
 {% if form %}
     <form class="form-horizontal" id="form_import" method="post" action="{{ request.path }}">
 {% endif %}
@@ -6,6 +5,11 @@
     <h3>Import a Service from {{ context_object_name }}</h3>
 </div>
 <div class="modal-body">
+<style>
+    .helptext {
+        display: none;
+    }
+</style>
         {% if messages %}
             <ul id="form-message" class="messages messagelist">
                 {% for message in messages %}
@@ -19,7 +23,9 @@
         <div id="form_import_content" style="z-index: 5" align="center">
             {% csrf_token %}
             <div id="form_import_fields">
-                {% crispy form %}
+                <table>
+                {{ form.as_table }}
+                </table>
             </div>
         </div>
         {% endif %}
@@ -45,19 +51,10 @@
                 }).complete(function () {
                     $('#launch-import').removeAttr('disabled');
                     $('#id_tool_list').removeAttr('disabled');
-                }).done(function (data) {
+                }).always(function (data) {
+                    // handle response errors here
                     window.location.replace(data.url_redirect);
                     $('#form-modal').modal('toggle');
-                }).fail(function (xhr, thrownError) {
-                    // handle response errors here
-                    console.log('errors ' + JSON.stringify(xhr.responseJSON['form_html']));
-                    $('#form_import_fields').html(xhr.responseJSON['form_html'])
-                    $('#form_import_fields > div.alert.alert-block.alert-danger > ul').addClass('messagelist');
-                    $('#form_import_fields > div.alert.alert-block.alert-danger > ul > li').addClass('error');
-                    $('.help-block').css('display', 'none');
-
-                }).always(function (data) {
-                    // console.log('always call ' + JSON.stringify(data));
                 });
                 return false;
             });

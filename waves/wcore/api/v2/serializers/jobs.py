@@ -2,19 +2,20 @@
 """ Jobs API serializers """
 from __future__ import unicode_literals
 
+import codecs
 from os import stat
 from os.path import getsize, isfile
 
-import swapper
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
-from waves.wcore.models import JobInput, Job, JobOutput, AParam, JobHistory
+from .services import ServiceSubmissionSerializer
+from waves.wcore.models import JobInput, Job, JobOutput, AParam, JobHistory, get_service_model
+from waves.wcore.models.const import *
 
-Service = swapper.load_model("wcore", "Service")
-
+Service = get_service_model()
 User = get_user_model()
 
 
@@ -80,10 +81,10 @@ class JobInputSerializer(DynamicFieldsModelSerializer):
             repres = {
                 'name': j_input.api_name,
                 "label": j_input.label,
-                'param_type': j_input.type,
+                'param_type': j_input.param_type,
                 "value": j_input.value,
             }
-            if j_input.type == AParam.TYPE_FILE:
+            if j_input.param_type == TYPE_FILE:
                 repres["download_uri"] = self.get_download_url(j_input.slug)
             to_repr.append(repres)
         return to_repr
@@ -103,6 +104,7 @@ class JobInputDetailSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url': {'view_name': 'wapi:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}
         }
+
     inputs = JobInputSerializer(source='job_inputs', read_only=True)
     job = serializers.SerializerMethodField()
 
@@ -125,9 +127,9 @@ class JobOutputSerializer(serializers.ModelSerializer):
         if not isfile(file_path) or stat(file_path).st_size == 0:
             return None
         if getsize(file_path) < 500:
-            with open(file_path) as fp:
+            with codecs.open(file_path, 'r') as fp:
                 file_content = fp.read()
-            return file_content.decode()
+            return file_content.decode('ascii', 'ignore')
         return ""
 
     def to_representation(self, instance):
@@ -172,6 +174,7 @@ class JobOutputDetailSerializer(serializers.HyperlinkedModelSerializer):
                        kwargs={'slug': obj.slug})
 
     job = serializers.SerializerMethodField()
+
     @staticmethod
     def get_status_txt(obj):
         """ Return job status text """
@@ -184,9 +187,9 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
     class Meta:
         model = Job
         fields = ('url', 'slug', 'title', 'status_code', 'status_txt', 'created', 'updated', 'inputs', 'outputs',
-                  'history', 'client', 'service')
+                  'history', 'client', 'service', 'submission_title')
         read_only_fields = (
-            'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history')
+            'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history', 'submission_title')
         extra_kwargs = {
             'url': {'view_name': 'wapi:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}
         }
@@ -200,6 +203,7 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
     outputs = serializers.SerializerMethodField()
     inputs = serializers.SerializerMethodField()
     service = serializers.SerializerMethodField()
+    submission_title = serializers.SerializerMethodField()
 
     def get_service(self, obj):
         if obj.submission and obj.submission.service:
@@ -222,6 +226,9 @@ class JobSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSe
         """ Link to job inputs wapi:api_v2 endpoint """
         return reverse(viewname='wapi:api_v2:waves-jobs-inputs', request=self.context['request'],
                        kwargs={'slug': obj.slug})
+
+    def get_submission_title(self, obj):
+        return obj.submission.name
 
     @staticmethod
     def get_status_txt(job):

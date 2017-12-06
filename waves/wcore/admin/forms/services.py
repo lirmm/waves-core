@@ -3,19 +3,22 @@ WAVES Service models forms
 """
 from __future__ import unicode_literals
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field
 from django import forms
-import swapper
+from django.conf import settings
 
+from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.models.inputs import *
-from waves.wcore.models.services import Submission, SubmissionOutput, SubmissionExitCode
+from waves.wcore.models.runners import Runner
+from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode
 from waves.wcore.settings import waves_settings as config
 
-Service = swapper.load_model("wcore", "Service")
+Submission = get_submission_model()
+
+Service = get_service_model()
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm', 'InputInlineForm', 'SubmissionExitCodeForm',
-           'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'InputSampleForm2', 'SampleDepForm2']
+           'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'SampleDepForm2',
+           'ServiceSubmissionForm']
 
 
 class SubmissionInlineForm(forms.ModelForm):
@@ -26,32 +29,53 @@ class SubmissionInlineForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(SubmissionInlineForm, self).__init__(*args, **kwargs)
 
+    runner = forms.ModelChoiceField(queryset=Runner.objects.all(),
+                                    required=False,
+                                    empty_label="----- use service configuration -----",
+                                    help_text="Changing value need more configuration")
+
 
 class ImportForm(forms.Form):
+    class Meta:
+        model = Runner
+        fields = ('name', 'running_services', 'tool')
+        # fields = ('name', 'tool')
     """
     Service Import Form
     """
+    running_services = forms.ChoiceField()
     tool = forms.ChoiceField()
 
     def __init__(self, *args, **kwargs):
-        tool_list = kwargs.pop('tool', ())
-        selected = kwargs.pop('selected', None)
+        self.instance = kwargs.pop('instance')
         super(ImportForm, self).__init__(*args, **kwargs)
+        list_service = [(x.pk, x.name) for x in self.instance.running_services]
+        list_service.insert(0, (None, 'Create new service'))
         self.fields['tool'] = forms.ChoiceField(
-            choices=tool_list,
-            initial=selected,
-            disabled=('disabled' if selected is not None else ''),
-            widget=forms.widgets.Select(attrs={'size': '15', 'style': 'width:100%; height: auto;'}))
+            choices=self.instance.importer.list_services(),
+            widget=forms.widgets.Select(attrs={'size': '15', 'style': 'width:100%; height: auto;'}),
+            label="Available tools",
+            help_text="")
+        self.fields['running_services'] = forms.ChoiceField(
+            choices=list_service,
+            required=False,
+            label="Create submission for service")
 
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.render_unmentioned_fields = False
-        self.helper.form_show_labels = True
-        self.helper.form_show_errors = True
-        self.helper.layout = Layout(
-            Field('tool'),
-        )
-        self.helper.disable_csrf = True
+
+class ServiceSubmissionForm(forms.ModelForm):
+    class Meta:
+        model = Submission
+        fields = '__all__'
+
+    @property
+    def media(self):
+        if 'jet' in settings.INSTALLED_APPS:
+            js = ('admin/waves/js/submission_jet.js',)
+        else:
+            js = ('admin/waves/js/submissions.js',)
+        return forms.Media(js=js)
+
+    runner = forms.ModelChoiceField(queryset=Runner.objects.all(), empty_label="----- use service configuration -----")
 
 
 class ServiceForm(forms.ModelForm):
@@ -70,7 +94,6 @@ class ServiceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ServiceForm, self).__init__(*args, **kwargs)
         self.fields['restricted_client'].label = "Restrict access to specified user"
-        self.fields['runner'].required = False
         if not self.fields['created_by'].initial:
             self.fields['created_by'].initial = self.current_user
         if not config.NOTIFY_RESULTS:
@@ -99,6 +122,8 @@ class InputInlineForm(forms.ModelForm):
         if isinstance(self.instance, ListParam) or isinstance(self.instance, BooleanParam):
             self.fields['default'] = forms.ChoiceField(choices=self.instance.choices, initial=self.instance.default)
             self.fields['default'].required = False
+        if isinstance(self.instance, FileInput):
+            self.fields['default'].widget.attrs['readonly'] = True
         if self.instance.parent is not None:
             self.fields['required'].widget.attrs['disabled'] = 'disabled'
             self.fields['required'].widget.attrs['title'] = 'Inputs with dependencies must be optional'
@@ -121,19 +146,16 @@ class InputSampleModelChoiceField(forms.ModelChoiceField):
         return '(%s - %s) %s' % (obj.submission.service.name, obj.submission.name, obj)
 
 
-class InputSampleForm2(forms.ModelForm):
-    file_input = InputSampleModelChoiceField(queryset=FileInput.objects.all())
-
-    class Meta:
-        model = FileInputSample
-        fields = '__all__'
+def get_related_to():
+    return AParam.objects.not_instance_of(FileInput)
 
 
 class SampleDepForm2(forms.ModelForm):
-    related_to = InputSampleModelChoiceField(queryset=AParam.objects.not_instance_of(FileInput))
+    related_to = InputSampleModelChoiceField(queryset=None)
 
     def __init__(self, *args, **kwargs):
         super(SampleDepForm2, self).__init__(*args, **kwargs)
+        self.fields['related_to'].queryset = AParam.objects.not_instance_of(FileInput)
         self.fields['file_input'].widget.can_delete_related = False
         self.fields['file_input'].widget.can_add_related = False
         self.fields['file_input'].widget.can_change_related = False

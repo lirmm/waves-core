@@ -38,8 +38,8 @@ class JobOutputForm(ReadOnlyForm):
             'value': forms.Textarea(attrs={'rows': 2, 'class': 'span12'})
         }
 
-    def get_file_path(self, object):
-        return object.file_path
+    def get_file_path(self, obj):
+        return obj.file_path
 
 
 class JobForm(forms.ModelForm):

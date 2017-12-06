@@ -4,6 +4,7 @@ These settings may be overridden in your Django main configuration file
 """
 from __future__ import unicode_literals
 
+import logging
 import socket
 from importlib import import_module
 from os.path import join
@@ -57,17 +58,18 @@ DEFAULTS = {
     'SAMPLE_DIR': join(getattr(settings, 'MEDIA_ROOT', '/tmp'), 'sample'),
     'UPLOAD_MAX_SIZE': 20 * 1024 * 1024,
     'HOST': HOSTNAME,
-    'ACCOUNT_ACTIVATION_DAYS': 7,
-    'ADMIN_EMAIL': 'admin@atgc-montpellier.fr',
+    'ADMIN_EMAIL': 'admin@your-site.com',
     'ALLOW_JOB_SUBMISSION': True,
     'APP_NAME': 'WAVES',
     'JOBS_MAX_RETRY': 5,
+    'JOB_LOG_LEVEL': logging.INFO,
+    'SRV_IMPORT_LOG_LEVEL': logging.INFO,
     'KEEP_ANONYMOUS_JOBS': 30,
     'KEEP_REGISTERED_JOBS': 120,
     'NOTIFY_RESULTS': True,
     'REGISTRATION_ALLOWED': True,
-    'SERVICES_EMAIL': 'waves@atgc-montpellier.fr',
-    'TEMPLATE_PACK': 'bootstrap3',
+    'SERVICES_EMAIL': 'waves@your-site.com',
+    'TEMPLATE_PACK': getattr(settings, 'CRISPY_TEMPLATE_PACK', 'bootstrap3'),
     'SECRET_KEY': getattr(settings, 'SECRET_KEY', '')[0:32],
     'ADAPTORS_CLASSES': (
         'waves.wcore.adaptors.shell.SshShellAdaptor',
@@ -77,6 +79,7 @@ DEFAULTS = {
         'waves.wcore.adaptors.cluster.SshClusterAdaptor',
         'waves.wcore.adaptors.cluster.SshKeyClusterAdaptor',
     ),
+    'TEMPLATES_PACKS': ['bootstrap3', 'bootstrap2'],
     'PERMISSION_CLASSES': (),
     'MAILER_CLASS': 'waves.wcore.mails.JobMailer',
 }
@@ -91,6 +94,7 @@ class WavesSettings(object):
     """
     WAVES settings object, allow WAVES settings access from properties
     """
+
     def __init__(self, waves_settings=None, defaults=None, imports_string=None):
         if waves_settings:
             self._waves_settings = waves_settings
@@ -134,5 +138,6 @@ def reload_waves_settings(*args, **kwargs):
     setting, value = kwargs['setting'], kwargs['value']
     if setting == 'WAVES_CORE':
         waves_settings = WavesSettings(value, DEFAULTS, IMPORT_STRINGS)
+
 
 setting_changed.connect(reload_waves_settings)

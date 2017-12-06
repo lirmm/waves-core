@@ -11,11 +11,8 @@ __all__ = ["available_themes", "list_themes", "RichTextField", "CompactInline", 
 
 
 if 'jet' in settings.INSTALLED_APPS:
-    from compat_jet import *
-    organize_input_class = 'waves.wcore.compat.submissions_jet.OrganizeInputInline'
+    from jet.admin import CompactInline
 else:
-    organize_input_class = 'waves.wcore.compat.submissions_std.OrganizeInputInline'
-
     class CompactInline(StackedInline):
         """ Inherit base class """
         pass
@@ -27,6 +24,7 @@ else:
 
     class RichTextField(models.TextField):
         """ Override RichTextField """
+
         pass
 
 if 'bootstrap_themes' in settings.INSTALLED_APPS:
@@ -38,9 +36,3 @@ else:
 
     def list_themes():
         return available_themes
-
-if 'adminsortable2' not in settings.INSTALLED_APPS:
-    class SortableInlineAdminMixin(object):
-        pass
-else:
-    from compat_adminsortable import *

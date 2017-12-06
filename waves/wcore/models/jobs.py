@@ -1,4 +1,3 @@
-# coding: utf8
 """ WAVES job related models class objects """
 from __future__ import unicode_literals
 
@@ -8,26 +7,26 @@ import os
 from os import path as path
 from os.path import join
 
+import swapper
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import TemporaryUploadedFile, InMemoryUploadedFile
+from django.core.files.base import File
 from django.db import models, transaction
 from django.db.models import Q
+from django.utils.encoding import smart_text
 from django.utils.html import format_html
-from django.core.files.base import File
 
-import waves.wcore.adaptors.const
 import waves.wcore.adaptors.exceptions
-from waves.wcore.adaptors.const import JobRunDetails
+from waves.wcore.adaptors.const import *
+from waves.wcore.adaptors.mails import JobMailer
 from waves.wcore.exceptions import WavesException
 from waves.wcore.exceptions.jobs import *
-from waves.wcore.mails import JobMailer
-from waves.wcore.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
-from waves.wcore.models.inputs import AParam, FileInputSample
-from waves.wcore.models.services import Submission, SubmissionOutput
+from waves.wcore.models import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel, FileInputSample, \
+    SubmissionOutput
+from waves.wcore.models.const import *
 from waves.wcore.settings import waves_settings
-from waves.wcore.utils import normalize_value
+from waves.wcore.utils import random_analysis_name
 from waves.wcore.utils.storage import allow_display_online
 
 logger = logging.getLogger(__name__)
@@ -38,6 +37,7 @@ __all__ = ['Job', 'JobInput', 'JobOutput', 'JobManager']
 class JobManager(models.Manager):
     """ Job Manager add few shortcut function to default Django models objects Manager
     """
+
     def get_by_natural_key(self, slug, service):
         return self.get(slug=slug, service=service)
 
@@ -66,6 +66,16 @@ class JobManager(models.Manager):
             return self.filter(Q(service__created_by=user) | Q(client=user) | Q(email_to=user.email))
         return self.filter(client=user)
 
+    @staticmethod
+    def add_filter_user(queryset, user):
+        if not user or user.is_anonymous:
+            return queryset.none()
+        if user.is_superuser:
+            return queryset
+        if user.is_staff:
+            return queryset.filter(Q(service__created_by=user) | Q(client=user) | Q(email_to=user.email))
+        return queryset.filter(client=user)
+
     def get_service_job(self, user, service):
         """
         Returns jobs filtered by service, according to following access rule:
@@ -93,16 +103,16 @@ class JobManager(models.Manager):
         if user and not user.is_anonymous:
             if user.is_superuser or user.is_staff:
                 # return all pending jobs
-                return self.filter(status__in=(
-                    waves.wcore.adaptors.const.JOB_CREATED,
-                    waves.wcore.adaptors.const.JOB_PREPARED,
-                    waves.wcore.adaptors.const.JOB_QUEUED,
-                    waves.wcore.adaptors.const.JOB_RUNNING))
+                return self.filter(_status__in=(
+                    JOB_CREATED,
+                    JOB_PREPARED,
+                    JOB_QUEUED,
+                    JOB_RUNNING))
             # get only user jobs
-            return self.filter(status__in=(waves.wcore.adaptors.const.JOB_CREATED,
-                                           waves.wcore.adaptors.const.JOB_PREPARED,
-                                           waves.wcore.adaptors.const.JOB_QUEUED,
-                                           waves.wcore.adaptors.const.JOB_RUNNING),
+            return self.filter(_status__in=(JOB_CREATED,
+                                            JOB_PREPARED,
+                                            JOB_QUEUED,
+                                            JOB_RUNNING),
                                client=user)
         # User is not supposed to be None
         return self.none()
@@ -116,10 +126,10 @@ class JobManager(models.Manager):
         :return: QuerySet
         """
         if user is not None:
-            self.filter(status=waves.wcore.adaptors.const.JOB_CREATED,
+            self.filter(status=JOB_CREATED,
                         client=user,
                         **extra_filter).order_by('-created')
-        return self.filter(status=waves.wcore.adaptors.const.JOB_CREATED,
+        return self.filter(_status=JOB_CREATED,
                            **extra_filter).order_by('-created').all()
 
     @transaction.atomic
@@ -136,18 +146,12 @@ class JobManager(models.Manager):
         :return: a newly create Job instance
         :rtype: :class:`waves.wcore.models.jobs.Job`
         """
-        try:
-            job_title = submitted_inputs.pop('title', 'New Job')
-        except KeyError:
-            job_title = ""
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug('Received data :')
-            for key in submitted_inputs:
-                logger.debug('Param %s: %s', key, submitted_inputs[key])
         client = user if user is not None and not user.is_anonymous() else None
         if update is None:
-            job = self.create(email_to=email_to, client=client, title=job_title,
-                              submission=submission, service=submission.service.name,
+            job = self.create(email_to=email_to, client=client,
+                              title=submitted_inputs.get('title', None),
+                              submission=submission,
+                              service=submission.service.name,
                               _adaptor=submission.adaptor.serialize(),
                               notify=submission.service.email_on)
         else:
@@ -156,18 +160,23 @@ class JobManager(models.Manager):
             job.adaptor = submission.adaptor
             job.notify = submission.service.email_on
             job.service = submission.service.name
-        job.create_non_editable_inputs(submission)
+        if job.logger.isEnabledFor(logging.DEBUG):
+            job.logger.debug('Received data :')
+            for key in submitted_inputs:
+                job.logger.debug('Param %s: %s', key, submitted_inputs[key])
         mandatory_params = submission.expected_inputs.filter(required=True)
-        missing = {m.name: '%s (:%s:) is required field' % (m.label, m.name) for m in mandatory_params if
-                   m.name not in submitted_inputs.keys()}
+        missing = {m.name: '%s (:%s:) is required field' % (m.label, m.api_name) for m in mandatory_params if
+                   m.api_name not in submitted_inputs.keys()}
         if len(missing) > 0:
+            logger.warning("received keys %s", submitted_inputs.keys())
+            logger.warning("Expected mandatory %s missing", [(m.label, m.api_name) for m in mandatory_params])
             raise ValidationError(missing)
         # First create inputs
-        submission_inputs = submission.inputs.filter(name__in=submitted_inputs.keys()).exclude(required=None)
+        submission_inputs = submission.inputs.filter(api_name__in=submitted_inputs.keys()).exclude(required=None)
         for service_input in submission_inputs:
             # Treat only non dependent inputs first
-            incoming_input = submitted_inputs.get(service_input.name, None)
-            logger.debug("current Service Input: %s, %s, %s", service_input, service_input.required, incoming_input)
+            incoming_input = submitted_inputs.get(service_input.api_name, None)
+            logger.debug("Current Service Input: %s, %s, %s", service_input, service_input.required, incoming_input)
             # test service input mandatory, without default and no value
             if service_input.required and not service_input.default and incoming_input is None:
                 raise JobMissingMandatoryParam(service_input.label, job)
@@ -177,7 +186,6 @@ class JobManager(models.Manager):
                 # transform single incoming into list to keep process iso
                 if type(incoming_input) != list:
                     incoming_input = [incoming_input]
-
                 for in_input in incoming_input:
                     job.job_inputs.add(
                         JobInput.objects.create_from_submission(job, service_input, service_input.order, in_input))
@@ -186,16 +194,18 @@ class JobManager(models.Manager):
         for service_output in submission.outputs.all():
             job.outputs.add(
                 JobOutput.objects.create_from_submission(job, service_output, submitted_inputs))
-        logger.debug('Job %s created with %i inputs', job.slug, job.job_inputs.count())
-        if logger.isEnabledFor(logging.DEBUG):
+        job.logger.debug('Job %s created with %i inputs', job.slug, job.job_inputs.count())
+        if job.logger.isEnabledFor(logging.DEBUG):
             # LOG full command line
             logger.debug('Job %s command will be :', job.title)
-            logger.debug('%s', job.command_line)
+            logger.debug('Job %s command will be :', job.title)
+            logger.debug('%s %s', job.adaptor.command, job.command_line)
             logger.debug('Expected outputs will be:')
             for j_output in job.outputs.all():
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
+                logger.debug('Output %s: %s', j_output.name, j_output.value)
         job._command_line = job.command_line
-        if force_status is not None and force_status in waves.wcore.adaptors.const.STATUS_MAP.keys():
+        if force_status is not None and force_status in STATUS_MAP.keys():
             job.status = force_status
         job.save()
         return job
@@ -216,16 +226,18 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     class Meta(TimeStamped.Meta):
         verbose_name = 'Job'
+        verbose_name_plural = "Jobs"
         ordering = ['-updated', '-created']
 
     objects = JobManager()
     #: Job Title, automatic or set by user upon submission
     title = models.CharField('Job title', max_length=255, null=True, blank=True)
     #: Job related Service
-    submission = models.ForeignKey(Submission, related_name='service_jobs', null=True, on_delete=models.SET_NULL)
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), related_name='service_jobs',
+                                   null=True, on_delete=models.SET_NULL)
     #: Job status issued from last retrieve on DB
-    _status = models.IntegerField('Job status', choices=waves.wcore.adaptors.const.STATUS_LIST,
-                                  default=waves.wcore.adaptors.const.JOB_CREATED)
+    _status = models.IntegerField('Job status', choices=STATUS_LIST,
+                                  default=JOB_CREATED)
     #: Job last status for which we sent a notification email
     status_mail = models.IntegerField(editable=False, default=9999)
     #: Job associated client, may be null for anonymous submission
@@ -245,9 +257,36 @@ class Job(TimeStamped, Slugged, UrlMixin):
     remote_history_id = models.CharField('Remote history ID', max_length=255, editable=False, null=True)
     #: Final generated command line
     _command_line = models.CharField('Final generated command line', max_length=255, editable=False, null=True)
+    #: adaptor serialized values
     _adaptor = models.TextField('Adaptor classed used for this Job', editable=False, null=True)
-    service = models.CharField('Issued from service', max_length=255, editable=False, null=True, default="")
+    #: remind th Service Name
+    service = models.CharField('Service name', max_length=255, editable=False, null=True, default="")
+    #: Should Waves Notify client about Job Status
     notify = models.BooleanField("Notify this result", default=False, editable=False)
+
+    _logger = None
+
+    @property
+    def log_file(self):
+        return os.path.join(self.working_dir, 'job.log')
+
+    @property
+    def logger(self):
+        self._logger = logging.getLogger('waves.job.%s' % str(self.slug))
+        if not len(self._logger.handlers):
+            # Add handler only once !
+            hdlr = logging.FileHandler(self.log_file)
+            formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+            hdlr.setFormatter(formatter)
+            self._logger.propagate = False
+            self._logger.addHandler(hdlr)
+            self._logger.setLevel(waves_settings.JOB_LOG_LEVEL)
+        return self._logger
+
+    @property
+    def random_title(self):
+        return "Job %s-%s" % (self.service,
+                              random_analysis_name())
 
     @property
     def status(self):
@@ -256,11 +295,9 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @status.setter
     def status(self, value):
         if value != self._status:
-            if self.message:
-                message = self.message.decode('utf8', errors='replace')
-                logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
-            else:
-                message = ""
+            message = smart_text(self.message) or ""
+            self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(),
+                              message)
             self.job_history.create(message=message, status=value)
         self._status = value
 
@@ -269,27 +306,16 @@ class Job(TimeStamped, Slugged, UrlMixin):
         Format a row depending on current Job Status
         :return: Html unicode string
         """
-        return format_html('<span class="{}">{}</span>',
-                           self.label_class,
-                           self.get_status_display())
+        return format_html('<span class="{}">{}</span>', self.label_class, self.get_status_display())
 
     def job_service_back_url(self):
-        if self.submission:
+        if self.submission and self.submission.service:
             return self.submission.service.get_admin_url()
         else:
             return "#"
 
     def save(self, *args, **kwargs):
         """ Overriden save, set _status to current job status """
-        if self.submission:
-            if not self.service:
-                self.service = self.submission.service.name
-            if not self.notify:
-                self.notify = self.submission.service.email_on
-            if not self.title:
-                self.title = "%s %s" % (self.service, self.slug)
-        if not self.title:
-            self.title = '%s' % self.slug
         super(Job, self).save(*args, **kwargs)
 
     def make_job_dirs(self):
@@ -328,7 +354,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: list of JobInput models instance
         :rtype: QuerySet
         """
-        return self.job_inputs.filter(param_type=AParam.TYPE_FILE)
+        return self.job_inputs.filter(param_type=TYPE_FILE)
 
     @property
     def output_files_exists(self):
@@ -350,11 +376,14 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @property
     def output_files(self):
-        """ Return list of all outputs files, whether they exist or not on disk
-        .. note::
-            Use :func:`output_files_exists` for only existing outputs instead
-        :return: a list of JobOuput objects
+        """
+        Return list of all outputs files, whether they exist or not on disk
+            .. note::
+                Use :func:`output_files_exists` for only existing outputs instead
+
+        :return: a list of JobOutput objects
         :rtype: list
+
         """
         all_files = self.outputs.all()
         return all_files
@@ -365,7 +394,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: list of `JobInput` models instance
         :rtype: [list of JobInput objects]
         """
-        return self.job_inputs.exclude(param_type=AParam.TYPE_FILE)
+        return self.job_inputs.exclude(param_type=TYPE_FILE)
 
     @property
     def working_dir(self):
@@ -388,11 +417,11 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
                 return adaptor
             except Exception as e:
-                logger.exception("Unable to load %s adaptor %s", self._adaptor, e.message)
+                self.logger.exception("Unable to load %s adaptor %s", self._adaptor, e.message)
         elif self.submission:
             return self.submission.adaptor
         else:
-            logger.exception("None adaptor ...")
+            self.logger.exception("None adaptor ...")
         return None
 
     @adaptor.setter
@@ -419,7 +448,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: unicode
         """
         if self._command_line is None:
-            self.command_line = "%s" % self.command.create_command_line(job_inputs=self.job_inputs.all())
+            self.command_line = "%s" % self.command.create_command_line(inputs=self.job_inputs.all().order_by('order'))
         return self._command_line
 
     @command_line.setter
@@ -433,11 +462,11 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: a css class (based on bootstrap)
         :rtype: unicode
         """
-        if self.status in (waves.wcore.adaptors.const.JOB_UNDEFINED, waves.wcore.adaptors.const.JOB_SUSPENDED):
+        if self.status in (JOB_UNDEFINED, JOB_SUSPENDED):
             return 'warning'
-        elif self.status == waves.wcore.adaptors.const.JOB_ERROR:
+        elif self.status == JOB_ERROR:
             return 'danger'
-        elif self.status == waves.wcore.adaptors.const.JOB_CANCELLED:
+        elif self.status == JOB_CANCELLED:
             return 'info'
         else:
             return 'success'
@@ -448,24 +477,24 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: int
         """
         mailer = JobMailer()
-        if self.status != self.status_mail and self.status == waves.wcore.adaptors.const.JOB_ERROR:
+        if self.status != self.status_mail and self.status == JOB_ERROR:
             mailer.send_job_admin_error(self)
         if waves_settings.NOTIFY_RESULTS and self.notify:
             if self.email_to is not None and self.status != self.status_mail:
                 # should send a email
                 try:
                     nb_sent = 0
-                    if self.status == waves.wcore.adaptors.const.JOB_CREATED:
+                    if self.status == JOB_CREATED:
                         nb_sent = mailer.send_job_submission_mail(self)
-                    elif self.status == waves.wcore.adaptors.const.JOB_TERMINATED:
+                    elif self.status == JOB_TERMINATED:
                         nb_sent = mailer.send_job_completed_mail(self)
-                    elif self.status == waves.wcore.adaptors.const.JOB_ERROR:
+                    elif self.status == JOB_ERROR:
                         nb_sent = mailer.send_job_error_email(self)
-                    elif self.status == waves.wcore.adaptors.const.JOB_CANCELLED:
+                    elif self.status == JOB_CANCELLED:
                         nb_sent = mailer.send_job_cancel_email(self)
                     # Avoid resending emails when last status mail already sent
                     self.status_mail = self.status
-                    logger.debug("Sending email to %s ", self.email_to)
+                    self.logger.info("Try to send email to %s [%s]", self.email_to, self.status)
                     if nb_sent > 0:
                         self.job_history.create(message='Sent notification email', status=self.status, is_admin=True)
                     else:
@@ -475,6 +504,10 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 except Exception as e:
                     logger.error('Mail error: %s %s', e.__class__.__name__, e.message)
                     pass
+            elif not self.email_to:
+                self.logger.warn('Job %s email not set', self.slug)
+        else:
+            self.logger.info('Jobs notification are not activated')
 
     def get_absolute_url(self):
         """Reverse url for this Job according to Django urls configuration
@@ -511,20 +544,23 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """
         return 'job.stderr'
 
-    def create_non_editable_inputs(self, service_submission):
-        """ Create non editable (i.e not submitted anywhere and used for run)
-        .. seealso::
-            Used in post_save signals
-        :param service_submission:
+    def create_non_editable_inputs(self):
+        """
+        Create non editable (i.e not submitted anywhere and used for run)
+            .. seealso::
+                Used in post_save signals
+
+        :param service_submission
         :return: None
         """
-        for service_input in service_submission.inputs.filter(required=None):
+
+        for service_input in self.submission.inputs.filter(required=None):
             # Create fake "submitted_inputs" with non editable ones with default value if not already set
-            logger.debug('Created non editable job input: %s (%s, %s)', service_input.label,
-                         service_input.name, service_input.default)
+            self.logger.debug('Created non editable job input: %s (%s, %s)', service_input.label,
+                              service_input.name, service_input.default)
             self.job_inputs.add(JobInput.objects.create(job=self, name=service_input.name,
-                                                        type=service_input.type,
-                                                        param_type=AParam.OPT_TYPE_NONE,
+                                                        param_type=service_input.type,
+                                                        cmd_format=service_input.cmd_format,
                                                         label=service_input.label,
                                                         order=service_input.order,
                                                         value=service_input.default))
@@ -533,15 +569,15 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """ Create standard default outputs for job (stdout and stderr)
         :return: None
         """
-        output_dict = dict(job=self, value=self.stdout, _name='Standard output', extension=".txt")
+        output_dict = dict(job=self, value=self.stdout, _name='Standard output')
         out = JobOutput.objects.create(**output_dict)
         self.outputs.add(out)
-        open(join(self.working_dir, self.stdout), 'a').close()
+        open(join(self.working_dir, self.stdout), 'w').close()
         output_dict['value'] = self.stderr
         output_dict['_name'] = "Standard error"
         out1 = JobOutput.objects.create(**output_dict)
         self.outputs.add(out1)
-        open(join(self.working_dir, self.stderr), 'a').close()
+        open(join(self.working_dir, self.stderr), 'w').close()
 
     @property
     def public_history(self):
@@ -556,19 +592,19 @@ class Job(TimeStamped, Slugged, UrlMixin):
         if self.nb_retry <= waves_settings.JOBS_MAX_RETRY:
             self.nb_retry += 1
             if message is not None:
-                self.job_history.create(message='[Retry]%s' % message.decode('utf8'), status=self.status)
+                self.job_history.create(message='[Retry]%s' % smart_text(message), status=self.status)
         else:
             self.error(message)
 
     def error(self, message):
         """ Set job Status to ERROR, save error reason in JobAdminHistory, save job"""
-        logger.error('Job error: %s', message)
-        self.message = '[Error]%s' % message
-        self.status = waves.wcore.adaptors.const.JOB_ERROR
+        self.logger.error('Job error: %s', smart_text(message))
+        self.message = '[Error]%s' % smart_text(message)
+        self.status = JOB_ERROR
 
     def fatal_error(self, exception):
         logger.exception('Job fatal error: %s', exception)
-        self.error(exception.message)
+        self.error(smart_text(exception.message))
 
     def get_status_display(self):
         return self.get__status_display()
@@ -576,21 +612,21 @@ class Job(TimeStamped, Slugged, UrlMixin):
     def _run_action(self, action):
         """ Check if current job status is coherent with requested action """
         if action == 'prepare_job':
-            status_allowed = waves.wcore.adaptors.const.STATUS_LIST[1:2]
+            status_allowed = STATUS_LIST[1:2]
         elif action == 'run_job':
-            status_allowed = waves.wcore.adaptors.const.STATUS_LIST[2:3]
+            status_allowed = STATUS_LIST[2:3]
         elif action == 'cancel_job':
             # Report fails to a AdaptorException raise during cancel process
-            status_allowed = waves.wcore.adaptors.const.STATUS_LIST[1:6]
+            status_allowed = STATUS_LIST[1:6]
             if getattr(self.adaptor, 'state_allow_cancel', None):
                 status_allowed = self.adaptor.state_allow_cancel
         elif action == 'job_results':
-            status_allowed = waves.wcore.adaptors.const.STATUS_LIST[6:7] + waves.wcore.adaptors.const.STATUS_LIST[9:]
+            status_allowed = STATUS_LIST[6:7] + STATUS_LIST[9:]
         elif action == 'job_run_details':
-            status_allowed = waves.wcore.adaptors.const.STATUS_LIST[6:10]
+            status_allowed = STATUS_LIST[6:10]
         else:
             # By default let all status allowed
-            status_allowed = waves.wcore.adaptors.const.STATUS_LIST
+            status_allowed = STATUS_LIST
         if self.status not in [int(i[0]) for i in status_allowed]:
             raise JobInconsistentStateError(self.get_status_display(), status_allowed)
         try:
@@ -601,45 +637,43 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 self.nb_retry = 0
                 return returned
         except waves.wcore.adaptors.exceptions.AdaptorException as exc:
-            logger.debug('Retry execution - non fatal error')
+            logger.debug('Retry execution - non fatal error %s' % smart_text(exc.message))
             self.retry(exc.message)
         except WavesException as exc:
-            logger.debug("Abort execution - Waves Exception")
+            logger.debug("Abort execution - Waves Exception %s " % smart_text(exc.message))
             self.error(exc.message)
-            raise exc
-        except BaseException as exc:
-            logger.debug("Abort execution - Fatal unexpected error")
+        except Exception as exc:
+            logger.debug("Abort execution - Fatal unexpected error %s " % smart_text(exc.message))
             self.fatal_error(exc)
-            raise exc
         finally:
-            logger.debug("Always save job in DB")
+            self.logger.debug("Saving Job in DB [%s]" % self.get_status_display())
             self.save()
 
     @property
     def next_status(self):
         """ Automatically retrieve next expected status """
-        if self.status in waves.wcore.adaptors.const.NEXT_STATUS:
-            return waves.wcore.adaptors.const.NEXT_STATUS[self.status]
+        if self.status in NEXT_STATUS:
+            return NEXT_STATUS[self.status]
         else:
-            return waves.wcore.adaptors.const.JOB_UNDEFINED
+            return JOB_UNDEFINED
 
     def run_prepare(self):
         """ Ask job adaptor to prepare run (manage input files essentially) """
         self._run_action('prepare_job')
-        self.status = waves.wcore.adaptors.const.JOB_PREPARED
+        self.status = JOB_PREPARED
 
     def run_launch(self):
         """ Ask job adaptor to actually launch job """
         self._run_action('run_job')
-        self.status = waves.wcore.adaptors.const.JOB_QUEUED
+        self.status = JOB_QUEUED
 
     def run_status(self):
         """ Ask job adaptor current job status """
         self._run_action('job_status')
-        logger.debug('job current state :%s', self.status)
-        if self.status == waves.wcore.adaptors.const.JOB_COMPLETED:
+        self.logger.debug('job current state :%s', self.status)
+        if self.status == JOB_COMPLETED:
             self.run_results()
-        if self.status == waves.wcore.adaptors.const.JOB_UNDEFINED and self.nb_retry > waves_settings.JOBS_MAX_RETRY:
+        if self.status == JOB_UNDEFINED and self.nb_retry > waves_settings.JOBS_MAX_RETRY:
             self.run_cancel()
         self.save()
         return self.status
@@ -648,22 +682,27 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """ Ask job adaptor to cancel job if possible """
         self._run_action('cancel_job')
         self.message = 'Job cancelled'
-        self.status = waves.wcore.adaptors.const.JOB_CANCELLED
+        self.status = JOB_CANCELLED
 
     def run_results(self):
         """ Ask job adaptor to get results files (dowload files if needed) """
         self._run_action('job_results')
         self.run_details()
-        logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
-                     os.stat(join(self.working_dir, self.stderr)).st_size)
+        self.logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
+                          os.stat(join(self.working_dir, self.stderr)).st_size)
         if self.exit_code != 0:
             if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
-                logger.error('Error found %s %s ', self.exit_code, self.stderr_txt.decode('ascii', errors="replace"))
+                logger.error('Error found %s %s ', self.exit_code, smart_text(self.stderr_txt))
             self.message = "Error detected in job.stderr"
-            self.status = waves.wcore.adaptors.const.JOB_ERROR
+            self.status = JOB_ERROR
         else:
-            self.message = "Data retrieved"
-            self.status = waves.wcore.adaptors.const.JOB_TERMINATED
+            if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
+                self.status = JOB_WARNING
+                logger.warning('Exit Code %s but found stderr %s ', self.exit_code,
+                               smart_text(self.stderr_txt))
+            else:
+                self.message = "Data retrieved"
+                self.status = JOB_TERMINATED
 
     def run_details(self):
         """ Ask job adaptor to get JobRunDetails information (started, finished, exit_code ...)"""
@@ -676,7 +715,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
                     details = JobRunDetails(*json.load(fp))
                 return details
             except TypeError:
-                logger.error("Unable to retrieve data from file %s", file_run_details)
+                self.logger.error("Unable to retrieve data from file %s", file_run_details)
                 return self.default_run_details()
         else:
             try:
@@ -701,7 +740,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def allow_rerun(self):
         """ set whether current job state allow rerun """
-        return self.status not in (waves.wcore.adaptors.const.JOB_CREATED, waves.wcore.adaptors.const.JOB_UNDEFINED)
+        return self.status not in (JOB_CREATED, JOB_UNDEFINED)
 
     def re_run(self):
         """ Reset attributes and mark job as CREATED to be re-run"""
@@ -709,15 +748,19 @@ class Job(TimeStamped, Slugged, UrlMixin):
         self.nb_retry = 0
         self.job_history.all().update(is_admin=True)
         self.job_history.create(message='Marked for re-run', status=self.status)
-        self.status = waves.wcore.adaptors.const.JOB_CREATED
+        self.status = JOB_CREATED
+        self._command_line = None
+
         for job_out in self.outputs.all():
             open(job_out.file_path, 'w').close()
+        # Reset logs
+        open(self.log_file, 'w').close()
         self.save()
 
     def default_run_details(self):
         """ Get and retriver a JobRunDetails namedtuple with defaults values"""
-        prepared = self.job_history.filter(status=waves.wcore.adaptors.const.JOB_PREPARED).first()
-        finished = self.job_history.filter(status__gte=waves.wcore.adaptors.const.JOB_COMPLETED).first()
+        prepared = self.job_history.filter(status=JOB_PREPARED).first()
+        finished = self.job_history.filter(status__gte=JOB_COMPLETED).first()
         prepared_date = prepared.timestamp.isoformat() if prepared is not None else ""
         finished_date = finished.timestamp.isoformat() if finished is not None else ""
         return JobRunDetails(self.id, str(self.slug), self.remote_job_id, self.title, self.exit_code,
@@ -734,7 +777,7 @@ class JobInputManager(models.Manager):
         # Backward compatibility hack
         sin = kwargs.pop('srv_input', None)
         if sin:
-            kwargs.update(dict(name=sin.name, type=sin.type, param_type=sin.cmd_line_type, label=sin.label))
+            kwargs.update(dict(name=sin.name, param_type=sin.type, cmd_format=sin.cmd_line_type, label=sin.label))
         return super(JobInputManager, self).create(**kwargs)
 
     @transaction.atomic
@@ -747,23 +790,15 @@ class JobInputManager(models.Manager):
         :return: return the newly created JobInput
         :rtype: :class:`waves.wcore.models.jobs.JobInput`
         """
-        from waves.wcore.models.inputs import AParam, FileInput
         input_dict = dict(job=job,
                           order=order,
                           name=service_input.name,
                           param_type=service_input.param_type,
                           api_name=service_input.api_name,
-                          command_type=service_input.cmd_format if hasattr(service_input,
-                                                                           'cmd_format') else service_input.param_type,
+                          cmd_format=service_input.cmd_format,
                           label=service_input.label,
                           value=str(submitted_input))
-        try:
-            if isinstance(service_input, FileInput) and service_input.to_outputs.filter(
-                    submission=service_input.submission).exists():
-                input_dict['value'] = normalize_value(input_dict['value'])
-        except ObjectDoesNotExist:
-            pass
-        if service_input.param_type == AParam.TYPE_FILE:
+        if service_input.param_type == TYPE_FILE:
             if isinstance(submitted_input, File):
                 # classic uploaded file
                 filename = path.join(job.working_dir, submitted_input.name)
@@ -807,17 +842,19 @@ class JobInput(Ordered, Slugged, ApiModel):
     objects = JobInputManager()
     #: Reference to related :class:`waves.wcore.models.jobs.Job`
     job = models.ForeignKey(Job, related_name='job_inputs', on_delete=models.CASCADE)
-    #: Reference to related :class:`waves.wcore.models.services.SubmissionParam`
-    # srv_input = models.ForeignKey('SubmissionParam', null=True, on_delete=models.CASCADE)
     #: Value set to this service input for this job
     value = models.CharField('Input content', max_length=255, null=True, blank=True,
                              help_text='Input value (filename, boolean value, int value etc.)')
     #: Each input may have its own identifier on remote adaptor
     remote_input_id = models.CharField('Remote input ID (on adaptor)', max_length=255, editable=False, null=True)
-    param_type = models.CharField('Param param_type', choices=AParam.IN_TYPE, max_length=50, editable=False, null=True)
-    name = models.CharField('Param name', max_length=200, editable=False, null=True)
-    command_type = models.IntegerField('Parameter Type', choices=AParam.OPT_TYPE, editable=False, null=True,
-                                       default=AParam.OPT_TYPE_POSIX)
+    #: retrieved upon creation from related AParam object
+    param_type = models.CharField('Param param_type', choices=IN_TYPE, max_length=50, editable=False, null=True)
+    #: retrieved upon creation from related AParam object
+    name = models.CharField('Param name', max_length=50, editable=False, null=True)
+    #: retrieved upon creation from related AParam object
+    cmd_format = models.IntegerField('Parameter Type', choices=OPT_TYPE, editable=False, null=True,
+                                     default=OPT_TYPE_POSIX)
+    #: retrieved upon creation from related AParam object
     label = models.CharField('Label', max_length=100, editable=False, null=True)
 
     def natural_key(self):
@@ -836,7 +873,7 @@ class JobInput(Ordered, Slugged, ApiModel):
         :return: path to file
         :rtype: unicode
         """
-        if self.param_type == AParam.TYPE_FILE:
+        if self.param_type == TYPE_FILE:
             return os.path.join(self.job.working_dir, str(self.value))
         else:
             return ""
@@ -847,17 +884,15 @@ class JobInput(Ordered, Slugged, ApiModel):
 
         :return: determined from related SubmissionParam type
         """
-        if self.param_type == AParam.TYPE_FILE:
+        if self.param_type in (TYPE_FILE, TYPE_TEXT):
             return self.value
-        elif self.param_type == AParam.TYPE_BOOLEAN:
+        elif self.param_type == TYPE_BOOLEAN:
             return bool(self.value)
-        elif self.param_type == AParam.TYPE_TEXT:
-            return self.value
-        elif self.param_type == AParam.TYPE_INT:
+        elif self.param_type == TYPE_INT:
             return int(self.value)
-        elif self.param_type == AParam.TYPE_DECIMAL:
+        elif self.param_type == TYPE_DECIMAL:
             return float(self.value)
-        elif self.param_type == AParam.TYPE_LIST:
+        elif self.param_type == TYPE_LIST:
             if self.value == 'None':
                 return False
             return self.value
@@ -872,39 +907,6 @@ class JobInput(Ordered, Slugged, ApiModel):
         if self.srv_input.mandatory and not self.srv_input.default and not self.value:
             raise ValidationError('Input %(input) is mandatory', params={'input': self.srv_input.label})
         super(JobInput, self).clean()
-
-    @property
-    def command_line_element(self, forced_value=None):
-        """For each job input, according to related SubmissionParam, return command line part for this parameter
-
-        :param forced_value: Any forced value if needed
-        :return: depends on parameter type
-        """
-        value = self.validated_value if forced_value is None else forced_value
-        if self.command_type == AParam.OPT_TYPE_VALUATED:
-            return '--%s=%s' % (self.name, value)
-        elif self.command_type == AParam.OPT_TYPE_SIMPLE:
-            if value:
-                return '-%s %s' % (self.name, value)
-            else:
-                return ''
-        elif self.command_type == AParam.OPT_TYPE_OPTION:
-            if value:
-                return '-%s' % self.name
-            return ''
-        elif self.command_type == AParam.OPT_TYPE_NAMED_OPTION:
-            if value:
-                return '--%s' % self.name
-            return ''
-        elif self.command_type == AParam.OPT_TYPE_POSIX:
-            if value:
-                return '%s' % value
-            else:
-                return ''
-        elif self.command_type == AParam.OPT_TYPE_NONE:
-            return ''
-        # By default it's OPT_TYPE_SIMPLE way
-        return '-%s %s' % (self.name, self.value)
 
     @property
     def get_label_for_choice(self):
@@ -932,8 +934,21 @@ class JobInput(Ordered, Slugged, ApiModel):
 
     @property
     def available(self):
-        return self.param_type == AParam.TYPE_FILE and os.path.isfile(self.file_path) \
+        return self.param_type == TYPE_FILE and os.path.isfile(self.file_path) \
                and os.path.getsize(self.file_path) > 0
+
+    def get_absolute_url(self):
+        """Reverse url for this Job according to Django urls configuration
+        :return: the absolute uri of this job (without host)
+        """
+        from django.core.urlresolvers import reverse
+        return reverse('wfront:job_input', kwargs={'slug': self.slug})
+
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return self.__class__.objects.filter(api_name=api_name, job=self.job).exclude(pk=self.pk)
 
 
 class JobOutputManager(models.Manager):
@@ -953,18 +968,23 @@ class JobOutputManager(models.Manager):
         assert (isinstance(submission_output, SubmissionOutput))
         output_dict = dict(job=job, _name=submission_output.label, extension=submission_output.ext,
                            api_name=submission_output.api_name)
-        if submission_output.from_input:
+        if hasattr(submission_output, 'from_input') and submission_output.from_input:
             # issued from a input value
-            srv_submission_output = submission_output.from_input
-            value_to_normalize = submitted_inputs.get(srv_submission_output.name,
-                                                      srv_submission_output.default)
-            if srv_submission_output.param_type == AParam.TYPE_FILE:
-                if type(value_to_normalize) is file:
+            from_input = submission_output.from_input
+            logger.debug("Output issued from input %s[%s]", from_input.name, from_input.api_name)
+            value_to_normalize = submitted_inputs.get(from_input.api_name, from_input.default)
+            logger.debug('Value to normalize init 1 %s', value_to_normalize)
+            if from_input.param_type == TYPE_FILE:
+                logger.debug('From input is defined as a file')
+                if type(value_to_normalize) is file or isinstance(value_to_normalize, File):
+                    logger.debug('Value to normalize is a real file %s', value_to_normalize.name)
                     value_to_normalize = value_to_normalize.name
                 elif isinstance(value_to_normalize, (str, unicode)):
-                    value_to_normalize = srv_submission_output.default
-
-            input_value = normalize_value(value_to_normalize)
+                    logger.debug('Value to normalize is str %s', from_input.default)
+                    value_to_normalize = from_input.default
+            logger.debug("value to normalize %s", value_to_normalize)
+            # input_value = normalize_value(value_to_normalize)
+            input_value = value_to_normalize
             formatted_value = submission_output.file_pattern % input_value
             output_dict.update(dict(value=formatted_value))
         else:
@@ -977,7 +997,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     """
 
     class Meta:
-        unique_together = ('_name', 'job')
+        unique_together = ('api_name', 'job')
 
     objects = JobOutputManager()
     field_api_name = "value"
@@ -989,7 +1009,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     value = models.CharField('Output value', max_length=200, null=True, blank=True, default="")
     #: Each output may have its own identifier on remote adaptor
     remote_output_id = models.CharField('Remote output ID (on adaptor)', max_length=255, editable=False, null=True)
-    _name = models.CharField('Name', max_length=200, null=False, blank=False, help_text='Output displayed name')
+    _name = models.CharField('Name', max_length=50, null=False, blank=False, help_text='Output displayed name')
     extension = models.CharField('File extension', max_length=5, null=False, default="")
 
     @property
@@ -1042,7 +1062,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('wfront:job_output', kwargs={'slug': self.slug})
+        return "%s?export=1" % reverse('wfront:job_output', kwargs={'slug': self.slug})
 
     @property
     def download_url(self):
@@ -1057,4 +1077,10 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     @property
     def available(self):
-        return os.path.isfile(self.file_path)
+        return os.path.isfile(self.file_path) and os.path.getsize(self.file_path) > 0
+
+    def duplicate_api_name(self, api_name):
+        """ Check is another entity is set with same api_name
+        :param api_name:
+        """
+        return self.__class__.objects.filter(api_name=api_name, job=self.job).exclude(pk=self.pk)

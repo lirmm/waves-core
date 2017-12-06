@@ -6,17 +6,17 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
+import random
 from os.path import dirname
 
-import swapper
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import override_settings, TestCase
 
-from waves.wcore.tests.utils import get_sample_dir
+from waves.wcore.models import get_service_model, Job, JobInput, JobOutput
+from waves.wcore.tests.tests_utils import get_sample_dir, create_runners
 
-Service = swapper.load_model("wcore", "Service")
-
+Service = get_service_model()
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +29,27 @@ logger = logging.getLogger(__name__)
 )
 class WavesBaseTestCase(TestCase):
     service = None
+
+    def setUp(self):
+        super(WavesBaseTestCase, self).setUp()
+        self.runners = []
+        for runner in create_runners():
+            self.runners.append(runner)
+
+    def _create_random_service(self):
+        return Service.objects.create(name='Sample Service',
+                                      runner=self.runners[random.randint(0, len(self.runners) - 1)])
+
+    def _create_random_job(self):
+        service = self._create_random_service()
+        job = Job.objects.create(submission=service.default_submission,
+                                 email_to='marc@fake.com')
+        job.job_inputs.add(JobInput.objects.create(name="param1", value="Value1", job=job))
+        job.job_inputs.add(JobInput.objects.create(name="param2", value="Value2", job=job))
+        job.job_inputs.add(JobInput.objects.create(name="param3", value="Value3", job=job))
+        job.outputs.add(JobOutput.objects.create(_name="out1", value="out1", job=job))
+        job.outputs.add(JobOutput.objects.create(_name="out2", value="out2", job=job))
+        return job
 
     def _loadServiceJobsParams(self, api_name):
         """

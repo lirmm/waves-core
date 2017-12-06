@@ -3,11 +3,10 @@
 
 {% block object-tools-items %}
     <li>
-        <a type="button" href="{% url 'admin:wcore_aparam_add' %}?for-submission={{ original.pk }}"
-           target="_self"
-           title="Service"
-           class="btn btn-high btn-primary"
-           id="add_submission_link" style="">
+        <a type="button" href="{% url 'admin:wcore_aparam_add' %}?for-submission={{ original.pk }}&_popup=1"
+           title="Service" style="opacity:1"
+           class="btn btn-high btn-primary related-widget-wrapper-link add-related"
+           id="add_submission_input_link" style="">
             Add a new param
         </a>
     </li>
@@ -20,6 +19,14 @@
             Edit Service
         </a>
     </li>
+    {% if original.adaptor %}
+    <li>
+        <a type="button" href="{% url 'wcore:service_preview' original.service.pk %}"
+           class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
+            Preview
+        </a>
+    </li>
+    {% endif %}
     <li>
         <a type="button" href="{% url 'wcore:service_preview' original.service.pk %}"
            class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
@@ -36,34 +43,4 @@
         </a>
     </li>
     {{ block.super }}
-{% endblock %}
-
-{% block admin_change_form_document_ready %}
-    {{ block.super }}
-    <script type="text/javascript">
-        (function ($) {
-            console.log("loaded")
-            $(document).on('formset:added', function (event, $row, formsetName) {
-                console.log("formsetName" + formsetName)
-                if (formsetName == 'inputs') {
-                    // Do something
-                    event.stopImmediatePropagation();
-                    event.stopPropagation();
-                    var rel = new RelatedInlinePopup();
-                    rel.popupInline($('#add_submission_link').attr('href'));
-                    // $('#add_submission_link').trigger('click');
-                }
-            });
-            var rel1 = new RelatedInlinePopup();
-            rel1.findPopupResponse();
-            $('fieldset.show-change-link-popup a.inlinechangelink').click(function (e) {
-                var rel = new RelatedInlinePopup();
-                e.preventDefault();
-                rel.popupInline(e.target.href)
-            });
-            $(document).on('formset:removed', function (event, $row, formsetName) {
-                // Row removed
-            });
-        })(django.jQuery);
-    </script>
 {% endblock %}

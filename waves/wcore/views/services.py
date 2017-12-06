@@ -2,25 +2,18 @@ from __future__ import unicode_literals
 
 from uuid import UUID
 
-import swapper
 from django.contrib import messages
+from django.db import transaction
 from django.urls import reverse
 from django.views import generic
 
 from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.forms.services import ServiceSubmissionForm
-from waves.wcore.models.jobs import Job
-from waves.wcore.models.services import Submission
+from waves.wcore.models import Job, get_submission_model, get_service_model
+from waves.wcore.settings import waves_settings
 
-Service = swapper.load_model("wcore", "Service")
-
-
-class ServiceModalPreview(generic.DetailView):
-    model = Service
-    context_object_name = 'service'
-    queryset = Service.objects.all().prefetch_related('submissions')
-    object = None
-    template_name = 'admin/waves/service/service_preview.html'
+Submission = get_submission_model()
+Service = get_service_model()
 
 
 class SubmissionFormView(generic.FormView, generic.DetailView):
@@ -28,12 +21,21 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
     context_object_name = 'service'
     queryset = Service.objects.all().prefetch_related('submissions')
     object = None
-    template_name = 'admin/waves/service/service_modal.html'
+    # template_name = 'waves/services/bootstrap/submission_form.html'
     form_class = ServiceSubmissionForm
     view_mode = ''
+    job = None
+
+    def get_template_names(self):
+        if self.template_name is None:
+            self.template_name = 'waves/services/' + waves_settings.TEMPLATE_PACK + '/submission_form.html'
+        return super(SubmissionFormView, self).get_template_names()
 
     def __init__(self, **kwargs):
         super(SubmissionFormView, self).__init__(**kwargs)
+
+    def get_submissions(self):
+        return self.get_object().submissions
 
     def get_success_url(self):
         return reverse('wcore:submission', kwargs={'pk': self.get_object().id})
@@ -54,14 +56,14 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         # self.object = self.get_object()
         context = super(SubmissionFormView, self).get_context_data(**kwargs)
         context['selected_submission'] = self._get_selected_submission()
-        context['view_mode'] = self.kwargs.get('view_mode', '')
-        context['submission_forms'] = []
-        for submission in self.get_object().submissions_web.all():
+        context['submissions'] = []
+        for submission in self.get_submissions().all():
             if form is not None and str(submission.slug) == form.cleaned_data['slug']:
-                context['submission_forms'].append(form)
+                context['submissions'].append({'submission': submission, 'form': form})
             else:
-                context['submission_forms'].append(self.form_class(instance=submission, parent=self.object,
-                                                              user=self.request.user))
+                context['submissions'].append(
+                    {'submission': submission, 'form': self.form_class(instance=submission, parent=self.object,
+                                                                       user=self.request.user)})
         return context
 
     def get_form_kwargs(self):
@@ -73,10 +75,8 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         return extra_kwargs
 
     def post(self, request, *args, **kwargs):
-        self.user = self.request.user
-        self.selected_submission = self._get_selected_submission()
         form = ServiceSubmissionForm(parent=self.get_object(),
-                                     instance=self.selected_submission,
+                                     instance=self._get_selected_submission(),
                                      data=self.request.POST,
                                      files=self.request.FILES)
         if form.is_valid():
@@ -84,6 +84,7 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         else:
             return self.form_invalid(**{'form': form})
 
+    @transaction.atomic
     def form_valid(self, form):
         # create job in database
         ass_email = form.cleaned_data.pop('email')
@@ -91,13 +92,13 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
             ass_email = self.request.user.email
         user = self.request.user if self.request.user.is_authenticated() else None
         try:
-            self.job = Job.objects.create_from_submission(submission=self.selected_submission,
+            self.job = Job.objects.create_from_submission(submission=self._get_selected_submission(),
                                                           email_to=ass_email,
                                                           submitted_inputs=form.cleaned_data,
                                                           user=user)
             messages.success(
                 self.request,
-                "Job successfully submitted"
+                "Job successfully submitted %s" % self.job.slug
             )
         except JobException as e:
             messages.error(

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from rest_framework import serializers
+from waves.wcore.models.inputs import AParam
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
@@ -16,7 +17,6 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
         hidden = kwargs.pop('hidden', [])
         # Instantiate the superclass normally
         super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
-
         if fields:
             # Drop any fields that are not specified in the `fields` argument.
             allowed = set(fields)
@@ -29,7 +29,13 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
 
-class RecursiveField(DynamicFieldsModelSerializer):
+class RecursiveField(serializers.ModelSerializer):
+    class Meta:
+        model = AParam
+
     def to_representation(self, value):
         serializer = self.parent.parent.__class__(value, context=self.context)
+        print self.parent.parent
+        print value
+        print self.parent
         return serializer.data

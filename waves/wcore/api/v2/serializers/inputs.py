@@ -10,8 +10,8 @@ from .fields import CommaSeparatedListField, ListElementField
 
 class AParamSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['when_value', 'label', 'name', 'default', 'api_name', 'type', 'mandatory', 'description', 'multiple', 'edam_formats',
-                  'edam_datas', 'dependents_inputs']
+        fields = ['when_value', 'label', 'default', 'api_name', 'type', 'mandatory', 'description', 'multiple',
+                  'edam_formats', 'edam_datas', 'dependents_inputs']
         model = AParam
 
     mandatory = serializers.NullBooleanField(source='required')

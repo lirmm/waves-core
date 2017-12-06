@@ -4,48 +4,65 @@ from __future__ import unicode_literals
 import json
 
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
+from django.core.urlresolvers import reverse
+from django.db import models, DatabaseError
+from django.http import HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
 from django.utils import six
+from django.utils.encoding import force_text
+from django.utils.html import format_html
+from django.utils.http import urlquote
 from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
+from waves.wcore.admin.base import WavesModelAdmin
 from waves.wcore.admin.submissions import FileInputSampleInline, SampleDependentInputInline
 from waves.wcore.models.inputs import *
-from waves.wcore.models.services import Submission
+from waves.wcore.models import get_submission_model
+
+Submission = get_submission_model()
 
 __all__ = ['AllParamModelAdmin']
 
+required_base_fields = ['label', 'name', 'cmd_format', 'required', 'submission']
+extra_base_fields = ['help_text', 'multiple', 'api_name', 'default']
+dependencies_fields = ['parent', 'when_value']
 
-class AParamAdmin(PolymorphicChildModelAdmin):
+
+class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
     """ Base Input admin """
     base_model = AParam
+
     exclude = ['order', 'repeat_group']
 
-    base_fieldsets = (
+    # TODO NEXT VERSION
+    readonly_fields = []
+    _object = None
+
+    fieldsets = [
         ('General', {
-            'fields': ('label', 'name', 'api_name', 'cmd_format', 'default', 'required', 'submission'),
-            'classes': []
+            'fields': required_base_fields,
+            'classes': ['collapse', 'open']
         }),
-        ('Details', {
-            'fields': ('help_text', 'regexp', 'edam_formats', 'edam_datas', 'multiple'),
+        ('More', {
+            'fields': extra_base_fields,
             'classes': ['collapse']
         }),
         ('Dependencies', {
-            'fields': ('parent', 'when_value'),
+            'fields': dependencies_fields,
             'classes': ['collapse']
         }),
-    )
-    # TODO NEXT VERSION
-    """
-    ('Grouping', {
-        'fields': ('repeat_group',),
-        'classes': ['collapse']
-    })
-    """
-    readonly_fields = []
-    _object = None
+    ]
+
+    @property
+    def popup_response_template(self):
+        if 'jet' in settings.INSTALLED_APPS:
+            return 'admin/waves/baseparam/jet_popup_response.html'
+        else:
+            return 'admin/waves/baseparam/popup_response.html'
 
     def get_model_perms(self, request):
         return {}  # super(AllParamModelAdmin, self).get_model_perms(request)
@@ -78,7 +95,8 @@ class AParamAdmin(PolymorphicChildModelAdmin):
             obj.submission = request.submission
         try:
             super(AParamAdmin, self).save_model(request, obj, form, change)
-        except BaseException:
+        except DatabaseError as e:
+            messages.error(request, "Error occurred saving param %s" % e.message)
             pass
         else:
             messages.success(request, "Param successfully saved")
@@ -96,7 +114,6 @@ class AParamAdmin(PolymorphicChildModelAdmin):
         form.base_fields['submission'].widget = forms.HiddenInput()
         if request.submission or (obj and obj.submission):
             form.base_fields['submission'].initial = request.submission.pk if request.submission else obj.submission.pk
-        # form.fields['submission'].initial = request.submission
         return form
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -128,9 +145,14 @@ class AParamAdmin(PolymorphicChildModelAdmin):
                 'value': six.text_type(value),
                 'obj': six.text_type(obj),
             })
-            return SimpleTemplateResponse('admin/waves/baseparam/popup_response.html', {
-                'popup_response_data': popup_response_data,
+            return SimpleTemplateResponse(self.popup_response_template, context={
+                'popup_response_data': popup_response_data
             })
+        elif "_addanother" in request.POST:
+            # TODO add new param and setup submission foreign key
+            pass
+        else:
+            post_url_continue = reverse('admin:wcore_submission_change', args=[obj.submission.id])
         return super(AParamAdmin, self).response_add(request, obj, post_url_continue)
 
     def response_change(self, request, obj):
@@ -146,9 +168,26 @@ class AParamAdmin(PolymorphicChildModelAdmin):
                 'obj': six.text_type(obj),
                 'new_value': six.text_type(new_value),
             })
-            return SimpleTemplateResponse('admin/waves/baseparam/popup_response.html', {
+            return SimpleTemplateResponse(self.popup_response_template, {
                 'popup_response_data': popup_response_data,
             })
+        elif "_addanother" in request.POST:
+            # TODO add new param and setup submission foreign key
+            pass
+        else:
+            opts = self.model._meta
+            msg_dict = {
+                'name': force_text(opts.verbose_name),
+                'obj': format_html('<a href="{}">{}</a>', urlquote(request.path), obj),
+            }
+
+            msg = format_html(
+                'The {name} "{obj}" was changed successfully.',
+                **msg_dict
+            )
+            self.message_user(request, msg, messages.SUCCESS)
+            return HttpResponseRedirect(
+                reverse('admin:wcore_submission_change', args=[obj.submission.pk]) + '#/tab/inline_0/')
         return super(AParamAdmin, self).response_change(request, obj)
 
 
@@ -162,7 +201,21 @@ class FileInputAdmin(AParamAdmin):
     inlines = [FileInputSampleInline, SampleDependentInputInline]
     # TODO activate sample selection dependencies (both on forms and on submission)
     # TOD, SampleDependentInputInline,]
-    readonly_fields = ['regexp', ]
+    # readonly_fields = ['default', ]
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields + ['max_size', 'allowed_extensions'],
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields + ['edam_formats', 'edam_datas', 'regexp'],
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
 
 
 @admin.register(TextParam)
@@ -170,6 +223,20 @@ class TextParamAdmin(AParamAdmin):
     """ BaseParam subclass Admin """
     base_model = TextParam
     extra_fieldset_title = 'Text input params'
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields + ['max_length'],
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields,
+            'classes': ['collapse', 'open']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
 
 
 @admin.register(BooleanParam)
@@ -177,6 +244,20 @@ class BooleanParamAdmin(AParamAdmin):
     """ BooleanParam subclass Admin """
     base_model = BooleanParam
     extra_fieldset_title = 'Boolean params'
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields + ['true_value', 'false_value'],
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
 
 
 @admin.register(ListParam)
@@ -186,6 +267,23 @@ class ListParamAdmin(AParamAdmin):
     show_in_index = False
     # fields = ('list_mode', 'list_elements')
     extra_fieldset_title = 'List params'
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'rows': 2, 'cols': 50, 'class': 'span8'})}
+    }
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields + ['list_mode', 'list_elements'],
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields,
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        })
+    ]
 
 
 @admin.register(IntegerParam)
@@ -194,6 +292,21 @@ class IntegerParamAdmin(AParamAdmin):
     base_model = IntegerParam
     extra_fieldset_title = 'Integer range'
 
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields + ['min_val', 'max_val', 'step'],
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
+
 
 @admin.register(DecimalParam)
 class DecimalParamAdmin(AParamAdmin):
@@ -201,13 +314,27 @@ class DecimalParamAdmin(AParamAdmin):
 
     base_model = DecimalParam
     extra_fieldset_title = 'Decimal range'
+    fieldsets = [
+        ('General', {
+            'fields': required_base_fields,
+            'classes': ['collapse', 'open']
+        }),
+        ('More', {
+            'fields': extra_base_fields + ['min_val', 'max_val', 'step'],
+            'classes': ['collapse']
+        }),
+        ('Dependencies', {
+            'fields': dependencies_fields,
+            'classes': ['collapse']
+        }),
+    ]
 
 
 @admin.register(AParam)
 class AllParamModelAdmin(PolymorphicParentModelAdmin):
     """ Main polymorphic params Admin """
     base_model = AParam
-
+    exclude = ('order',)
     child_models = (
         (TextParam, TextParamAdmin),
         (FileInput, FileInputAdmin),
@@ -226,12 +353,6 @@ class AllParamModelAdmin(PolymorphicParentModelAdmin):
         return obj.get_real_instance_class().class_label
 
     get_class_label.short_description = 'Parameter type'
-
-    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
-        return super(AllParamModelAdmin, self).changeform_view(request, object_id, form_url, extra_context)
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        return super(AllParamModelAdmin, self).change_view(request, object_id, form_url, extra_context)
 
     def response_change(self, request, obj):
         from django.contrib.admin.options import IS_POPUP_VAR

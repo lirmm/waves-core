@@ -38,9 +38,9 @@ class JobOutputInline(TabularInline):
     suit_classes = 'suit-tab suit-tab-outputs'
     classes = ['collapse', ]
     can_delete = False
-    readonly_fields = ('name', 'value', 'file_path')
+    readonly_fields = ('name', 'get_api_name', 'value', 'file_path')
     ordering = ('order',)
-    fields = ('name', 'value', 'file_path')
+    fields = ('name', 'get_api_name', 'value', 'file_path')
 
     def has_add_permission(self, request):
         """ Never add any job output from admin """
@@ -106,7 +106,7 @@ class JobAdmin(WavesModelAdmin):
     ]
     actions = [mark_rerun, delete_model]
     list_filter = ('_status', 'client')
-    list_display = ('get_slug', 'get_colored_status', 'submission_service_name', 'get_run_on', 'get_client',
+    list_display = ('get_slug', 'title', 'get_colored_status', 'submission_service_name', 'get_run_on', 'get_client',
                     'created', 'updated')
     list_per_page = 30
     search_fields = ('client__email', 'get_run_on')
@@ -225,7 +225,7 @@ class JobAdmin(WavesModelAdmin):
 
     def get_command_line(self, obj):
         if obj.adaptor:
-            return obj.adaptor.command + " " + obj.command_line
+            return "%s %s" % (obj.adaptor.command, obj.command_line)
         else:
             return "Unavailable"
 
@@ -236,6 +236,7 @@ class JobAdmin(WavesModelAdmin):
             return "Unavailable"
 
     connexion_string.short_description = "Remote connexion string"
+    submission_service_name.short_description = "Service [submission]"
     get_command_line.short_description = "Remote command line"
     get_colored_status.short_description = 'Status'
     get_run_on.short_description = 'Run on'

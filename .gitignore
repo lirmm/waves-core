@@ -108,3 +108,4 @@ ENV/
 /waves/tests/settings.ini
 /staticfiles/
 !/waves/wcore/forms/lib/
+!/bin/fastme-2.1.5-linux64

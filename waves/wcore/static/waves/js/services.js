@@ -27,7 +27,7 @@
           * for each inputs with related_inputs, hide all except the one corresponding
           * to input value
          */
-        var dependents = $("[dependent-on='" + $(this).attr("name") + "']")
+        var dependents = $("[dependent-on='" + $(this).attr("name") + "']");
         var has_dep = $(this).val();
         console.log('Type obj:', $(this).attr('type'));
         if ($(this).attr('type') == 'checkbox' || $(this).attr('type') == 'radio') {

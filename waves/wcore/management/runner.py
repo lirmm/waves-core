@@ -1,110 +1,150 @@
-"""
-Extended DaemonRunner class (from python-daemon):
-- add `status` command
-- add `argv` override to __init__ arguments
-- implement base `run()` method, which launch `loop_callback()`, on exit run `exit_callback()`
-
-"""
+""" Daemonized WAVES system commands """
 from __future__ import unicode_literals
 
+import datetime
 import logging
+import os
 import signal
+import time
+from itertools import chain
 
-import lockfile
-import psutil
-from daemon.runner import DaemonRunner as BaseDaemonRunner, DaemonRunnerStopFailureError, \
-    DaemonRunnerStartFailureError, emit_message
+from daemons.prefab import run
+
+import waves.wcore.adaptors.const
+import waves.wcore.exceptions
+from waves.wcore.adaptors.exceptions import AdaptorException
+from waves.wcore.models import Job
+from waves.wcore.settings import waves_settings
 
 logger = logging.getLogger('waves.daemon')
+LOG = logging.getLogger('daemons.django.wcore')
 
 
-class DaemonRunner(BaseDaemonRunner):
-    """ Override base DaemonRunner from python-daemon in order to add 'Status' method
+class BaseRunDaemon(run.RunDaemon):
+    def __init__(self, *args, **kwargs):
+        super(BaseRunDaemon, self).__init__(*args, **kwargs)
+        self._handlers = {
+            signal.SIGTERM: [self.exit_callback],
+            signal.SIGKILL: [self.exit_callback]
+        }
 
-    """
-    LOCK_ERROR = "Unable to acquire lock: process may be already running ?"
-    START_ERROR = "Unable to start %s"
-    STOP_ERROR = "Unable to stop %s"
-    STATUS_STOPPED = "Stopped"
-    STATUS_RUNNING = "Running"
-    STATUS_UNKNOWN = "Unknown"
-    _verbose = True
+    def loop_callback(self):
+        """ Main loop executed by daemon """
+        raise NotImplementedError('You must implement loop_callback method to define a daemon')
 
-    def _status(self):
+    def exit_callback(self):
+        """
+        Exit callback, called whenever process is manually stopped, or killed elsewhere.
+        .. WARNING:
+            If you plan to override this function, remember to always call parent method in order to terminate process
+        """
+        logger.debug("exit_callback")
+
+    def preloop_callback(self):
+        """
+        Override this method if you want to do initialization before actual daemon process infinite loop
+        """
+        logger.debug("preloop_callback")
+
+    def run(self):
+        """
+        Method called upon 'start' command from daemon manager, must be overriden in actual job daemon subclass
+        """
         try:
-            running = psutil.pid_exists(self.pidfile.read_pid())
-        except (OSError, TypeError):
-            emit_message(self.STATUS_UNKNOWN)
-            return self.STATUS_UNKNOWN
+            self.preloop_callback()
+            logger.debug("Starting loopback...")
+            while True:
+                self.loop_callback()
+        except (SystemExit, KeyboardInterrupt) as exc:
+            # Normal exit getting a signal from the parent process
+            pass
+        except Exception as exc:
+            # Something unexpected happened?
+            logger.exception("Unexpected Exception %s", exc)
+
+    def status(self):
+        if self.pid < 0 or self.pid is None:
+            LOG.warning("Process pid does not exists")
+            return
+        try:
+            os.kill(self.pid, 0)
+        except OSError:
+            LOG.info("Process is stopped.")
         else:
-            if running:
-                emit_message(self.STATUS_RUNNING)
-                return self.STATUS_RUNNING
-            else:
-                emit_message(self.STATUS_STOPPED)
-                return self.STATUS_STOPPED
+            LOG.info("Process is running.")
 
-    def _start(self):
-        try:
-            super(DaemonRunner, self)._start()
-        except DaemonRunnerStartFailureError as exc:
-            emit_message(self.START_ERROR % exc.message)
-        except lockfile.LockTimeout as exc:
-            emit_message(self.LOCK_ERROR)
 
-    def _stop(self):
-        try:
-            pid = self.pidfile.read_pid()
-            super(DaemonRunner, self)._stop()
-            emit_message("Process %i stopped " % pid)
-        except DaemonRunnerStopFailureError as exc:
-            emit_message(self.STOP_ERROR % exc.message)
+class JobQueueRunDaemon(BaseRunDaemon):
+    """
+    Dedicated command to summarize current WAVES specific settings
+    """
+    help = 'Managing WAVES job queue states'
+    SLEEP_TIME = 2
+    pidfile = os.path.join(waves_settings.DATA_ROOT, 'waves_queue.pid')
+    pidfile_timeout = 5
 
-    def _restart(self):
-        super(DaemonRunner, self)._restart()
+    def loop_callback(self):
+        """
+        Very very simple daemon to monitor jobs queue.
 
-    action_funcs = {
-        'start': _start,
-        'stop': _stop,
-        'restart': _restart,
-        'status': _status
-    }
+        - Retrieve all current non terminated job, and process according to current status.
+        - Jobs are run on a stateless process
 
-    def __init__(self, app, **options):
-        """ Set up the parameters of a new runner.
-            **Override base DaemonRunner in order to provide specific args upon creation**
+        .. todo::
+            Implement this as separated forked processes for each jobs, inspired by Galaxy queue treatment.
 
-            :param app: The application instance; see below.
-            :return: ``None``.
+        :return: None
+        """
+        jobs = Job.objects.prefetch_related('job_inputs'). \
+            prefetch_related('outputs').filter(_status__lt=waves.wcore.adaptors.const.JOB_TERMINATED)
+        if jobs.count() > 0:
+            logger.info("Starting queue process with %i(s) unfinished jobs", jobs.count())
+        for job in jobs:
+            runner = job.adaptor
+            if runner and logger.isEnabledFor(logging.DEBUG):
+                logger.debug('[Runner]-------\n%s\n----------------', runner.dump_config())
+            try:
+                job.check_send_mail()
+                logger.debug("Launching Job %s (adaptor:%s)", job, runner)
+                if job.status == waves.wcore.adaptors.const.JOB_CREATED:
+                    job.run_prepare()
+                    logger.debug("[PrepareJob] %s (adaptor:%s)", job, runner)
+                elif job.status == waves.wcore.adaptors.const.JOB_PREPARED:
+                    logger.debug("[LaunchJob] %s (adaptor:%s)", job, runner)
+                    job.run_launch()
+                elif job.status == waves.wcore.adaptors.const.JOB_COMPLETED:
+                    job.run_results()
+                    logger.debug("[JobExecutionEnded] %s (adaptor:%s)", job.get_status_display(), runner)
+                else:
+                    job.run_status()
+            except (waves.wcore.exceptions.WavesException, AdaptorException) as e:
+                logger.error("Error Job %s (adaptor:%s-state:%s): %s", job, runner, job.get_status_display(),
+                             e.message)
+            except Exception as exc:
+                logger.error('Current job raised unrecoverable exception %s', exc)
+                job.fatal_error()
+            finally:
+                logger.info("Queue job terminated at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
+                job.check_send_mail()
+                if runner is not None:
+                    runner.disconnect()
+        logger.debug('Go to sleep for %i seconds' % self.SLEEP_TIME)
+        time.sleep(self.SLEEP_TIME)
 
-            The `app` argument must have the following attributes:
 
-            * `stdin_path`, `stdout_path`, `stderr_path`: Filesystem paths
-              to open and replace the existing `sys.stdin`, `sys.stdout`,
-              `sys.stderr`.
+class PurgeDaemon(BaseRunDaemon):
+    help = 'Clean up old jobs '
+    SLEEP_TIME = 86400
+    pidfile_path = os.path.join(waves_settings.DATA_ROOT, 'waves_clean.pid')
 
-            * `pidfile_path`: Absolute filesystem path to a file that will
-              be used as the PID file for the daemon. If ``None``, no PID
-              file will be used.
-
-            * `pidfile_timeout`: Used as the default acquisition timeout
-              value supplied to the runner's PID lock file.
-
-            * `run`: Callable that will be invoked when the daemon is
-              started.
-
-            """
-        super(DaemonRunner, self).__init__(app)
-        # preserve file related loggers handlers
-        self.daemon_context.files_preserve = self.getLogFilesHandles(logger)
-        self.daemon_context.detach_process = True
-        self.daemon_context.working_directory = options.get('work_dir')
-        self.daemon_context.signal_map[signal.SIGTERM] = app.exit_callback
-
-    def getLogFilesHandles(self, logger):
-        handles = []
-        for handler in logger.handlers:
-            handles.append(handler.stream.fileno())
-        if logger.parent:
-            handles += self.getLogFilesHandles(logger.parent)
-        return handles
+    def loop_callback(self):
+        logger.info("Purge job launched at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
+        date_anonymous = datetime.date.today() - datetime.timedelta(waves_settings.KEEP_ANONYMOUS_JOBS)
+        date_registered = datetime.date.today() - datetime.timedelta(waves_settings.KEEP_REGISTERED_JOBS)
+        anonymous = Job.objects.filter(client__isnull=True, updated__lt=date_anonymous)
+        registered = Job.objects.filter(client__isnull=False, updated__lt=date_registered)
+        for job in list(chain(*[anonymous, registered])):
+            logger.info('Deleting job %s created on %s', job.slug, job.created)
+            job.delete()
+        logger.info("Purge job terminated at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
+        time.sleep(self.SLEEP_TIME)

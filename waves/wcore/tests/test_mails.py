@@ -2,22 +2,19 @@ from __future__ import unicode_literals
 
 import logging
 
-import swapper
 from django.conf import settings
 from django.core import mail
 from django.test import override_settings
 from django.utils import timezone
 
 import waves.wcore.adaptors.const
-from waves.wcore.models import Job, JobInput, JobOutput
-from waves.wcore.models.services import Submission
+from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.settings import waves_settings as config
 from waves.wcore.tests.base import WavesBaseTestCase
 
-Service = swapper.load_model("wcore", "Service")
-
-
 logger = logging.getLogger(__name__)
+Service = get_service_model()
+Submission = get_submission_model()
 
 
 @override_settings(
@@ -30,21 +27,15 @@ class JobMailTest(WavesBaseTestCase):
         logger.info('EMAIL_BACKEND: %s', settings.EMAIL_BACKEND)
 
     def test_mail_job(self):
-        job = Job.objects.create(
-            submission=Submission.objects.create(name='Default',
-                                                 service=Service.objects.create(name='SubmissionSample Service')),
-            email_to='marc@fake.com')
-        job.job_inputs.add(JobInput.objects.create(name="param1", value="Value1", job=job))
-        job.job_inputs.add(JobInput.objects.create(name="param2", value="Value2", job=job))
-        job.job_inputs.add(JobInput.objects.create(name="param3", value="Value3", job=job))
-        job.outputs.add(JobOutput.objects.create(_name="out1", value="out1", job=job))
-        job.outputs.add(JobOutput.objects.create(_name="out2", value="out2", job=job))
+        job = self._create_random_job()
+
         job.status_time = timezone.datetime.now()
         logger.debug("Job link: %s", job.link)
         logger.debug("Job notify: %s", job.notify)
         job.check_send_mail()
         self.assertEqual(len(mail.outbox), 1)
         sent_mail = mail.outbox[-1]
+        print sent_mail.subject
         self.assertTrue(job.service in sent_mail.subject)
         self.assertEqual(job.email_to, sent_mail.to[0])
         self.assertEqual(config.SERVICES_EMAIL, sent_mail.from_email)
