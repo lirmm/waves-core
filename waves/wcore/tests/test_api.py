@@ -230,10 +230,10 @@ class WavesAPIV2TestCase(WavesAPITestCase):
                     input_datas[name] = input_data
 
                 logger.debug('Data posted %s', input_datas)
-                logger.debug('To => %s', submission_url + 'job')
+                logger.debug('To => %s', submission['submission_uri'])
                 o = urlparse(servicetool['url'])
                 self.client.login(username="api_user", password="api_user1234")
-                response = self.client.post(submission_url + 'job',
+                response = self.client.post(submission['submission_uri'],
                                             data=input_datas,
                                             format='multipart')
                 logger.debug(response)

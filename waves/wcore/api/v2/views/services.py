@@ -21,6 +21,7 @@ from waves.wcore.api.views.base import WavesAuthenticatedView
 from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.models import Job, get_service_model, get_submission_model
 from waves.wcore.views.services import ServiceSubmissionForm
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 Submission = get_submission_model()
 Service = get_service_model()
@@ -116,10 +117,12 @@ class MultipleFieldLookupMixin(object):
         return get_object_or_404(queryset, **filters)  # Lookup the object
 
 
-class ServiceSubmissionViewSet(viewsets.ModelViewSet):
+class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
+   #  permission_classes = (IsAuthenticatedOrReadOnly, )
     serializer_class = ServiceSubmissionSerializer
     lookup_field = 'api_name'
-    http_method_names = ['get', 'post', 'options']
+    http_method_names = ['get', 'options', 'post']
+
     job = None
 
     def get_queryset(self):
@@ -128,9 +131,25 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
                                          api_name=self.kwargs.get('api_name'),
                                          availability__gte=2)
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Get Service submission detailed informations (inputs, parameters, expected outputs)
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        return super(ServiceSubmissionViewSet, self).retrieve(request, *args, **kwargs)
+
     @detail_route(methods=['get'])
-    def submission_form(self, request, service=None, api_name=None, **kwargs):
-        """ Retrieve service form """
+    def form(self, request, service, api_name=None):
+        """
+        Retrieve service form as raw html
+
+        Allows to include this part of generated code inside any HTML page
+
+        Submission is made on API.
+        """
         logger.debug("Submission_form")
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
         template_pack = self.request.GET.get('tp', 'bootstrap3')
@@ -153,7 +172,10 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
 
     @detail_route(methods=['post'])
     def create_job(self, request, *args, **kwargs):
-        """ Create a new job from submitted params """
+        """
+        Create a new job from submitted inputs
+
+        """
         logger.debug("Create Job")
         if logger.isEnabledFor(logging.DEBUG):
             for param in request.data:
@@ -165,10 +187,8 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
         ass_email = passed_data.pop('email', None)
         try:
             passed_data.pop('api_key', None)
-            from waves.wcore.api.v2.serializers.jobs import JobCreateSerializer
-            from django.db.models import Q
             self.job = Job.objects.create_from_submission(submission=service_submission, email_to=ass_email,
-                                                     submitted_inputs=passed_data, user=request.user)
+                                                          submitted_inputs=passed_data, user=request.user)
 
             # Now job is created (or raise an exception),
             serializer = JobSerializer(self.job, many=False, context={'request': request},
@@ -181,3 +201,10 @@ class ServiceSubmissionViewSet(viewsets.ModelViewSet):
         except JobException as e:
             logger.fatal("Create Error %s", e.message)
             return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+
+    def list(self, request, *args, **kwargs):
+        """
+        List all available submissions for this service
+        :return: A list of currently available submissions
+        """
+        return super(ServiceSubmissionViewSet, self).list(request, *args, **kwargs)
