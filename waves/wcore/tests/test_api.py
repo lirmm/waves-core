@@ -209,7 +209,7 @@ class WavesAPIV2TestCase(WavesAPITestCase):
                     job_input = submission['inputs'][name]
                     if job_input['type'] == TYPE_FILE:
                         i += 1
-                        input_data = create_test_file(job_input['name'], i)
+                        input_data = create_test_file(job_input['api_name'], i)
                         logger.debug('file input %s', input_data)
                     elif job_input['type'] == TYPE_INT:
                         input_data = int(random.randint(0, 199))

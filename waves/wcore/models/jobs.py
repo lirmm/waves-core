@@ -1062,7 +1062,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('wfront:job_output', kwargs={'slug': self.slug})
+        return "%s?export=1" % reverse('wfront:job_output', kwargs={'slug': self.slug})
 
     @property
     def download_url(self):

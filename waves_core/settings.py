@@ -26,7 +26,7 @@ SECRET_KEY = '0jmf=ngd^2**h3km5@#&w21%hlj9kos($2=igsqh8-38_9g1$1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'waves.front',
     'crispy_forms',
     'rest_framework',
+    'rest_framework_swagger',
     'adminsortable2',
     # 'debug_toolbar'
 )
@@ -192,4 +193,4 @@ MESSAGE_TAGS = {
 WAVES_CORE = {
     'JOB_LOG_LEVEL': logging.DEBUG,
 }
-INTERNAL_IPS = ("127.0.0.1",)
+INTERNAL_IPS = ("127.0.0.1", "193.49.106.227")

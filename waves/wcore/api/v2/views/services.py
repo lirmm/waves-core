@@ -116,53 +116,6 @@ class MultipleFieldLookupMixin(object):
         return get_object_or_404(queryset, **filters)  # Lookup the object
 
 
-class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.RetrieveAPIView, generics.CreateAPIView,
-                               WavesAuthenticatedView):
-    """ Service job Submission view """
-    queryset = Submission.objects.all()
-    serializer_class = ServiceSubmissionSerializer
-    lookup_fields = ('service', 'api_name')
-
-    def get_queryset(self):
-        """ Retrieve for service, current submissions available for API """
-        return Submission.objects.filter(api_name=self.kwargs.get('api_name'),
-                                         service__api_name=self.kwargs.get('service'),
-                                         availability__gt=2)
-
-    def get_object(self):
-        """ Retrieve object or redirect to 404 """
-        return get_object_or_404(self.get_queryset())
-
-    # TODO add check authorization
-    def post(self, request, *args, **kwargs):
-        """ Create a new job from submitted params """
-        logger.debug("Post ServiceJobSubmission")
-        if logger.isEnabledFor(logging.DEBUG):
-            for param in request.data:
-                logger.debug('param key ' + param)
-                logger.debug(request.data[param])
-            logger.debug('Request Data %s', request.data)
-        service_submission = self.get_object()
-        ass_email = request.data.pop('email', None)
-        try:
-            request.data.pop('api_key', None)
-            from waves.wcore.api.v2.serializers.jobs import JobCreateSerializer
-            from django.db.models import Q
-            job = Job.objects.create_from_submission(submission=service_submission,
-                                                     email_to=ass_email,
-                                                     submitted_inputs=request.data,
-                                                     user=request.user)
-            # Now job is created (or raise an exception),
-            serializer = JobSerializer(job, many=False, context={'request': request},
-                                       fields=('slug', 'url', 'created', 'status',))
-            return Response(serializer.data, status=201)
-        except ValidationError as e:
-            raise DRFValidationError(e.message_dict)
-        except JobException as e:
-            logger.fatal("Create Error %s", e.message)
-            return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
-
-
 class ServiceSubmissionViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSubmissionSerializer
     lookup_field = 'api_name'
