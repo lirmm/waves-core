@@ -1,4 +1,4 @@
-{% extends "admin/waves/change_form.html" %}
+{% extends "waves/admin/change_form.html" %}
 {% load i18n admin_modify admin_urls admin_static waves_tags %}
 {% block object-tools-items %}
     <li>
@@ -10,7 +10,7 @@
         </a>
     </li>
     <li>
-        <a type="button" href="{% url 'wcore:service_export_form' original.pk %}"
+        <a type="button" href="{% url 'admin:service_export_form' original.pk %}"
            title="View online"
            class="btn btn-high btn-info"
            id="view_jobs">
@@ -27,13 +27,13 @@
             </a>
         </li>
         <li>
-            <a type="button" href="{% url 'wcore:service_preview' original.pk %}"
+            <a type="button" href="{% url 'admin:service_preview' original.pk %}"
                class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
                 Preview
             </a>
         </li>
         <li>
-            <a type="button" href="{% url 'wcore:service_test_connection' original.pk %}"
+            <a type="button" href="{% url 'admin:service_test_connection' original.pk %}"
                title="Connection Test"
                class="button"
                id="test_connect">
@@ -43,7 +43,7 @@
         {%  comment "Service Tool import needs update" %}
         {% if original.runner.adaptor.importer %}
             <li>
-                <a type="button" href="{% url 'wcore:service_import_form' original.pk %}"
+                <a type="button" href="{% url 'admin:service_import_form' original.pk %}"
                    title="Import from adapter"
                    class="button"
                    data-toggle="modal"

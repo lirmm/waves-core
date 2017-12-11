@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from adminsortable2.admin import SortableInlineAdminMixin
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
@@ -8,6 +9,8 @@ from django.utils.safestring import mark_safe
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
 from waves.wcore.admin.base import *
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
+from waves.wcore.admin.views import ServiceParamImportView, ServiceDuplicateView, ServiceExportView, \
+    ServiceModalPreview, ServiceTestConnectionView
 from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.utils import url_to_edit_object
@@ -44,8 +47,8 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     """ Service model objects Admin"""
 
     class Media:
-        js = ('admin/waves/js/services.js',
-              'admin/waves/js/connect.js')
+        js = ('waves/admin/js/services.js',
+              'waves/admin/js/connect.js')
 
     form = ServiceForm
 
@@ -54,7 +57,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     list_display = ('name', 'api_name', 'runner', 'version', 'status', 'created_by',
                     'submission_link')
     list_filter = ('status', 'name', 'created_by')
-    change_form_template = "admin/waves/service/change_form.html"
+    change_form_template = "waves/admin/service/change_form.html"
 
     fieldsets = [
         ('General', {
@@ -78,6 +81,17 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     ]
 
     extra_fieldsets = []
+
+    def get_urls(self):
+        urls = super(ServiceAdmin, self).get_urls()
+        extended_urls = [
+            url(r'^service/(?P<pk>\d+)/import/$', ServiceParamImportView.as_view(), name="service_import_form"),
+            url(r'^service/(?P<service_id>\d+)/duplicate$', ServiceDuplicateView.as_view(), name="service_duplicate"),
+            url(r'^service/(?P<pk>\d+)/export$', ServiceExportView.as_view(), name="service_export_form"),
+            url(r'^service/(?P<pk>\d+)/check$', ServiceTestConnectionView.as_view(), name="service_test_connection"),
+            url(r'^service/(?P<pk>\d+)/preview$', ServiceModalPreview.as_view(), name="service_preview"),
+        ]
+        return urls + extended_urls
 
     def get_fieldsets(self, request, obj=None):
         base_fieldsets = super(ServiceAdmin, self).get_fieldsets(request, obj)

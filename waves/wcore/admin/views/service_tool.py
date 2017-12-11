@@ -73,7 +73,7 @@ class ServiceTestConnectionView(RunnerTestConnectionView):
 
 
 class ServicePreviewForm(SubmissionFormView):
-    template_name = 'admin/waves/service/service_preview.html'
+    template_name = 'waves/admin/service/service_preview.html'
 
     def get_context_data(self, **kwargs):
         context = super(ServicePreviewForm, self).get_context_data(**kwargs)
@@ -86,7 +86,7 @@ class ServiceModalPreview(generic.DetailView):
     context_object_name = 'service'
     queryset = Service.objects.all().prefetch_related('submissions')
     object = None
-    template_name = 'admin/waves/service/service_modal.html'
+    template_name = 'waves/admin/service/service_modal.html'
 
     def get_context_data(self, **kwargs):
         context = super(ServiceModalPreview, self).get_context_data(**kwargs)

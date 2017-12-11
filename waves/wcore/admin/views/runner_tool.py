@@ -24,7 +24,7 @@ Service = get_service_model()
 
 class RunnerImportToolView(DetailView, FormView):
     """ Import a new service for a runner """
-    template_name = 'admin/waves/import/service_modal_form.html'
+    template_name = 'waves/admin/import/service_modal_form.html'
     form_class = ImportForm
     model = Runner
     # success_url = '/admin/import/tools/2'

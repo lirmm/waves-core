@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from adminsortable2.admin import SortableInlineAdminMixin
+from django.conf.urls import url
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
@@ -9,6 +10,7 @@ from django.utils.safestring import mark_safe
 from waves.wcore.admin.adaptors import SubmissionRunnerParamInLine
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.services import *
+from waves.wcore.admin.views import ServicePreviewForm
 from waves.wcore.compat import CompactInline
 from waves.wcore.models import get_submission_model
 from waves.wcore.models.inputs import *
@@ -163,7 +165,14 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
         }),
     ]
     show_full_result_count = True
-    change_form_template = "admin/waves/submission/change_form.html"
+    change_form_template = "waves/admin/submission/change_form.html"
+
+    def get_urls(self):
+        urls = super(ServiceSubmissionAdmin, self).get_urls()
+        extended_urls = [
+            url(r'^submission/(?P<pk>\d+)/preview', ServicePreviewForm.as_view(), name="submission_preview"),
+        ]
+        return urls + extended_urls
 
     # Override admin class and set this list to add your inlines to service admin
     def display_run_params(self, obj):
@@ -247,8 +256,6 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
         if obj and not obj.runner:
             obj.adaptor_params.all().delete()
         super(ServiceSubmissionAdmin, self).save_model(request, obj, form, change)
-
-
 
 
 admin.site.register(RepeatedGroup, RepeatGroupAdmin)

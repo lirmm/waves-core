@@ -60,9 +60,9 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
     @property
     def popup_response_template(self):
         if 'jet' in settings.INSTALLED_APPS:
-            return 'admin/waves/baseparam/jet_popup_response.html'
+            return 'waves/admin/baseparam/jet_popup_response.html'
         else:
-            return 'admin/waves/baseparam/popup_response.html'
+            return 'waves/admin/baseparam/popup_response.html'
 
     def get_model_perms(self, request):
         return {}  # super(AllParamModelAdmin, self).get_model_perms(request)

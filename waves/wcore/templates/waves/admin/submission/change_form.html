@@ -1,4 +1,4 @@
-{% extends "admin/waves/change_form.html" %}
+{% extends "waves/admin/change_form.html" %}
 {% load i18n admin_modify admin_urls admin_static waves_tags %}
 
 {% block object-tools-items %}
@@ -19,16 +19,8 @@
             Edit Service
         </a>
     </li>
-    {% if original.adaptor %}
     <li>
-        <a type="button" href="{% url 'wcore:service_preview' original.service.pk %}"
-           class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
-            Preview
-        </a>
-    </li>
-    {% endif %}
-    <li>
-        <a type="button" href="{% url 'wcore:service_preview' original.service.pk %}"
+        <a type="button" href="{% url 'admin:service_preview' original.service.pk %}"
            class="btn btn-high btn-info js-popup-link" modal-title="Service Form Preview">
             Preview
         </a>

@@ -3,14 +3,16 @@ Admin pages for Runner and RunnerParam models objects
 """
 from __future__ import unicode_literals
 
+from django.conf.urls import url
 from django.contrib import messages
 from django.contrib.admin import register, TabularInline
 from django.contrib.admin.options import IS_POPUP_VAR
 
 from base import ExportInMassMixin
 from waves.wcore.admin.adaptors import RunnerParamInline
-from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
+from waves.wcore.admin.base import WavesModelAdmin
 from waves.wcore.admin.forms.runners import RunnerForm
+from waves.wcore.admin.views import RunnerExportView, RunnerImportToolView, RunnerTestConnectionView
 from waves.wcore.models import Runner, get_service_model, get_submission_model
 
 Service = get_service_model()
@@ -81,7 +83,16 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
             'classes': ('collapse grp-collapse grp-closed',),
         }),
     ]
-    change_form_template = "admin/waves/runner/change_form.html"
+    change_form_template = "waves/admin/runner/change_form.html"
+
+    def get_urls(self):
+        urls = super(RunnerAdmin, self).get_urls()
+        extended_urls = [
+            url(r'^runner/(?P<pk>\d+)/import/$', RunnerImportToolView.as_view(), name="runner_import_form"),
+            url(r'^runner/(?P<pk>\d+)/export$', RunnerExportView.as_view(), name="runner_export_form"),
+            url(r'^runner/(?P<pk>\d+)/check$', RunnerTestConnectionView.as_view(), name="runner_test_connection"),
+        ]
+        return urls + extended_urls
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}

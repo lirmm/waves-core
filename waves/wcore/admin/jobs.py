@@ -4,8 +4,11 @@ import waves.wcore.adaptors.const
 from django.contrib import admin, messages
 from django.contrib.admin import TabularInline
 from django.db.models import Q
+from django.conf.urls import url
+
 from waves.wcore.admin.base import WavesModelAdmin
 from waves.wcore.admin.forms.jobs import JobInputForm, JobOutputForm, JobForm
+from waves.wcore.admin.views import JobCancelView, JobRerunView
 from waves.wcore.models.history import JobHistory
 from waves.wcore.models.jobs import *
 
@@ -128,6 +131,16 @@ class JobAdmin(WavesModelAdmin):
          )
     ]
 
+    def get_urls(self):
+        urls = super(JobAdmin, self).get_urls()
+        extended_urls = [
+            url(r'^job/(?P<job_id>[0-9]+)/cancel/$', JobCancelView.as_view(), name='job_cancel'),
+            url(r'^job/(?P<job_id>[0-9]+)/rerun/$', JobRerunView.as_view(), name='job_rerun'),
+            # TODO change this to download view in BO
+            # url(r'^job/(?P<job_id>[0-9]+)/download/(?P<slug>)$', JobRerunView.as_view(), name='job_rerun'),
+        ]
+        return urls + extended_urls
+
     def submission_name(self, obj):
         return obj.submission.name
 
@@ -163,7 +176,7 @@ class JobAdmin(WavesModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser or (
-            obj is not None and (obj.client == request.user or obj.service.created_by == request.user))
+                obj is not None and (obj.client == request.user or obj.service.created_by == request.user))
 
     def get_actions(self, request):
         actions = super(JobAdmin, self).get_actions(request)

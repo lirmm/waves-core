@@ -81,12 +81,12 @@ class WavesModelAdmin(ModelAdmin):
 
     class Media:
         js = (
-            'admin/waves/js/admin.js',
-            'admin/waves/js/modal.js'
+            'waves/admin/js/admin.js',
+            'waves/admin/js/modal.js'
         )
         css = {
-            'screen': ('admin/waves/css/admin.css',
-                       'admin/waves/css/modal.css')
+            'screen': ('waves/admin/css/admin.css',
+                       'waves/admin/css/modal.css')
         }
 
 

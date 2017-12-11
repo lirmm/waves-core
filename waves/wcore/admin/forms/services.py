@@ -70,9 +70,9 @@ class ServiceSubmissionForm(forms.ModelForm):
     @property
     def media(self):
         if 'jet' in settings.INSTALLED_APPS:
-            js = ('admin/waves/js/submission_jet.js',)
+            js = ('waves/admin/js/submission_jet.js',)
         else:
-            js = ('admin/waves/js/submissions.js',)
+            js = ('waves/admin/js/submissions.js',)
         return forms.Media(js=js)
 
     runner = forms.ModelChoiceField(queryset=Runner.objects.all(), empty_label="----- use service configuration -----")
