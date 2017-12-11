@@ -4,6 +4,8 @@ from uuid import UUID
 
 from django.contrib import messages
 from django.db import transaction
+from django.template import TemplateDoesNotExist
+from django.template.loader import get_template
 from django.urls import reverse
 from django.views import generic
 
@@ -114,3 +116,46 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
             "Your job could not be submitted, check errors"
         )
         return self.render_to_response(self.get_context_data(**kwargs))
+
+
+class ServiceListView(generic.ListView):
+    template_name = "waves/services/services_list.html"
+    model = Service
+    context_object_name = 'available_services'
+
+    def get_queryset(self):
+        return Service.objects.all().prefetch_related('submissions')
+
+
+class ServiceDetailView(generic.DetailView):
+    model = Service
+    # template_name = 'waves/services/service_details.html'
+    context_object_name = 'service'
+    queryset = Service.objects.all().prefetch_related('submissions')
+    object = None
+    slug_field = 'api_name'
+
+    def get_context_data(self, **kwargs):
+        context = super(ServiceDetailView, self).get_context_data(**kwargs)
+        return context
+
+    def get_object(self, queryset=None):
+        obj = super(ServiceDetailView, self).get_object(queryset)
+        self.object = obj
+        if not obj.available_for_user(self.request.user):
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied()
+        return obj
+
+    def get_template_names(self):
+        try:
+            get_template(
+                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_details.html')
+            return [
+                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_details.html']
+        except TemplateDoesNotExist:
+            try:
+                get_template('waves/override/service_' + self.get_object().api_name + '_details.html')
+                return ['waves/override/service_' + self.get_object().api_name + '_details.html']
+            except TemplateDoesNotExist:
+                return ['waves/services/service_details.html']

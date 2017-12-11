@@ -1,3 +1,10 @@
+Version 1.1.6 - 2017-12-30
+--------------------------
+
+    - Removed: wfront urls, merged inside wcore
+    - Added admin urls directly in related Wcore ModelAdmins
+
+
 Version 1.1.5 - 2017-11-30
 --------------------------
 

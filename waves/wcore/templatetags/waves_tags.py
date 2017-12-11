@@ -19,12 +19,12 @@ def get_app_version():
     return waves_settings.VERSION
 
 
-@register.inclusion_tag('waves/services/service_inc.html')
+@register.inclusion_tag('waves/services/forms/service_inc.html')
 def service_inc(inc_type):
     return {'template': "waves/services/" + waves_settings.TEMPLATE_PACK + "/inc." + inc_type + ".html"}
 
 
-@register.inclusion_tag('waves/services/base_form.html', takes_context=True)
+@register.inclusion_tag('waves/services/forms/base_form.html', takes_context=True)
 def submission_form(context, template_pack=None):
     tpl_pack = template_pack or waves_settings.TEMPLATE_PACK
     return {'template_form': "waves/services/" + tpl_pack + "/submission_form.html",

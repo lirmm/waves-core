@@ -39,10 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'waves.wcore',
-    'waves.front',
     'crispy_forms',
     'rest_framework',
-    'rest_framework_swagger',
     'adminsortable2',
     # 'debug_toolbar'
 )
@@ -125,7 +123,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "waves", "wcore", "static"),
-    # os.path.join(BASE_DIR, "static")
+    os.path.join(BASE_DIR, "static")
 ]
 
 STATICFILES_FINDERS = (

@@ -22,7 +22,7 @@
                         <ul class="pagination">
                             {% if page_obj.has_previous %}
                                 <li>
-                                    <a href="{% url 'wfront:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                                    <a href="{% url 'wcore:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
                                 </li>
                             {% else %}
                                 <li class="disabled"><a href="#">previous</a></li>
@@ -30,11 +30,11 @@
 
                             {% for i in paginator.page_range %}
                                 <li {% ifequal i page_obj.number %}class="active"{% endifequal %}>
-                                    <a href="{% url 'wfront:job_list' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+                                    <a href="{% url 'wcore:job_list' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
                                 </li>
                             {% endfor %}
                             {% if page_obj.has_next %}
-                                <li><a href="{% url 'wfront:job_list' %}?page={{ page_obj.next_page_number }}">next</a>
+                                <li><a href="{% url 'wcore:job_list' %}?page={{ page_obj.next_page_number }}">next</a>
                                 </li>
                             {% else %}
                                 <li class="disabled"><a href="#">next</a></li>
@@ -53,7 +53,7 @@
                     <div align="center">
                         <ul class="pagination">
                             {% if page_obj.has_previous %}
-                                <li><a href="{% url 'wfront:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                                <li><a href="{% url 'wcore:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
                                 </li>
                             {% else %}
                                 <li class="disabled"><a href="#">previous</a></li>
@@ -61,11 +61,11 @@
 
                             {% for i in paginator.page_range %}
                                 <li {% ifequal i page_obj.number %}class="active"{% endifequal %}>
-                                    <a href="{% url 'wfront:job_list' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+                                    <a href="{% url 'wcore:job_list' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
                                 </li>
                             {% endfor %}
                             {% if page_obj.has_next %}
-                                <li><a href="{% url 'wfront:job_list' %}?page={{ page_obj.next_page_number }}">next</a>
+                                <li><a href="{% url 'wcore:job_list' %}?page={{ page_obj.next_page_number }}">next</a>
                                 </li>
                             {% else %}
                                 <li class="disabled"><a href="#">next</a></li>

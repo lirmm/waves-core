@@ -20,7 +20,7 @@
                 {% for service in available_services %}
                     <div class="list-group-item">
                         <h4 class="list-group-item-heading ">
-                            <a href="{% url 'wfront:service_details' service.api_name %}">
+                            <a href="{% url 'wcore:service_details' service.api_name %}">
                                 {{ service.name }} - {{ service.version }}
                             </a>
                         </h4>
