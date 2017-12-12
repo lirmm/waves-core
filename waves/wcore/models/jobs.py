@@ -90,6 +90,20 @@ class JobManager(models.Manager):
             return self.filter(submission__service__in=[service, ])
         return self.filter(client=user, submission__service__in=[service, ])
 
+    def get_submission_job(self, user, submission):
+        """
+        Returns jobs filtered by service, according to following access rule:
+        * user is simply registered, return its jobs, filtered by service
+        :param user: currently logged in user
+        :param submission: submission model object to filter
+        :return: QuerySet
+        """
+        if not user or user.is_anonymous:
+            return self.none()
+        if user.is_superuser or user.is_staff:
+            return self.filter(submission=submission)
+        return self.filter(client=user, submission=submission)
+
     def get_pending_jobs(self, user=None):
         """
         Return pending jobs for user, according to following access rule:
@@ -146,9 +160,11 @@ class JobManager(models.Manager):
         :return: a newly create Job instance
         :rtype: :class:`waves.wcore.models.jobs.Job`
         """
-        client = user if user is not None and not user.is_anonymous() else None
+        default_email = user.email if user and not user.is_anonymous() else None
+        follow_email = email_to or default_email
+
         if update is None:
-            job = self.create(email_to=email_to, client=client,
+            job = self.create(email_to=follow_email, client=user,
                               title=submitted_inputs.get('title', None),
                               submission=submission,
                               service=submission.service.name,
@@ -617,7 +633,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
             status_allowed = STATUS_LIST[2:3]
         elif action == 'cancel_job':
             # Report fails to a AdaptorException raise during cancel process
-            status_allowed = STATUS_LIST[1:6]
+            status_allowed = STATUS_LIST[1:5] + STATUS_LIST[7:]
             if getattr(self.adaptor, 'state_allow_cancel', None):
                 status_allowed = self.adaptor.state_allow_cancel
         elif action == 'job_results':
@@ -879,6 +895,14 @@ class JobInput(Ordered, Slugged, ApiModel):
             return ""
 
     @property
+    def file_name(self):
+        if self.param_type == TYPE_FILE:
+            return self.value
+        else:
+            return ""
+
+
+    @property
     def validated_value(self):
         """ May modify value (cast) according to related SubmissionParam type
 
@@ -1020,6 +1044,13 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
         elif self.value == self.job.stderr:
             return "Standard error"
         return self._name
+
+    def get_extension(self):
+        if self.value == self.job.stdout:
+            return ".stdout"
+        elif self.value == self.job.stderr:
+            return ".stderr"
+        return self.extension
 
     @name.setter
     def name(self, value):

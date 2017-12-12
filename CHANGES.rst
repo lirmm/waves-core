@@ -1,8 +1,9 @@
 Version 1.1.6 - 2017-12-30
 --------------------------
 
-    - Removed: wfront urls, merged inside wcore
+    - Removed: waves.front, merged back inside wcore
     - Added admin urls directly in related Wcore ModelAdmins
+    - Added: fields authors and citation to Service model
 
 
 Version 1.1.5 - 2017-11-30

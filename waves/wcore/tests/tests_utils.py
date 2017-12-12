@@ -17,19 +17,6 @@ from waves.wcore.settings import waves_settings
 logger = logging.getLogger(__name__)
 
 
-def assertion_tracker(func):
-    def method_wrapper(method):
-        def wrapped_method(test, *args, **kwargs):
-            return method(test, *args, **kwargs)
-
-        # Must preserve method name so nose can detect and report tests by
-        # name.
-        wrapped_method.__name__ = method.__name__
-        return wrapped_method
-
-    return method_wrapper
-
-
 def get_sample_dir():
     return join(dirname(dirname(realpath(__file__))), 'data', 'sample')
 
@@ -73,7 +60,7 @@ class TestJobWorkflowMixin(object):
             if job_state >= waves.wcore.adaptors.const.JOB_COMPLETED:
                 logger.info('Job state ended to %s ', job.get_status_display())
                 if job_state == waves.wcore.adaptors.const.JOB_ERROR:
-                    self.fail('Job is in error')
+                    self.fail('Job is in error %s')
                 break
             time.sleep(3)
         if job.status in (waves.wcore.adaptors.const.JOB_COMPLETED, waves.wcore.adaptors.const.JOB_TERMINATED):
@@ -113,8 +100,10 @@ def create_runners():
     runners = []
     loader = AdaptorLoader
     for adaptor in loader.get_adaptors():
-        runners.append(Runner.objects.create(name="%s Runner" % adaptor.name,
-                                             clazz='.'.join([adaptor.__module__, adaptor.__class__.__name__])))
+        runner = Runner.objects.create(name="%s Runner" % adaptor.name,
+                                       clazz='.'.join([adaptor.__module__, adaptor.__class__.__name__]))
+        runners.append(runner)
+
     return runners
 
 

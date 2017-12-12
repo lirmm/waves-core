@@ -1,106 +1,116 @@
 """ WAVES API jobs endpoints """
 from __future__ import unicode_literals
 
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, mixins, status
-from rest_framework.decorators import detail_route
-from rest_framework.parsers import MultiPartParser, JSONParser, BaseParser
-from rest_framework.response import Response
+import logging
+from os.path import getsize
 
-from waves.wcore.api.views.base import WavesAuthenticatedView
-from waves.wcore.exceptions import WavesException
-from waves.wcore.models import Job, JobOutput
-from waves.wcore.api.v2.serializers.jobs import JobSerializer, JobHistoryDetailSerializer, JobInputDetailSerializer, \
-    JobOutputDetailSerializer
+import magic
 from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import get_object_or_404
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
+from rest_framework import status
+from rest_framework import mixins
+from rest_framework import viewsets
+from rest_framework.decorators import detail_route
+from rest_framework.decorators import permission_classes
+from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from waves.wcore.api.v2.serializers.jobs import JobSerializer
+from waves.wcore.models import Job, JobOutput, JobInput
+from waves.wcore.exceptions.jobs import JobInconsistentStateError
+
+logger = logging.getLogger(__name__)
 
 
-class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
-                 viewsets.GenericViewSet, WavesAuthenticatedView):
+class JobViewSet(mixins.ListModelMixin,
+                 mixins.RetrieveModelMixin,
+                 mixins.DestroyModelMixin,
+                 viewsets.GenericViewSet):
     """
     API entry point for ServiceJobs
     """
-    queryset = Job.objects.all()
     serializer_class = JobSerializer
-    parser_classes = (MultiPartParser, JSONParser)
+    queryset = Job.objects.all()
+    parser_classes = (JSONParser,)
     lookup_field = 'slug'
     filter_fields = ('_status', 'updated', 'submission')
+    http_method_names = ['get', 'options', 'put', 'delete']
 
-    def get_queryset(self):
+    @detail_route(methods=['put'], url_path="cancel")
+    @permission_classes((IsAuthenticated,))
+    def cancel(self, request, slug):
         """
-        Basic job queryset
-        :return: querySet
-        base_queryset = super(JobViewSet, self).get_queryset()
-        queryset = Job.objects.add_filter_user(base_queryset, self.request.user).order_by('-created')
-        return queryset
+        Update Job according to requested action
         """
-        return Job.objects.get_user_job(self.request.user).order_by('-created')
-
-    def retrieve(self, request, slug=None, *args, **kwargs):
-        """ Detailed job info """
-        service_job = get_object_or_404(self.get_queryset(), slug=slug)
-        serializer = JobSerializer(service_job, context={'request': request})
-        return Response(serializer.data)
-
-    def destroy(self, request, slug=None, *args, **kwargs):
-        """ Try to remotely cancel job, then delete it from WAVES DB """
-        service_job = get_object_or_404(self.get_queryset(), slug=slug)
+        # TODO check permissions
+        job = get_object_or_404(self.get_queryset(), slug=slug)
         try:
-            service_job.run_cancel()
-        except WavesException as e:
+            job.run_cancel()
+        except JobInconsistentStateError as e:
+            return HttpResponse({'error': e.message}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return HttpResponse({'success': 'Job marked as cancelled'}, status=status.HTTP_202_ACCEPTED)
+
+    def retrieve(self, request, slug=None):
+        """
+        Detailed job info
+        """
+        queryset = get_object_or_404(self.get_queryset(), slug=slug)
+        serializer = self.get_serializer(queryset)
+        return Response(serializer.data)
+
+    def list(self, request):
+        """
+        :param request:
+        :return:
+        """
+        queryset = Job.objects.get_user_job(user=request.user)
+        serializer = self.get_serializer(queryset, many=True, hidden=['inputs', 'outputs', 'history'])
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Try to cancel job if needed, then delete it from db
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        job = get_object_or_404(self.get_queryset())
+        try:
+            job.run_cancel()
+        except JobInconsistentStateError as e:
+            # Even if we can't cancel job, delete it from db, so let it run on adaptor.
             pass
-        self.perform_destroy(service_job)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @detail_route(methods=['get'], url_path='history')
-    def list_history(self, request, slug=None):
-        """ List job history elements """
-        queryset = Job.objects.get_user_job(user=request.user)
-        job = get_object_or_404(queryset, slug=slug)
-        serializer = JobHistoryDetailSerializer(job, many=False, context={'request': request})
-        return Response(serializer.data)
-
-    @detail_route(methods=['get'], url_path='inputs')
-    def list_inputs(self, request, slug=None):
-        """ list job submitted inputs """
-        queryset = Job.objects.get_user_job(user=request.user)
-        job = get_object_or_404(queryset, slug=slug)
-        serializer = JobInputDetailSerializer(job, many=False, context={'request': request})
-        return Response(serializer.data)
-
-    @detail_route(methods=['get'], url_path='outputs')
-    def list_outputs(self, request, slug=None):
-        """ list job expected outputs """
-        queryset = Job.objects.get_user_job(user=request.user)
-        job = get_object_or_404(queryset, slug=slug)
-        serializer = JobOutputDetailSerializer(job, many=False, context={'request': request})
-        return Response(serializer.data)
+        return super(JobViewSet, self).destroy(request, *args, **kwargs)
 
 
-class PlainTextParser(BaseParser):
-    """
-        Plain text parser.
-        """
-    media_type = 'text/plain'
 
-    def parse(self, stream, media_type=None, parser_context=None):
-        """
-        Simply return a string representing the body of the request.
-        """
-        return stream.read()
-
-
-class JobOutputRawView(SingleObjectMixin, View):
-    model = JobOutput
+class JobFileView(SingleObjectMixin):
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
-        try:
-            with open(instance.file_path) as fp:
-                file_content = fp.read()
-                o_content = file_content.decode('utf-8')
-        except IOError as e:
-            return HttpResponseNotFound('Content not available')
-        return HttpResponse(content=o_content, content_type="text/plain; charset=utf8")
+        if hasattr(instance, 'file_path'):
+            try:
+                mime = magic.Magic(mime=True)
+                with open(instance.file_path) as fp:
+                    response = HttpResponse(content=fp)
+                    response['Content-Type'] = mime.from_file(instance.file_path)
+                    response['Content-Length'] = getsize(instance.file_path)
+                    response['Content-Disposition'] = 'attachment; filename=%s' \
+                                                      % instance.file_name
+                return response
+            except IOError:
+                # Do nothing, by default return 404 if error
+                pass
+        return HttpResponseNotFound('Content not available')
+
+
+class JobOutputView(JobFileView, View):
+    model = JobOutput
+
+
+class JobInputView(JobFileView, View):
+    model = JobInput

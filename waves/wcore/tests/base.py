@@ -36,13 +36,15 @@ class WavesBaseTestCase(TestCase):
         for runner in create_runners():
             self.runners.append(runner)
 
-    def _create_random_service(self):
+    def _create_random_service(self, runner=None):
+        service_runner = runner or self.runners[random.randint(0, len(self.runners) - 1)]
         return Service.objects.create(name='Sample Service',
-                                      runner=self.runners[random.randint(0, len(self.runners) - 1)])
+                                      runner=service_runner,
+                                      status=3)
 
-    def _create_random_job(self):
-        service = self._create_random_service()
-        job = Job.objects.create(submission=service.default_submission,
+    def _create_random_job(self, service=None, runner=None):
+        job_service = service or self._create_random_service(runner)
+        job = Job.objects.create(submission=job_service.default_submission,
                                  email_to='marc@fake.com')
         job.job_inputs.add(JobInput.objects.create(name="param1", value="Value1", job=job))
         job.job_inputs.add(JobInput.objects.create(name="param2", value="Value2", job=job))

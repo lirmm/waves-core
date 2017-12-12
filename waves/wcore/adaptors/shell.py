@@ -81,7 +81,7 @@ class LocalShellAdaptor(JobAdaptor):
             logger.debug('Connection to %s', self.saga_host)
             self.connector = self._init_service()
             self._connected = self.connector is not None and self.connector.valid and self.connector.session is not None
-            logger.debug('Connected to %s', self.connector.session)
+            logger.debug('Connected to %s', self.saga_host)
         except saga.SagaException as exc:
             self._connected = False
             # logger.exception(exc.message)

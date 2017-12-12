@@ -7,7 +7,8 @@ import logging
 import waves.wcore.adaptors.const
 from waves.wcore.adaptors.exceptions import *
 from waves.wcore.adaptors.utils import check_ready
-from waves.wcore.utils.exception_logging_decorator import exception
+from waves.wcore.exceptions.jobs import JobInconsistentStateError
+
 
 logger = logging.getLogger(__name__)
 
@@ -45,10 +46,14 @@ class JobAdaptor(object):
 
     @property
     def init_params(self):
-        """ Returns expected (required) 'init_params', with default if set at class level
+        """
+        Returns expected (required) 'init_params', with default if set at class level
         :return: A dictionary containing expected init params
         :rtype: dict
         """
+        # TODO multiple dictionary entries to setup the form display in back-office (same way as AdaptorParam model)
+        # (ex: dict(command={'list':['value1', 'value'2']))
+
         return dict(command=self.command, protocol=self.protocol, host=self.host)
 
     @property
@@ -63,7 +68,6 @@ class JobAdaptor(object):
     def available(self):
         return True
 
-
     def connect(self):
         """
         Connect to remote platform adaptor
@@ -74,7 +78,6 @@ class JobAdaptor(object):
             self._connect()
         return self.connector
 
-
     def disconnect(self):
         """ Shut down connection to adaptor. Called after job adaptor execution to disconnect from remote
         :raise: :class:`waves.wcore.adaptors.exceptions.adaptors.AdaptorConnectException`
@@ -84,7 +87,6 @@ class JobAdaptor(object):
             self._disconnect()
         self.connector = None
         self._connected = False
-
 
     @check_ready
     def prepare_job(self, job):
@@ -97,12 +99,11 @@ class JobAdaptor(object):
         try:
             assert (job.status <= waves.wcore.adaptors.const.JOB_CREATED)
         except AssertionError:
-            raise AdaptorJobStateException(job.status, waves.wcore.adaptors.const.JOB_CREATED)
+            raise JobInconsistentStateError(job.status, waves.wcore.adaptors.const.JOB_CREATED)
         self.connect()
         self._prepare_job(job)
         job.status = waves.wcore.adaptors.const.JOB_PREPARED
         return job
-
 
     @check_ready
     def run_job(self, job):
@@ -115,12 +116,11 @@ class JobAdaptor(object):
         try:
             assert (job.status == waves.wcore.adaptors.const.JOB_PREPARED)
         except AssertionError:
-            raise AdaptorJobStateException(job.status, waves.wcore.adaptors.const.JOB_PREPARED)
+            raise JobInconsistentStateError(job.status, waves.wcore.adaptors.const.JOB_PREPARED)
         self.connect()
         self._run_job(job)
         job.status = waves.wcore.adaptors.const.JOB_QUEUED
         return job
-
 
     @check_ready
     def cancel_job(self, job):
@@ -134,7 +134,7 @@ class JobAdaptor(object):
         try:
             assert (job.status <= waves.wcore.adaptors.const.JOB_SUSPENDED)
         except AssertionError:
-            raise AdaptorJobStateException(job.status, waves.wcore.adaptors.const.STATUS_MAP[0:5])
+            raise JobInconsistentStateError(job.status, waves.wcore.adaptors.const.STATUS_LIST[0:5])
         self.connect()
         try:
             self._cancel_job(job)
@@ -148,7 +148,6 @@ class JobAdaptor(object):
                 is_admin=True)
         return job
 
-
     @check_ready
     def job_status(self, job):
         """ Return current WAVES Job status
@@ -161,7 +160,6 @@ class JobAdaptor(object):
                         waves.wcore.adaptors.const.STATUS_MAP.get(job.status, 'Undefined'))
         return job
 
-
     @check_ready
     def job_results(self, job):
         """ If job is done, return results
@@ -171,7 +169,6 @@ class JobAdaptor(object):
         self.connect()
         self._job_results(job)
         return job
-
 
     def job_run_details(self, job):
         """ Retrive job run details for job

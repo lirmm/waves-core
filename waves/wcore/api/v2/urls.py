@@ -7,7 +7,7 @@ from waves.wcore.api.v2.views import jobs, services
 from waves.wcore.views.jobs import JobOutputView, JobInputView
 
 # API router setup
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 # Services URIs configuration
 router.register(prefix=r'services',
                 viewset=services.ServiceViewSet,
@@ -23,7 +23,6 @@ router.register(r'services/(?P<service>[^/.]+)/submissions',
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^jobs/outputs/(?P<slug>[\w-]+)/$', JobOutputView.as_view(), name="waves-job-output"),
-    url(r'^jobs/outputs/(?P<slug>[\w-]+)/raw$', jobs.JobOutputRawView.as_view(), name="waves-job-output-raw"),
-    url(r'^jobs/inputs/(?P<slug>[\w-]+)/$', JobInputView.as_view(), name="waves-job-input"),
+    url(r'^jobs/outputs/(?P<slug>[\w-]+)$', jobs.JobOutputView.as_view(), name="job-output"),
+    url(r'^jobs/inputs/(?P<slug>[\w-]+)$', jobs.JobInputView.as_view(), name="job-input"),
 ]

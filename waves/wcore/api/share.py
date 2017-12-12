@@ -35,7 +35,4 @@ class RecursiveField(serializers.ModelSerializer):
 
     def to_representation(self, value):
         serializer = self.parent.parent.__class__(value, context=self.context)
-        print self.parent.parent
-        print value
-        print self.parent
         return serializer.data

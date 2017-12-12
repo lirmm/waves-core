@@ -35,7 +35,6 @@ class JobMailTest(WavesBaseTestCase):
         job.check_send_mail()
         self.assertEqual(len(mail.outbox), 1)
         sent_mail = mail.outbox[-1]
-        print sent_mail.subject
         self.assertTrue(job.service in sent_mail.subject)
         self.assertEqual(job.email_to, sent_mail.to[0])
         self.assertEqual(config.SERVICES_EMAIL, sent_mail.from_email)

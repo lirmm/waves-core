@@ -104,6 +104,8 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     objects = ServiceManager()
     # fields
     name = models.CharField('Service name', max_length=255, help_text='Service displayed name')
+    authors = models.CharField('Authors', max_length=255, help_text="Tools authors", null=True)
+    citations = models.CharField('Citation link', max_length=500, help_text="Citation link (Bibtex format)", null=True)
     version = models.CharField('Current version', max_length=10, null=True, blank=True, default='1.0',
                                help_text='Service displayed version')
     restricted_client = models.ManyToManyField(settings.AUTH_USER_MODEL,

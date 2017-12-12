@@ -99,10 +99,8 @@ class ApiModel(WavesBaseModel):
     def base_api_name(self):
         last_pos = self.api_name.rfind('_')
         if last_pos != -1 and self.api_name[last_pos + 1:].isdigit():
-            print 'base_api_name 1', self.api_name[:last_pos+1]
             return self.api_name[:last_pos+1]
         else:
-            print "simple api_name ", self.api_name
             return self.api_name
 
     def duplicate_api_name(self, api_name):

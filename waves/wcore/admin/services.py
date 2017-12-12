@@ -99,7 +99,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     def get_inlines(self, request, obj=None):
         _inlines = [
-            ServiceSubmissionInline,
+            ServiceSubmissionInline
         ]
         self.inlines = _inlines
         if obj and obj.runner is not None \
