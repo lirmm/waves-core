@@ -641,6 +641,9 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 return returned
         except waves.wcore.adaptors.exceptions.AdaptorException as exc:
             self.retry(exc.message)
+            # raise
+        except JobInconsistentStateError:
+            # raise exception, do not change job status
             raise
         except WavesException as exc:
             self.error(exc.message)

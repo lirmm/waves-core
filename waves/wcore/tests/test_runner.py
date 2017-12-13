@@ -6,9 +6,8 @@ from __future__ import unicode_literals
 import logging
 
 import waves.wcore.adaptors.const
-from waves.wcore.adaptors.exceptions import *
 from waves.wcore.adaptors.mocks import MockJobRunnerAdaptor
-from waves.wcore.exceptions.jobs import *
+from waves.wcore.exceptions.jobs import JobInconsistentStateError
 from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.tests.base import WavesBaseTestCase
 from waves.wcore.tests.tests_utils import sample_runner, sample_job
@@ -68,11 +67,11 @@ class TestJobRunner(WavesBaseTestCase):
         self.jobs.append(self.current_job)
         self._debug_job_state()
         self.current_job.status = waves.wcore.adaptors.const.JOB_RUNNING
-        length1 = self.current_job.job_history.count()
         logger.debug('Test Prepare')
         self._debug_job_state()
         with self.assertRaises(JobInconsistentStateError):
             self.current_job.run_prepare()
+
         self._debug_job_state()
         logger.debug('Test Run')
         self.current_job.status = waves.wcore.adaptors.const.JOB_UNDEFINED

@@ -19,7 +19,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from waves.wcore.api.v2.serializers.jobs import JobSerializer
-from waves.wcore.adaptors.exceptions import JobInconsistentStateError
+from waves.wcore.exceptions.jobs import JobInconsistentStateError
 from waves.wcore.models import Job, JobOutput, JobInput
 
 logger = logging.getLogger(__name__)

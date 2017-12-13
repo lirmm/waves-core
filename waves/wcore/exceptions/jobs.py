@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from waves.wcore.adaptors.exceptions import AdaptorJobException
 from waves.wcore.exceptions import WavesException
 
 __all__ = ['JobException', 'JobRunException', 'JobSubmissionException', 'JobCreateException',
@@ -11,7 +12,7 @@ class JobException(WavesException):
 
     def __init__(self, message, job=None):
         if job:
-            self.message = '[job:%s][%s] - %s' % (job.slug, job.remote_job_id, message)
+            message = '[job:%s][%s] - %s' % (job.slug, job.remote_job_id, message)
         super(JobException, self).__init__(message)
 
 
@@ -41,21 +42,22 @@ class JobMissingMandatoryParam(JobSubmissionException):
         super(JobMissingMandatoryParam, self).__init__(message, job)
 
 
-class JobInconsistentStateError(JobRunException):
+class JobInconsistentStateError(JobException):
     """ Inconsistency detected in job current status and requester action """
 
-    def __init__(self, status, expected, msg=''):
-        """ Job current status is inconsistent for requested action
-        :param status: current Job status
-        :param expected: list oc expected status
-        :param msg: extended message to add to standard exception message
-        """
-        message = u'[Inconsistent status: "%s"] - expected one of %s' % (status, [str(i[1]) for i in expected])
-        if msg:
-            message = '%s ' % msg + message
+    """ Job current status is inconsistent for requested action
+    :param job: current Job
+    :param expected: list oc expected status
+    :param msg: extended message to add to standard exception message
+    """
+
+    def __init__(self, message="", job=None, expected=[]):
+        if job:
+            message = u'{} [{}] - Inconsistent job  state: "{}" - expected {}'.format(
+                message, job.slug, job.get_status_display(), [str(i[1]) for i in expected], )
         super(JobInconsistentStateError, self).__init__(message)
 
 
-class JobPrepareException(JobRunException):
+class JobPrepareException(AdaptorJobException):
     """Preparation process errors """
     pass

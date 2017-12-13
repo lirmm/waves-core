@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import waves.wcore.adaptors.const
-
 
 class AdaptorException(Exception):
     """ Base Adaptor exception class, should be raise upon specific Adaptor class exception catch
@@ -78,24 +76,3 @@ class UnmanagedInputTypeException(UnmanagedException):
 
     def __init__(self, *args, **kwargs):
         super(UnmanagedInputTypeException, self).__init__(*args, **kwargs)
-
-
-class JobInconsistentStateError(AdaptorJobException):
-    """ Inconsistency detected in job current status and requester action """
-
-    """ Job current status is inconsistent for requested action
-    :param job: current Job
-    :param expected: list oc expected status
-    :param msg: extended message to add to standard exception message
-    """
-
-    def __init__(self, message="", job=None, expected=[]):
-        if job:
-            self.message = u'{} [Inconsistent job state: "{}" - expected {}]'.format(
-                message, job.get_status_display(), [str(i[1]) for i in expected], )
-        super(JobInconsistentStateError, self).__init__(message)
-
-
-class JobPrepareException(AdaptorJobException):
-    """Preparation process errors """
-    pass

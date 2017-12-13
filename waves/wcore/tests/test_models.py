@@ -44,6 +44,7 @@ class TestServices(WavesBaseTestCase):
             self.assertListEqual(sorted(service.run_params.keys()), sorted(service.runner.run_params.keys()))
 
     def test_load_service(self):
+        self.skipTest("Load / Unload under progress")
         from waves.wcore.models.serializers.services import ServiceSerializer
         import json
         create_service_for_runners()

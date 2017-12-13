@@ -7,6 +7,7 @@ import logging
 import waves.wcore.adaptors.const
 from waves.wcore.adaptors.exceptions import *
 from waves.wcore.adaptors.utils import check_ready
+from waves.wcore.exceptions.jobs import JobInconsistentStateError
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +96,7 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'created'
         """
         if job.status > waves.wcore.adaptors.const.JOB_CREATED:
-            raise JobInconsistentStateError(job=job, expected=waves.wcore.adaptors.const.JOB_CREATED)
+            raise JobInconsistentStateError(job=job, expected=[waves.wcore.adaptors.const.STATUS_LIST[1]])
         self.connect()
         self._prepare_job(job)
         job.status = waves.wcore.adaptors.const.JOB_PREPARED
@@ -110,8 +111,7 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
         if job.status != waves.wcore.adaptors.const.JOB_PREPARED:
-            raise JobInconsistentStateError(job=job,
-                                            expected=waves.wcore.adaptors.const.JOB_PREPARED)
+            raise JobInconsistentStateError(job=job, expected=[waves.wcore.adaptors.const.STATUS_LIST[2]])
         self.connect()
         self._run_job(job)
         job.status = waves.wcore.adaptors.const.JOB_QUEUED
@@ -127,8 +127,7 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
         if job.status > waves.wcore.adaptors.const.JOB_SUSPENDED:
-            raise JobInconsistentStateError(job=job,
-                                            expected=waves.wcore.adaptors.const.STATUS_LIST[0:5],
+            raise JobInconsistentStateError(job=job, expected=waves.wcore.adaptors.const.STATUS_LIST[0:5],
                                             message="Job can't be cancelled")
         self.connect()
         try:
