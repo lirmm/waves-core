@@ -39,21 +39,24 @@ class ServiceManager(models.Manager):
         :return: QuerySet for services
         :rtype: QuerySet
         """
-        if user and not user.is_anonymous():
+        if user is None:
+            return self.none()
+
+        if not user.is_anonymous():
             if user.is_superuser:
                 queryset = self.all()
             elif user.is_staff:
                 # Staff user have access their own Services and to all 'Test / Restricted / Public' made by others
                 queryset = self.filter(
                     Q(status=self.model.SRV_DRAFT, created_by=user) |
-                    Q(status__in=(self.model.SRV_TEST, self.model.SRV_RESTRICTED,
+                    Q(status__in=(self.model.SRV_TEST, self.model.SRV_RESTRICTED, self.model.SRV_REGISTERED,
                                   self.model.SRV_PUBLIC))
                 )
             else:
                 # Simply registered user have access only to "Public" and configured restricted access
                 queryset = self.filter(
                     Q(status=self.model.SRV_RESTRICTED, restricted_client__in=(user,)) |
-                    Q(status=self.model.SRV_PUBLIC)
+                    Q(status__in=(self.model.SRV_REGISTERED, self.model.SRV_PUBLIC))
                 )
         # Non logged in user have only access to public services
         else:
@@ -99,8 +102,9 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     restricted_client = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                                related_name='%(app_label)s_%(class)s_restricted_services',
                                                blank=True, verbose_name='Restricted clients',
-                                               help_text='By default access is granted to everyone, '
-                                                         'you may restrict access here.')
+                                               help_text='Public access is granted to everyone, '
+                                                         'If status is \'Restricted\' you may restrict '
+                                                         'access to specific users here.')
     status = models.IntegerField(choices=SRV_STATUS_LIST, default=SRV_DRAFT,
                                  help_text='Service online status')
     email_on = models.BooleanField('Notify results', default=True,
@@ -226,7 +230,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
                (self.status == self.SRV_DRAFT and self.created_by == user) or \
                (self.status == self.SRV_TEST and user.is_staff) or \
                (self.status == self.SRV_RESTRICTED and (
-                   user in self.restricted_client.all() or user.is_staff)) or \
+                       user in self.restricted_client.all() or user.is_staff)) or \
                user.is_superuser
 
     @property
