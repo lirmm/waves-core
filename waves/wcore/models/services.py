@@ -132,6 +132,14 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
             sub.set_defaults()
 
     @property
+    def operations(self):
+        return self.edam_operations.split(',') if self.edam_operations else []
+
+    @property
+    def topics(self):
+        return self.edam_topics.split(',') if self.edam_topics else []
+
+    @property
     def jobs(self):
         """ Get current Service Jobs """
         from waves.wcore.models import Job

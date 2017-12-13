@@ -43,6 +43,7 @@
                         {% block service_extracold %}
                         {% endblock %}
                         {% block job_submission %}
+                            {% if service.default_submission %}
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <h3 class="panel-title ">
@@ -53,6 +54,39 @@
                                     {% online_exec_button service=service %}
                                 </div>
                             </div>
+                            {% endif %}
+                            {% if service.topics %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title ">
+                                        <span class="text-primary">Edams topics</span>
+                                    </h3>
+                                </div>
+                                <div class="panel-body text-right">
+                                    <ul class="list-group">
+                                        {% for topic in service.topics %}
+                                            <li class="list-group-item"><a href="http://edamontology.org/{{ topic }}" target="_blank">{{ topic }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if service.operations %}
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title ">
+                                        <span class="text-primary">Edams operations</span>
+                                    </h3>
+                                </div>
+                                <div class="panel-body text-right">
+                                    <ul class="list-group">
+                                        {% for operation in service.operations %}
+                                            <li class="list-group-item"><a href="http://edamontology.org/{{ operation }}" target="_blank">{{ operation }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endif %}
                             {% block service_staff %}
                                 {% if user.is_staff %}
                                     <div class="panel panel-default">
