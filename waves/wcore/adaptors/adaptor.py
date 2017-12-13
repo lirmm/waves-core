@@ -7,8 +7,6 @@ import logging
 import waves.wcore.adaptors.const
 from waves.wcore.adaptors.exceptions import *
 from waves.wcore.adaptors.utils import check_ready
-from waves.wcore.exceptions.jobs import JobInconsistentStateError
-
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +25,7 @@ class JobAdaptor(object):
     def __str__(self):
         return self.__class__.__name__
 
-    def __init__(self, command='', protocol='fork', host="localhost", **kwargs):
+    def __init__(self, command='', protocol='', host="localhost", **kwargs):
         """ Initialize a adaptor
         Set _initialized value (True or False) if all non default expected params are set
         :param kwargs: its possible to force connector and parser attributes when initialize a Adaptor
@@ -96,10 +94,8 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobPrepareException` if error during preparation process
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'created'
         """
-        try:
-            assert (job.status <= waves.wcore.adaptors.const.JOB_CREATED)
-        except AssertionError:
-            raise JobInconsistentStateError(job.status, waves.wcore.adaptors.const.JOB_CREATED)
+        if job.status > waves.wcore.adaptors.const.JOB_CREATED:
+            raise JobInconsistentStateError(job=job, expected=waves.wcore.adaptors.const.JOB_CREATED)
         self.connect()
         self._prepare_job(job)
         job.status = waves.wcore.adaptors.const.JOB_PREPARED
@@ -113,10 +109,9 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobRunException` if error during launch
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
-        try:
-            assert (job.status == waves.wcore.adaptors.const.JOB_PREPARED)
-        except AssertionError:
-            raise JobInconsistentStateError(job.status, waves.wcore.adaptors.const.JOB_PREPARED)
+        if job.status != waves.wcore.adaptors.const.JOB_PREPARED:
+            raise JobInconsistentStateError(job=job,
+                                            expected=waves.wcore.adaptors.const.JOB_PREPARED)
         self.connect()
         self._run_job(job)
         job.status = waves.wcore.adaptors.const.JOB_QUEUED
@@ -131,10 +126,10 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobRunException` if error during launch
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
-        try:
-            assert (job.status <= waves.wcore.adaptors.const.JOB_SUSPENDED)
-        except AssertionError:
-            raise JobInconsistentStateError(job.status, waves.wcore.adaptors.const.STATUS_LIST[0:5])
+        if job.status > waves.wcore.adaptors.const.JOB_SUSPENDED:
+            raise JobInconsistentStateError(job=job,
+                                            expected=waves.wcore.adaptors.const.STATUS_LIST[0:5],
+                                            message="Job can't be cancelled")
         self.connect()
         try:
             self._cancel_job(job)

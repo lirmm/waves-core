@@ -10,8 +10,8 @@ class JobException(WavesException):
     """ Base Exception class for all job related errors  """
 
     def __init__(self, message, job=None):
-        if job is not None:
-            message = '[job:%s][%s] - %s' % (job.slug, job.remote_job_id, message)
+        if job:
+            self.message = '[job:%s][%s] - %s' % (job.slug, job.remote_job_id, message)
         super(JobException, self).__init__(message)
 
 
@@ -51,7 +51,7 @@ class JobInconsistentStateError(JobRunException):
         :param msg: extended message to add to standard exception message
         """
         message = u'[Inconsistent status: "%s"] - expected one of %s' % (status, [str(i[1]) for i in expected])
-        if msg != '':
+        if msg:
             message = '%s ' % msg + message
         super(JobInconsistentStateError, self).__init__(message)
 

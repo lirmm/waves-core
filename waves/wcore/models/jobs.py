@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
+import six
 from os import path as path
 from os.path import join
 
@@ -619,32 +620,18 @@ class Job(TimeStamped, Slugged, UrlMixin):
         self.status = JOB_ERROR
 
     def fatal_error(self, exception):
-        logger.exception('Job fatal error: %s', exception)
+        logger.fatal('Job workflow fatal error: %s', exception)
         self.error(smart_text(exception.message))
 
     def get_status_display(self):
         return self.get__status_display()
 
     def _run_action(self, action):
-        """ Check if current job status is coherent with requested action """
-        if action == 'prepare_job':
-            status_allowed = STATUS_LIST[1:2]
-        elif action == 'run_job':
-            status_allowed = STATUS_LIST[2:3]
-        elif action == 'cancel_job':
-            # Report fails to a AdaptorException raise during cancel process
-            status_allowed = STATUS_LIST[1:5] + STATUS_LIST[7:]
-            if getattr(self.adaptor, 'state_allow_cancel', None):
-                status_allowed = self.adaptor.state_allow_cancel
-        elif action == 'job_results':
-            status_allowed = STATUS_LIST[6:7] + STATUS_LIST[9:]
-        elif action == 'job_run_details':
-            status_allowed = STATUS_LIST[6:10]
-        else:
-            # By default let all status allowed
-            status_allowed = STATUS_LIST
-        if self.status not in [int(i[0]) for i in status_allowed]:
-            raise JobInconsistentStateError(self.get_status_display(), status_allowed)
+        """
+        Report action to specified job adaptor
+        :param action: action one of [prepare, run, cancel, status, results, run_details]
+        :return: None
+        """
         try:
             if self.adaptor is None:
                 raise WavesException("No Adaptor, impossible to run")
@@ -653,16 +640,15 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 self.nb_retry = 0
                 return returned
         except waves.wcore.adaptors.exceptions.AdaptorException as exc:
-            logger.debug('Retry execution - non fatal error %s' % smart_text(exc.message))
             self.retry(exc.message)
+            raise
         except WavesException as exc:
-            logger.debug("Abort execution - Waves Exception %s " % smart_text(exc.message))
             self.error(exc.message)
+            raise
         except Exception as exc:
-            logger.debug("Abort execution - Fatal unexpected error %s " % smart_text(exc.message))
             self.fatal_error(exc)
+            raise
         finally:
-            self.logger.debug("Saving Job in DB [%s]" % self.get_status_display())
             self.save()
 
     @property
@@ -900,7 +886,6 @@ class JobInput(Ordered, Slugged, ApiModel):
             return self.value
         else:
             return ""
-
 
     @property
     def validated_value(self):

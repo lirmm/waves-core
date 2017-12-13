@@ -9,18 +9,18 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
-from rest_framework import status
 from rest_framework import mixins
+from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import detail_route
-from rest_framework.decorators import permission_classes
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from waves.wcore.api.v2.serializers.jobs import JobSerializer
+from waves.wcore.adaptors.exceptions import JobInconsistentStateError
 from waves.wcore.models import Job, JobOutput, JobInput
-from waves.wcore.exceptions.jobs import JobInconsistentStateError
 
 logger = logging.getLogger(__name__)
 
@@ -39,8 +39,7 @@ class JobViewSet(mixins.ListModelMixin,
     filter_fields = ('_status', 'updated', 'submission')
     http_method_names = ['get', 'options', 'put', 'delete']
 
-    @detail_route(methods=['put'], url_path="cancel")
-    @permission_classes((IsAuthenticated,))
+    @detail_route(methods=['put'], url_path="cancel", permission_classes=(IsAuthenticated,))
     def cancel(self, request, slug):
         """
         Update Job according to requested action
@@ -50,8 +49,10 @@ class JobViewSet(mixins.ListModelMixin,
         try:
             job.run_cancel()
         except JobInconsistentStateError as e:
-            return HttpResponse({'error': e.message}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return HttpResponse({'success': 'Job marked as cancelled'}, status=status.HTTP_202_ACCEPTED)
+            perm = PermissionDenied(detail=e.message)
+            perm.status_code = status.HTTP_405_METHOD_NOT_ALLOWED
+            raise perm
+        return Response({'success': 'Job marked as cancelled'}, status=status.HTTP_202_ACCEPTED)
 
     def retrieve(self, request, slug=None):
         """
@@ -85,7 +86,6 @@ class JobViewSet(mixins.ListModelMixin,
             # Even if we can't cancel job, delete it from db, so let it run on adaptor.
             pass
         return super(JobViewSet, self).destroy(request, *args, **kwargs)
-
 
 
 class JobFileView(SingleObjectMixin):

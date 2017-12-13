@@ -16,7 +16,6 @@ class WavesException(Exception):
     """
     Waves base exception class, exception log
     """
-
     def __init__(self, *args, **kwargs):
         super(WavesException, self).__init__(*args, **kwargs)
         logger.exception('[%s] - %s', self.__class__.__name__, self.message)

@@ -6,15 +6,14 @@ from os.path import join
 import saga
 
 import waves.wcore.adaptors.const
-from waves.wcore.adaptors.adaptor import JobAdaptor
 from waves.wcore.adaptors.const import JobRunDetails
 from waves.wcore.adaptors.exceptions import *
-from waves.wcore.utils.encrypt import Encrypt
+from waves.wcore.adaptors.saga_python import SagaAdaptor
 
 logger = logging.getLogger(__name__)
 
 
-class LocalShellAdaptor(JobAdaptor):
+class LocalShellAdaptor(SagaAdaptor):
     """
     Local script job adaptor, command line tools must be in path or specified as absolute path
     """
@@ -23,72 +22,8 @@ class LocalShellAdaptor(JobAdaptor):
     protocol = 'fork'
     protocol_default = 'fork'
 
-    _states_map = {
-        saga.job.UNKNOWN: waves.wcore.adaptors.const.JOB_UNDEFINED,
-        saga.job.NEW: waves.wcore.adaptors.const.JOB_QUEUED,
-        saga.job.PENDING: waves.wcore.adaptors.const.JOB_QUEUED,
-        saga.job.RUNNING: waves.wcore.adaptors.const.JOB_RUNNING,
-        saga.job.SUSPENDED: waves.wcore.adaptors.const.JOB_SUSPENDED,
-        saga.job.CANCELED: waves.wcore.adaptors.const.JOB_CANCELLED,
-        saga.job.DONE: waves.wcore.adaptors.const.JOB_COMPLETED,
-        saga.job.FAILED: waves.wcore.adaptors.const.JOB_ERROR,
-    }
-
     def __init__(self, command=None, protocol='fork', host="localhost", **kwargs):
         super(LocalShellAdaptor, self).__init__(command, protocol, host, **kwargs)
-        self._session = None
-
-    @property
-    def session(self):
-        if not self._session:
-            session = saga.Session()
-            session.add_context(self.context)
-            logger.info("New session [--%s--]" % session)
-            self._session = session
-        return self._session
-
-    @property
-    def available(self):
-        try:
-            service = self._init_service()
-        except saga.NoSuccess as e:
-            raise AdaptorNotAvailableException(e.message)
-        return service.valid
-
-    def init_value_editable(self, init_param):
-        if init_param == 'protocol':
-            return False
-        return super(LocalShellAdaptor, self).init_value_editable(init_param)
-
-    def connexion_string(self):
-        return self.saga_host
-
-    @property
-    def saga_host(self):
-        """ Construct Saga-python adaptor uri scheme """
-        return '%s://%s' % (self.protocol, self.host)
-
-    def _init_service(self):
-        return saga.job.Service(self.saga_host)
-
-    @property
-    def context(self):
-        """ Create / initialize Saga-python session context """
-        return self._context
-
-    def _connect(self):
-        try:
-            logger.debug('Connection to %s', self.saga_host)
-            self.connector = self._init_service()
-            self._connected = self.connector is not None and self.connector.valid and self.connector.session is not None
-            logger.debug('Connected to %s', self.saga_host)
-        except saga.SagaException as exc:
-            self._connected = False
-            # logger.exception(exc.message)
-            raise AdaptorConnectException(exc.message)
-
-    def job_work_dir(self, job, mode=saga.filesystem.READ):
-        return job.working_dir
 
     def _job_description(self, job):
         desc = dict(working_directory=job.working_dir,
@@ -97,13 +32,6 @@ class LocalShellAdaptor(JobAdaptor):
                     output=job.stdout,
                     error=job.stderr)
         return desc
-
-    def _disconnect(self):
-        logger.debug('Disconnect')
-        self.connector.close()
-        self.connector = None
-        self._connected = False
-        self._context = None
 
     def _prepare_job(self, job):
         # Nothing to do here
@@ -246,7 +174,7 @@ class SshShellAdaptor(LocalShellAdaptor):
     def job_work_dir(self, job, mode=saga.filesystem.READ):
         """ Setup remote host working dir """
         return saga.filesystem.Directory(saga.Url('%s/%s' % (self.remote_dir, str(job.slug))), mode,
-                                         session=self.session)
+                                                session=self.session)
 
     def _prepare_job(self, job):
         """

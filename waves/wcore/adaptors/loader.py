@@ -15,6 +15,12 @@ class AdaptorLoader(object):
     def get_adaptors(cls):
         return sorted([adaptor_class() for adaptor_class in cls.adaptors_classes])
 
+    def init_value_editable(self, init_param):
+        if init_param == 'protocol':
+            return False
+        return super(LocalShellAdaptor, self).init_value_editable(init_param)
+
+
     @classmethod
     def load(cls, clazz, **params):
         if params is None:

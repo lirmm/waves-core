@@ -262,7 +262,7 @@ class WavesAPIV2TestCase(WavesAPITestCase):
             self.assertGreaterEqual(job.outputs.count(), 2)
         self.assertEqual(expected_jobs, Job.objects.count())
 
-    def test_update_job(self):
+    def test_cancel_job(self):
         """
         Test job cancel service
         """
@@ -273,7 +273,12 @@ class WavesAPIV2TestCase(WavesAPITestCase):
         response = self.client.get(reverse('wapi:api_v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         test_cancel = self.client.put(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
+        self.assertEqual(test_cancel.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.client.login(username="api_user", password="api_user1234")
+        test_cancel = self.client.put(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_202_ACCEPTED)
+        test_cancel = self.client.put(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
+        self.assertEqual(test_cancel.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_delete_job(self):
         runner = Runner.objects.create(name="Mock Runner",
