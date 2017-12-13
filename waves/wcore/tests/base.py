@@ -12,12 +12,12 @@ from os.path import dirname
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import override_settings, TestCase
-
+from django.contrib.auth import get_user_model
 from waves.wcore.models import get_service_model, Job, JobInput, JobOutput
 from waves.wcore.tests.tests_utils import get_sample_dir, create_runners
 
 Service = get_service_model()
-
+User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
@@ -35,6 +35,19 @@ class WavesBaseTestCase(TestCase):
         self.runners = []
         for runner in create_runners():
             self.runners.append(runner)
+        super_user = User.objects.create(email='superadmin@waves.wcore.fr', username="superadmin",
+                                         is_superuser=True)
+        super_user.set_password('superadmin')
+        super_user.save()
+        admin_user = User.objects.create(email='admin@waves.wcore.fr', username="admin", is_staff=True)
+        admin_user.set_password('admin')
+        admin_user.save()
+
+        api_user = User.objects.create(email="wavesapi@waves.wcore.fr", username="api_user", is_staff=False,
+                                       is_superuser=False, is_active=True)
+        api_user.set_password('api_user')
+        api_user.save()
+        self.users = {'api_user': api_user, 'admin': admin_user, 'superadmin': super_user}
 
     def _create_random_service(self, runner=None):
         service_runner = runner or self.runners[random.randint(0, len(self.runners) - 1)]

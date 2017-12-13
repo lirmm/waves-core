@@ -19,26 +19,10 @@ from waves.wcore.models.const import *
 Service = get_service_model()
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
 
 
 class WavesAPITestCase(APITestCase, WavesBaseTestCase):
     fixtures = ['waves/wcore/tests/fixtures/users.json', 'waves/wcore/tests/fixtures/services.json']
-
-    def setUp(self):
-        super(WavesAPITestCase, self).setUp()
-        super_user = User.objects.create(email='superadmin@waves.wcore.fr', username="superadmin", is_superuser=True)
-        super_user.set_password('superadmin1234')
-        super_user.save()
-        admin_user = User.objects.create(email='admin@waves.wcore.fr', username="admin", is_staff=True)
-        admin_user.set_password('admin1234')
-        admin_user.save()
-
-        api_user = User.objects.create(email="wavesapi@waves.wcore.fr", username="api_user", is_staff=False,
-                                       is_superuser=False, is_active=True)
-        api_user.set_password('api_user1234')
-        api_user.save()
-        self.users = {'api_user': api_user, 'admin': admin_user, 'root': super_user}
 
 
 class WavesAPIV1TestCase(WavesAPITestCase):
@@ -120,7 +104,7 @@ class WavesAPIV1TestCase(WavesAPITestCase):
                 logger.debug('To => %s', submission['submission_uri'])
                 o = urlparse(servicetool['url'])
                 path = o.path.split('/')
-                self.client.login(username="api_user", password="api_user1234")
+                self.client.login(username="api_user", password="api_user")
                 response = self.client.post(submission['submission_uri'],
                                             data=input_datas,
                                             format='multipart')
@@ -242,7 +226,7 @@ class WavesAPIV2TestCase(WavesAPITestCase):
                 logger.debug('Data posted %s', job_inputs_params)
                 submit_to = submission['jobs']
                 logger.debug('To => %s', submit_to)
-                self.client.login(username="api_user", password="api_user1234")
+                self.client.login(username="api_user", password="api_user")
                 response = self.client.post(submit_to,
                                             data=job_inputs_params,
                                             files=job_inputs_files,
@@ -274,7 +258,7 @@ class WavesAPIV2TestCase(WavesAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         test_cancel = self.client.put(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.client.login(username="api_user", password="api_user1234")
+        self.client.login(username="api_user", password="api_user")
         test_cancel = self.client.put(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_202_ACCEPTED)
         test_cancel = self.client.put(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
@@ -301,7 +285,7 @@ class WavesAPIV2TestCase(WavesAPITestCase):
             logger.debug('Data posted %s', submitted_input)
 
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.client.login(username="api_user", password="api_user1234")
+            self.client.login(username="api_user", password="api_user")
             response = self.client.post(response.data['default_submission_uri'],
                                         data=submitted_input,
                                         format='multipart')

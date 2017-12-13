@@ -6,7 +6,7 @@ import os
 
 from django.test import TestCase
 from django.utils.module_loading import import_string
-
+from django.core.urlresolvers import reverse
 import waves.wcore.adaptors.const
 from waves.wcore.adaptors.adaptor import JobAdaptor
 from waves.wcore.models import get_service_model, get_submission_model
@@ -36,7 +36,9 @@ class TestRunner(TestCase):
 
 class TestServices(WavesBaseTestCase):
     def test_create_service(self):
-        for service in create_service_for_runners():
+        services = create_service_for_runners()
+        self.assertGreater(len(services), 0)
+        for service in services:
             self.assertEqual(service.submissions.count(), 1)
             # Assert that service params has a length corresponding to 'allowed override' value
             self.assertListEqual(sorted(service.run_params.keys()), sorted(service.runner.run_params.keys()))
@@ -44,7 +46,9 @@ class TestServices(WavesBaseTestCase):
     def test_load_service(self):
         from waves.wcore.models.serializers.services import ServiceSerializer
         import json
+        create_service_for_runners()
         init_count = Service.objects.all().count()
+        self.assertGreater(init_count, 0)
         file_paths = []
         for srv in Service.objects.all():
             file_paths.append(srv.serialize())
@@ -54,6 +58,107 @@ class TestServices(WavesBaseTestCase):
                 if serializer.is_valid():
                     serializer.save()
         self.assertEqual(init_count * 2, Service.objects.all().count())
+
+    def _test_access(self, url, expected_status, user=None):
+        if user:
+            self.assertTrue(self.client.login(username=user.username, password=user.username))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, expected_status,
+                         "Status code {} expected is {}".format(response.status_code, expected_status))
+        if user:
+            self.client.logout()
+
+    def test_access_granted(self):
+        services = create_service_for_runners()
+        self.assertGreater(len(services), 0)
+        # List access => always 200
+        response = self.client.get(reverse('wcore:services_list'))
+        self.assertEqual(response.status_code, 200)
+        service = services[0]
+        # For draft Service is allowed only to creator and superadmin
+        logger.debug('Test DRAFT status ...')
+        service.status = service.SRV_DRAFT
+        service.created_by = self.users['admin']
+        service.save()
+        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        self._test_access(url, 403)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 403, self.users['api_user'])
+        # SAME for submission
+        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        self._test_access(url, 403)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 403, self.users['api_user'])
+        logger.debug('Test DRAFT status OK')
+        logger.debug('Test TEST status ...')
+        service.status = service.SRV_TEST
+        service.created_by = self.users['superadmin']
+        service.save()
+        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        self._test_access(url, 403)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 403, self.users['api_user'])
+        # SAME for submission
+        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        self._test_access(url, 403)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 403, self.users['api_user'])
+        logger.debug('Test TEST status OK')
+
+        logger.debug('Test REGISTERED status ...')
+        service.status = service.SRV_REGISTERED
+        service.save()
+        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        self._test_access(url, 200)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 200, self.users['api_user'])
+        # SAME for submission
+        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        self._test_access(url, 403)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 200, self.users['api_user'])
+        logger.debug('Test REGISTERED status OK')
+
+        logger.debug('Test RESTRICTED status ...')
+        service.status = service.SRV_RESTRICTED
+        service.save()
+        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        self._test_access(url, 200)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 200, self.users['api_user'])
+        # SAME for submission
+        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        self._test_access(url, 403)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 403, self.users['api_user'])
+        # Add api_user to restricted client
+        service.restricted_client.add(self.users['api_user'])
+        service.save()
+        self._test_access(url, 200, self.users['api_user'])
+        logger.debug('Test RESTRICTED status OK')
+        logger.debug('Test PUBLIC status ...')
+        service.status = service.SRV_PUBLIC
+        service.save()
+        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        self._test_access(url, 200)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 200, self.users['api_user'])
+        # SAME for submission
+        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        self._test_access(url, 200)
+        self._test_access(url, 200, self.users['superadmin'])
+        self._test_access(url, 200, self.users['admin'])
+        self._test_access(url, 200, self.users['api_user'])
+        logger.debug('Test PUBLIC status OK')
 
 
 class TestJobs(WavesBaseTestCase):

@@ -4,10 +4,11 @@ from uuid import UUID
 
 from django.contrib import messages
 from django.db import transaction
-from django.template import TemplateDoesNotExist
+from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.urls import reverse
 from django.views import generic
+from django.core.exceptions import PermissionDenied
 
 from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.forms.services import ServiceSubmissionForm
@@ -37,7 +38,20 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         super(SubmissionFormView, self).__init__(**kwargs)
 
     def get_submissions(self):
-        return self.get_object().submissions
+        submissions = self.get_object().submissions.filter(availability=3)
+        available = []
+        for submission in submissions:
+            available.append(submission) if submission.available_for_user(self.request.user) else None
+        if len(available) == 0:
+            raise PermissionDenied()
+        return available
+
+    def get_object(self, queryset=None):
+        self.object = super(SubmissionFormView, self).get_object(queryset)
+        if self.object.submissions.filter(availability=3).count() == 0:
+            raise PermissionDenied()
+
+        return self.object
 
     def get_success_url(self):
         return reverse('wcore:submission', kwargs={'pk': self.get_object().id})
@@ -57,9 +71,11 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
             form = kwargs['form']
         # self.object = self.get_object()
         context = super(SubmissionFormView, self).get_context_data(**kwargs)
-        context['selected_submission'] = self._get_selected_submission()
         context['submissions'] = []
-        for submission in self.get_submissions().all():
+        submissions = self.get_submissions()
+        context['selected_submission'] = self._get_selected_submission()
+        for submission in submissions:
+
             if form is not None and str(submission.slug) == form.cleaned_data['slug']:
                 context['submissions'].append({'submission': submission, 'form': form})
             else:
@@ -124,7 +140,7 @@ class ServiceListView(generic.ListView):
     context_object_name = 'available_services'
 
     def get_queryset(self):
-        return Service.objects.all().prefetch_related('submissions')
+        return Service.objects.filter(status__gte=Service.SRV_RESTRICTED).prefetch_related('submissions')
 
 
 class ServiceDetailView(generic.DetailView):
@@ -143,7 +159,6 @@ class ServiceDetailView(generic.DetailView):
         obj = super(ServiceDetailView, self).get_object(queryset)
         self.object = obj
         if not obj.available_for_user(self.request.user):
-            from django.core.exceptions import PermissionDenied
             raise PermissionDenied()
         return obj
 

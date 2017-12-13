@@ -6,6 +6,7 @@ from uuid import UUID
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.urls import reverse
+from django.core.exceptions import PermissionDenied
 from django.views import generic
 
 from waves.wcore.forms.services import ServiceSubmissionForm
@@ -67,18 +68,11 @@ class JobSubmissionView(ServiceDetailView, SubmissionFormView):
     def get_template_names(self):
         return super(JobSubmissionView, self).get_template_names()
 
-    def get_submissions(self):
-        return self.get_object().submissions_web
-
     def __init__(self, **kwargs):
         super(JobSubmissionView, self).__init__(**kwargs)
         self.job = None
-        self.user = None
-        self.selected_submission = None
 
     def get(self, request, *args, **kwargs):
-        self.user = self.request.user
-        self.selected_submission = self._get_selected_submission()
         return super(JobSubmissionView, self).get(request, *args, **kwargs)
 
     def get_success_url(self):

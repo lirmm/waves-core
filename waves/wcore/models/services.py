@@ -194,7 +194,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def default_submission(self):
         """ Return Service default submission for web forms """
         try:
-            return self.submissions.filter(availability__in=(1, 3)).first()
+            return self.submissions.filter(availability=3).first()
         except ObjectDoesNotExist:
             return None
 
@@ -202,36 +202,24 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def default_submission_api(self):
         """ Return Service default submission for wapi:api_v2 """
         try:
-            return self.submissions.filter(availability__gt=2).first()
+            return self.submissions.filter(availability=3).first()
         except ObjectDoesNotExist:
             return None
 
     @property
-    def submissions_web(self):
-        """ Returned submissions available on WEB forms """
-        return self.submissions.filter(availability__in=(1, 3))
-
-    @property
     def submissions_api(self):
         """ Returned submissions available on API """
-        return self.submissions.filter(availability__gte=2)
+        return self.submissions.filter(availability=3)
 
     def available_for_user(self, user):
         """ Access rules for submission form according to user
         :param user: Request User
         :return: True or False
         """
-        if user.is_anonymous():
-            return (self.runner is not None and self.status == self.SRV_PUBLIC and
-                    waves_settings.ALLOW_JOB_SUBMISSION is True)
-        # RULES to set if user can access submissions
-        return self.runner is not None and (self.runner is not None and self.status == self.SRV_PUBLIC and
-                                            waves_settings.ALLOW_JOB_SUBMISSION is True) or \
-               (self.status == self.SRV_DRAFT and self.created_by == user) or \
-               (self.status == self.SRV_TEST and user.is_staff) or \
-               (self.status == self.SRV_RESTRICTED and (
-                       user in self.restricted_client.all() or user.is_staff)) or \
-               user.is_superuser
+        # TODO reuse manager function or use authorization dedicated class
+        # RULES to set if user can access service page
+        return self.runner is not None and ((self.status > self.SRV_TEST) or (self.created_by == user) or
+                                            (self.status == self.SRV_TEST and user.is_staff) or user.is_superuser)
 
     @property
     def serializer(self, context=None):
@@ -287,9 +275,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
                                 related_name='submissions')
     availability = models.IntegerField('Availability', default=3,
                                        choices=((NOT_AVAILABLE, "Not Available"),
-                                                (AVAILABLE_WEB_ONLY, "Available web only"),
-                                                (AVAILABLE_API_ONLY, "Available api only"),
-                                                (AVAILABLE_BOTH, "Available api and web")))
+                                                (AVAILABLE_BOTH, "Available for job submission")))
     name = models.CharField('Title', max_length=255, null=False, blank=False)
 
     def get_runner(self):
@@ -314,12 +300,12 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     @property
     def available_online(self):
         """ return whether submission is available online """
-        return self.availability == 1 or self.availability == 3
+        return self.availability == 3
 
     @property
     def available_api(self):
         """ return whether submission is available for wapi:api_v2 calls """
-        return self.availability >= 2
+        return self.availability == 2
 
     def __str__(self):
         return '[%s]' % self.name
@@ -384,6 +370,26 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         :param api_name:
         """
         return self.__class__.objects.filter(api_name=api_name, service=self.service).exclude(pk=self.pk)
+
+    def available_for_user(self, user):
+        """ Access rules for submission form according to user
+        :param user: Request User
+        :return: True or False
+        """
+        # TODO reuse manager function or use authorization dedicated class
+        if waves_settings.ALLOW_JOB_SUBMISSION is False:
+            return False
+        if user.is_anonymous():
+            return self.service.status == self.service.SRV_PUBLIC
+        # RULES to set if user can access submissions
+        return self.get_runner() is not None and (
+                (self.service.status == self.service.SRV_PUBLIC) or
+                (self.service.status == self.service.SRV_REGISTERED and not user.is_anonymous()) or
+                (self.service.status == self.service.SRV_DRAFT and self.service.created_by == user) or
+                (self.service.status == self.service.SRV_TEST and user.is_staff) or
+                (self.service.status == self.service.SRV_RESTRICTED and (
+                        user in self.service.restricted_client.all() or user.is_staff)) or
+                user.is_superuser)
 
 
 class Submission(BaseSubmission):
