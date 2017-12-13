@@ -71,7 +71,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         }),
         ('Manage Access', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['restricted_client', 'api_on', 'web_on', 'email_on', ]
+            'fields': ['restricted_client', 'email_on', ]
         }),
         ('Details', {
             'classes': ('grp-collapse grp-closed', 'collapse'),

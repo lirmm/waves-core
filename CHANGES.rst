@@ -5,6 +5,7 @@ Version 1.1.6 - 2017-12-30
     - [Admin] Added: admin urls directly in related Wcore ModelAdmins
     - [Models] Added: fields authors and citation to Service model
     - [API] Added: Add Job cancel and delete services
+    - [Models] Removed: removed fields api_on and web_on in Service model
 
 
 Version 1.1.5 - 2017-11-30

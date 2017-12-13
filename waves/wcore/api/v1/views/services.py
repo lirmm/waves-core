@@ -33,7 +33,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         """ retrieve available services for current request user """
-        return Service.objects.get_api_services(user=self.request.user)
+        return Service.objects.get_services(user=self.request.user)
 
     @list_route(methods=['get'], permission_classes=[AllowAny])
     def list_services(self, request):

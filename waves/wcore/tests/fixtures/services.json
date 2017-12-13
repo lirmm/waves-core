@@ -259,8 +259,6 @@
       "name": "Simple Service",
       "version": "1.0",
       "status": 3,
-      "api_on": true,
-      "web_on": true,
       "email_on": true,
       "partial": false,
       "created_by": [

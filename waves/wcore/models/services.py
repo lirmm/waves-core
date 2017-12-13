@@ -32,15 +32,14 @@ class ServiceManager(models.Manager):
     Service Model 'objects' Manager
     """
 
-    def get_services(self, user=None, for_api=False):
+    def get_services(self, user=None):
         """
-
+        Return services allowed for this specific user
         :param user: current User
-        :param for_api: filter only wapi:api_v2 enabled, either return only web enabled
         :return: QuerySet for services
         :rtype: QuerySet
         """
-        if user is not None and not user.is_anonymous():
+        if user and not user.is_anonymous():
             if user.is_superuser:
                 queryset = self.all()
             elif user.is_staff:
@@ -59,20 +58,7 @@ class ServiceManager(models.Manager):
         # Non logged in user have only access to public services
         else:
             queryset = self.filter(status=self.model.SRV_PUBLIC)
-        if for_api:
-            queryset = queryset.filter(api_on=True)
-        else:
-            queryset = queryset.filter(web_on=True)
         return queryset
-
-    def get_api_services(self, user=None):
-        """ Return all wapi:api_v2 enabled service to User
-        """
-        return self.get_services(user, for_api=True)
-
-    def get_web_services(self, user=None):
-        """ Return all web enabled services """
-        return self.get_services(user)
 
     def get_by_natural_key(self, api_name, version, status):
         return self.get(api_name=api_name, version=version, status=status)
@@ -93,9 +79,11 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     SRV_TEST = 1
     SRV_RESTRICTED = 2
     SRV_PUBLIC = 3
+    SRV_REGISTERED = 4
     SRV_STATUS_LIST = [
         [SRV_DRAFT, 'Draft'],
         [SRV_TEST, 'Test'],
+        [SRV_REGISTERED, 'Only registered'],
         [SRV_RESTRICTED, 'Restricted'],
         [SRV_PUBLIC, 'Public'],
     ]
@@ -115,9 +103,6 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
                                                          'you may restrict access here.')
     status = models.IntegerField(choices=SRV_STATUS_LIST, default=SRV_DRAFT,
                                  help_text='Service online status')
-    api_on = models.BooleanField('Available on API', default=True,
-                                 help_text='Service is available for wapi:api_v2 calls')
-    web_on = models.BooleanField('Available on WEB', default=True, help_text='Service is available for web front')
     email_on = models.BooleanField('Notify results', default=True,
                                    help_text='This service sends notification email')
     partial = models.BooleanField('Dynamic outputs', default=False,
