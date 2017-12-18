@@ -1,33 +1,56 @@
 from __future__ import unicode_literals
 
 import logging
+import os
 
-from django.conf import settings
 from django.core import mail
-from django.test import override_settings
 from django.utils import timezone
 
 import waves.wcore.adaptors.const
 from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.settings import waves_settings as config
-from waves.wcore.tests.base import WavesBaseTestCase
+from waves.wcore.tests.base import BaseTestCase
 
 logger = logging.getLogger(__name__)
 Service = get_service_model()
 Submission = get_submission_model()
 
+logger = logging.getLogger(__name__)
 
-@override_settings(
-    NOTIFY_RESULTS=True,
-)
-class JobMailTest(WavesBaseTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(JobMailTest, cls).setUpClass()
-        logger.info('EMAIL_BACKEND: %s', settings.EMAIL_BACKEND)
+
+class TestJobs(BaseTestCase):
+
+    def test_jobs_signals(self):
+        job = self.create_random_job()
+        self.assertIsNotNone(job.title)
+        self.assertEqual(job.outputs.count(), 4)
+        self.assertTrue(os.path.isdir(job.working_dir))
+        logger.debug('Job directories has been created %s ', job.working_dir)
+        self.assertEqual(job.status, waves.wcore.adaptors.const.JOB_CREATED)
+        self.assertEqual(job.job_history.count(), 1)
+        job.message = "Test job Message"
+        job.status = waves.wcore.adaptors.const.JOB_PREPARED
+        job.save()
+        self.assertGreaterEqual(job.job_history.filter(message__contains=job.message).all(), 0)
+        job.delete()
+        self.assertFalse(os.path.isdir(job.working_dir))
+        logger.debug('Job directories has been deleted')
+
+    def test_job_history(self):
+        # TODO check messages sent to history
+        job = self.create_random_job()
+        job.job_history.create(message="Test Admin message", status=job.status, is_admin=True)
+        job.job_history.create(message="Test public message", status=job.status)
+        try:
+            self.assertEqual(job.job_history.count(), 3)
+            self.assertEqual(job.public_history.count(), 2)
+        except AssertionError:
+            logger.debug('All history %s', job.job_history.all())
+            logger.debug('Public history %s', job.public_history.all())
+            raise
 
     def test_mail_job(self):
-        job = self._create_random_job()
+        job = self.create_random_job()
 
         job.status_time = timezone.datetime.now()
         logger.debug("Job link: %s", job.link)

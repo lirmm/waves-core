@@ -1,14 +1,12 @@
 from __future__ import unicode_literals
 
 import ConfigParser
-from os.path import join, dirname
+from django.conf import settings
+from os.path import join, dirname, isfile
 
-configFile = join(dirname(__file__), 'settings.ini')
-Config = ConfigParser.SafeConfigParser(
-    dict(LOG_LEVEL='DEBUG',
-         WAVES_TEST_SGE_CELL='mainqueue',
-         WAVES_SSH_TEST_SGE_CELL='all.q')
-)
+configFile = join(settings.BASE_DIR, 'tests', 'settings.ini')
+assert(isfile(configFile))
+Config = ConfigParser.SafeConfigParser()
 Config.read(configFile)
 
 WAVES_TEST_SSH_HOST = Config.get('saga', 'WAVES_TEST_SSH_HOST')
@@ -24,3 +22,9 @@ WAVES_SSH_KEY_USER_ID = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_USER_ID')
 WAVES_SSH_KEY_HOST = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_HOST')
 WAVES_SSH_KEY_PASSPHRASE = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_PASSPHRASE')
 WAVES_SSH_KEY_BASE_DIR = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_BASE_DIR')
+
+WAVES_SLURM_TEST_SSH_HOST = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_HOST')
+WAVES_SLURM_TEST_SSH_USER_ID = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_ID')
+WAVES_SLURM_TEST_SSH_USER_PASS = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_PASS')
+WAVES_SLURM_TEST_SSH_QUEUE = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_QUEUE')
+WAVES_SLURM_TEST_SSH_BASE_DIR = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_BASE_DIR')

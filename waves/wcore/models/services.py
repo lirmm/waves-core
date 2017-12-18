@@ -85,7 +85,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     SRV_REGISTERED = 4
     SRV_STATUS_LIST = [
         [SRV_DRAFT, 'Draft'],
-        [SRV_TEST, 'Test'],
+        [SRV_TEST, 'Staff'],
         [SRV_REGISTERED, 'Only registered'],
         [SRV_RESTRICTED, 'Restricted'],
         [SRV_PUBLIC, 'Public'],
@@ -231,7 +231,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     @property
     def serializer(self, context=None):
-        from waves.wcore.models.serializers.services import ServiceSerializer
+        from waves.wcore.serializers import ServiceSerializer
         return ServiceSerializer
 
     @property

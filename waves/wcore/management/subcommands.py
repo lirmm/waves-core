@@ -20,7 +20,7 @@ from django.db import (
 from rest_framework.exceptions import ValidationError
 
 from waves.wcore.models import Job
-from waves.wcore.models.serializers.services import ServiceSerializer
+from waves.wcore.serializers import ServiceSerializer
 from waves.wcore.settings import waves_settings as config
 
 __all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand', 'ShowUrlsCommand']

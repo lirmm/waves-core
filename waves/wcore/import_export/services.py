@@ -6,15 +6,15 @@ from django.db import transaction
 from rest_framework import serializers as rest_serializer
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
-from waves.wcore.api.v2.serializers import ServiceSerializer as BaseServiceSerializer, \
-    ServiceSubmissionSerializer as BaseServiceSubmissionSerializer
+from waves.wcore.api import serializers
 from waves.wcore.models import *
-from waves.wcore.models.serializers.base import RelatedSerializerMixin
-from waves.wcore.models.serializers.runners import RunnerSerializer, RunnerParamSerializer
+from waves.wcore.import_export.base import RelatedSerializerMixin
+from waves.wcore.import_export.runners import RunnerSerializer, RunnerParamSerializer
 from waves.wcore.settings import waves_settings
 
 Submission = get_submission_model()
 Service = get_service_model()
+
 __all__ = ['ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
 
 
@@ -39,7 +39,7 @@ class ServiceInputSerializer(DynamicFieldsModelSerializer, RelatedSerializerMixi
         return srv_input
 
 
-class ServiceSubmissionSerializer(BaseServiceSubmissionSerializer, RelatedSerializerMixin):
+class ServiceSubmissionSerializer(serializers.ServiceSerializer, RelatedSerializerMixin):
     """ Service Submission export / import """
 
     class Meta:
@@ -120,7 +120,7 @@ class ServiceRunnerParamSerializer(rest_serializer.ModelSerializer):
         return obj
 
 
-class ServiceSerializer(BaseServiceSerializer, RelatedSerializerMixin):
+class ServiceSerializer(serializers.ServiceSerializer, RelatedSerializerMixin):
     """ Service export / import """
 
     class Meta:

@@ -53,8 +53,8 @@ class LocalShellAdaptor(SagaAdaptor):
             new_job = self.connector.create_job(jd)
             new_job.run()
             job.logger.debug('Job Descriptor %s', jd)
-            job.remote_job_id = new_job.id
-            job.logger.debug('New saga job %s [id:%s]', new_job, new_job.id)
+            job.remote_job_id = new_job.get_id()
+            job.logger.debug('New saga job %s [id:%s]', new_job, new_job.get_id())
             return job
         except saga.SagaException as exc:
             raise AdaptorJobException(exc.message)

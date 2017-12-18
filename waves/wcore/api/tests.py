@@ -12,8 +12,7 @@ import waves.wcore.adaptors.const
 from waves.wcore.models.const import *
 from waves.wcore.models import Job, get_service_model, Runner
 from waves.wcore.models.inputs import AParam
-from waves.wcore.tests.base import WavesBaseTestCase
-from waves.wcore.tests.tests_utils import create_test_file
+from waves.wcore.tests.base import BaseTestCase
 from waves.wcore.models.const import *
 
 Service = get_service_model()
@@ -21,11 +20,11 @@ Service = get_service_model()
 logger = logging.getLogger(__name__)
 
 
-class WavesAPITestCase(APITestCase, WavesBaseTestCase):
+class BaseAPITestCase(APITestCase, BaseTestCase):
     fixtures = ['waves/wcore/tests/fixtures/users.json', 'waves/wcore/tests/fixtures/services.json']
 
 
-class WavesAPIV1TestCase(WavesAPITestCase):
+class WavesAPIV1TestCase(BaseAPITestCase):
     def test_api_root(self):
         api_root = self.client.get(reverse('wapi:api_v1:api-root'))
         self.assertEqual(api_root.status_code, status.HTTP_200_OK)
@@ -80,7 +79,7 @@ class WavesAPIV1TestCase(WavesAPITestCase):
                 for job_input in submission['inputs']:
                     if job_input['type'] == TYPE_FILE:
                         i += 1
-                        input_data = create_test_file(job_input['name'], i)
+                        input_data = self.create_test_file(job_input['name'], i)
                         logger.debug('file input %s', input_data)
                     elif job_input['type'] == TYPE_INT:
                         input_data = int(random.randint(0, 199))
@@ -134,7 +133,7 @@ class WavesAPIV1TestCase(WavesAPITestCase):
         pass
 
 
-class WavesAPIV2TestCase(WavesAPITestCase):
+class WavesAPIV2TestCase(BaseAPITestCase):
     def test_api_root(self):
         api_root = self.client.get(reverse('wapi:api_v2:api-root'))
         self.assertEqual(api_root.status_code, status.HTTP_200_OK)
@@ -196,8 +195,8 @@ class WavesAPIV2TestCase(WavesAPITestCase):
                     submission_input = submission['expected_inputs'][name]
                     if submission_input['type'] == TYPE_FILE:
                         i += 1
-                        job_input_data = create_test_file(submission_input['api_name'], i)
-                        job_input_file = create_test_file(submission_input['api_name'], i)
+                        job_input_data = self.create_test_file(submission_input['api_name'], i)
+                        job_input_file = self.create_test_file(submission_input['api_name'], i)
                         job_inputs_params[name] = job_input_data
                         job_inputs_files[name] = job_input_file
                         logger.debug('file input %s', job_input_data)
@@ -226,7 +225,7 @@ class WavesAPIV2TestCase(WavesAPITestCase):
                 logger.debug('Data posted %s', job_inputs_params)
                 submit_to = submission['jobs']
                 logger.debug('To => %s', submit_to)
-                self.client.login(username="api_user", password="api_user")
+                self.login('api_user')
                 response = self.client.post(submit_to,
                                             data=job_inputs_params,
                                             files=job_inputs_files,
@@ -253,7 +252,7 @@ class WavesAPIV2TestCase(WavesAPITestCase):
         runner = Runner.objects.create(name="Mock Runner",
                                        clazz='waves.wcore.adaptors.mocks.MockJobRunnerAdaptor')
 
-        sample_job = self._create_random_job(service=self._create_random_service(runner))
+        sample_job = self.create_random_job(service=self.create_random_service(runner))
         response = self.client.get(reverse('wapi:api_v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         test_cancel = self.client.put(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
@@ -268,18 +267,18 @@ class WavesAPIV2TestCase(WavesAPITestCase):
         runner = Runner.objects.create(name="Mock Runner",
                                        clazz='waves.wcore.adaptors.mocks.MockJobRunnerAdaptor')
 
-        sample_job = self._create_random_job(service=self._create_random_service(runner))
+        sample_job = self.create_random_job(service=self.create_random_service(runner))
         response = self.client.get(reverse('wapi:api_v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         test_delete = self.client.delete(reverse('wapi:api_v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_delete.status_code, status.HTTP_204_NO_CONTENT)
 
-    def testMissingParam(self):
+    def test_missing_params(self):
         response = self.client.get(reverse('wapi:api_v2:waves-services-detail',
                                            kwargs={'api_name': 'physic_ist'}))
         if response.status_code == status.HTTP_200_OK:
-            jobs_params = self._loadServiceJobsParams(api_name='physic_ist')
+            jobs_params = self.load_service_jobs_params(api_name='physic_ist')
             submitted_input = jobs_params[0]
             submitted_input.pop('s')
             logger.debug('Data posted %s', submitted_input)

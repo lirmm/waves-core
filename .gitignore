@@ -103,9 +103,13 @@ ENV/
 /media/*
 !/media/.gitkeep
 *.sqlite3
+/tests/data/jobs/
+!/tests/data/jobs/.gitkeep
 !/waves/templates/waves/parts/
 !/waves/forms/lib/
 /waves/tests/settings.ini
 /staticfiles/
 !/waves/wcore/forms/lib/
 !/bin/fastme-2.1.5-linux64
+/tests/settings.ini
+

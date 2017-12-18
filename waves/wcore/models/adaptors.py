@@ -8,6 +8,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.module_loading import import_string
+from django.conf import settings
 
 from waves.wcore.models.base import WavesBaseModel
 from waves.wcore.models.binaries import ServiceBinaryFile
@@ -150,5 +151,10 @@ class HasAdaptorClazzMixin(WavesBaseModel):
     def adaptor(self, adaptor):
         """ Allow to temporarily override current adaptor instance """
         self._adaptor = adaptor
+
+    def save(self, *args, **kwargs):
+        if self.clazz not in settings.WAVES_CORE['ADAPTORS_CLASSES']:
+            raise RuntimeError('The class [{}] not configured as an available WAVES adaptor'.format(self.clazz))
+        super(HasAdaptorClazzMixin, self).save(*args, **kwargs)
 
 

@@ -420,6 +420,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: working dir
         :rtype: unicode
         """
+        from waves.wcore.settings import waves_settings
         return os.path.join(waves_settings.JOB_BASE_DIR, str(self.slug))
 
     @property

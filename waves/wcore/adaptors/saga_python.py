@@ -14,6 +14,7 @@ class SagaAdaptor(JobAdaptor):
     Main Saga-python WAVES adaptor container
 
     """
+    _session = None
     _states_map = {
         saga.job.UNKNOWN: const.JOB_UNDEFINED,
         saga.job.NEW: const.JOB_QUEUED,
@@ -27,7 +28,6 @@ class SagaAdaptor(JobAdaptor):
 
     def __init__(self, command='', protocol='', host="localhost", **kwargs):
         super(SagaAdaptor, self).__init__(command, protocol, host, **kwargs)
-        self._session = None
         self._context = None
 
     @property
