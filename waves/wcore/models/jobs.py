@@ -644,7 +644,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
             self.retry(exc.message)
             # raise
         except JobInconsistentStateError:
-            # raise exception, do not change job status
+            # raise log_exception, do not change job status
             raise
         except WavesException as exc:
             self.error(exc.message)

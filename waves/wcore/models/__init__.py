@@ -1,9 +1,9 @@
 """ All WAVES related models imports """
 from __future__ import unicode_literals
 
-from waves.wcore.models.adaptors import *
 # Automate sub module import
 import swapper
+from waves.wcore.models.adaptors import *
 from waves.wcore.models.base import *
 from waves.wcore.models.history import JobHistory
 from waves.wcore.models.runners import *

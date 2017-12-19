@@ -11,7 +11,7 @@ Service = get_service_model()
 Submission = get_submission_model()
 
 
-class TestServices(BaseTestCase):
+class ServicesTestCase(BaseTestCase):
     def test_create_service(self):
         services = self.bootstrap_services()
         self.assertGreater(len(services), 0)

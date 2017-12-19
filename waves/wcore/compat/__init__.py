@@ -6,8 +6,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.contrib.admin import StackedInline
 
-__all__ = ["available_themes", "list_themes", "RichTextField", "CompactInline", 'organize_input_class',
-           "SortableInlineAdminMixin"]
+__all__ = ["available_themes", "list_themes", "RichTextField", "CompactInline"]
 
 
 if 'jet' in settings.INSTALLED_APPS:

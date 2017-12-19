@@ -48,7 +48,7 @@ class JobInconsistentStateError(JobException):
     """ Job current status is inconsistent for requested action
     :param job: current Job
     :param expected: list oc expected status
-    :param msg: extended message to add to standard exception message
+    :param msg: extended message to add to standard log_exception message
     """
 
     def __init__(self, message="", job=None, expected=[]):

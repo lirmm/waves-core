@@ -18,7 +18,7 @@ Submission = get_submission_model()
 logger = logging.getLogger(__name__)
 
 
-class TestJobs(BaseTestCase):
+class JobsTestCase(BaseTestCase):
 
     def test_jobs_signals(self):
         job = self.create_random_job()

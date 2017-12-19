@@ -10,7 +10,7 @@ from waves.wcore.tests import BaseTestCase, TestJobWorkflowMixin
 logger = logging.getLogger(__name__)
 
 
-class TestRunner(BaseTestCase, TestJobWorkflowMixin):
+class RunnerTestCase(BaseTestCase, TestJobWorkflowMixin):
     def test_create_runner(self):
         for runner in self.bootstrap_runners():
             logger.info('Current: %s - %s', runner.name, runner.clazz)

@@ -6,7 +6,7 @@
         var reloading;
 
         function checkReloading() {
-            if (window.location.hash == "#autoreload") {
+            if (window.location.hash === "#autoreload") {
                 reloading = setTimeout("window.location.reload();", 5000);
                 $('#reloadCB').bootstrapToggle('on');
             }
