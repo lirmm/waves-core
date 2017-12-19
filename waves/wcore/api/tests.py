@@ -190,13 +190,13 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                 self.assertEqual(submission_srv.status_code, status.HTTP_200_OK)
                 submission = submission_srv.data
                 logger.debug(submission_srv.data)
-                for name in submission['expected_inputs']:
+                for name in submission['inputs']:
                     logger.info('name %s ', name)
-                    submission_input = submission['expected_inputs'][name]
+                    submission_input = submission['inputs'][name]
                     if submission_input['type'] == TYPE_FILE:
                         i += 1
-                        job_input_data = self.create_test_file(submission_input['api_name'], i)
-                        job_input_file = self.create_test_file(submission_input['api_name'], i)
+                        job_input_data = self.create_test_file(name, i)
+                        job_input_file = self.create_test_file(name, i)
                         job_inputs_params[name] = job_input_data
                         job_inputs_files[name] = job_input_file
                         logger.debug('file input %s', job_input_data)
@@ -234,7 +234,6 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 job = Job.objects.get(slug=response.data['slug'])
                 self.assertEqual(job.email_to, 'wavesapi@waves.wcore.fr')
-                self.assertEqual
                 logger.debug(job)
         for job in Job.objects.all():
             logger.debug('Job %s ', job)

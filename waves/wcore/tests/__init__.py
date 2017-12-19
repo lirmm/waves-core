@@ -170,6 +170,7 @@ class BaseTestCase(TestCase):
 
     def create_test_file(self, path, index):
         full_path = join(waves_settings.DATA_ROOT, str(index) + '_' + path)
+        print full_path
         f = open(full_path, 'w')
         f.write('sample content for input file %s' % (str(index) + '_' + path))
         f.close()

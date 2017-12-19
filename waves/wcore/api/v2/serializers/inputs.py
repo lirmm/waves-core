@@ -10,7 +10,7 @@ from .fields import CommaSeparatedListField, ListElementField
 
 class AParamSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ['when_value', 'label', 'default', 'api_name', 'type', 'mandatory', 'description', 'multiple',
+        fields = ['when_value', 'label', 'default', 'type', 'mandatory', 'description', 'multiple',
                   'edam_formats', 'edam_datas', 'dependents_inputs']
         model = AParam
 
@@ -87,8 +87,7 @@ class InputSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = AParam
         queryset = AParam.objects.all()
-        fields = ('label', 'name', 'default', 'type', 'mandatory', 'help_text', 'multiple', 'dependents_inputs',
-                  'api_name')
+        fields = ('label', 'name', 'default', 'type', 'mandatory', 'help_text', 'multiple', 'dependents_inputs',)
         extra_kwargs = {
             'url': {'view_name': 'wapi:api_v2:waves-services-detail', 'lookup_field': 'api_name'}
         }

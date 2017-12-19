@@ -58,10 +58,10 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
     class Meta:
         model = Submission
         fields = ('service', 'name', 'api_name', 'form', 'jobs',
-                  'expected_inputs', 'outputs', 'title', 'email_to')
+                  'inputs', 'outputs', 'title', 'email_to')
 
     view_name = 'wapi:api_v2:waves-submission-detail'
-    expected_inputs = InputSerializer(many=False, read_only=True)
+    inputs = InputSerializer(many=False, read_only=True, source='expected_inputs')
     form = serializers.SerializerMethodField()
     service = serializers.SerializerMethodField()
     jobs = serializers.SerializerMethodField()
