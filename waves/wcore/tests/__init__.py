@@ -169,9 +169,9 @@ class BaseTestCase(TestCase):
         return self.services
 
     def create_test_file(self, path, index):
-        full_path = join(waves_settings.JOB_BASE_DIR, '_' + str(index) + '_' + path)
+        full_path = join(waves_settings.DATA_ROOT, str(index) + '_' + path)
         f = open(full_path, 'w')
-        f.write('sample content for input file %s' % ('_' + str(index) + '_' + path))
+        f.write('sample content for input file %s' % (str(index) + '_' + path))
         f.close()
         f = open(full_path, 'rb')
         return f

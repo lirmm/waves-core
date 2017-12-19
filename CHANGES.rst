@@ -8,6 +8,7 @@ Version 1.1.6 - 2017-12-30
     - [Models] Removed: removed fields api_on and web_on in Service model
     - [Jobs] Changed: JobInconsistentState treatment in job workflow
     - [Models] Added: 'topics' and 'operations' property for reading EDAMS ontology data in Service templates
+    - [Adaptors] Moved: Saga common processes in dedicated class SagaAdaptor
 
 Version 1.1.5 - 2017-11-30
 --------------------------

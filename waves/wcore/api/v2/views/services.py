@@ -77,6 +77,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
     @detail_route(methods=['get'])
+    @renderer_classes((StaticHTMLRenderer,))
     def form(self, request, api_name=None):
         """ Retrieve service form """
         from django.shortcuts import render
@@ -90,7 +91,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                                    reverse('wapi:api_v2:waves-submission-detail',
                                                            kwargs=dict(
                                                                service=self.kwargs.get('api_name'),
-                                                               api_name=service_submission.api_name)
+                                                               submission=service_submission.api_name)
                                                            )))}
                 for service_submission in service_tool.submissions.all()]
         content = render(request=self.request,
@@ -99,18 +100,19 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                   'js': get_js(self),
                                   'css': get_css(self)},
                          content_type='')
-        return HttpResponse(content=content, content_type="text/plain; charset=utf8")
+        return HttpResponse(content=content, content_type="text/html; charset=utf8")
 
 
 class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ServiceSubmissionSerializer
+    lookup_url_kwarg = 'submission'
     lookup_field = 'api_name'
     http_method_names = ['get', 'options', 'post']
 
     def get_queryset(self):
         """ Retrieve for service, current submissions available for API """
         return Submission.objects.filter(service__api_name=self.kwargs.get('service'),
-                                         api_name=self.kwargs.get('api_name'),
+                                         api_name=self.kwargs.get('submission'),
                                          availability__gte=2)
 
     def retrieve(self, request, *args, **kwargs):
@@ -125,7 +127,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['get'])
     @renderer_classes((StaticHTMLRenderer,))
-    def form(self, request, service=None, api_name=None):
+    def form(self, request, service=None, submission=None):
         """
         Retrieve service form as raw html
 
@@ -133,7 +135,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
 
         Submission is made on API.
         """
-        service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
+        service_tool = get_object_or_404(self.get_queryset())
         template_pack = self.request.GET.get('tp', 'bootstrap3')
         form = [{'submission': service_tool,
                  'form': ServiceSubmissionForm(instance=self.get_object(),
@@ -143,13 +145,13 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
                                                    reverse('wapi:api_v2:waves-submission-detail',
                                                            kwargs=dict(
                                                                service=service,
-                                                               api_name=api_name
+                                                               submission=submission
                                                            ))))}]
         content = render(request=self.request,
                          template_name='waves/api/service_api_form.html',
                          context={'submissions': form,
-                                  'js': self.request.query_params.get('js', False),
-                                  'css': self.request.query_params.get('css', False)})
+                                  'js': get_js(self),
+                                  'css': get_css(self)})
         return HttpResponse(content=content, content_type="text/html; charset=utf8")
 
     def list(self, request, *args, **kwargs):
@@ -159,35 +161,27 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
         """
         return super(ServiceSubmissionViewSet, self).list(request, *args, **kwargs)
 
-    @detail_route(methods=['get'], url_path='jobs')
-    def jobs_list(self, request, service, api_name):
+    @detail_route(methods=['get', 'post'], url_path='jobs')
+    def jobs(self, request, service, submission):
         """
-        Return a list of all existing jobs for this submission, filtered according to user's access policy
+        get:
+        Return a list of current user's job for this submission
+
+        post:
+        Create a new job from submitted inputs
 
         :param request: HTTP request
-        :param service: api_name for service
-        :param api_name: api_name for related submission
+        :param service: service app_name
+        :param submission: submission app_name
         :return: list
         """
-        submission = get_object_or_404(self.get_queryset(), api_name=api_name)
+        obj = get_object_or_404(self.get_queryset())
         if self.request.method == 'GET':
-            queryset_jobs = Job.objects.get_submission_job(user=request.user, submission=submission)
+            queryset_jobs = Job.objects.get_submission_job(user=request.user, submission=obj)
             serializer = JobSerializer(queryset_jobs, many=True, context={'request': request},
                                        fields=['url', 'slug', 'title', 'status', 'created', 'updated'])
             return Response(serializer.data)
-
-    @detail_route(methods=['post'], url_path='jobs')
-    def jobs_create(self, request, service, api_name):
-        """
-        Create a new job if user is allowed to create one for this submission
-
-        :param request: HTTP request
-        :param service: api_name for service
-        :param api_name: api_name for related submission
-        :return: Json representation for newly created job
-        """
-        submission = get_object_or_404(self.get_queryset(), api_name=api_name)
-        if self.request.method == 'POST':
+        elif self.request.method == 'POST':
             # CREATE a new job for this submission
             logger.debug("Create Job")
             if logger.isEnabledFor(logging.DEBUG):
@@ -199,9 +193,10 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
             ass_email = passed_data.pop('email_to', None)
             try:
                 passed_data.pop('api_key', None)
-                created_job = Job.objects.create_from_submission(submission=submission,
+                created_job = Job.objects.create_from_submission(submission=obj,
                                                                  email_to=ass_email,
-                                                                 submitted_inputs=passed_data, user=request.user)
+                                                                 submitted_inputs=passed_data,
+                                                                 user=request.user)
 
                 # Now job is created (or raise an exception),
                 serializer = JobSerializer(created_job, many=False, context={'request': request},
@@ -214,4 +209,3 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
             except JobException as e:
                 logger.fatal("Create Error %s", e.message)
                 return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'error': 'Creation Error: Unknown error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -228,7 +228,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                 self.login('api_user')
                 response = self.client.post(submit_to,
                                             data=job_inputs_params,
-                                            files=job_inputs_files,
+                                            # files=job_inputs_files,
                                             format='multipart')
                 logger.debug(response)
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)

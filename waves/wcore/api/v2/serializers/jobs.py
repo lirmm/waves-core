@@ -121,7 +121,7 @@ class JobSerializer(DynamicFieldsModelSerializer,
     def get_submission(self, obj):
         if obj.submission and obj.submission.service:
             return reverse(viewname='wapi:api_v2:waves-submission-detail', request=self.context['request'],
-                           kwargs={'service': obj.submission.service.api_name, 'api_name': obj.submission.api_name})
+                           kwargs={'service': obj.submission.service.api_name, 'submission': obj.submission.api_name})
         else:
             return obj.service
 
@@ -143,13 +143,3 @@ class JobSerializer(DynamicFieldsModelSerializer,
             'code': obj.status,
             'label': obj.get_status_display()
         }
-
-
-class JobCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Job
-        fields = ('job_inputs', 'submission')
-        write_only_fields = ('job_inputs',)
-
-    def create(self, validated_data):
-        return Job.objects.create()
