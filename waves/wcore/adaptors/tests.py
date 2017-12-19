@@ -12,7 +12,7 @@ from waves.wcore.adaptors.mocks import MockJobRunnerAdaptor
 from waves.wcore.adaptors.shell import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.wcore.exceptions.jobs import JobInconsistentStateError
 from waves.wcore.settings import waves_settings
-from waves.wcore.tests.base import BaseTestCase, TestJobWorkflowMixin
+from waves.wcore.tests import BaseTestCase, TestJobWorkflowMixin
 from waves.wcore.utils.encrypt import Encrypt
 from .loader import AdaptorLoader
 

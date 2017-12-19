@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from waves.wcore.adaptors.adaptor import JobAdaptor
+from waves.wcore.adaptors import JobAdaptor
 
 
 class PublicApiAdaptor(JobAdaptor):

@@ -12,7 +12,7 @@ import waves.wcore.adaptors.const
 from waves.wcore.models.const import *
 from waves.wcore.models import Job, get_service_model, Runner
 from waves.wcore.models.inputs import AParam
-from waves.wcore.tests.base import BaseTestCase
+from waves.wcore.tests import BaseTestCase
 from waves.wcore.models.const import *
 
 Service = get_service_model()
@@ -42,7 +42,7 @@ class WavesAPIV1TestCase(BaseAPITestCase):
             logger.debug('ServiceTool: %s', tool_details.data['name'])
             self.assertIsNotNone(tool_details.data['default_submission_uri'])
 
-    def testHTTPMethods(self):
+    def test_http_methods(self):
         # TODO test authorization
         pass
 
@@ -150,7 +150,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
             logger.debug('ServiceTool: %s', tool_details.data['name'])
             self.assertIsNotNone(tool_details.data['submissions'])
 
-    def testHTTPMethods(self):
+    def test_http_methods(self):
         # TODO test authorization
         pass
 

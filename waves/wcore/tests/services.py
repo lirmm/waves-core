@@ -1,11 +1,10 @@
-import json
+from __future__ import unicode_literals
+
 import logging
-from unittest import skip
 from django.urls import reverse
 
 from waves.wcore.models import get_service_model, get_submission_model
-from waves.wcore.tests.base import BaseTestCase
-from waves.wcore.serializers import ServiceSerializer
+from waves.wcore.tests import BaseTestCase
 
 logger = logging.getLogger(__name__)
 Service = get_service_model()
@@ -20,21 +19,6 @@ class TestServices(BaseTestCase):
             self.assertEqual(service.submissions.count(), 1)
             # Assert that service params has a length corresponding to 'allowed override' value
             self.assertListEqual(sorted(service.run_params.keys()), sorted(service.runner.run_params.keys()))
-
-    @skip("Serialize / Unserialize needs code refactoring")
-    def test_serialize_service(self):
-        self.bootstrap_services()
-        init_count = Service.objects.all().count()
-        self.assertGreater(init_count, 0)
-        file_paths = []
-        for srv in Service.objects.all():
-            file_paths.append(srv.serialize())
-        for exp in file_paths:
-            with open(exp) as fp:
-                serializer = ServiceSerializer(data=json.load(fp))
-                if serializer.is_valid():
-                    serializer.save()
-        self.assertEqual(init_count * 2, Service.objects.all().count())
 
     def test_access_rules(self):
         def _test_access(url, expected_status, user=None):

@@ -9,7 +9,7 @@ from django.utils import timezone
 import waves.wcore.adaptors.const
 from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.settings import waves_settings as config
-from waves.wcore.tests.base import BaseTestCase
+from waves.wcore.tests import BaseTestCase
 
 logger = logging.getLogger(__name__)
 Service = get_service_model()

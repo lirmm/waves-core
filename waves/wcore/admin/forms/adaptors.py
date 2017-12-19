@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.forms import ModelForm, ChoiceField, PasswordInput
 from django.core.exceptions import ValidationError
 
-from waves.wcore.adaptors.adaptor import JobAdaptor
+from waves.wcore.adaptors import JobAdaptor
 from waves.wcore.models import AdaptorInitParam, get_submission_model, get_service_model
 
 Service = get_service_model()

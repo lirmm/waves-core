@@ -90,6 +90,10 @@ IMPORT_STRINGS = [
 ]
 
 
+def get_db_version():
+    return waves_settings.DB_VERSION
+
+
 class WavesSettings(object):
     """
     WAVES settings object, allow WAVES settings access from properties

@@ -5,12 +5,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from rest_framework import serializers as rest_serializer
 
-from waves.wcore.api.share import DynamicFieldsModelSerializer
 from waves.wcore.api import serializers
-from waves.wcore.models import *
-from waves.wcore.import_export.base import RelatedSerializerMixin
+from waves.wcore.import_export import BaseSerializer, RelatedSerializerMixin
 from waves.wcore.import_export.runners import RunnerSerializer, RunnerParamSerializer
-from waves.wcore.settings import waves_settings
+from waves.wcore.models import *
 
 Submission = get_submission_model()
 Service = get_service_model()
@@ -18,7 +16,7 @@ Service = get_service_model()
 __all__ = ['ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
 
 
-class ServiceInputSerializer(DynamicFieldsModelSerializer, RelatedSerializerMixin):
+class ServiceInputSerializer(BaseSerializer, RelatedSerializerMixin):
     """ Serialize a basic service input with its dependents parameters"""
 
     class Meta:
@@ -39,7 +37,7 @@ class ServiceInputSerializer(DynamicFieldsModelSerializer, RelatedSerializerMixi
         return srv_input
 
 
-class ServiceSubmissionSerializer(serializers.ServiceSerializer, RelatedSerializerMixin):
+class ServiceSubmissionSerializer(BaseSerializer, serializers.ServiceSubmissionSerializer, RelatedSerializerMixin):
     """ Service Submission export / import """
 
     class Meta:
@@ -58,7 +56,7 @@ class ServiceSubmissionSerializer(serializers.ServiceSerializer, RelatedSerializ
         return submission
 
 
-class ExitCodeSerializer(rest_serializer.ModelSerializer):
+class ExitCodeSerializer(BaseSerializer):
     """ ExitCode export / import """
 
     class Meta:
@@ -66,7 +64,7 @@ class ExitCodeSerializer(rest_serializer.ModelSerializer):
         fields = ('exit_code', 'message')
 
 
-class SubmissionOutputSerializer(rest_serializer.ModelSerializer):
+class SubmissionOutputSerializer(BaseSerializer):
     class Meta:
         model = Submission
         fields = ('api_name',)
@@ -75,7 +73,7 @@ class SubmissionOutputSerializer(rest_serializer.ModelSerializer):
         return Submission(api_name=validated_data.get('api_name'))
 
 
-class ServiceOutputSerializer(rest_serializer.ModelSerializer):
+class ServiceOutputSerializer(BaseSerializer):
     class Meta:
         model = SubmissionOutput
         fields = ('order', 'name', 'from_input', 'description',
@@ -96,13 +94,13 @@ class ServiceOutputSerializer(rest_serializer.ModelSerializer):
         return obj
 
 
-class ServiceTmpSerializer(rest_serializer.ModelSerializer):
+class ServiceTmpSerializer(BaseSerializer):
     class Meta:
         model = Service
         fields = ('name',)
 
 
-class ServiceRunnerParamSerializer(rest_serializer.ModelSerializer):
+class ServiceRunnerParamSerializer(BaseSerializer):
     class Meta:
         model = SubmissionRunParam
         fields = ('param', '_value', 'service')
@@ -120,7 +118,7 @@ class ServiceRunnerParamSerializer(rest_serializer.ModelSerializer):
         return obj
 
 
-class ServiceSerializer(serializers.ServiceSerializer, RelatedSerializerMixin):
+class ServiceSerializer(BaseSerializer, serializers.ServiceSerializer, RelatedSerializerMixin):
     """ Service export / import """
 
     class Meta:
@@ -173,5 +171,3 @@ class ServiceSerializer(serializers.ServiceSerializer, RelatedSerializerMixin):
                                                     serializer=ExitCodeSerializer, datas=ext_codes)
         return srv_object
 
-    def get_db_version(self, obj):
-        return waves_settings.DB_VERSION

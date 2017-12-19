@@ -1,9 +1,8 @@
 from __future__ import unicode_literals
 
 import saga
-from waves.wcore.adaptors import const
+from waves.wcore.adaptors import const, JobAdaptor
 from waves.wcore.adaptors import exceptions
-from .adaptor import JobAdaptor
 import logging
 
 logger = logging.getLogger(__name__)

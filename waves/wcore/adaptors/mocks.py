@@ -9,7 +9,7 @@ import time
 
 import waves.wcore.adaptors.const
 import waves.wcore.adaptors.utils
-from waves.wcore.adaptors.adaptor import JobAdaptor
+from waves.wcore.adaptors import JobAdaptor
 
 
 class MockConnector(object):
