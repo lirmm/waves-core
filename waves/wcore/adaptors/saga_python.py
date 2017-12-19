@@ -82,3 +82,69 @@ class SagaAdaptor(JobAdaptor):
         self.connector = None
         self._connected = False
         self._context = None
+
+    def _prepare_job(self, job):
+        # Nothing to do here
+        job.logger.info('Nothing to prepare, we are local')
+        return job
+
+    def _run_job(self, job):
+        """
+        Launch the job with current parameters from associated history
+        Args:
+            job:
+        """
+        try:
+            job.logger.debug('Creating job descriptor')
+            jd_dict = self._job_description(job)
+            jd = saga.job.Description()
+            for key in jd_dict.keys():
+                setattr(jd, key, jd_dict[key])
+            new_job = self.connector.create_job(jd)
+            new_job.run()
+            job.logger.debug('Job Descriptor %s', jd)
+            job.remote_job_id = new_job.get_id()
+            job.logger.debug('New saga job %s [id:%s]', new_job, new_job.get_id())
+            return job
+        except saga.SagaException as exc:
+            raise AdaptorJobException(exc.message)
+
+    def _cancel_job(self, job):
+        """
+        Jobs Cancel if connector is available
+        """
+        try:
+            the_job = self.connector.get_job(str(job.remote_job_id))
+            the_job.cancel()
+            return job
+        except saga.SagaException as exc:
+            raise AdaptorJobException(exc.message)
+
+    def _job_status(self, job):
+        try:
+            the_job = self.connector.get_job(str(job.remote_job_id))
+            return the_job.state
+        except saga.SagaException as exc:
+            raise AdaptorJobException(exc.message)
+
+    def _job_results(self, job):
+        try:
+            saga_job = self.connector.get_job(str(job.remote_job_id))
+            job.results_available = True
+            job.exit_code = saga_job.exit_code
+            return job
+        except saga.SagaException as exc:
+            raise AdaptorJobException(exc.message)
+
+    def _job_run_details(self, job):
+        remote_job = self.connector.get_job(str(job.remote_job_id))
+        date_created = remote_job.created if remote_job.created else ""
+        date_started = remote_job.started if remote_job.started else ""
+        date_finished = remote_job.finished if remote_job.finished else ""
+        details = JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
+                                remote_job.exit_code,
+                                date_created,
+                                date_started,
+                                date_finished,
+                                remote_job.execution_hosts)
+        return details

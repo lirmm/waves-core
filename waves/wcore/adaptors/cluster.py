@@ -1,9 +1,10 @@
 from __future__ import unicode_literals
 
-from waves.wcore.adaptors.shell import LocalShellAdaptor, SshKeyShellAdaptor, SshShellAdaptor
+from waves.wcore.adaptors.shell import SshKeyShellAdaptor, SshShellAdaptor
+from waves.wcore.adaptors.saga_python import SagaAdaptor
 
 
-class LocalClusterAdaptor(LocalShellAdaptor):
+class LocalClusterAdaptor(SagaAdaptor):
     """
     Encapsulate some of Saga-python adaptors for common cluster calculation devices onto WAVES adaptor logic
     """
