@@ -89,9 +89,10 @@ class BaseTestCase(TestCase):
                                       runner=service_runner,
                                       status=3)
 
-    def create_random_job(self, service=None, runner=None):
+    def create_random_job(self, service=None, runner=None, user=None):
         job_service = service or self.create_random_service(runner)
         job = Job.objects.create(submission=job_service.default_submission,
+                                 client=user,
                                  email_to='marc@fake.com')
         job.job_inputs.add(JobInput.objects.create(name="param1", value="Value1", job=job))
         job.job_inputs.add(JobInput.objects.create(name="param2", value="Value2", job=job))
@@ -170,7 +171,6 @@ class BaseTestCase(TestCase):
 
     def create_test_file(self, path, index):
         full_path = join(waves_settings.DATA_ROOT, str(index) + '_' + path)
-        print full_path
         f = open(full_path, 'w')
         f.write('sample content for input file %s' % (str(index) + '_' + path))
         f.close()

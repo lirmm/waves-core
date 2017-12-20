@@ -163,9 +163,10 @@ class JobManager(models.Manager):
         """
         default_email = user.email if user and not user.is_anonymous() else None
         follow_email = email_to or default_email
-
+        client = user if not user.is_anonymous() else None
         if update is None:
-            job = self.create(email_to=follow_email, client=user,
+            job = self.create(email_to=follow_email,
+                              client=client,
                               title=submitted_inputs.get('title', None),
                               submission=submission,
                               service=submission.service.name,
@@ -185,8 +186,9 @@ class JobManager(models.Manager):
         missing = {m.name: '%s (:%s:) is required field' % (m.label, m.api_name) for m in mandatory_params if
                    m.api_name not in submitted_inputs.keys()}
         if len(missing) > 0:
-            logger.warning("received keys %s", submitted_inputs.keys())
-            logger.warning("Expected mandatory %s missing", [(m.label, m.api_name) for m in mandatory_params])
+            logger.warning("Received keys %s", submitted_inputs.keys())
+            logger.warning("Expected mandatory %s", [(m.label, m.api_name) for m in mandatory_params])
+            logger.warning("Missing %s", [m for m in missing])
             raise ValidationError(missing)
         # First create inputs
         submission_inputs = submission.inputs.filter(api_name__in=submitted_inputs.keys()).exclude(required=None)
@@ -312,9 +314,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @status.setter
     def status(self, value):
         if value != self._status:
-            message = smart_text(self.message) or ""
-            self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(),
-                              message)
+            message = smart_text(self.message) or "New job status {}".format(value)
+            self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
             self.job_history.create(message=message, status=value)
         self._status = value
 
@@ -604,6 +605,10 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: QuerySet
         """
         return self.job_history.filter(is_admin=False)
+
+    @property
+    def last_history(self):
+        return self.public_history.first()
 
     def retry(self, message):
         """ Add a new try for job execution, save retry reason in JobAdminHistory, save job """

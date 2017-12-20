@@ -60,7 +60,7 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
         fields = ('service', 'name', 'api_name', 'form', 'jobs',
                   'inputs', 'outputs', 'title', 'email_to')
 
-    view_name = 'wapi:api_v2:waves-submission-detail'
+    view_name = 'wapi:api_v2:waves-submissions-detail'
     inputs = InputSerializer(many=False, read_only=True, source='expected_inputs')
     form = serializers.SerializerMethodField()
     service = serializers.SerializerMethodField()
@@ -72,18 +72,18 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
     email_to = serializers.CharField(write_only=True, required=False)
 
     def get_jobs(self, obj):
-        return reverse(viewname='wapi:api_v2:waves-submission-jobs', request=self.context['request'],
-                       kwargs={'service': obj.service.api_name, 'submission': obj.api_name})
+        return reverse(viewname='wapi:api_v2:waves-submissions-jobs', request=self.context['request'],
+                       kwargs={'service': obj.service.api_name, 'submission_app_name': obj.api_name})
 
     def get_form(self, obj):
         """ Return Service form endpoint uri"""
-        return reverse(viewname='wapi:api_v2:waves-submission-form', request=self.context['request'],
-                       kwargs={'service': obj.service.api_name, 'submission': obj.api_name})
+        return reverse(viewname='wapi:api_v2:waves-submissions-form', request=self.context['request'],
+                       kwargs={'service': obj.service.api_name, 'submission_app_name': obj.api_name})
 
     def get_service(self, obj):
         """ Return service details uri """
         return reverse(viewname='wapi:api_v2:waves-services-detail', request=self.context['request'],
-                       kwargs={'api_name': obj.service.api_name})
+                       kwargs={'service_app_name': obj.service.api_name})
 
     def get_queryset(self):
         """ Filter wapi:api_v2 enabled submissions """
@@ -99,7 +99,9 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
                   'jobs', 'submissions', 'form')
         lookup_field = 'api_name'
         extra_kwargs = {
-            'url': {'view_name': 'wapi:api_v2:waves-services-detail', 'lookup_field': 'api_name'},
+            'url': {'view_name': 'wapi:api_v2:waves-services-detail',
+                    'lookup_field': 'api_name',
+                    'lookup_url_kwarg': 'service_app_name'},
         }
 
     jobs = serializers.SerializerMethodField()
@@ -107,15 +109,15 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
     form = serializers.SerializerMethodField()
 
     def get_submissions(self, obj):
-        return [reverse(viewname='wapi:api_v2:waves-submission-detail', request=self.context['request'],
-                        kwargs={'service': obj.api_name, 'submission': sub.api_name}) for sub in
+        return [reverse(viewname='wapi:api_v2:waves-submissions-detail', request=self.context['request'],
+                        kwargs={'service': obj.api_name, 'submission_app_name': sub.api_name}) for sub in
                 obj.submissions.all()]
 
     def get_form(self, obj):
         return reverse(viewname='wapi:api_v2:waves-services-form', request=self.context['request'],
-                       kwargs={'api_name': obj.api_name})
+                       kwargs={'service_app_name': obj.api_name})
 
     def get_jobs(self, obj):
         """ return uri to access current service users' jobs """
         return reverse(viewname='wapi:api_v2:waves-services-jobs', request=self.context['request'],
-                       kwargs={'api_name': obj.api_name})
+                       kwargs={'service_app_name': obj.api_name})

@@ -19,7 +19,7 @@ router.register(prefix=r'jobs',
 
 router.register(r'services/(?P<service>[^/.]+)/submissions',
                 viewset=services.ServiceSubmissionViewSet,
-                base_name='waves-submission')
+                base_name='waves-submissions')
 
 urlpatterns = [
     url(r'^', include(router.urls)),

@@ -13,18 +13,19 @@ from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, permission_classes
 from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from waves.wcore.api.v2.serializers.jobs import JobSerializer
+from waves.wcore.api.v2.serializers.jobs import JobSerializer, JobStatusSerializer
 from waves.wcore.exceptions.jobs import JobInconsistentStateError
 from waves.wcore.models import Job, JobOutput, JobInput
 
 logger = logging.getLogger(__name__)
 
 
+@permission_classes((IsAuthenticatedOrReadOnly,))
 class JobViewSet(mixins.ListModelMixin,
                  mixins.RetrieveModelMixin,
                  mixins.DestroyModelMixin,
@@ -37,9 +38,9 @@ class JobViewSet(mixins.ListModelMixin,
     parser_classes = (JSONParser,)
     lookup_field = 'slug'
     filter_fields = ('_status', 'updated', 'submission')
-    http_method_names = ['get', 'options', 'put', 'delete']
+    http_method_names = ['get', 'options', 'post', 'delete']
 
-    @detail_route(methods=['put'], url_path="cancel", permission_classes=(IsAuthenticated,))
+    @detail_route(methods=['post'], url_path="cancel")
     def cancel(self, request, slug):
         """
         Update Job according to requested action
@@ -54,30 +55,27 @@ class JobViewSet(mixins.ListModelMixin,
             raise perm
         return Response({'success': 'Job marked as cancelled'}, status=status.HTTP_202_ACCEPTED)
 
-    def retrieve(self, request, slug=None):
+    def retrieve(self, request, *args, **kwargs):
         """
-        Detailed job info
+        Retrieve detailed WAVES job info
         """
-        queryset = get_object_or_404(self.get_queryset(), slug=slug)
-        serializer = self.get_serializer(queryset)
-        return Response(serializer.data)
+        return super(JobViewSet, self).retrieve(request, *args, **kwargs)
 
-    def list(self, request):
+    @permission_classes((IsAuthenticated,))
+    def list(self, request, *args, **kwargs):
         """
-        :param request:
-        :return:
+        List current jobs related to user, require to be logged in
         """
         queryset = Job.objects.get_user_job(user=request.user)
         serializer = self.get_serializer(queryset, many=True, hidden=['inputs', 'outputs', 'history'])
         return Response(serializer.data)
 
+    @permission_classes((IsAuthenticated,))
     def destroy(self, request, *args, **kwargs):
         """
-        Try to cancel job if needed, then delete it from db
-        :param request:
-        :param args:
-        :param kwargs:
-        :return:
+        Try to cancel job, then delete it from database, can't be undone
+
+
         """
         job = get_object_or_404(self.get_queryset())
         try:
@@ -86,6 +84,12 @@ class JobViewSet(mixins.ListModelMixin,
             # Even if we can't cancel job, delete it from db, so let it run on adaptor.
             pass
         return super(JobViewSet, self).destroy(request, *args, **kwargs)
+
+    @detail_route(methods=['get'])
+    def status(self, request, *args, **kwargs):
+        job = get_object_or_404(self.get_queryset())
+        serializer = JobStatusSerializer(instance=job)
+        return Response(serializer.data)
 
 
 class JobFileView(SingleObjectMixin):

@@ -15,9 +15,20 @@ from waves.wcore.api.share import DynamicFieldsModelSerializer
 from waves.wcore.models import JobInput, Job, JobOutput, JobHistory, get_service_model
 from waves.wcore.models.const import *
 
-
 Service = get_service_model()
 User = get_user_model()
+
+
+class JobStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Job
+        field = ('status',)
+
+    def to_representation(self, instance):
+        return OrderedDict({
+            'code': instance.status,
+            'label': instance.get_status_display()
+        })
 
 
 class JobUserSerializer(serializers.ModelSerializer):
@@ -26,7 +37,7 @@ class JobUserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email')
 
 
-class JobHistorySerializer(serializers.ModelSerializer):
+class JobHistorySerializer(DynamicFieldsModelSerializer):
     """ JobHistory Serializer - display status / message / timestamp """
 
     class Meta:
@@ -102,9 +113,9 @@ class JobSerializer(DynamicFieldsModelSerializer,
     class Meta:
         model = Job
         fields = ('url', 'slug', 'title', 'service', 'submission', 'client', 'status', 'created',
-                  'updated', 'inputs', 'outputs', 'history')
+                  'updated', 'inputs', 'outputs', 'history', 'last_message')
         read_only_fields = (
-            'status', 'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history')
+            'title', 'status', 'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history')
         extra_kwargs = {
             'url': {'view_name': 'wapi:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}
         }
@@ -117,18 +128,21 @@ class JobSerializer(DynamicFieldsModelSerializer,
     history = JobHistorySerializer(many=True, read_only=True, source="public_history")
     outputs = JobOutputSerializer(read_only=True, source='output_files')
     inputs = JobInputSerializer(source='job_inputs', read_only=True)
+    last_message = JobHistorySerializer(source='last_history', many=False, fields=['timestamp', 'message'],
+                                        read_only=True)
 
     def get_submission(self, obj):
         if obj.submission and obj.submission.service:
-            return reverse(viewname='wapi:api_v2:waves-submission-detail', request=self.context['request'],
-                           kwargs={'service': obj.submission.service.api_name, 'submission': obj.submission.api_name})
+            return reverse(viewname='wapi:api_v2:waves-submissions-detail', request=self.context['request'],
+                           kwargs={'service': obj.submission.service.api_name,
+                                   'submission_app_name': obj.submission.api_name})
         else:
             return obj.service
 
     def get_service(self, obj):
         if obj.submission and obj.submission.service:
             return reverse(viewname='wapi:api_v2:waves-services-detail', request=self.context['request'],
-                           kwargs={'api_name': obj.submission.service.api_name})
+                           kwargs={'service_app_name': obj.submission.service.api_name})
         else:
             return obj.service
 
