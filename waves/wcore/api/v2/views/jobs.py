@@ -25,7 +25,7 @@ from waves.wcore.models import Job, JobOutput, JobInput
 logger = logging.getLogger(__name__)
 
 
-@permission_classes((IsAuthenticatedOrReadOnly,))
+@permission_classes((IsAuthenticated,))
 class JobViewSet(mixins.ListModelMixin,
                  mixins.RetrieveModelMixin,
                  mixins.DestroyModelMixin,

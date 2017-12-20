@@ -93,7 +93,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                                form_action=request.build_absolute_uri(
                                                    reverse('wapi:api_v2:waves-submissions-detail',
                                                            kwargs=dict(
-                                                               service=self.kwargs.get('service_app_name'),
+                                                               service_app_name=self.kwargs.get('service_app_name'),
                                                                submission_app_name=service_submission.api_name)
                                                            )))}
                 for service_submission in service_tool.submissions.all()]
@@ -119,7 +119,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
     http_method_names = ['get', 'options', 'post']
 
     def get_object_or_404(self):
-        return get_object_or_404(Submission, service__api_name=self.kwargs.get('service'),
+        return get_object_or_404(Submission, service__api_name=self.kwargs.get('service_app_name'),
                                  api_name=self.kwargs.get('submission_app_name'))
 
     def get_queryset(self):
@@ -161,7 +161,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
                                                form_action=request.build_absolute_uri(
                                                    reverse('wapi:api_v2:waves-submissions-detail',
                                                            kwargs=dict(
-                                                               service=service_api_name,
+                                                               service_app_name=service_api_name,
                                                                submission_app_name=submission_api_name
                                                            ))))}]
         content = render(request=self.request,

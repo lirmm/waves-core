@@ -91,7 +91,7 @@
                     <div class="panel panel-default">
                         <div class="panel-body text-right">
                             {%  if job.submission %}
-                                <a class="btn btn-primary" href="{% url 'wcore:service_details' job.submission.service.id %}">Back to
+                                <a class="btn btn-primary" href="{% url 'wcore:service_details' job.submission.service.api_name %}">Back to
                                     service</a>
                                 {% online_exec_button service=job.submission.service label="New job" %}
                             {% endif %}

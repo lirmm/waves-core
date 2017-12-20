@@ -134,7 +134,7 @@ class JobSerializer(DynamicFieldsModelSerializer,
     def get_submission(self, obj):
         if obj.submission and obj.submission.service:
             return reverse(viewname='wapi:api_v2:waves-submissions-detail', request=self.context['request'],
-                           kwargs={'service': obj.submission.service.api_name,
+                           kwargs={'service_app_name': obj.submission.service.api_name,
                                    'submission_app_name': obj.submission.api_name})
         else:
             return obj.service

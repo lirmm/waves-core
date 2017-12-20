@@ -64,9 +64,7 @@ class JobSubmissionView(ServiceDetailView, SubmissionFormView):
     template_name = 'waves/services/service_form.html'
     form_class = ServiceSubmissionForm
     slug_field = 'api_name'
-
-    def get_template_names(self):
-        return super(JobSubmissionView, self).get_template_names()
+    slug_url_kwarg = 'service_app_name'
 
     def __init__(self, **kwargs):
         super(JobSubmissionView, self).__init__(**kwargs)

@@ -17,7 +17,7 @@ router.register(prefix=r'jobs',
                 viewset=jobs.JobViewSet,
                 base_name='waves-jobs')
 
-router.register(r'services/(?P<service>[^/.]+)/submissions',
+router.register(r'services/(?P<service_app_name>[^/.]+)/submissions',
                 viewset=services.ServiceSubmissionViewSet,
                 base_name='waves-submissions')
 

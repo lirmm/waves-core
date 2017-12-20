@@ -163,7 +163,7 @@ class JobManager(models.Manager):
         """
         default_email = user.email if user and not user.is_anonymous() else None
         follow_email = email_to or default_email
-        client = user if not user.is_anonymous() else None
+        client = user if user and not user.is_anonymous() else None
         if update is None:
             job = self.create(email_to=follow_email,
                               client=client,

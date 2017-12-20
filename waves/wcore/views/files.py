@@ -1,11 +1,11 @@
 from __future__ import unicode_literals
 
 import os
-import magic
 from wsgiref.util import FileWrapper
 
+import magic
 from django.http import Http404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views import generic
 
@@ -17,6 +17,7 @@ class DownloadFileView(generic.DetailView):
     slug_field = 'slug'
     http_method_names = ['get', ]
     _force_download = False
+    file_type = None
 
     def get_object(self, queryset=None):
         """ Retrieve object and validate that it has expected file_path"""
@@ -24,6 +25,14 @@ class DownloadFileView(generic.DetailView):
         if obj is None:
             raise Http404('Object does not exists')
         return obj
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.file_type = magic.from_file(self.file_path)
+        export = 'export' in self.request.GET or self._force_download is True
+        if 'text' not in self.file_type and not export:
+            return HttpResponseRedirect(self.request.path + "?export=1")
+        return super(DownloadFileView, self).get(request, *args, **kwargs)
 
     def render_to_response(self, context, **response_kwargs):
         """ Creates a response with file asked, otherwise returns displayed file as 'Text'
@@ -49,8 +58,7 @@ class DownloadFileView(generic.DetailView):
         except AttributeError as e:
             raise Http404('File does not exists %s' % e)
         if 'export' not in self.request.GET:
-            file_type = magic.from_file(self.file_path)
-            if 'text' in file_type:
+            if 'text' in self.file_type:
                 with open(self.file_path) as fp:
                     context['file_content'] = fp.read()
             else:

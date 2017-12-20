@@ -5,8 +5,6 @@ from os.path import join
 
 import saga
 
-import waves.wcore.adaptors.const
-from waves.wcore.adaptors.const import JobRunDetails
 from waves.wcore.adaptors.exceptions import *
 from waves.wcore.adaptors.saga_python import SagaAdaptor
 
