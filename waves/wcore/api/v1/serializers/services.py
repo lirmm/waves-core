@@ -76,7 +76,7 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer, serializers.Hype
 
     def get_queryset(self):
         """ Filter api enabled submissions """
-        return ServiceSubmission.objects.filter(available_api=True)
+        return ServiceSubmission.objects.filter(availability=1)
 
 
 class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsModelSerializer):

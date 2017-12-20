@@ -126,7 +126,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
         """ Retrieve for service, current submissions available for API """
         return Submission.objects.filter(service__api_name=self.kwargs.get('service_app_name'),
                                          api_name=self.kwargs.get('submission_app_name'),
-                                         availability__gte=2)
+                                         availability=1)
 
     def retrieve(self, request, *args, **kwargs):
         """

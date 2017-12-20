@@ -148,7 +148,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     exclude = ['order']
     list_display = ['get_name', 'service', 'api_name', 'availability', 'runner', 'created',
                     'updated']
-    readonly_fields = ['available_online', 'available_api', 'get_command_line_pattern', 'display_run_params']
+    readonly_fields = ['get_command_line_pattern', 'display_run_params']
     list_filter = (
         'service__name',
         'availability'
@@ -209,8 +209,6 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
         if obj is None:  # i.e create mode
             elem = fieldsets[0][1]
             elem['classes'].append('open') if 'open' not in elem['classes'] else None
-            elem['fields'].remove('available_api') if 'available_api' in elem['fields'] else None
-            elem['fields'].remove('available_online') if 'available_online' in elem['fields'] else None
             elem['fields'].remove('api_name') if 'api_name' in elem['fields'] else None
         return fieldsets
 
@@ -225,12 +223,6 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
         return "%s %s" % (obj.adaptor.command, obj.service.command.create_command_line(inputs=obj.inputs.all()))
 
     get_command_line_pattern.short_description = "Command line pattern"
-
-    def available_api(self, obj):
-        return obj.available_api
-
-    def available_online(self, obj):
-        return obj.available_online
 
     def has_add_permission(self, request):
         return False

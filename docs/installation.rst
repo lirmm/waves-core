@@ -1,32 +1,44 @@
 Installation
 ============
 
-GET a WAVES web-app online following the next few steps, WAVES can run on Apache, Nginx with uWSGI
-
-
-0. Prerequisites
-----------------
     .. WARNING::
         To run WAVES, it's strongly recommended that you setup a dedicated user, because WAVES run with
         saga-python, and this module need to create some directories you might not be able to create (.radical and .saga)
         with another user (such as www-data)
 
+    .. warning::
+        WAVES was initially developed with Python 2.7 and Django 1.11
+        and is currently not tested on latest version (Python 3 and Django 2.0).
+
+
+0. Install your django application
+----------------------------------
+
+    To create a Django project, have a look at `Django tutorial <https://docs.djangoproject.com/en/1.11/intro/tutorial01/>`_
+    GET a WAVES web-app online following the next few steps, WAVES can run on Apache, Nginx with uWSGI
+
     .. note::
         In order to install WAVES you need:
             - python 2.7.X (WAVES is not yet compatible with python3)
             - pip package manager
-            - Django Application set up (use `Waves-demo <https://github.com/lirmm/waves-demo>`_ project if you don't have one )
-            - Web server: `Apache <https://httpd.apache.org/>`_ or `NGINX <https://nginx.org/>`_
-            - Message broker : we won't force you but Waves is tested with Celery and RabbitMQ
 
-1. Install WAVES
-----------------
+        For production, a web server:
+                - `Apache <https://httpd.apache.org/>`_
+                - `NGINX <https://nginx.org/>`_
+
+
+1. Install WAVES-core package
+-----------------------------
 
     1.1. Install waves package:
 
-        ``pip install -e git+https://github.com/lirmm/waves-core.git#egg=waves``
+        ``pip install waves-core``
 
-    1.2. Add "waves" to your INSTALLED_APPS settings, minimum apps are as follow ::
+    If you want to install the latest version
+
+        ``pip install -e git+https://github.com/lirmm/waves-core.git#egg=waves-core``
+
+    1.2. Go to your Django settings file and add "waves" and dependencies to your INSTALLED_APPS::
 
         INSTALLED_APPS = [
             'polymorphic',
@@ -49,14 +61,9 @@ GET a WAVES web-app online following the next few steps, WAVES can run on Apache
 
         ``url(r'^wcore/', include('waves.wcore.urls', namespace='wcore'))``
 
-        1.3.1 If you need standard front pages:
+    If you want to enable api:
 
-            ``url(r'^waves/', include('waves.front.urls', namespace='wfront')),``
-
-        1.3.2 If you need api:
-
-            ``url(r'^api/', include('waves.wcore.api.urls', namespace='wapi'))``
-
+        ``url(r'^api/', include('waves.wcore.api.urls', namespace='wapi'))``
 
     1.4. Create your database::
 

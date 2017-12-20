@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-import waves.wcore.adaptors.const
+from waves.wcore.adaptors import const
 from waves.wcore.models import Job, get_service_model, Runner
 from waves.wcore.models.const import *
 from waves.wcore.tests import BaseTestCase
@@ -146,7 +146,7 @@ class WavesAPIV1TestCase(BaseAPITestCase):
                 logger.debug(job)
         for job in Job.objects.all():
             logger.debug('Job %s ', job)
-            self.assertEqual(job.status, waves.wcore.adaptors.const.JOB_CREATED)
+            self.assertEqual(job.status, const.JOB_CREATED)
             self.assertEqual(job.job_history.count(), 1)
             self.assertIsNotNone(job.job_inputs)
             self.assertIsNotNone(job.outputs)
@@ -235,7 +235,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                 logger.debug(job)
         for job in Job.objects.all():
             logger.debug('Job %s ', job)
-            self.assertEqual(job.status, waves.wcore.adaptors.const.JOB_CREATED)
+            self.assertEqual(job.status, const.JOB_CREATED)
             self.assertEqual(job.job_history.count(), 1)
             self.assertIsNotNone(job.job_inputs)
             self.assertIsNotNone(job.outputs)
@@ -249,14 +249,14 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         runner = Runner.objects.create(name="Mock Runner",
                                        clazz='waves.wcore.adaptors.mocks.MockJobRunnerAdaptor')
 
-        sample_job = self.create_random_job(service=self.create_random_service(runner))
-        response = self.client.get(reverse('wapi:api_v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        sample_job = self.create_random_job(runner=runner)
         test_cancel = self.client.post(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login("api_user")
         test_cancel = self.client.post(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_202_ACCEPTED)
+        db_job = Job.objects.get(slug=sample_job.slug)
+        self.assertEqual(db_job.status, const.JOB_CANCELLED)
         test_cancel = self.client.put(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -265,8 +265,6 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                                        clazz='waves.wcore.adaptors.mocks.MockJobRunnerAdaptor')
 
         sample_job = self.create_random_job(service=self.create_random_service(runner), user=self.users['api_user'])
-        response = self.client.get(reverse('wapi:api_v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
         test_delete = self.client.delete(reverse('wapi:api_v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_delete.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login('api_user')

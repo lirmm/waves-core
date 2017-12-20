@@ -22,8 +22,8 @@ Submission Inputs:
 
 Base class for service inputs shared information
         .. autoclass:: waves.wcore.models.inputs.AParam
-            :members:
-            :show-inheritance:
+                :members:
+                :show-inheritance:
 
 .. _service-outputs-label:
 
@@ -31,8 +31,8 @@ Submission Outputs:
 -------------------
 Submission description defines expected outputs
 
-    .. autoclass:: waves.wcore.models.services.SubmissionOutput
-        :members:
+        .. autoclass:: waves.wcore.models.services.SubmissionOutput
+                :members:
 
 
 Submission ExitCode:

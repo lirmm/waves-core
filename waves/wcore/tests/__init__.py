@@ -19,7 +19,7 @@ from django.utils.timezone import localtime
 from waves.wcore.adaptors import const
 from waves.wcore.adaptors.loader import AdaptorLoader
 from waves.wcore.models import get_service_model, get_submission_model, Job, JobInput, JobOutput, Runner, \
-    AdaptorInitParam, ServiceRunParam
+    AdaptorInitParam, ServiceRunParam, TextParam, BooleanParam, FileInput
 from waves.wcore.models.const import TYPE_FILE, TYPE_TEXT
 from waves.wcore.settings import waves_settings
 
@@ -85,9 +85,11 @@ class BaseTestCase(TestCase):
 
     def create_random_service(self, runner=None):
         service_runner = runner or self.runners[random.randint(0, len(self.runners) - 1)]
-        return Service.objects.create(name='Sample Service',
-                                      runner=service_runner,
-                                      status=3)
+        service = Service.objects.create(name='Sample Service', runner=service_runner, status=3)
+        service.default_submission.inputs.add(TextParam.objects.create(name='param1', default='Default1', submission=service.default_submission))
+        service.default_submission.inputs.add(BooleanParam.objects.create(name='param2', default=False, submission=service.default_submission ))
+        service.default_submission.inputs.add(FileInput.objects.create(name='param3', submission=service.default_submission))
+        return service
 
     def create_random_job(self, service=None, runner=None, user=None):
         job_service = service or self.create_random_service(runner)
@@ -95,7 +97,7 @@ class BaseTestCase(TestCase):
                                  client=user,
                                  email_to='marc@fake.com')
         job.job_inputs.add(JobInput.objects.create(name="param1", value="Value1", job=job))
-        job.job_inputs.add(JobInput.objects.create(name="param2", value="Value2", job=job))
+        job.job_inputs.add(JobInput.objects.create(name="param2", value="Value2.txt", job=job))
         job.job_inputs.add(JobInput.objects.create(name="param3", value="Value3", job=job))
         job.outputs.add(JobOutput.objects.create(_name="out1", value="out1", job=job))
         job.outputs.add(JobOutput.objects.create(_name="out2", value="out2", job=job))
@@ -164,7 +166,8 @@ class BaseTestCase(TestCase):
         self.services = []
         i = 0
         for runner in self.bootstrap_runners():
-            srv = Service.objects.create(name="Service %s" % runner.name, runner=runner, api_name="service_{}".format(i))
+            srv = Service.objects.create(name="Service %s" % runner.name, runner=runner,
+                                         api_name="service_{}".format(i))
             i += 1
             self.services.append(srv)
         return self.services
@@ -179,7 +182,6 @@ class BaseTestCase(TestCase):
 
 
 class TestJobWorkflowMixin(TestCase):
-
     jobs = []
 
     @staticmethod

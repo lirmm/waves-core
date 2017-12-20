@@ -1,19 +1,13 @@
-ReadME
+======
+README
 ======
 
-    .. note:: What WAVES stands for ?
-
+What WAVES stands for ?
+-----------------------
     WAVES stands for "Web Application for Versatile and Easy online bioinformatic Services."
-
     It is aimed to help you easily present, publish and give access on the web of any bioinformatic tools developed in your teams.
 
-    Based on Python and Django framework, it is easy to maintain and make evolve for your specific requirements.
-
-    .. warning::
-
-    Please be warned that WAVES was initially developed with Python 2.7 and Django 1.11
-    and is currently not tested on latest version (Python 3 and Django 2.0).
-
+    Based on Python and Django framework, it is easy to maintain and to extend for your specific requirements.
 
 
 Features

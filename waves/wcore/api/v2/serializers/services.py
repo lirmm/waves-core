@@ -88,7 +88,7 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
 
     def get_queryset(self):
         """ Filter wapi:api_v2 enabled submissions """
-        return Submission.objects.filter(availability__gt=2)
+        return Submission.objects.filter(availability=1)
 
 
 class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsModelSerializer):

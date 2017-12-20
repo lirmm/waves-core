@@ -20,15 +20,14 @@ Welcome to WAVES's CORE Documentation !
 
 .. toctree::
     :maxdepth: 1
-    :caption: WAVES' Insider
+    :caption: Technical documentation
 
     contributing
     modules/source
+    dev_doc/dev_doc
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 

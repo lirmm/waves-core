@@ -32,7 +32,7 @@ class ServiceManager(models.Manager):
     Service Model 'objects' Manager
     """
 
-    def get_services(self, user=None):
+    def get_services(self, user=None, filter_api=False):
         """
         Return services allowed for this specific user
         :param user: current User
@@ -202,7 +202,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def default_submission(self):
         """ Return Service default submission for web forms """
         try:
-            return self.submissions.filter(availability=3).first()
+            return self.submissions.first()
         except ObjectDoesNotExist:
             return None
 
@@ -210,14 +210,14 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def default_submission_api(self):
         """ Return Service default submission for wapi:api_v2 """
         try:
-            return self.submissions.filter(availability=3).first()
+            return self.submissions.filter(availability=1).first()
         except ObjectDoesNotExist:
             return None
 
     @property
     def submissions_api(self):
         """ Returned submissions available on API """
-        return self.submissions.filter(availability=3)
+        return self.submissions.filter(availability=1)
 
     def available_for_user(self, user):
         """ Access rules for submission form according to user
@@ -275,15 +275,13 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         unique_together = ('service', 'api_name')
 
     NOT_AVAILABLE = 0
-    AVAILABLE_WEB_ONLY = 1
-    AVAILABLE_API_ONLY = 2
-    AVAILABLE_BOTH = 3
+    AVAILABLE_API = 1
 
     service = models.ForeignKey(swapper.get_model_name('wcore', 'Service'), on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
-    availability = models.IntegerField('Availability', default=3,
-                                       choices=((NOT_AVAILABLE, "Not Available"),
-                                                (AVAILABLE_BOTH, "Available for job submission")))
+    availability = models.IntegerField('Availability', default=AVAILABLE_API,
+                                       choices=((NOT_AVAILABLE, "Disabled API"),
+                                                (AVAILABLE_API, "Enabled API")))
     name = models.CharField('Title', max_length=255, null=False, blank=False)
 
     def get_runner(self):
@@ -304,16 +302,6 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
             return runners_params
         else:
             return self.service.run_params
-
-    @property
-    def available_online(self):
-        """ return whether submission is available online """
-        return self.availability == 3
-
-    @property
-    def available_api(self):
-        """ return whether submission is available for wapi:api_v2 calls """
-        return self.availability == 2
 
     def __str__(self):
         return '[%s]' % self.name
@@ -409,9 +397,7 @@ class Submission(BaseSubmission):
 
 
 class SubmissionOutput(TimeStamped, ApiModel):
-    """
-    Represents usual service expected output files
-    """
+    """ Represents usual service expected output files """
 
     class Meta:
         verbose_name = 'Expected output'
@@ -425,8 +411,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     #: Output Name (internal)
     name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Label")
     #: Related Submission
-    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'),
-                                   related_name='outputs',
+    submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), related_name='outputs',
                                    on_delete=models.CASCADE)
     #: Associated Submission Input if needed
     from_input = models.ForeignKey('AParam', null=True, blank=True, default=None, related_name='to_outputs',
@@ -438,33 +423,33 @@ class SubmissionOutput(TimeStamped, ApiModel):
     edam_format = models.CharField('Edam format', max_length=255, null=True, blank=True,
                                    help_text="Edam ontology format")
     #: EDAM data type
-    edam_data = models.CharField('Edam data', max_length=255, null=True, blank=True,
-                                 help_text="Edam ontology data")
+    edam_data = models.CharField('Edam data', max_length=255, null=True, blank=True, help_text="Edam ontology data")
     #: Help text displayed on results
     help_text = models.TextField('Help Text', null=True, blank=True, )
-    #: File extension
+    #: Expected file extension
     extension = models.CharField('Extension', max_length=5, blank=True, default="",
                                  help_text="Leave blank for *, or set in file pattern")
 
     def __str__(self):
+        """ String representation, return label"""
         return self.label
 
     def clean(self):
+        """ Check validitiy before saving"""
         cleaned_data = super(SubmissionOutput, self).clean()
         if self.from_input and not self.file_pattern:
             raise ValidationError({'file_pattern': 'If valuated from input, you must set a file pattern'})
         return cleaned_data
 
     def save(self, *args, **kwargs):
+        """ Override name with current label if not set"""
         if not self.name:
             self.name = self.label
         super(SubmissionOutput, self).save(*args, **kwargs)
 
     @property
     def ext(self):
-        """
-        return expected file output extension
-        """
+        """ Return expected file output extension """
         file_name = None
         if self.name and '%s' in self.name and self.from_input and self.from_input.default:
             file_name = self.name % self.from_input.default
@@ -476,9 +461,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
             return self.extension
 
     def duplicate_api_name(self, api_name):
-        """ Check is another entity is set with same api_name
-        :param api_name:
-        """
+        """ Check is another entity is set with same api_name """
         return SubmissionOutput.objects.filter(api_name=api_name, submission=self.submission).exclude(pk=self.pk)
 
 

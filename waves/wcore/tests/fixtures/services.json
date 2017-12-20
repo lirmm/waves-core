@@ -282,7 +282,7 @@
       "binary_file": null,
       "runner": null,
       "service": 1,
-      "availability": 3,
+      "availability": 1,
       "name": "default"
     }
   },

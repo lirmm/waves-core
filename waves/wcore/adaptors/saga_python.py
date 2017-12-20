@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import saga
 import logging
 
-
 from waves.wcore.adaptors import const, JobAdaptor
 from waves.wcore.adaptors import exceptions
 
@@ -109,7 +108,7 @@ class SagaAdaptor(JobAdaptor):
             job.logger.debug('New saga job %s [id:%s]', new_job, new_job.get_id())
             return job
         except saga.SagaException as exc:
-            raise AdaptorJobException(exc.message)
+            raise exceptions.AdaptorJobException(exc.message)
 
     def _cancel_job(self, job):
         """
@@ -120,14 +119,14 @@ class SagaAdaptor(JobAdaptor):
             the_job.cancel()
             return job
         except saga.SagaException as exc:
-            raise AdaptorJobException(exc.message)
+            raise exceptions.AdaptorJobException(exc.message)
 
     def _job_status(self, job):
         try:
             the_job = self.connector.get_job(str(job.remote_job_id))
             return the_job.state
         except saga.SagaException as exc:
-            raise AdaptorJobException(exc.message)
+            raise exceptions.AdaptorJobException(exc.message)
 
     def _job_results(self, job):
         try:
@@ -136,17 +135,17 @@ class SagaAdaptor(JobAdaptor):
             job.exit_code = saga_job.exit_code
             return job
         except saga.SagaException as exc:
-            raise AdaptorJobException(exc.message)
+            raise exceptions.AdaptorJobException(exc.message)
 
     def _job_run_details(self, job):
         remote_job = self.connector.get_job(str(job.remote_job_id))
         date_created = remote_job.created if remote_job.created else ""
         date_started = remote_job.started if remote_job.started else ""
         date_finished = remote_job.finished if remote_job.finished else ""
-        details = JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
-                                remote_job.exit_code,
-                                date_created,
-                                date_started,
-                                date_finished,
-                                remote_job.execution_hosts)
+        details = const.JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
+                                      remote_job.exit_code,
+                                      date_created,
+                                      date_started,
+                                      date_finished,
+                                      remote_job.execution_hosts)
         return details

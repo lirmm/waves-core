@@ -22,7 +22,7 @@ Utilities classes
 
 Adaptor base class
 ------------------
-.. automodule:: waves.wcore.adaptors.adaptor
+.. automodule:: waves.wcore.adaptors
     :members:
     :show-inheritance:
 

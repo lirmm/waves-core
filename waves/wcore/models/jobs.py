@@ -572,7 +572,6 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :param service_submission
         :return: None
         """
-
         for service_input in self.submission.inputs.filter(required=None):
             # Create fake "submitted_inputs" with non editable ones with default value if not already set
             self.logger.debug('Created non editable job input: %s (%s, %s)', service_input.label,
@@ -691,9 +690,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     def run_cancel(self):
         """ Ask job adaptor to cancel job if possible """
-        self._run_action('cancel_job')
         self.message = 'Job cancelled'
-        self.status = JOB_CANCELLED
+        self._run_action('cancel_job')
 
     def run_results(self):
         """ Ask job adaptor to get results files (dowload files if needed) """
