@@ -8,8 +8,10 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.module_loading import import_string
-from django.conf import settings
 
+
+from waves.wcore.settings import waves_settings
+from waves.wcore.adaptors.loader import AdaptorLoader
 from waves.wcore.models.base import WavesBaseModel
 from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.utils.encrypt import Encrypt
@@ -153,8 +155,9 @@ class HasAdaptorClazzMixin(WavesBaseModel):
         self._adaptor = adaptor
 
     def save(self, *args, **kwargs):
-        if self.clazz not in settings.WAVES_CORE['ADAPTORS_CLASSES']:
-            raise RuntimeError('The class [{}] not configured as an available WAVES adaptor'.format(self.clazz))
+        names = AdaptorLoader.get_class_names()
+        if self.clazz not in names:
+            raise RuntimeError('The class [{}] not configured as ADAPTORS_CLASSES {}'.format(self.clazz, names))
         super(HasAdaptorClazzMixin, self).save(*args, **kwargs)
 
 

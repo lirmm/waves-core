@@ -2,24 +2,26 @@ from __future__ import unicode_literals
 
 import json
 
-from waves.wcore.settings import waves_settings, import_from_string
 from waves.wcore.adaptors.exceptions import AdaptorNotAvailableException
+from waves.wcore.settings import import_from_string
 
 __all__ = ['AdaptorLoader']
 
 
 class AdaptorLoader(object):
-    adaptors_classes = waves_settings.ADAPTORS_CLASSES
 
     @classmethod
     def get_adaptors(cls):
-        return sorted([adaptor_class() for adaptor_class in cls.adaptors_classes])
+        from waves.wcore.settings import waves_settings
+        return sorted([adaptor_class() for adaptor_class in waves_settings.ADAPTORS_CLASSES])
 
     @classmethod
     def load(cls, clazz, **params):
+        from waves.wcore.settings import waves_settings
+
         if params is None:
             params = {}
-        loaded = next((x(**params) for x in cls.adaptors_classes if x == clazz), None)
+        loaded = next((x(**params) for x in waves_settings.ADAPTORS_CLASSES if x == clazz), None)
         if loaded is None:
             raise AdaptorNotAvailableException("This adaptor class %s is not available " % clazz)
         return loaded
@@ -33,3 +35,8 @@ class AdaptorLoader(object):
         json_data = json.loads(serialized)
         clazz = import_from_string(json_data['clazz'])
         return cls.load(clazz, **json_data['params'])
+
+    @classmethod
+    def get_class_names(cls):
+        from waves.wcore.settings import waves_settings
+        return ['{}.{}'.format(clazz.__module__, clazz.__name__) for clazz in waves_settings.ADAPTORS_CLASSES]
