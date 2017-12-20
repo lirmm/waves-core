@@ -130,6 +130,9 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobRunException` if error during launch
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
+        if job.status >= const.JOB_COMPLETED:
+            raise JobInconsistentStateError(job=job, expected=const.STATUS_LIST[0:5],
+                                            message="Job can't be cancelled")
         self.connect()
         try:
             self._cancel_job(job)

@@ -42,16 +42,16 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
                           password=Encrypt.encrypt(waves.wcore.adaptors.test_settings.WAVES_TEST_SSH_USER_PASS),
                           basedir=waves.wcore.adaptors.test_settings.WAVES_SSH_TEST_SGE_BASE_DIR,
                           host=waves.wcore.adaptors.test_settings.WAVES_TEST_SSH_HOST),
+        SshKeyShellAdaptor(command='cp', user_id=waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_USER_ID,
+                           password=Encrypt.encrypt(waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_PASSPHRASE),
+                           basedir=waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_BASE_DIR,
+                           host=waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_HOST),
         SshClusterAdaptor(protocol='slurm', command='cp',
                           queue=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_QUEUE,
                           user_id=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_USER_ID,
                           password=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_USER_PASS,
                           basedir=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_BASE_DIR,
                           host=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_HOST),
-        SshKeyShellAdaptor(command='cp', user_id=waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_USER_ID,
-                           password=Encrypt.encrypt(waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_PASSPHRASE),
-                           basedir=waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_BASE_DIR,
-                           host=waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_HOST)
     ]
 
     def test_serialize(self):
@@ -80,6 +80,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
 
     def test_loader(self):
         list_adaptors = self.loader.get_adaptors()
+        from waves.wcore.settings import waves_settings
         self.assertTrue(all([clazz.__class__ in waves_settings.ADAPTORS_CLASSES for clazz in list_adaptors]))
         [logger.debug(c) for c in list_adaptors]
 
@@ -113,8 +114,9 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
         logger.info('job command line %s ', job.command_line)
         self.run_job_workflow(job)
 
+    @unittest.skip("Waiting for slurm enabled on HPC")
     def test_slurm_cp_job(self):
-        adaptor = self.adaptors[3]
+        adaptor = self.adaptors[4]
         logger.debug('Connecting to %s', adaptor.name)
         job = self.create_cp_job(source_file=self.get_sample(),
                                  submission=self.create_random_service().default_submission)
@@ -123,7 +125,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
         self.run_job_workflow(job)
 
     def test_all_cp_jobs(self):
-        for adaptor in self.adaptors:
+        for adaptor in self.adaptors[0:4]:
             try:
                 logger.debug('Connecting to %s', adaptor.name)
                 job = self.create_cp_job(source_file=self.get_sample(),

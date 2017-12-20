@@ -23,7 +23,7 @@ setup(
     author_email='marc.chakiachvili@lirmm.fr, marc@archi-logic.fr',
     install_requires=[
         'daemons==1.3.0',
-        'Django==1.11.6',
+        'Django==1.11.8',
         'django-admin-sortable2==0.6.16',
         'django-crispy-forms==1.7.0',
         'django-polymorphic==1.3',

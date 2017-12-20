@@ -572,16 +572,17 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :param service_submission
         :return: None
         """
-        for service_input in self.submission.inputs.filter(required=None):
-            # Create fake "submitted_inputs" with non editable ones with default value if not already set
-            self.logger.debug('Created non editable job input: %s (%s, %s)', service_input.label,
-                              service_input.name, service_input.default)
-            self.job_inputs.add(JobInput.objects.create(job=self, name=service_input.name,
-                                                        param_type=service_input.type,
-                                                        cmd_format=service_input.cmd_format,
-                                                        label=service_input.label,
-                                                        order=service_input.order,
-                                                        value=service_input.default))
+        if self.submission:
+            for service_input in self.submission.inputs.filter(required=None):
+                # Create fake "submitted_inputs" with non editable ones with default value if not already set
+                self.logger.debug('Created non editable job input: %s (%s, %s)', service_input.label,
+                                  service_input.name, service_input.default)
+                self.job_inputs.add(JobInput.objects.create(job=self, name=service_input.name,
+                                                            param_type=service_input.type,
+                                                            cmd_format=service_input.cmd_format,
+                                                            label=service_input.label,
+                                                            order=service_input.order,
+                                                            value=service_input.default))
 
     def create_default_outputs(self):
         """ Create standard default outputs for job (stdout and stderr)
