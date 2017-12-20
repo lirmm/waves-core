@@ -87,7 +87,9 @@ class AdaptorImporter(object):
                 self._logger.info('=> to new service: %s', self.service.name)
                 # create from scratch a new one
                 # Submission has been created from signal
+                self.service.adaptor = self.adaptor
                 self.service.save()
+
                 self.submission = self.service.default_submission
                 self.submission.name = "Imported from Galaxy"
                 self.submission.availability = Submission.NOT_AVAILABLE

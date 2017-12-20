@@ -155,9 +155,9 @@ class HasAdaptorClazzMixin(WavesBaseModel):
         self._adaptor = adaptor
 
     def save(self, *args, **kwargs):
+        super(HasAdaptorClazzMixin, self).save(*args, **kwargs)
         names = AdaptorLoader.get_class_names()
         if self.clazz not in names:
             raise RuntimeError('The class [{}] not configured as ADAPTORS_CLASSES {}'.format(self.clazz, names))
-        super(HasAdaptorClazzMixin, self).save(*args, **kwargs)
 
 
