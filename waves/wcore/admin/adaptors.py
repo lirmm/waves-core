@@ -22,12 +22,14 @@ class AdaptorInitParamInline(GenericTabularInline):
 
     def has_delete_permission(self, request, obj=None):
         """ No delete permission for runners params
+
         :return: False
         """
         return False
 
     def has_add_permission(self, request):
         """ No add permission for runners params
+
         :return: False
         """
         return False

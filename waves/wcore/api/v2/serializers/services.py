@@ -112,11 +112,13 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
     def get_submissions(self, obj):
         return [reverse(viewname='wapi:api_v2:waves-submissions-detail', request=self.context['request'],
                         kwargs={'service_app_name': obj.api_name, 'submission_app_name': sub.api_name}) for sub in
-                obj.submissions.all()]
+                obj.submissions_api.all()]
 
     def get_form(self, obj):
-        return reverse(viewname='wapi:api_v2:waves-services-form', request=self.context['request'],
-                       kwargs={'service_app_name': obj.api_name})
+        if obj.submissions_api.count() > 0:
+            return reverse(viewname='wapi:api_v2:waves-services-form', request=self.context['request'],
+                           kwargs={'service_app_name': obj.api_name})
+        return ""
 
     def get_jobs(self, obj):
         """ return uri to access current service users' jobs """

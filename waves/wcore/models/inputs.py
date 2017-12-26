@@ -90,6 +90,7 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
 
     def duplicate_api_name(self, api_name):
         """ Check is another entity is set with same api_name for the same submission
+
         :param api_name:
         """
         return AParam.objects.filter(api_name=api_name, submission=self.submission).exclude(pk=self.pk)

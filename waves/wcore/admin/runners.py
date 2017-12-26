@@ -32,12 +32,14 @@ class ServiceRunInline(TabularInline):
 
     def has_delete_permission(self, request, obj=None):
         """ No delete permission for runners params
+
         :return: False
         """
         return False
 
     def has_add_permission(self, request):
         """ No add permission for runners params
+
         :return: False
         """
         return False
@@ -54,12 +56,14 @@ class SubmissionRunInline(TabularInline):
 
     def has_delete_permission(self, request, obj=None):
         """ No delete permission for runners params
+
         :return: False
         """
         return False
 
     def has_add_permission(self, request):
         """ No add permission for runners params
+
         :return: False
         """
         return False

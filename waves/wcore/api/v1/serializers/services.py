@@ -97,9 +97,10 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
 
     def get_default_submission_uri(self, obj):
         """ Return service default submission uri """
-        if obj.default_submission_api is not None:
+        default_submission_api = obj.submissions.filter(availability=1).first()
+        if default_submission_api is not None:
             return reverse(viewname='wapi:api_v1:waves-services-submissions', request=self.context['request'],
-                           kwargs={'service': obj.api_name, 'api_name': obj.default_submission_api.api_name})
+                           kwargs={'service': obj.api_name, 'api_name': default_submission_api.api_name})
         else:
             logger.warning('Service %s has no default submission', obj)
             return ""

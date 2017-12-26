@@ -32,6 +32,7 @@ class AdaptorImporter(object):
     def __init__(self, adaptor):
         """
         Initialize a Import from it's source adaptor
+
         :param adaptor: a JobAdaptor object, providing connection support
         """
         self.adaptor = adaptor
@@ -62,6 +63,7 @@ class AdaptorImporter(object):
     def import_service(self, tool_id, for_service=None, update_service=False):
         """
         For specified Adaptor remote tool identifier, try to import submission params
+
         :param update_service: update or not for_service if specified
         :param for_service: Specified is service should be updated or created
         :param tool_id: Adaptors provider remote tool identifier
@@ -178,6 +180,7 @@ class AdaptorImporter(object):
     def load_tool_details(self, tool_id):
         """
         Return a Service Object instance (not saved) with remote information
+
         :return: Service"""
         raise NotImplementedError()
 

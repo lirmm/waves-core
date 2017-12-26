@@ -33,6 +33,7 @@ class JobAdaptor(object):
     def __init__(self, command='', protocol='', host="localhost", **kwargs):
         """ Initialize a adaptor
         Set _initialized value (True or False) if all non default expected params are set
+
         :param kwargs: its possible to force connector and parser attributes when initialize a Adaptor
         :return: a new JobAdaptor object
         """
@@ -51,6 +52,7 @@ class JobAdaptor(object):
     def init_params(self):
         """
         Returns expected (required) 'init_params', with default if set at class level
+
         :return: A dictionary containing expected init params
         :rtype: dict
         """
@@ -62,6 +64,7 @@ class JobAdaptor(object):
     @property
     def connected(self):
         """ Tells whether current remote adaptor object is connected to calculation infrastructure
+
         :return: True if actually connected / False either
         :rtype: bool
         """
@@ -74,6 +77,7 @@ class JobAdaptor(object):
     def connect(self):
         """
         Connect to remote platform adaptor
+
         :raise: :class:`waves.wcore.adaptors.exceptions.adaptors.AdaptorConnectException`
         :return: connector reference or raise an
         """
@@ -83,6 +87,7 @@ class JobAdaptor(object):
 
     def disconnect(self):
         """ Shut down connection to adaptor. Called after job adaptor execution to disconnect from remote
+
         :raise: :class:`waves.wcore.adaptors.exceptions.adaptors.AdaptorConnectException`
         :return: Nothing
         """
@@ -94,6 +99,7 @@ class JobAdaptor(object):
     @check_ready
     def prepare_job(self, job):
         """ Job execution preparation process, may store prepared data in a pickled object
+
         :param job: The job to prepare execution for
         :raise: :class:`waves.wcore.adaptors.exceptions.RunnerNotReady` if adaptor is not initialized before call
         :raise: :class:`waves.wcore.adaptors.exceptions.JobPrepareException` if error during preparation process
@@ -109,6 +115,7 @@ class JobAdaptor(object):
     @check_ready
     def run_job(self, job):
         """ Launch a previously 'prepared' job on the remote adaptor class
+
         :param job: The job to launch execution
         :raise: :class:`waves.wcore.adaptors.exceptions.RunnerNotReady` if adaptor is not initialized
         :raise: :class:`waves.wcore.adaptors.exceptions.JobRunException` if error during launch
@@ -124,6 +131,7 @@ class JobAdaptor(object):
     @check_ready
     def cancel_job(self, job):
         """ Cancel a running job on adaptor class, if possible
+
         :param job: The job to cancel
         :return: The new job status
         :rtype: int
@@ -149,6 +157,7 @@ class JobAdaptor(object):
     @check_ready
     def job_status(self, job):
         """ Return current WAVES Job status
+
         :param job: current job
         :return: one of `waves.wcore.adaptors.STATUS_MAP`
         """
@@ -161,6 +170,7 @@ class JobAdaptor(object):
     @check_ready
     def job_results(self, job):
         """ If job is done, return results
+
         :param job: current Job
         :return: a list a JobOutput
         """
@@ -170,6 +180,7 @@ class JobAdaptor(object):
 
     def job_run_details(self, job):
         """ Retrive job run details for job
+
         :param job: current Job
         :return: JobRunDetails object
         """
@@ -191,12 +202,14 @@ class JobAdaptor(object):
 
     def _connect(self):
         """ Actually do connect to concrete remote job runner platform,
+
          :raise: `waves.wcore.adaptors.exception.AdaptorConnectException` if error
          :return: an instance of concrete connector implementation """
         raise NotImplementedError()
 
     def _disconnect(self):
         """ Actually disconnect from remote job runner platform
+
         :raise: `waves.wcore.adaptors.exception.AdaptorConnectException` if error """
         raise NotImplementedError()
 
@@ -205,27 +218,32 @@ class JobAdaptor(object):
         For example:
             - prepare and upload input files to remote host
             - set up parameters according to concrete adaptor needs
+
         :raise: `waves.wcore.adaptors.exception.AdaptorException` if error """
         raise NotImplementedError()
 
     def _run_job(self, job):
         """ Actually launch job on concrete adaptor
+
         :raise: `waves.wcore.adaptors.exception.AdaptorException` if error """
         raise NotImplementedError()
 
     def _cancel_job(self, job):
         """ Try to cancel job on concrete adaptor
+
         :raise: `waves.wcore.adaptors.exception.AdaptorException` if error """
         raise NotImplementedError()
 
     def _job_status(self, job):
         """ Actually retrieve job states on concrete adaptor, return raw value to be mapped with defined in _states_map
+
         :raise: `waves.wcore.adaptors.exception.AdaptorException` if error """
         raise NotImplementedError()
 
     def _job_results(self, job):
         """ Retrieve job results from concrete adaptor, may include some file download from remote hosts
         Set attribute result_available for job if success
+
         :raise: `waves.wcore.adaptors.exception.AdaptorException` if error
         :return: Boolean True if results are retrieved from remote host, False either
         """
@@ -233,11 +251,13 @@ class JobAdaptor(object):
 
     def _job_run_details(self, job):
         """ Retrieve job run details if possible from concrete adaptor
+
         :raise: `waves.wcore.adaptors.exception.AdaptorException` if error """
         return job.default_run_details()
 
     def _dump_config(self):
         """ Return string representation of concrete adaptor configuration
+
         :return: a String representing configuration """
         return str([(item, value) for (item, value) in vars(self).iteritems()])
 

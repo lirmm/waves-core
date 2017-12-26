@@ -90,6 +90,7 @@ class ApiModel(WavesBaseModel):
     class Meta:
         abstract = True
 
+    #: Default field use to generate a api_name (unique app name)
     field_api_name = 'name'
     #: A char field, must be unique for a model instance
     api_name = models.CharField(max_length=100, null=True, blank=True,
@@ -106,14 +107,14 @@ class ApiModel(WavesBaseModel):
 
     def duplicate_api_name(self, api_name):
         """ Check is another entity is set with same api_name
-        :param api_name:
+
+        :param api_name: checked api name
         """
         return self.__class__.objects.filter(api_name=api_name).exclude(pk=self.pk)
 
-    def create_api_name(self):
+    def __create_api_name(self):
         """
         Construct a new wapi:api_v2 name issued from field_api_name
-        :return:
         """
         return inflection.underscore(re.sub(r'[^\w]+', '_', getattr(self, self.field_api_name))).lower()
 

@@ -136,7 +136,7 @@ for subclass in get_all_subclasses(AdaptorInitParam):
 def api_able_pre_save_handler(sender, instance, **kwargs):
     """ Any ApiModel model object setup api_name if not already set in object data """
     if not instance.api_name or instance.api_name == '':
-        instance.api_name = instance.create_api_name()
+        instance.api_name = instance.__create_api_name()
     if not kwargs.get('raw', False):
         exists = instance.duplicate_api_name(instance.api_name).count()
         if exists > 0:

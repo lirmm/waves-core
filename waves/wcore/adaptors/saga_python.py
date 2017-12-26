@@ -92,8 +92,6 @@ class SagaAdaptor(JobAdaptor):
     def _run_job(self, job):
         """
         Launch the job with current parameters from associated history
-        Args:
-            job:
         """
         try:
             job.logger.debug('Creating job descriptor')

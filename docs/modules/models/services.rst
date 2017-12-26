@@ -5,8 +5,10 @@ Services
 
 Services are the main entry point for WAVEs application, managed by :ref:`service-manager-label`.
 
+    .. py:currentmodule:: waves.wcore.models.services
     .. autoclass:: waves.wcore.models.services.Service
         :members:
+        :inherited-members:
         :show-inheritance:
 
 Services may be accessed from multiple 'submissions'
@@ -17,26 +19,28 @@ Services may be accessed from multiple 'submissions'
 
 .. _service-inputs-label:
 
-Submission Inputs:
-------------------
+Submission Inputs
+-----------------
 
 Base class for service inputs shared information
-        .. autoclass:: waves.wcore.models.inputs.AParam
-                :members:
-                :show-inheritance:
+    .. autoclass:: waves.wcore.models.inputs.BooleanParam
+    .. autoclass:: waves.wcore.models.inputs.DecimalParam
+    .. autoclass:: waves.wcore.models.inputs.FileInput
+    .. autoclass:: waves.wcore.models.inputs.IntegerParam
+    .. autoclass:: waves.wcore.models.inputs.TextParam
 
 .. _service-outputs-label:
 
-Submission Outputs:
--------------------
+Submission Outputs
+------------------
 Submission description defines expected outputs
 
-        .. autoclass:: waves.wcore.models.services.SubmissionOutput
-                :members:
+    .. autoclass:: waves.wcore.models.services.SubmissionOutput
+        :members:
 
 
-Submission ExitCode:
---------------------
+Submission ExitCode
+-------------------
 
 Submission description defines expected exitcode
 

@@ -9,6 +9,7 @@ from waves.wcore.models.base import WavesBaseModel
 class JobHistoryManager(models.Manager):
     def create(self, **kwargs):
         """ Force 'is_admin' flag for JobAdminHistory models objects
+
         :return: a JobAdminHistory object
         """
         if 'message' not in kwargs:
@@ -20,12 +21,14 @@ class JobAdminHistoryManager(JobHistoryManager):
     def get_queryset(self):
         """
         Specific query set to filter only :class:`waves.wcore.models.jobs.JobAdminHistory` objects
+
         :return: QuerySet
         """
         return super(JobAdminHistoryManager, self).get_queryset().filter(is_admin=True)
 
     def create(self, **kwargs):
         """ Force 'is_admin' flag for JobAdminHistory models objects
+
         :return: a JobAdminHistory object
         """
         kwargs.update({'is_admin': True})

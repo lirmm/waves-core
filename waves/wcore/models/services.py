@@ -30,14 +30,16 @@ logger = logging.getLogger(__name__)
 class ServiceManager(models.Manager):
     """
     Service Model 'objects' Manager
+
     """
 
-    def get_services(self, user=None, filter_api=False):
+    def get_services(self, user=None):
         """
         Return services allowed for this specific user
+
         :param user: current User
-        :return: QuerySet for services
-        :rtype: QuerySet
+        :return: services allowed for this user
+        :rtype: Django queryset
         """
         if user is None:
             return self.none()
@@ -78,52 +80,73 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     class Meta:
         abstract = True
 
+    #: Service DRAFT status: online access granted only to creator
     SRV_DRAFT = 0
+    #: Service TEST status: online access granted only to team members: creator + staff
     SRV_TEST = 1
+    #: Service RESTRICTED status: online access granted only to specified users in list: creator + staff + specifics
     SRV_RESTRICTED = 2
+    #: Service PUBLIC status: online access granted to anyone on front-end
     SRV_PUBLIC = 3
+    #: Service REGISTERED status: online access granted to registered users only
     SRV_REGISTERED = 4
+    #: Service status list for choices
     SRV_STATUS_LIST = [
-        [SRV_DRAFT, 'Draft'],
-        [SRV_TEST, 'Staff'],
-        [SRV_REGISTERED, 'Only registered'],
+        [SRV_DRAFT, 'Draft (only creator)'],
+        [SRV_TEST, 'Staff (Team members)'],
+        [SRV_REGISTERED, 'Registered'],
         [SRV_RESTRICTED, 'Restricted'],
         [SRV_PUBLIC, 'Public'],
     ]
 
-    # manager
+    #: Dedicated Service object manager
     objects = ServiceManager()
-    # fields
+
+    #: Service public name
     name = models.CharField('Service name', max_length=255, help_text='Service displayed name')
+    #: Authors list, comma separated list
     authors = models.CharField('Authors', max_length=255, help_text="Tools authors", null=True)
+    #: Citation link
     citations = models.CharField('Citation link', max_length=500, help_text="Citation link (Bibtex format)", null=True)
+    #: Current service version (no history kept)
     version = models.CharField('Current version', max_length=10, null=True, blank=True, default='1.0',
                                help_text='Service displayed version')
+    #: When status is 'RESTRICTED', set up user who have access to service
     restricted_client = models.ManyToManyField(settings.AUTH_USER_MODEL,
                                                related_name='%(app_label)s_%(class)s_restricted_services',
                                                blank=True, verbose_name='Restricted clients',
                                                help_text='Public access is granted to everyone, '
                                                          'If status is \'Restricted\' you may restrict '
                                                          'access to specific users here.')
+    #: Service current status (implied access granted to users)
     status = models.IntegerField(choices=SRV_STATUS_LIST, default=SRV_DRAFT,
                                  help_text='Service online status')
+    #: Setup service's user notification
     email_on = models.BooleanField('Notify results', default=True,
                                    help_text='This service sends notification email')
+    #: Set whether or not the service's outputs are knows in advance
     partial = models.BooleanField('Dynamic outputs', default=False,
                                   help_text='Set whether some service outputs are dynamic (not known in advance)')
+    #: Service creator user
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    #: Service is identifier on computing platform with this id
     remote_service_id = models.CharField('Remote service tool ID', max_length=255, editable=False, null=True)
+    #: List of related EDAM topics
     edam_topics = models.TextField('Edam topics', null=True, blank=True,
                                    help_text='Comma separated list of Edam ontology topics')
+    #: List of related EDAM ontology operation
     edam_operations = models.TextField('Edam operations', null=True, blank=True,
                                        help_text='Comma separated list of Edam ontology operations')
 
     def clean(self):
         cleaned_data = super(BaseService, self).clean()
-        # TODO check changed status with at least one submission available on each submission channel (web/wapi:api_v2)
         return cleaned_data
 
     def __str__(self):
+        """ String representation
+
+        :return: str
+        """
         return "%s v(%s)" % (self.name, self.version)
 
     def set_defaults(self):
@@ -133,49 +156,44 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     @property
     def operations(self):
+        """ List of specified EDAM operations related to this service
+        :return: list
+        """
         return self.edam_operations.split(',') if self.edam_operations else []
 
     @property
     def topics(self):
+        """ List of specified EDAM topics related to this service
+
+        :return: list
+        """
         return self.edam_topics.split(',') if self.edam_topics else []
 
     @property
     def jobs(self):
-        """ Get current Service Jobs """
+        """ Return queryset for all service's related jobs
+
+        :return: queryset
+        """
         from waves.wcore.models import Job
         return Job.objects.filter(submission__in=self.submissions.all())
 
     @property
     def pending_jobs(self):
-        """ Get current Service Jobs """
+        """ Get current non-terminated service's related jobs
+
+        :return: queryset
+        """
         from waves.wcore.models import Job
         return Job.objects.filter(submission__in=self.submissions.all(),
                                   _status__in=waves.wcore.adaptors.const.PENDING_STATUS)
 
-    def import_service_params(self):
-        """ Try to import service param configuration issued from adaptor
-
-        :return: None
-        """
-        if not self.runner:
-            raise ImportError(u'Unable to import if no adaptor is set')
-
     @property
     def command(self):
-        """ Return command parser for current Service """
+        """ Return command parser for current service
+        :return: BaseCommand """
         from waves.wcore.commands.command import BaseCommand
         return BaseCommand()
-
-    def service_submission_inputs(self, submission=None):
-        """
-        Retrieve all
-        :param submission:
-        :return: corresponding QuerySet object
-        :rtype: QuerySet
-        """
-        if not submission:
-            return self.default_submission.inputs
-        return submission.inputs
 
     @transaction.atomic
     def duplicate(self):
@@ -195,22 +213,16 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     @property
     def sample_dir(self):
-        """ Return expected sample dir for a Service """
+        """ Return sample dir for a service
+        :return: str """
         return os.path.join(waves_settings.SAMPLE_DIR, self.api_name)
 
     @property
     def default_submission(self):
-        """ Return Service default submission for web forms """
+        """ Return Service default submission for web forms
+        :return: First submission in list """
         try:
             return self.submissions.first()
-        except ObjectDoesNotExist:
-            return None
-
-    @property
-    def default_submission_api(self):
-        """ Return Service default submission for wapi:api_v2 """
-        try:
-            return self.submissions.filter(availability=1).first()
         except ObjectDoesNotExist:
             return None
 
@@ -231,7 +243,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     @property
     def serializer(self, context=None):
-        from waves.wcore.serializers import ServiceSerializer
+        from waves.wcore.import_export.services import ServiceSerializer
         return ServiceSerializer
 
     @property
@@ -277,14 +289,23 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     NOT_AVAILABLE = 0
     AVAILABLE_API = 1
 
+    AVAILABILITY_CHOICES = (
+        (NOT_AVAILABLE, "Disabled API"),
+        (AVAILABLE_API, "Enabled API")
+    )
+
+    #: Related service model
     service = models.ForeignKey(swapper.get_model_name('wcore', 'Service'), on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
-    availability = models.IntegerField('Availability', default=AVAILABLE_API,
-                                       choices=((NOT_AVAILABLE, "Disabled API"),
-                                                (AVAILABLE_API, "Enabled API")))
-    name = models.CharField('Title', max_length=255, null=False, blank=False)
+    #: Set whether this submission is available on REST API
+    availability = models.IntegerField('Availability', default=AVAILABLE_API, choices=AVAILABILITY_CHOICES)
+    #: Submission label
+    name = models.CharField('Label', max_length=255, null=False, blank=False)
 
     def get_runner(self):
+        """ Return the run configuration associated with this submission, or the default service one if not set
+        :return: Runner
+        """
         if self.runner:
             return self.runner
         else:
@@ -292,16 +313,9 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
 
     @property
     def run_params(self):
-        if self.runner:
-            return super(BaseSubmission, self).run_params
-            object_params = {init.name: init.get_value() for init in self.adaptor_params.all()}
-            # Retrieve the ones defined for runner
-            runners_params = self.get_runner().run_params
-            # Merge them
-            runners_params.update(object_params)
-            return runners_params
-        else:
+        if not self.runner:
             return self.service.run_params
+        return super(BaseSubmission, self).run_params
 
     def __str__(self):
         return '[%s]' % self.name

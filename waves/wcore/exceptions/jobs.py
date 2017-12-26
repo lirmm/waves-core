@@ -43,9 +43,8 @@ class JobMissingMandatoryParam(JobSubmissionException):
 
 
 class JobInconsistentStateError(JobException):
-    """ Inconsistency detected in job current status and requester action """
-
     """ Job current status is inconsistent for requested action
+
     :param job: current Job
     :param expected: list oc expected status
     :param msg: extended message to add to standard log_exception message

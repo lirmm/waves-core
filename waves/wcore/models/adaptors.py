@@ -138,6 +138,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
     @property
     def adaptor(self):
         """ Get and returned an initialized concrete adaptor class parametrized with params defined in db
+
         :return: a subclass JobAdaptor object instance
         :rtype: JobAdaptor
         """

@@ -1,10 +1,19 @@
-Runners
-=======
+Execution environments
+======================
 
-Runners are in charge of running job on a specific 'Adaptor' configuration
+Execution environment models are in charge to store the configuration for expected adaptors to run jobs
 
 
-.. automodule:: waves.wcore.models.runners
-    :members:
-    :undoc-members:
-    :show-inheritance:
+Runner
+------
+    .. automodule:: waves.wcore.models.runners
+        :members:
+        :undoc-members:
+        :show-inheritance:
+
+Adaptors Parameters
+-------------------
+
+    .. automodule:: waves.wcore.models.adaptors
+        :members:
+        :show-inheritance:

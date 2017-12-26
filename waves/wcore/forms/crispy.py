@@ -9,7 +9,7 @@ from waves.wcore.models.inputs import *
 from waves.wcore.models.inputs import FileInputSample
 from waves.wcore.forms.helper import WFormHelper
 
-__all__ = ['FormHelper', 'FormLayout']
+__all__ = ['FormHelper']
 
 
 class FormHelper(CrispyFormHelper, WFormHelper):

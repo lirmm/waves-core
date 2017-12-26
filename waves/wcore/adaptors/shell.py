@@ -80,6 +80,7 @@ class SshShellAdaptor(LocalShellAdaptor):
     def _job_description(self, job):
         """
         Job description for saga-python library
+
         :param job:
         :return: a dictionary with data set up according to job
         """
@@ -128,6 +129,7 @@ class SshShellAdaptor(LocalShellAdaptor):
     def _job_results(self, job):
         """
         Download all files located in remote job working dir
+
         :param job: the Job to retrieve file for
         :return: None
         """

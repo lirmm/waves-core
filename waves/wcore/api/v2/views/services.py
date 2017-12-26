@@ -96,7 +96,8 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                                                service_app_name=self.kwargs.get('service_app_name'),
                                                                submission_app_name=service_submission.api_name)
                                                            )))}
-                for service_submission in service_tool.submissions.all()]
+                for service_submission in service_tool.submissions_api.all()]
+
         content = render(request=self.request,
                          template_name='waves/api/service_api_form.html',
                          context={'submissions': form,
@@ -131,6 +132,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         """
         Get Service submission detailed informations (inputs, parameters, expected outputs)
+
         :param request:
         :param args:
         :param kwargs:
@@ -174,6 +176,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
     def list(self, request, *args, **kwargs):
         """
         List all available submissions for this service
+
         :return: A list of currently available submissions
         """
         return super(ServiceSubmissionViewSet, self).list(request, *args, **kwargs)
@@ -188,11 +191,8 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
         Create a new job from submitted inputs
 
         :param request: HTTP request
-
         :param service: service app_name
-
         :param submission: submission app_name
-
         :return: list
         """
         obj = self.get_object_or_404()

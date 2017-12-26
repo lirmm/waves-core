@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
+import shutil
 import six
 from os import path as path
 from os.path import join
@@ -67,16 +68,6 @@ class JobManager(models.Manager):
             return self.filter(Q(service__created_by=user) | Q(client=user) | Q(email_to=user.email))
         return self.filter(client=user)
 
-    @staticmethod
-    def add_filter_user(queryset, user):
-        if not user or user.is_anonymous:
-            return queryset.none()
-        if user.is_superuser:
-            return queryset
-        if user.is_staff:
-            return queryset.filter(Q(service__created_by=user) | Q(client=user) | Q(email_to=user.email))
-        return queryset.filter(client=user)
-
     def get_service_job(self, user, service):
         """
         Returns jobs filtered by service, according to following access rule:
@@ -85,11 +76,7 @@ class JobManager(models.Manager):
         :param service: service model object to filter
         :return: QuerySet
         """
-        if not user or user.is_anonymous:
-            return self.none()
-        if user.is_superuser or user.is_staff:
-            return self.filter(submission__service__in=[service, ])
-        return self.filter(client=user, submission__service__in=[service, ])
+        return self.get_user_job(user).filter(submission__service__in=[service,])
 
     def get_submission_job(self, user, submission):
         """
@@ -99,11 +86,7 @@ class JobManager(models.Manager):
         :param submission: submission model object to filter
         :return: QuerySet
         """
-        if not user or user.is_anonymous:
-            return self.none()
-        if user.is_superuser or user.is_staff:
-            return self.filter(submission=submission)
-        return self.filter(client=user, submission=submission)
+        return self.get_user_job(user).filter(submission=submission)
 
     def get_pending_jobs(self, user=None):
         """
@@ -287,10 +270,16 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @property
     def log_file(self):
+        """ Return path to job dedicated log file
+
+        :return: str"""
         return os.path.join(self.working_dir, 'job.log')
 
     @property
     def logger(self):
+        """ Get or create a new logger for this job
+
+        :return: Logger"""
         self._logger = logging.getLogger('waves.job.%s' % str(self.slug))
         if not len(self._logger.handlers):
             # Add handler only once !
@@ -304,15 +293,21 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @property
     def random_title(self):
-        return "Job %s-%s" % (self.service,
-                              random_analysis_name())
+        """ Randomized default job title """
+        return "Job %s-%s" % (self.service, random_analysis_name())
 
     @property
     def status(self):
+        """ Current last known job status """
         return self._status
 
     @status.setter
     def status(self, value):
+        """ Set current status for job, and save state in job history
+
+        :param value:
+        :return: None
+        """
         if value != self._status:
             message = smart_text(self.message) or "New job status {}".format(value)
             self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
@@ -322,33 +317,25 @@ class Job(TimeStamped, Slugged, UrlMixin):
     def colored_status(self):
         """
         Format a row depending on current Job Status
+
         :return: Html unicode string
         """
         return format_html('<span class="{}">{}</span>', self.label_class, self.get_status_display())
 
     def job_service_back_url(self):
+        """ Retrieve associated service url is exists """
         if self.submission and self.submission.service:
             return self.submission.service.get_admin_url()
         else:
             return "#"
 
-    def save(self, *args, **kwargs):
-        """ Overriden save, set _status to current job status """
-        super(Job, self).save(*args, **kwargs)
-
     def make_job_dirs(self):
-        """
-        Create job working dirs
-        :return: None
-        """
+        """ Create job working dir """
         if not os.path.isdir(self.working_dir):
-            os.makedirs(self.working_dir, mode=0775)
+            os.makedirs(self.working_dir, mode=0o775)
 
     def delete_job_dirs(self):
-        """Upon job deletion in database, cleanup associated working dirs
-        :return: None
-        """
-        import shutil
+        """ Upon job deletion in database, cleanup associated working dirs """
         shutil.rmtree(self.working_dir, ignore_errors=True)
 
     @classmethod
@@ -361,6 +348,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def changed_status(self):
         """ Tells whether loaded object status is different from the one issued from last retrieve in db
+
         :return: True if changed, False either
         :rtype: bool
         """
@@ -368,15 +356,17 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @property
     def input_files(self):
-        """ Get only 'files' inputs for job
+        """ Get job files inputs
+
         :return: list of JobInput models instance
-        :rtype: QuerySet
+        :rtype: queryset
         """
         return self.job_inputs.filter(param_type=TYPE_FILE)
 
     @property
     def output_files_exists(self):
         """ Check if expected outputs are present on disk, return only those ones
+
         :return: list of file path
         :rtype: list
         """
@@ -395,20 +385,20 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def output_files(self):
         """
-        Return list of all outputs files, whether they exist or not on disk
-            .. note::
-                Use :func:`output_files_exists` for only existing outputs instead
+        Return list of all expected outputs files, whether they exist or not on disk
+        .. note::
+            Use :func:`output_files_exists` for only existing outputs instead
 
         :return: a list of JobOutput objects
         :rtype: list
 
         """
-        all_files = self.outputs.all()
-        return all_files
+        return self.outputs.all()
 
     @property
     def input_params(self):
-        """ Return all non-file (i.e tool params) job inputs, i.e job execution parameters
+        """ Return tool params, i.e job execution parameters
+
         :return: list of `JobInput` models instance
         :rtype: [list of JobInput objects]
         """
@@ -427,7 +417,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def adaptor(self):
         """ Return current related service adaptor effective class
-        :return: a child class of `JobRunnerAdaptor`
+
+        :return: a JobRunnerAdaptor
         :rtype: `waves.wcore.adaptors.runner.JobRunnerAdaptor`
         """
         if self._adaptor:
@@ -454,6 +445,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def command(self):
         """ Return current related service command effective class
+
         :return: a BaseCommand object (or one of its child)
         :rtype: `BaseCommand`
         """
@@ -462,7 +454,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @property
     def command_line(self):
-        """ Generate full command line for Job
+        """ Job command line finally executed on computing platform
+
         :return: string representation of command line
         :rtype: unicode
         """
@@ -472,12 +465,14 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @command_line.setter
     def command_line(self, command_line):
+        """ Set command line """
         self._command_line = command_line
         self.save(update_fields=['_command_line'])
 
     @property
     def label_class(self):
         """Return css class label associated with current Job Status
+
         :return: a css class (based on bootstrap)
         :rtype: unicode
         """
@@ -492,6 +487,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     def check_send_mail(self):
         """According to job status, check needs for sending notification emails
+
         :return: the nmmber of mail sent (should be one)
         :rtype: int
         """
@@ -530,26 +526,15 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     def get_absolute_url(self):
         """Reverse url for this Job according to Django urls configuration
+
         :return: the absolute uri of this job (without host)
         """
         from django.core.urlresolvers import reverse
         return reverse('wcore:job_details', kwargs={'slug': self.slug})
 
     @property
-    def details_available(self):
-        """Check whether run details are available for this JOB
-
-        .. note::
-            Not really yet implemented
-
-        :return: True is exists, False either
-        :rtype: bool
-        """
-        return os.path.isfile(os.path.join(self.working_dir, 'run_details.p'))
-
-    @property
     def stdout(self):
-        """ Hard coded job standard output file name
+        """ Job standard output file
 
         :rtype: unicode
         """
@@ -557,7 +542,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @property
     def stderr(self):
-        """ Hard coded job standard error file name
+        """ Job standard error file
 
         :rtype: unicode
         """
@@ -566,8 +551,6 @@ class Job(TimeStamped, Slugged, UrlMixin):
     def create_non_editable_inputs(self):
         """
         Create non editable (i.e not submitted anywhere and used for run)
-            .. seealso::
-                Used in post_save signals
 
         :param service_submission
         :return: None
@@ -585,7 +568,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
                                                             value=service_input.default))
 
     def create_default_outputs(self):
-        """ Create standard default outputs for job (stdout and stderr)
+        """ Create standard outputs for job (stdout and stderr) files
+
         :return: None
         """
         output_dict = dict(job=self, value=self.stdout, _name='Standard output')
@@ -608,6 +592,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @property
     def last_history(self):
+        """ Retrieve last public history message """
         return self.public_history.first()
 
     def retry(self, message):
@@ -635,6 +620,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     def _run_action(self, action):
         """
         Report action to specified job adaptor
+
         :param action: action one of [prepare, run, cancel, status, results, run_details]
         :return: None
         """
@@ -792,7 +778,8 @@ class JobInputManager(models.Manager):
 
     @transaction.atomic
     def create_from_submission(self, job, service_input, order, submitted_input):
-        """
+        """ Create Job Input from submitted data
+
         :param job: The current job being created,
         :param service_input: current service submission input
         :param order: given order in future command line creation (if needed)
@@ -845,7 +832,6 @@ class JobInput(Ordered, Slugged, ApiModel):
     """
     Job Inputs is association between a Job, a SubmissionParam, setting a value specific for this job
     """
-
     class Meta:
         unique_together = ('name', 'value', 'job')
 
@@ -918,7 +904,9 @@ class JobInput(Ordered, Slugged, ApiModel):
 
     @property
     def srv_input(self):
-        return self.job.submission.inputs.filter(name=self.name).first()
+        if self.job.submission:
+            return self.job.submission.inputs.filter(name=self.name).first()
+        raise RuntimeError('Missing submission for this job')
 
     def clean(self):
         if self.srv_input.mandatory and not self.srv_input.default and not self.value:
@@ -927,13 +915,12 @@ class JobInput(Ordered, Slugged, ApiModel):
 
     @property
     def get_label_for_choice(self):
-        # TODO check if still used !
         """ Try to get label for value issued from a service list input"""
         from waves.wcore.models.inputs import AParam
         try:
             srv_input = AParam.objects.get(submission=self.job.submission,
                                            name=self.name)
-            return srv_input.get_choices(self.value)
+            return srv_input.choices(self.value) if hasattr(srv_input, 'choices') else self.value
         except ObjectDoesNotExist:
             pass
         return self.value
@@ -956,6 +943,7 @@ class JobInput(Ordered, Slugged, ApiModel):
 
     def get_absolute_url(self):
         """Reverse url for this Job according to Django urls configuration
+
         :return: the absolute uri of this job (without host)
         """
         from django.core.urlresolvers import reverse
@@ -963,6 +951,7 @@ class JobInput(Ordered, Slugged, ApiModel):
 
     def duplicate_api_name(self, api_name):
         """ Check is another entity is set with same api_name
+
         :param api_name:
         """
         return self.__class__.objects.filter(api_name=api_name, job=self.job).exclude(pk=self.pk)
@@ -982,6 +971,7 @@ class JobOutputManager(models.Manager):
 
     @transaction.atomic
     def create_from_submission(self, job, submission_output, submitted_inputs):
+        """ Create job expected output from submission data """
         assert (isinstance(submission_output, SubmissionOutput))
         output_dict = dict(job=job, _name=submission_output.label, extension=submission_output.ext,
                            api_name=submission_output.api_name)
@@ -1017,7 +1007,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
         unique_together = ('api_name', 'job')
 
     objects = JobOutputManager()
-    field_api_name = "value"
+    field_api_name = "_name"
     #: Related :class:`waves.wcore.models.jobs.Job`
     job = models.ForeignKey(Job, related_name='outputs', on_delete=models.CASCADE)
     #: Related :class:`waves.wcore.models.services.SubmissionOutput`
@@ -1105,6 +1095,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     def duplicate_api_name(self, api_name):
         """ Check is another entity is set with same api_name
+
         :param api_name:
         """
         return self.__class__.objects.filter(api_name=api_name, job=self.job).exclude(pk=self.pk)

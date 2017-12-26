@@ -40,6 +40,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     def importer(self):
         """
         Return an Service AdaptorImporter instance, using either
+
         :return: an Importer new instance
         """
         # TODO recheck importer
@@ -104,7 +105,7 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
         return self.get_runner().clazz if self.get_runner() else None
 
     @clazz.setter
-    def clazz(self):
+    def clazz(self, value):
         # Do nothing when setting clazz attribute, not set in DB
         pass
 
@@ -116,6 +117,7 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
     def run_params(self):
         """
         Return a list of tuples representing current service adaptor init params
+
         :return: a Dictionary (param_name=param_service_value or runner_param_default if not set
         :rtype: dict
         """

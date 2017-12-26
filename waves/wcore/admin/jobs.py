@@ -41,9 +41,9 @@ class JobOutputInline(TabularInline):
     suit_classes = 'suit-tab suit-tab-outputs'
     classes = ['collapse', ]
     can_delete = False
-    readonly_fields = ('name', 'get_api_name', 'value', 'file_path')
+    readonly_fields = ('name', 'api_name', 'value', 'file_path')
     ordering = ('order',)
-    fields = ('name', 'get_api_name', 'value', 'file_path')
+    fields = ('name', 'api_name', 'value', 'file_path')
 
     def has_add_permission(self, request):
         """ Never add any job output from admin """
