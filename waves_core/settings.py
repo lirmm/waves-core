@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     'crispy_forms',
     'rest_framework',
     'adminsortable2',
-    # 'debug_toolbar'
 )
 
 MIDDLEWARE = [
