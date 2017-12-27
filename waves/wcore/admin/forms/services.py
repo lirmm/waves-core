@@ -86,10 +86,6 @@ class ServiceForm(forms.ModelForm):
     class Meta:
         model = Service
         fields = '__all__'
-        widgets = {
-            'edam_topics': forms.TextInput(attrs={'size': 50}),
-            'edam_operations': forms.TextInput(attrs={'size': 50}),
-        }
 
     def __init__(self, *args, **kwargs):
         super(ServiceForm, self).__init__(*args, **kwargs)

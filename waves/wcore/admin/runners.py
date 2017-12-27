@@ -75,8 +75,10 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     model = Runner
     form = RunnerForm
     inlines = (RunnerParamInline, ServiceRunInline)
-    list_display = ('name', 'get_runner_clazz', 'connexion_string', 'short_description', 'nb_services')
+    list_display = ('id', 'name', 'get_runner_clazz', 'connexion_string', 'short_description', 'nb_services')
     list_filter = ('name', 'clazz')
+    list_editable = ('name',)
+    list_display_links = ('id',)
     readonly_fields = ['connexion_string']
     fieldsets = [
         ('Main', {

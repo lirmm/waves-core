@@ -4,10 +4,29 @@ from __future__ import unicode_literals
 from django.contrib import admin, messages
 from django.contrib.admin import ModelAdmin
 from django.core.urlresolvers import reverse
+from django.db import models
+from django.forms import Textarea, Select
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
+from django.contrib.admin.templatetags.admin_modify import *
+from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
+
 
 __all__ = ['DuplicateInMassMixin', 'ExportInMassMixin', 'MarkPublicInMassMixin', 'WavesModelAdmin',
            'DynamicInlinesAdmin']
+
+
+@register.inclusion_tag('waves/admin/submit_line.html', takes_context=True)
+def submit_row(context):
+    ctx = original_submit_row(context)
+    ctx.update({
+        'show_save_and_add_another': context.get('show_save_and_add_another', ctx['show_save_and_add_another']),
+        'show_save_and_continue': context.get('show_save_and_continue', ctx['show_save_and_continue']),
+        'show_save_as_new': context.get('show_save_as_new', ctx['show_save_as_new']),
+        'show_save': context.get('show_save', ctx['show_save']),
+        'show_save_and_back': context.get('show_save_and_back', ctx.get('show_save_and_back', False))
+    })
+    return ctx
 
 
 def duplicate_in_mass(modeladmin, request, queryset):
@@ -89,6 +108,8 @@ class WavesModelAdmin(ModelAdmin):
                        'waves/admin/css/modal.css')
         }
 
+    list_per_page = 15
+
     @staticmethod
     def _has_group_permission(request):
         return request.user.groups.filter(name="WAVES-ADMIN").exists() or request.user.is_superuser
@@ -101,6 +122,33 @@ class WavesModelAdmin(ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return self._has_group_permission(request) and super(WavesModelAdmin, self).has_delete_permission(request, obj)
+
+    formfield_overrides = {
+        models.TextField: {'widget': Textarea(attrs={'rows': 3, 'cols': 50})},
+        models.ForeignKey: {'widget': Select(attrs={'style': 'min-width:428px'})}
+    }
+
+    def get_api_name(self, obj):
+        return obj.api_name
+
+    get_api_name.short_description = "App short name"
+
+    def _redirect_save_back(self, request, obj):
+        return HttpResponseRedirect(request.path)
+
+    def response_add(self, request, obj, post_url_continue=None):
+        if '_saveandback' in request.POST:
+            return self._redirect_save_back(request, obj)
+        else:
+            return super(WavesModelAdmin, self).response_add(request, obj, post_url_continue)
+
+    def response_change(self, request, obj):
+        if '_saveandback' in request.POST:
+            print "in response change ", request.POST.get('_saveandback')
+
+            return self._redirect_save_back(request, obj)
+        else:
+            return super(WavesModelAdmin, self).response_change(request, obj)
 
 
 class DynamicInlinesAdmin(ModelAdmin):

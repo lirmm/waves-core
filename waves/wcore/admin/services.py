@@ -54,12 +54,11 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     filter_horizontal = ['restricted_client']
     readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link', 'display_run_params']
-    list_display = ('id', 'name', 'get_api_name', 'get_runner', 'version', 'status', 'created_by', 'updated',
+    list_display = ('id', 'get_api_name', 'name', 'status', 'get_runner', 'version', 'created_by', 'updated',
                     'submission_link')
     list_filter = ('status', 'name', 'created_by')
     list_editable = ('status', 'name')
     list_display_links = ('get_api_name', 'id')
-    list_per_page = 10
     ordering = ('name', 'updated')
     change_form_template = "waves/admin/service/change_form.html"
 
@@ -89,10 +88,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     def get_runner(self, obj):
         return obj.runner
 
-    def get_api_name(self, obj):
-        return obj.api_name
 
-    get_api_name.short_description = "App short name"
     get_runner.short_description = "Default execution config."
 
     def get_urls(self):

@@ -6,6 +6,8 @@ from django.conf.urls import url
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
+from django.utils.html import format_html
+from django.utils.http import urlquote
 
 from waves.wcore.admin.adaptors import SubmissionRunnerParamInLine
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
@@ -146,14 +148,15 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     current_obj = None
     form = ServiceSubmissionForm
     exclude = ['order']
-    list_display = ['get_name', 'service', 'api_name', 'availability', 'runner', 'created',
+    list_display = ['id', 'get_api_name', 'name', 'service', 'availability', 'runner', 'created',
                     'updated']
     readonly_fields = ['get_command_line_pattern', 'display_run_params']
-    list_filter = (
-        'service__name',
-        'availability'
-    )
+    list_filter = ('service__name', 'availability')
+    list_editable = ('availability', 'name')
+    list_display_links = ('get_api_name', 'id')
+    ordering = ('name', 'updated', 'created')
     search_fields = ('service__name', 'label', 'override_runner__name', 'service__runner__name')
+
     fieldsets = [
         ('General', {
             'fields': ['service', 'name', 'availability', 'api_name'],
@@ -196,7 +199,18 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
 
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}
+        context['show_save_as_new'] = False
+        context['show_save_and_add_another'] = False
+        context['show_save'] = False
         return super(ServiceSubmissionAdmin, self).add_view(request, form_url, context)
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        context = extra_context or {}
+        context['show_save_as_new'] = False
+        context['show_save_and_add_another'] = False
+        context['show_save_and_back'] = True
+        context['show_save'] = False
+        return super(ServiceSubmissionAdmin, self).change_view(request, object_id, form_url, context)
 
     def get_form(self, request, obj=None, **kwargs):
         request.current_obj = obj
@@ -230,19 +244,10 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     def runner_link(self, obj):
         return obj.get_runner()
 
-    def response_add(self, request, obj, post_url_continue=None):
-        if '_continue' not in request.POST:
-            messages.success(request, "Submission %s successfully saved" % obj)
-            return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
-        else:
-            return super(ServiceSubmissionAdmin, self).response_add(request, obj, post_url_continue)
-
-    def response_change(self, request, obj):
-        if '_continue' not in request.POST:
-            messages.success(request, "Submission %s successfully saved" % obj)
-            return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
-        else:
-            return super(ServiceSubmissionAdmin, self).response_change(request, obj)
+    def _redirect_save_back(self, request, obj):
+        self.message_user(request, format_html('Submission "<a href="{}">{}</a>" successfully saved', urlquote(request.path), obj), messages.SUCCESS)
+        messages.warning(request, "You are now editing service '{}'".format(obj.service))
+        return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
 
     def save_model(self, request, obj, form, change):
         if obj and not obj.runner:
