@@ -3,14 +3,10 @@ Welcome to WAVES's CORE Documentation !
 
 .. toctree::
     :maxdepth: 1
-    :caption: Use WAVES
 
     readme
     authors
     license
-    installation
-    modules/settings
-    user_doc/user_guide
 
 .. toctree::
     :caption: Changelog
@@ -19,10 +15,18 @@ Welcome to WAVES's CORE Documentation !
     changelog
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
+    :caption: Administrator Guide
+
+    user_doc/user_guide
+
+.. toctree::
+    :maxdepth: 2
     :caption: Technical documentation
 
     contributing
+    installation
+    modules/settings
     modules/source
     dev_doc/dev_doc
 

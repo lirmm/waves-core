@@ -1,5 +1,5 @@
-Job Administration
-==================
+Job queue management
+====================
 
 
 Job List
@@ -10,6 +10,7 @@ Jobs are listed in first screen when you click on **jobs** link in main backoffi
     .. figure:: backoffice/job-list.png
         :align: center
         :width: 90%
+        :figclass: thumbnail
 
 Job Details
 -----------
@@ -32,6 +33,7 @@ General Information
     .. figure:: backoffice/job-general.png
         :align: center
         :width: 90%
+        :figclass: thumbnail
 
 Job History
     Retrieve here all logged events for this job, including Administration message (may describe errors)
@@ -39,6 +41,7 @@ Job History
     .. figure:: backoffice/job-history.png
         :align: center
         :width: 90%
+        :figclass: thumbnail
 
 Job Inputs
     Designated inputs for this job
@@ -46,6 +49,7 @@ Job Inputs
     .. figure:: backoffice/job-inputs.png
         :align: center
         :width: 90%
+        :figclass: thumbnail
 
 Job Outputs
     Current expected outputs
@@ -53,3 +57,4 @@ Job Outputs
     .. figure:: backoffice/job-outputs.png
         :align: center
         :width: 90%
+        :figclass: thumbnail

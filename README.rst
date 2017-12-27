@@ -2,29 +2,32 @@
 README
 ======
 
-What WAVES stands for ?
------------------------
-    WAVES stands for "Web Application for Versatile and Easy online bioinformatic Services."
-    It is aimed to help you easily present, publish and give access on the web of any bioinformatic tools developed in your teams.
+What is WAVES for ?
+-------------------
 
-    Based on Python and Django framework, it is easy to maintain and to extend for your specific requirements.
+    WAVES stands for "\ **W**\ eb \ **A**\ pplication for \ **V**\ ersatile and \ **E**\ asy online bioinformatic \ **S**\ ervices."
+
+    WAVES is a dedicated Django based web application to ease bioinformatic tools integration through web interfaces in
+    order to provide the scientific community with bioinformatic services.
+
+    It is aimed to help you easily present, publish and give access on the web of any bioinformatic tools developed
+    in your teams.
 
 
 Features
 --------
 
     - Create and manage you services execution over platform such as Galaxy, DRMAA clusters (SGE), Direct script execution, API calls to other service, remote calls to other platforms via ssh, etc.
-    - Easily presents these tools in a nice frontend based on Bootstrap3
+    - Easily presents these tools in a nice frontend based on Bootstrap3, Bootstrap4 and soon Material Design
     - Follow and manage remote REST API access to your service platform
     - Manage user's access to your services
 
 Installation
 ------------
 
-    - WAVES core comply to standard reusable project layout for Django. You can use it as a stand alone platform.
-    - Simply clone or download sources, follow the few configurations steps, and her you are, you can put your tools online !
-    - See "Details Installation" for more info.
-    - Documentation is available at http://waves-core.readthedocs.io/en/latest/
+    - You can use it as a stand alone application.
+    - WAVES core comply to standard reusable project layout for Django. So you may include it as a dependency in your own project
+    - See :ref:`installation-label` for detailed info.
 
 Contribute
 ----------
@@ -36,6 +39,6 @@ Contribute
 Support
 -------
 
-    If you are having issues, (or just want to say hello) : we have a mailing list located at: waves-webapp@googlegroups.com
+    If you are having issues, (or just want to say hello): we have a mailing list located at: waves-webapp@googlegroups.com
 
 

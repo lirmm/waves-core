@@ -18,19 +18,6 @@ from distutils.sysconfig import get_python_lib
 
 import django
 
-# from mock import Mock as MagicMock
-import waves.wcore as waves
-
-"""
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-            return Mock()
-
-MOCK_MODULES = ['Pillow', 'curl', 'mysql-python', 'pycurl', 'argparse']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
-"""
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -41,6 +28,9 @@ sys.path.append(get_python_lib())
 os.environ['DJANGO_SETTINGS_MODULE'] = 'waves_core.settings'
 # settings.configure()
 django.setup()
+
+import waves.wcore as waves
+
 
 # -- General configuration ------------------------------------------------
 
@@ -198,7 +188,7 @@ html_static_path = ['_static']
 # html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-# html_show_sphinx = True
+html_show_sphinx = False
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 # html_show_copyright = True

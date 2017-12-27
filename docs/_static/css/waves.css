@@ -1,0 +1,4 @@
+div[role=contentinfo] > p {
+    text-align: right;
+    font-size: x-small;
+}

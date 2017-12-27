@@ -1,3 +1,5 @@
+.. _installation-label:
+
 Installation
 ============
 
@@ -34,36 +36,32 @@ Installation
 
         ``pip install waves-core``
 
-    If you want to install the latest version
+        If you want to install the latest version
+            ``pip install -e git+https://github.com/lirmm/waves-core.git#egg=waves-core``
 
-        ``pip install -e git+https://github.com/lirmm/waves-core.git#egg=waves-core``
+    1.2. Go to your Django settings file (usually settings.py) and add required dependencies to your INSTALLED_APPS:
 
-    1.2. Go to your Django settings file and add "waves" and dependencies to your INSTALLED_APPS::
+    You should at least find these::
 
         INSTALLED_APPS = [
             'polymorphic',
-            ...
             'django.contrib.admin',
             'django.contrib.auth',
             'django.contrib.contenttypes',
             'django.contrib.sessions',
             'django.contrib.messages',
             'django.contrib.staticfiles',
-            ...
             'waves.wcore',
-            ...
             'crispy_forms',
             'rest_framework',
+            'adminsortable2',
             ...
         ]
 
     1.3. Include the services urls in your project urls.py:
 
-        ``url(r'^wcore/', include('waves.wcore.urls', namespace='wcore'))``
-
-    If you want to enable api:
-
-        ``url(r'^api/', include('waves.wcore.api.urls', namespace='wapi'))``
+        url(r'^waves/', include('waves.wcore.urls', namespace='wcore')),
+        url(r'^waves/api/', include('waves.wcore.api.urls', namespace='wapi')),
 
     1.4. Create your database::
 

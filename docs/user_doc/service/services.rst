@@ -1,64 +1,99 @@
 .. _service-admin-label:
 
-Services Administration
+=======================
+Services administration
 =======================
 
 How to configure a service in WAVES application
 
-Service List
-------------
+Service list
+============
  This is landing page when you click on 'Services' Links in Admin home page, you can see current list of services
  registered on your platform
 
-.. figure:: backoffice/service-list.png
-    :width: 90%
-    :align: center
+    .. figure:: backoffice/service-list.png
+        :width: 90%
+        :align: center
+        :figclass: thumbnail
 
-Click on **+ Add Service** to create a new service
+ Click on **+ Add Service** to create a new service
 
-Service Creation
-----------------
+Service details
+===============
 
-1. General options
-    Here you can set general information about you service:
-
-    - *Category* : The associated Category
-    - *Service Name* : Service name
-    - *Runner configuration* : Runner Adaptor setup (select box from Runner Administration :ref:`runner-admin-label`.)
-    - *Descriptions* : Description and short description
-    - *Version* : Current version
+General options
+---------------
 
     .. figure:: backoffice/service-general.png
         :width: 90%
         :align: center
+        :figclass: thumbnail
 
-2. Detailed options
-    Detailed options presents other details about your service:
+        Main general options for a WAVES service
 
-    - *Api name* : Currently defined api_name
-    - *Created By* : Current Service Owner, if you are not 'superuser', you can't change this value
-    - *Access restriction* : When service online status is 'restricted', along with all staff members, you can grant other 'web user' access to your service
-    - *Mail Notification* : Check or uncheck mail notification for this Service (this is disabled if configuration disallow it globally)
-    - *Api availability* : Set whether service is available on api as well as on the web
-    - *Command Class* : Parser Class : dedicated for specific and very complex command, set the waves.wcore.commands class implementation to create a job command line
-    - *TimeRecord* : Creation and last update date, you can't set these values, they are assigned automatically
+    - **Service name**: Service name displayed on front and api
+    - **Created by**: Only superuser can change this value, this is set by default to current user
+    - **Version**: Current version for your service (no relation with actual software version)
+    - **Status**: Current online status for this service, upon creation, it's automatically set to 'Draft'
 
-    .. CAUTION::
-        Modify *api_name* attribute when service is online can produce strange side effect (particularly for your api clients)
+        - *DRAFT*: Service is under configuration, by now, it is not intended to be available to anyone except the service’s creator.
+        - *STAFF*: Service configuration is finished (inputs / outputs / run configuration), it then can be open to the others team users, i.e back-office users
+        - *REGISTERED*: Service is fully configured, tested, but restricted to registered users (those who have an Django activated account)
+        - *RESTRICTED*: Service is intended to be used by specific registered users. WAVES-core allows to set up these users by specifically selected them in service configuration  back-office service page.
+        - *PUBLIC*: Service is open to any user who visit the website, still, access to REST API is subjected to user registration prior to use its capabilities.
+
+    - **App short code**: this value is used for generating urls and api entry points, for service, this value must be unique
+
+        .. CAUTION::
+            Modify *app short code* attribute when service is online can break api clients
+
+    - **Short description**: Short description text about what service is about (not displayed on front but only on api)
+    - **Execution environment**: Execution configuration (see :ref:`runner-admin-label` administration)
+    - **Binary file**: You can upload here the executable file which will be used for execution
+
+Access management
+-----------------
+
+    .. figure:: backoffice/service-access.png
+        :width: 90%
+        :align: center
+        :figclass: thumbnail
+
+        Access panel presents granted given to Service
+
+    - **Notify results**: Whether or not users are notified when job is terminated
+    - **Access restriction**: When service's status is 'RESTRICTED', you may set up allowed users for this service
+
+Service details
+-----------------
 
     .. figure:: backoffice/service-detail.png
         :width: 90%
         :align: center
+        :figclass: thumbnail
 
-3. Runner Adaptor configuration
-    Specifically for each Adaptor configured in WAVES, some parameters need to be setup for your 'Runs' configuration.
+        Detailed informations for your service
 
-    - *Parameters* : Parameter list is fixed, you must set all values needed if no default is provided.
-    - *Import From Runner* : If currently defined Run configuration allow direct import (such as GalaxyRunner), you may import your tools from it with 'Import From Runner' button, in right top corner
+    - **Created on**: Creation date (automatic)
+    - **Last update**: Update date (automatic)
+    - **Description**: A longer description about your service, may include some HTML content (you may then add CKEditor as a dependency for your project)
+    - **Edams topics**: A list of comma separated edam topics reference
+    - **Edams operations**: A list of comma separated edam operation reference
+    - **Remote service tool id**: Some remote computing platform may add a required id, once your service is deployed (automatic)
 
-    .. CAUTION::
-        These configuration fields are only available when you first save your Service, where you have setup a Runner (see General Options)
 
+Service execution configuration
+-------------------------------
     .. figure:: backoffice/service-runner.png
         :width: 90%
         :align: center
+        :figclass: thumbnail
+
+    You can set run configuration values for each expected parameters for service execution, one is always required: 'command'
+
+
+    .. hint::
+        You can prevent subsequent submission(s) to override a value in their own configuration administration page, by checking related 'Prevent override' checkbox
+
+
+

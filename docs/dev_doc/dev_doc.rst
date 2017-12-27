@@ -5,6 +5,7 @@ Developer Guide
 ===============
 
 
+.. _extending-adaptor-label:
 Create your own adaptor
 -----------------------
 

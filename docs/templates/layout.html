@@ -1,27 +1,26 @@
 {% extends "!layout.html" %}
 
 {% block extrahead %}
-    <link rel="stylesheet" href="../../_static/jquery.fancybox.css" type="text/css">
-
+    <link rel="stylesheet" href="{{ pathto('_static/css/jquery.fancybox.css', 1) }}" type="text/css">
+    <link rel="stylesheet" href="{{ pathto('_static/css/waves.css', 1) }}" type="text/css">
+    <link rel="stylesheet" href="{{ pathto('_static/css/bootstrap.min.css', 1) }}" type="text/css">
 {% endblock %}
 
 
 {% block footer %}
-
-    <script type="text/javascript" src="../../_static/jquery.fancybox.pack.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("img").click(function (e) {
-                e.preventDefault();
-                $.fancybox.open([
-                    {
-                    href : $(this).attr('src'),
-                    title : 'Image',
-                    }
-                ], {
-                    padding: 0
-                });
+<!-- footer -->
+<script type="text/javascript" src="{{ pathto('_static/js/jquery.fancybox.pack.js', 1) }}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("img").click(function (e) {
+            e.preventDefault();
+            $.fancybox.open([{
+                href: $(this).attr('src'),
+                title: 'Image',
+            }], {
+                padding: 10
             });
         });
-    </script>
+    });
+</script>
 {% endblock %}

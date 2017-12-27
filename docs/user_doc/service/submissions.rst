@@ -1,6 +1,6 @@
 .. _service-submission-label:
 
-Services Submission Administration
+Services submission administration
 ==================================
 
 Each service may be accessed by multiple ways i.e submissions
@@ -31,6 +31,7 @@ Each service may be accessed by multiple ways i.e submissions
         .. figure:: backoffice/submission-params.png
             :width: 90%
             :align: center
+            :figclass: thumbnail
 
     Related Inputs
         Sometime, your services may setup dependencies between inputs, for exemple, if you setup a service which use
@@ -62,6 +63,7 @@ Each service may be accessed by multiple ways i.e submissions
         .. figure:: backoffice/submission-output.png
             :width: 90%
             :align: center
+            :figclass: thumbnail
 
     Service ExitCodes
         Here you can define:
@@ -73,4 +75,5 @@ Each service may be accessed by multiple ways i.e submissions
         .. figure:: backoffice/submission-exitcode.png
             :width: 90%
             :align: center
+            :figclass: thumbnail
 
