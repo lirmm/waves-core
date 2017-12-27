@@ -31,6 +31,7 @@ General options
 
         Main general options for a WAVES service
 
+
     - **Service name**: Service name displayed on front and api
     - **Created by**: Only superuser can change this value, this is set by default to current user
     - **Version**: Current version for your service (no relation with actual software version)
@@ -41,15 +42,13 @@ General options
         - *REGISTERED*: Service is fully configured, tested, but restricted to registered users (those who have an Django activated account)
         - *RESTRICTED*: Service is intended to be used by specific registered users. WAVES-core allows to set up these users by specifically selected them in service configuration  back-office service page.
         - *PUBLIC*: Service is open to any user who visit the website, still, access to REST API is subjected to user registration prior to use its capabilities.
-
     - **App short code**: this value is used for generating urls and api entry points, for service, this value must be unique
-
-        .. CAUTION::
-            Modify *app short code* attribute when service is online can break api clients
-
     - **Short description**: Short description text about what service is about (not displayed on front but only on api)
     - **Execution environment**: Execution configuration (see :ref:`runner-admin-label` administration)
     - **Binary file**: You can upload here the executable file which will be used for execution
+
+        .. CAUTION::
+            Modify *app short code* attribute when service is online can break api clients
 
 Access management
 -----------------
