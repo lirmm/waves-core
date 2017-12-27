@@ -88,9 +88,8 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
         abstract = True
 
     _runner = None
-    runner = models.ForeignKey(Runner, related_name='%(app_label)s_%(class)s_runs', null=True, blank=False,
-                               on_delete=models.SET_NULL,
-                               help_text='Service job runs adapter')
+    runner = models.ForeignKey(Runner, verbose_name="Execution environment", related_name='%(app_label)s_%(class)s_runs',
+                               null=True, blank=False, on_delete=models.SET_NULL, help_text='Service job runs configuration')
 
     @classmethod
     def from_db(cls, db, field_names, values):

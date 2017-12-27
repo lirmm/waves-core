@@ -64,22 +64,22 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     fieldsets = [
         ('General', {
-            'fields': ['name', 'created_by', 'status', 'short_description'],
+            'fields': ['name', 'created_by', 'status', 'version', 'api_name', 'short_description'],
             'classes': ('grp-collapse grp-closed', 'collapse', 'open')
 
-        }),
-        ('Manage Access', {
-            'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['restricted_client', 'email_on', ]
-        }),
-        ('Details', {
-            'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['api_name', 'version', 'created', 'updated', 'description', 'edam_topics',
-                       'edam_operations', 'remote_service_id', ]
         }),
         ('Execution configuration', {
             'fields': ['runner', 'binary_file', 'display_run_params'],
             'classes': ['collapse', ]
+        }),
+        ('Manage Access', {
+            'classes': ('grp-collapse grp-closed', 'collapse'),
+            'fields': ['email_on', 'restricted_client', ]
+        }),
+        ('Details', {
+            'classes': ('grp-collapse grp-closed', 'collapse'),
+            'fields': ['created', 'updated', 'description', 'edam_topics',
+                       'edam_operations', 'remote_service_id', ]
         }),
     ]
 
@@ -87,7 +87,6 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     def get_runner(self, obj):
         return obj.runner
-
 
     get_runner.short_description = "Default execution config."
 
@@ -107,10 +106,12 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         if obj is None:
             # create mode un collapse RunConfig
             try:
-                base_fieldsets[3][1]['classes'].remove(u'collapse')
+                base_fieldsets[1][1]['classes'].remove(u'collapse')
             except ValueError:
                 pass
             # print type(base_fieldsets[1][1]['classes'][0]), base_fieldsets[1][1]['classes'][0]
+        else:
+            base_fieldsets[1][1]['classes'].append('collapse')
         return base_fieldsets + self.extra_fieldsets
 
     def get_inlines(self, request, obj=None):

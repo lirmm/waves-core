@@ -93,9 +93,8 @@ class ApiModel(WavesBaseModel):
     #: Default field use to generate a api_name (unique app name)
     field_api_name = 'name'
     #: A char field, must be unique for a model instance
-    api_name = models.CharField(max_length=100, null=True, blank=True,
-                                help_text='App short code, must be unique (used in url),'
-                                          ' leave blank for automatic setup')
+    api_name = models.CharField(verbose_name="App short code", max_length=100, null=True, blank=True,
+                                help_text='App short code, used in url, leave blank for automatic setup')
 
     @property
     def base_api_name(self):
