@@ -318,7 +318,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         return super(BaseSubmission, self).run_params
 
     def __str__(self):
-        return '[%s]' % self.name
+        return '{}'.format(self.name)
 
     @property
     def expected_inputs(self):

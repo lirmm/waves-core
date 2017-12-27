@@ -89,6 +89,19 @@ class WavesModelAdmin(ModelAdmin):
                        'waves/admin/css/modal.css')
         }
 
+    @staticmethod
+    def _has_group_permission(request):
+        return request.user.groups.filter(name="WAVES-ADMIN").exists() or request.user.is_superuser
+
+    def has_add_permission(self, request):
+        return self._has_group_permission(request) and super(WavesModelAdmin, self).has_add_permission(request)
+
+    def has_change_permission(self, request, obj=None):
+        return self._has_group_permission(request) and super(WavesModelAdmin, self).has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        return self._has_group_permission(request) and super(WavesModelAdmin, self).has_delete_permission(request, obj)
+
 
 class DynamicInlinesAdmin(ModelAdmin):
     """ ModelAdmin class with dynamic inlines setup in form """

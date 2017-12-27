@@ -14,6 +14,20 @@ __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 
            'UrlMixin', 'WavesBaseModel']
 
 
+from django.contrib.admin.templatetags.admin_modify import *
+from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
+# or
+# original_submit_row = submit_row
+
+@register.inclusion_tag('admin/submit_line.html', takes_context=True)
+def submit_row(context):
+    ctx = original_submit_row(context)
+    ctx.update({
+        'show_save_and_add_another': context.get('show_save_and_add_another', ctx['show_save_and_add_another']),
+        'show_save_and_continue': context.get('show_save_and_continue', ctx['show_save_and_continue'])
+        })
+    return ctx
+
 class WavesBaseModel(models.Model):
     class Meta:
         abstract = True
@@ -112,7 +126,7 @@ class ApiModel(WavesBaseModel):
         """
         return self.__class__.objects.filter(api_name=api_name).exclude(pk=self.pk)
 
-    def __create_api_name(self):
+    def _create_api_name(self):
         """
         Construct a new wapi:api_v2 name issued from field_api_name
         """

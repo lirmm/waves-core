@@ -2,14 +2,14 @@ from __future__ import unicode_literals
 
 from os.path import isfile
 
-from django.contrib import admin
 from django.contrib.admin import register
 
+from waves.wcore.admin.base import WavesModelAdmin
 from waves.wcore.models.binaries import ServiceBinaryFile
 
 
 @register(ServiceBinaryFile)
-class ServiceBinaryFileAdmin(admin.ModelAdmin):
+class ServiceBinaryFileAdmin(WavesModelAdmin):
     model = ServiceBinaryFile
     list_display = ('label', 'created', 'updated', 'file_size', 'file_path')
 

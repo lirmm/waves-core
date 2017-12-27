@@ -108,7 +108,11 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     def nb_services(self, obj):
         return len(obj.runs)
 
+    def get_runner_clazz(self, obj):
+        return obj.clazz if obj.adaptor else "Implementation class not available !"
+
     nb_services.short_description = "Running Services"
+    get_runner_clazz.short_description = "Computing infrastructure"
 
     def save_model(self, request, obj, form, change):
         """ Add related Service / Jobs updates upon Runner modification """
@@ -118,12 +122,6 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
                 for service in obj.runs:
                     message = 'Related %s has been reset' % service
                     service.set_defaults()
-                    """
-                    for job in service.pending_jobs.all():
-                        if job.adaptor is not None:
-                            job.run_cancel()
-                        message += '<br/>- Related pending job %s has been cancelled' % job.title
-                    """
                     messages.info(request, message)
 
     def connexion_string(self, obj):
@@ -134,10 +132,3 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
             return 'n/a'
 
     connexion_string.short_description = 'Connexion String'
-
-    def get_runner_clazz(self, obj):
-        concrete = obj.adaptor
-        if concrete:
-            return obj.clazz
-        else:
-            return "Implementation class not available !"

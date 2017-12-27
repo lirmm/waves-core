@@ -54,9 +54,13 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     filter_horizontal = ['restricted_client']
     readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link', 'display_run_params']
-    list_display = ('name', 'api_name', 'runner', 'version', 'status', 'created_by',
+    list_display = ('id', 'name', 'get_api_name', 'get_runner', 'version', 'status', 'created_by', 'updated',
                     'submission_link')
     list_filter = ('status', 'name', 'created_by')
+    list_editable = ('status', 'name')
+    list_display_links = ('get_api_name', 'id')
+    list_per_page = 10
+    ordering = ('name', 'updated')
     change_form_template = "waves/admin/service/change_form.html"
 
     fieldsets = [
@@ -64,10 +68,6 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
             'fields': ['name', 'created_by', 'status', 'short_description'],
             'classes': ('grp-collapse grp-closed', 'collapse', 'open')
 
-        }),
-        ('Run Config', {
-            'fields': ['runner', 'binary_file', 'display_run_params'],
-            'classes': ('collapse',)
         }),
         ('Manage Access', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
@@ -78,9 +78,22 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
             'fields': ['api_name', 'version', 'created', 'updated', 'description', 'edam_topics',
                        'edam_operations', 'remote_service_id', ]
         }),
+        ('Execution configuration', {
+            'fields': ['runner', 'binary_file', 'display_run_params'],
+            'classes': ['collapse', ]
+        }),
     ]
 
     extra_fieldsets = []
+
+    def get_runner(self, obj):
+        return obj.runner
+
+    def get_api_name(self, obj):
+        return obj.api_name
+
+    get_api_name.short_description = "App short name"
+    get_runner.short_description = "Default execution config."
 
     def get_urls(self):
         urls = super(ServiceAdmin, self).get_urls()
@@ -95,6 +108,13 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     def get_fieldsets(self, request, obj=None):
         base_fieldsets = super(ServiceAdmin, self).get_fieldsets(request, obj)
+        if obj is None:
+            # create mode un collapse RunConfig
+            try:
+                base_fieldsets[3][1]['classes'].remove(u'collapse')
+            except ValueError:
+                pass
+            # print type(base_fieldsets[1][1]['classes'][0]), base_fieldsets[1][1]['classes'][0]
         return base_fieldsets + self.extra_fieldsets
 
     def get_inlines(self, request, obj=None):
@@ -118,7 +138,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         context['show_save_as_new'] = False
         context['show_save_and_add_another'] = False
         context['show_save'] = False
-        return super(ServiceAdmin, self).add_view(request, form_url, context)
+        return super(ServiceAdmin, self).add_view(request, form_url, extra_context=context)
 
     def submission_link(self, obj):
         """ Direct link to submission in list """
@@ -134,7 +154,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         readonly_fields = super(ServiceAdmin, self).get_readonly_fields(request, obj)
         if not request.user.is_superuser:
             readonly_fields.append('created_by')
-        if obj and obj.status > Service.SRV_TEST and not 'api_name' in readonly_fields:
+        if obj and obj.status > Service.SRV_TEST and 'api_name' not in readonly_fields and not request.user.is_superuser:
             readonly_fields.append('api_name')
         if obj is not None and obj.created_by != request.user:
             readonly_fields.append('clazz')
@@ -146,9 +166,6 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         request.current_obj = obj
         form = super(ServiceAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
-        # form.base_fields['runner'].widget.can_delete_related = False
-        # form.base_fields['runner'].widget.can_add_related = False
-        # form.base_fields['runner'].widget.can_change_related = False
         form.base_fields['created_by'].widget.can_change_related = False
         form.base_fields['created_by'].widget.can_add_related = False
         form.base_fields['created_by'].widget.can_delete_related = False
