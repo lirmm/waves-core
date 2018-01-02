@@ -3,10 +3,10 @@ CHANGELOG
 =========
 
 
-Version 1.1.6 - 2017-12-30
+Version 1.1.6 - 2018-01-15
 --------------------------
 
-    - Removed: waves.front, merged back inside wcore
+    - [waves.front] Removed: waves.front, merged back inside wcore
     - [Admin] Added: admin urls directly in related Wcore ModelAdmins
     - [Models] Added: fields authors and citation to Service model
     - [API] Added: Add Job cancel and delete services
@@ -14,6 +14,8 @@ Version 1.1.6 - 2017-12-30
     - [Jobs] Changed: JobInconsistentState treatment in job workflow
     - [Models] Added: 'topics' and 'operations' property for reading EDAMS ontology data in Service templates
     - [Adaptors] Moved: Saga common processes in dedicated class SagaAdaptor
+    - [FileInput] Added: Configuration for enabling/disabling copy/paste form element
+    - [Docs]: Introduce Administrator guide / Developer guide
 
 Version 1.1.5 - 2017-11-30
 --------------------------

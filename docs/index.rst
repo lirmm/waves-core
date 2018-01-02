@@ -13,6 +13,7 @@ Welcome to WAVES's CORE Documentation !
     :maxdepth: 1
 
     changelog
+    roadmap
 
 .. toctree::
     :maxdepth: 2
