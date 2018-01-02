@@ -18,7 +18,7 @@ Environment list
         :width: 90%
         :figclass: thumbnail
 
-        List of environement set up
+        List of environment already set
 
 Environment details
 ===================
