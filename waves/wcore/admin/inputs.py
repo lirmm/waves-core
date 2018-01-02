@@ -204,7 +204,7 @@ class FileInputAdmin(AParamAdmin):
     # readonly_fields = ['default', ]
     fieldsets = [
         ('General', {
-            'fields': required_base_fields + ['max_size', 'allowed_extensions'],
+            'fields': required_base_fields + ['allow_copy_paste', 'max_size', 'allowed_extensions'],
             'classes': ['collapse', 'open']
         }),
         ('More', {

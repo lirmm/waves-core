@@ -28,11 +28,11 @@ OPT_TYPE_NAMED_OPTION = 5
 OPT_TYPE_NAMED_PARAM = 6
 OPT_TYPE = [
     (OPT_TYPE_NONE, "-- Not used in job command line--"),
-    (OPT_TYPE_NAMED_PARAM, 'Named parameter: [name]=value'),
-    (OPT_TYPE_SIMPLE, 'Named parameter: -[name] value'),
-    (OPT_TYPE_VALUATED, 'Named parameter: --[name]=value'),
-    (OPT_TYPE_OPTION, 'Named option: -[name]'),
-    (OPT_TYPE_NAMED_OPTION, 'Named option: --[name]'),
+    (OPT_TYPE_NAMED_PARAM, 'Assigned named parameter: [name]=value'),
+    (OPT_TYPE_SIMPLE, 'Named short parameter: -[name] value'),
+    (OPT_TYPE_VALUATED, 'Named assigned long parameter: --[name]=value'),
+    (OPT_TYPE_OPTION, 'Named short option: -[name]'),
+    (OPT_TYPE_NAMED_OPTION, 'Named long option: --[name]'),
     (OPT_TYPE_POSIX, 'Positional parameter: value')
 ]
 TYPE_BOOLEAN = 'boolean'

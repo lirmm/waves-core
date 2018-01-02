@@ -412,6 +412,9 @@ class FileInput(AParam):
                                           help_text="Comma separated list, * means no filter",
                                           default="*",
                                           validators=[validate_list_comma, ])
+    allow_copy_paste = models.BooleanField(verbose_name="Allow copy paste in forms",
+                                           help_text="Set whether file input field should add a copy/paste text field",
+                                           default=False)
 
     @property
     def param_type(self):

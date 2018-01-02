@@ -62,7 +62,7 @@ class FormHelper(CrispyFormHelper, WFormHelper):
             else:
                 field_dict.update(dict(wrapper_class="dis_dep_parameter"))
         input_field = Field(service_input.api_name, **field_dict)
-        if isinstance(service_input, FileInput) and not service_input.multiple:
+        if isinstance(service_input, FileInput) and not service_input.multiple and service_input.allow_copy_paste:
             cp_input_field = Field('cp_' + service_input.api_name, css_id='id_' + 'cp_' + service_input.api_name)
             tab_input = bootstrap.Tab(
                 "File Upload",

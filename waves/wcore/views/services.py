@@ -38,9 +38,9 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         super(SubmissionFormView, self).__init__(**kwargs)
 
     def get_submissions(self):
-        submissions = self.get_object().submissions.filter(availability=3)
+        submissions = self.get_object().submissions
         available = []
-        for submission in submissions:
+        for submission in submissions.all():
             available.append(submission) if submission.available_for_user(self.request.user) else None
         if len(available) == 0:
             raise PermissionDenied()
@@ -48,9 +48,6 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
 
     def get_object(self, queryset=None):
         self.object = super(SubmissionFormView, self).get_object(queryset)
-        if self.object.submissions.filter(availability=3).count() == 0:
-            raise PermissionDenied()
-
         return self.object
 
     def get_success_url(self):
