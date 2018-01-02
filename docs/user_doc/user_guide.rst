@@ -14,6 +14,14 @@ service entry point to be remotely accessed from a distant application.
 
 Some more configuration can be made to tune user’s access rights, execution parameters etc. those are further detailed in this document:
 
+    .. figure:: waves-admin.png
+        :width: 90%
+        :align: center
+        :figclass: thumbnail
+
+        Django classic back-office landing page for WAVES-core module
+
+
     .. toctree::
        :maxdepth: 3
        :numbered:
@@ -24,10 +32,4 @@ Some more configuration can be made to tune user’s access rights, execution pa
        job/jobs
 
 
-.. figure:: waves-admin.png
-    :width: 90%
-    :align: center
-    :figclass: thumbnail
-
-    Django classic backoffice landing page for WAVES-core module
 

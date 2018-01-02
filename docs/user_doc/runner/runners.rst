@@ -1,7 +1,7 @@
 .. _runner-admin-label:
 
 ========================
-Execution administration
+Execution environments
 ========================
 
 Computing infrastructures shortly named "Runner" are the entry point where you can setup different configuration on where and how services' jobs
