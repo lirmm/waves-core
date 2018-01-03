@@ -19,6 +19,7 @@ Welcome to WAVES's CORE Documentation !
     :maxdepth: 2
     :caption: Administrator Guide
 
+    installation
     user_doc/user_guide
 
 .. toctree::
@@ -26,10 +27,9 @@ Welcome to WAVES's CORE Documentation !
     :caption: Technical documentation
 
     contributing
-    installation
+    dev_doc/dev_doc
     modules/settings
     modules/source
-    dev_doc/dev_doc
 
 Indices and tables
 ==================

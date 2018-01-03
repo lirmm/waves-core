@@ -232,7 +232,7 @@ Inputs dependencies
 
     .. ATTENTION::
 
-    Related inputs can't be 'mandatory', because their submission is dependent on another one which is potentially not set
+        Related inputs can't be 'mandatory', because their submission is dependent on another one which is potentially not set
 
 
 Submission Outputs
