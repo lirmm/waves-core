@@ -42,6 +42,8 @@ Main panel
     .. CAUTION::
         These services are now is stage 'Draft'
 
+.. _environment-set-up:
+
 Environment setup
 -----------------
     .. figure:: backoffice/runner-param.png

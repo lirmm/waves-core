@@ -1,7 +1,9 @@
 .. _adaptor-label:
 
-Adaptors
-========
+================
+Adaptors related
+================
+
 These modules execute job on dedicated platforms, remotely or locally, they are supposed to control job processing once submitted via services submissions
 
 Constants
@@ -20,9 +22,13 @@ Utilities classes
 -----------------
 .. automodule:: waves.wcore.adaptors.utils
 
+
+.. _adaptor-base-class-label:
+
 Adaptor base class
-------------------
-.. automodule:: waves.wcore.adaptors
+==================
+
+.. autoclass:: waves.wcore.adaptors.JobAdaptor
     :members:
     :show-inheritance:
 
