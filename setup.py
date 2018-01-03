@@ -27,7 +27,7 @@ setup(
         'daemons==1.3.0',
         'django-admin-sortable2 >=0.6.16',
         'django-crispy-forms ==1.6.1',
-        'django-polymorphc== 1.2',
+        'django-polymorphic== 1.2',
         'djangorestframework==3.6.2',
         'inflection==0.3.1',
         'psutil==5.4.0',
@@ -35,7 +35,7 @@ setup(
         'python-magic==0.4.13',
         'saga-python==0.46',
         'setproctitle==1.1.10',
-        'six=1.11.0',
+        'six==1.11.0',
         'swapper==1.1.0',
     ],
     classifiers=[
