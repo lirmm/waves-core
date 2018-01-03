@@ -32,6 +32,11 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
     def get_template_names(self):
         if self.template_name is None:
             self.template_name = 'waves/services/' + waves_settings.TEMPLATE_PACK + '/submission_form.html'
+        try:
+            get_template('waves/override/submission_' + self.get_object().api_name + '_form.html')
+            return ['waves/override/submission_' + self.get_object().api_name + '_form.html']
+        except TemplateDoesNotExist:
+            pass
         return super(SubmissionFormView, self).get_template_names()
 
     def __init__(self, **kwargs):

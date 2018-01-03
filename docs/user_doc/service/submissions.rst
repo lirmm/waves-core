@@ -257,7 +257,6 @@ A service output is defined by:
         :figclass: thumbnail
 
 
-
 Submission ExitCode
 ===================
 

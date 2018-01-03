@@ -157,6 +157,55 @@ Overriding WAVES templates
 
 Well, as WAVES-core complies to Django reusable app standard, it's pretty straigthforward to extends WAVES base templates following Django documentation
 
+Related urls
+------------
+
+======================================  =======================================================
+URI                                     Description
+======================================  =======================================================
+/waves/services/                        List all available services
+/waves/services/{service_app_name}/     Display Service details
+/waves/services/{service_app_name}/new  Create a job (access to available submission(s) form(s)
+/waves/jobs/{slug}/                     View job details
+/waves/jobs/inputs/{slug}/[?export=1]   View Input file online / Download file
+/waves/jobs/outputs/{slug}/[?export=1]  View Output file online / Download file
+======================================  =======================================================
+
+
+WAVES-core defines the following base templates
+
+Services
+--------
+
+======================================  =======================================================
+Template path                           Description
+======================================  =======================================================
+~/waves/services/base.html              Base template used for block definition
+~/waves/services/service_list.html      List all available services defined in WAVES apps
+~/waves/services/service_details.html   Main service page defined in WAVES apps
+~/waves/services/service_form.html      Page to display service's related submissions forms
+~/waves/services/file.html              Display a line for a file input / output for service
+======================================  =======================================================
+
+
+.. hint::
+    WAVES-core allow override for a single service / submission template, following naming convention for templates, simply create a new template
+    in your templates subdir 'waves/override/' (service_app_name is the app_short_code defined in BO for the service):
+
+    * For service: service_[service_app_name]_detail.html
+    * For submission: submission_[service_app_name]_form.html
+
+Jobs
+----
+========================================  ======================================================================
+Template path                             Description
+========================================  ======================================================================
+~/waves/jobs/job_list.html                Display a list of user's jobs
+~/waves/jobs/parts/job_list_element.html  A list element template for a job in list
+~/waves/jobs/job_detail.html              Job detail page, list submitted inputs parameters and expected outputs
+========================================  ======================================================================
+
+
 .. seealso::
     `<https://docs.djangoproject.com/en/1.11/howto/overriding-templates/>`_
 
@@ -205,7 +254,7 @@ GET     /waves/api/jobs/{slug}/outputs  List job outputs, associated with direct
 ======  ==============================  ==========================================================================================
 
 
-Overriding Forms create template packs
+Overriding forms create template packs
 ======================================
 
 Under construction

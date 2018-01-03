@@ -17,6 +17,7 @@ from waves.wcore.compat import CompactInline
 from waves.wcore.models import get_submission_model
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode
+from waves.wcore.utils import url_to_edit_object
 
 Submission = get_submission_model()
 
@@ -148,7 +149,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     current_obj = None
     form = ServiceSubmissionForm
     exclude = ['order']
-    list_display = ['id', 'get_api_name', 'name', 'service', 'availability', 'runner', 'created',
+    list_display = ['id', 'get_api_name', 'name', 'get_service', 'availability', 'runner', 'created',
                     'updated']
     readonly_fields = ['get_command_line_pattern', 'display_run_params']
     list_filter = ('service__name', 'availability')
@@ -241,11 +242,18 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     def has_add_permission(self, request):
         return False
 
+    def get_service(self, obj):
+        return url_to_edit_object(obj.service)
+
+    get_service.short_description = "Service"
+
     def runner_link(self, obj):
         return obj.get_runner()
 
     def _redirect_save_back(self, request, obj):
-        self.message_user(request, format_html('Submission "<a href="{}">{}</a>" successfully saved', urlquote(request.path), obj), messages.SUCCESS)
+        self.message_user(request,
+                          format_html('Submission "<a href="{}">{}</a>" successfully saved', urlquote(request.path),
+                                      obj), messages.SUCCESS)
         messages.warning(request, "You are now editing service '{}'".format(obj.service))
         return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
 

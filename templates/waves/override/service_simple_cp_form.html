@@ -1,0 +1,29 @@
+{% extends "waves/services/service_form.html" %}
+{% load staticfiles crispy_forms_tags waves_tags %}
+
+{% block styles %}
+    {{ block.super }}
+    {% service_inc 'css' %}
+    <link rel="stylesheet" href="{% static 'waves/css/forms.css' %}">
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script src="{% static 'waves/js/services.js' %}"></script>
+{% endblock scripts %}
+
+{% block content_main %}
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">This is overriden template for service {{ service.name }} form</h3>
+        </div>
+        <div class="panel-body">
+            {% submission_form %}
+        </div>
+        <div class="panel-footer">
+            <span class="text-left">
+                <a href="{% url 'wcore:service_details' service.api_name %}">Back to service</a>
+            </span>
+        </div>
+    </div>
+{% endblock %}
