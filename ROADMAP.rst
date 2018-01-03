@@ -10,7 +10,7 @@ RELEASES
 
 
 Near-term (early 2018 - v1.1.7)
-------------------------------
+-------------------------------
     - Integrate WAVES into a `SINGULARITY <http://singularity.lbl.gov/>`_ container
     - Adaptor to run containers (SINGULARITY first)
     - Adaptor / Service : Import / Export json serialized data
@@ -35,7 +35,7 @@ Middle-term (mid 2018 - v1.1.8)
 
 
 Long-term (no date - no release)
--------------------
+--------------------------------
     - Integrate queue messaging framework such as Celery
     - Api-client
 
