@@ -184,6 +184,9 @@ class BaseTestCase(TestCase):
 class TestJobWorkflowMixin(TestCase):
     jobs = []
 
+    def tearDown(self):
+        super(TestJobWorkflowMixin, self).tearDown()
+
     @staticmethod
     def service_sample_dir(service_api_name):
         return join(waves_settings.SAMPLE_DIR, service_api_name)

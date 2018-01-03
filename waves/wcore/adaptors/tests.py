@@ -125,7 +125,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
         self.run_job_workflow(job)
 
     def test_all_cp_jobs(self):
-        for adaptor in self.adaptors[0:4]:
+        for adaptor in self.adaptors[0:3]:
             try:
                 logger.debug('Connecting to %s', adaptor.name)
                 job = self.create_cp_job(source_file=self.get_sample(),

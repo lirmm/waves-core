@@ -39,13 +39,13 @@ class ServicesTestCase(BaseTestCase):
         service.status = service.SRV_DRAFT
         service.created_by = self.users['admin']
         service.save()
-        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        url = reverse('wcore:service_details', kwargs={'service_app_name': service.api_name})
         _test_access(url, 403)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
         _test_access(url, 403, 'api_user')
         # SAME for submission
-        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        url = reverse('wcore:job_submission', kwargs={'service_app_name': service.api_name})
         _test_access(url, 403)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
@@ -55,13 +55,13 @@ class ServicesTestCase(BaseTestCase):
         service.status = service.SRV_TEST
         service.created_by = self.users['superadmin']
         service.save()
-        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        url = reverse('wcore:service_details', kwargs={'service_app_name': service.api_name})
         _test_access(url, 403)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
         _test_access(url, 403, 'api_user')
         # SAME for submission
-        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        url = reverse('wcore:job_submission', kwargs={'service_app_name': service.api_name})
         _test_access(url, 403)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
@@ -71,13 +71,13 @@ class ServicesTestCase(BaseTestCase):
         logger.debug('Test REGISTERED status ...')
         service.status = service.SRV_REGISTERED
         service.save()
-        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        url = reverse('wcore:service_details', kwargs={'service_app_name': service.api_name})
         _test_access(url, 200)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
         _test_access(url, 200, 'api_user')
         # SAME for submission
-        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        url = reverse('wcore:job_submission', kwargs={'service_app_name': service.api_name})
         _test_access(url, 403)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
@@ -87,13 +87,13 @@ class ServicesTestCase(BaseTestCase):
         logger.debug('Test RESTRICTED status ...')
         service.status = service.SRV_RESTRICTED
         service.save()
-        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        url = reverse('wcore:service_details', kwargs={'service_app_name': service.api_name})
         _test_access(url, 200)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
         _test_access(url, 200, 'api_user')
         # SAME for submission
-        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        url = reverse('wcore:job_submission', kwargs={'service_app_name': service.api_name})
         _test_access(url, 403)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
@@ -106,13 +106,13 @@ class ServicesTestCase(BaseTestCase):
         logger.debug('Test PUBLIC status ...')
         service.status = service.SRV_PUBLIC
         service.save()
-        url = reverse('wcore:service_details', kwargs={'slug': service.api_name})
+        url = reverse('wcore:service_details', kwargs={'service_app_name': service.api_name})
         _test_access(url, 200)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
         _test_access(url, 200, 'api_user')
         # SAME for submission
-        url = reverse('wcore:job_submission', kwargs={'slug': service.api_name})
+        url = reverse('wcore:job_submission', kwargs={'service_app_name': service.api_name})
         _test_access(url, 200)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
