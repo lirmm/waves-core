@@ -1,6 +1,9 @@
 import os
 from setuptools import find_packages, setup
 
+with open(os.path.join(os.path.dirname(__file__), 'README.rst')) as readme:
+    README = readme.read()
+
 
 def import_version():
     from waves.wcore import __version__
@@ -25,7 +28,6 @@ setup(
         'coreapi==2.3.3',
         'Django==1.11.8',
         'daemons==1.3.0',
-        'django-admin-sortable2 >=0.6.16',
         'django-crispy-forms ==1.6.1',
         'django-polymorphic== 1.2',
         'djangorestframework==3.6.2',
