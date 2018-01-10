@@ -145,10 +145,9 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
 
     def __str__(self):
         """ String representation
-
         :return: str
         """
-        return "%s v(%s)" % (self.name, self.version)
+        return "{} v({})".format(self.name, self.version)
 
     def set_defaults(self):
         super(BaseService, self).set_defaults()
@@ -263,10 +262,10 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
             status__in=[waves.wcore.adaptors.const.JOB_CREATED, waves.wcore.adaptors.const.JOB_COMPLETED])
 
     def get_admin_url(self):
-        return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
+        return reverse('admin:{}_{}_change'.format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     def get_admin_changelist(self):
-        return reverse('admin:%s_%s_changelist' % (self._meta.app_label, self._meta.model_name))
+        return reverse('admin:{}_{}_changelist'.format(self._meta.app_label, self._meta.model_name))
 
 
 class Service(BaseService):
@@ -373,7 +372,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         return form_fields
 
     def get_admin_url(self):
-        return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
+        return reverse('admin:{}_{}_change'.format(self._meta.app_label, self._meta.model_name), args=[self.pk])
 
     def duplicate_api_name(self, api_name):
         """ Check is another entity is set with same api_name
@@ -426,7 +425,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     #: Displayed label
     label = models.CharField('Label', max_length=255, null=True, blank=False, help_text="Label")
     #: Output Name (internal)
-    name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Label")
+    name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Output name")
     #: Related Submission
     submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), related_name='outputs',
                                    on_delete=models.CASCADE)
@@ -438,14 +437,15 @@ class SubmissionOutput(TimeStamped, ApiModel):
                                     help_text="Pattern is used to match input value (%s to retrieve value from input)")
     #: EDAM format
     edam_format = models.CharField('Edam format', max_length=255, null=True, blank=True,
-                                   help_text="Edam ontology format")
+                                   help_text="Edam ontology output format")
     #: EDAM data type
-    edam_data = models.CharField('Edam data', max_length=255, null=True, blank=True, help_text="Edam ontology data")
+    edam_data = models.CharField('Edam data', max_length=255, null=True, blank=True,
+                                 help_text="Edam ontology output data")
     #: Help text displayed on results
     help_text = models.TextField('Help Text', null=True, blank=True, )
     #: Expected file extension
-    extension = models.CharField('Extension', max_length=5, blank=True, default="",
-                                 help_text="Leave blank for *, or set in file pattern")
+    extension = models.CharField('File extension', max_length=5, blank=True, default="",
+                                 help_text="Leave blank accept all, or set in file pattern")
 
     def __str__(self):
         """ String representation, return label """

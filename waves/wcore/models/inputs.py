@@ -34,7 +34,7 @@ class RepeatedGroup(Ordered):
     default = models.IntegerField('Default repeat', default=0)
 
     def __str__(self):
-        return '[%s]' % self.name
+        return '[{}]'.formatself.name
 
 
 class AParam(PolymorphicModel, ApiModel, Ordered):
@@ -115,14 +115,14 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
         if self.required is None and not self.default and self.cmd_format not in (
                 OPT_TYPE_NAMED_OPTION, OPT_TYPE_OPTION, OPT_TYPE_NONE):
             # param is mandatory
-            raise ValidationError('Not displayed parameters must have a default value %s:%s' % (self.name, self.label))
+            raise ValidationError('Not displayed parameters must have a default value {}:{}'.format(self.name, self.label))
         if self.parent and not self.when_value:
             raise ValidationError({'when_value': 'If you set a dependency, you must set this value'})
         if self.parent is not None:
             self.parent.check_when_value(self.when_value)
         for dep in self.dependents_inputs.all():
             if (isinstance(self, ListParam) or isinstance(self, BooleanParam)) and dep.when_value not in self.values:
-                raise ValidationError('Input "%s" depends on missing value: \'%s\'  ' % (dep.label, dep.when_value))
+                raise ValidationError('Input "{}" depends on missing value: \'{}\'  '.format(dep.label, dep.when_value))
 
     def __str__(self):
         return self.label + ' (' + self.__class__.__name__ + ')'
@@ -137,7 +137,7 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
 
     @property
     def value(self):
-        return "%s_value" % self.name
+        return "{}_value".formatself.name
 
     def field_dict(self, data=None):
         return dict(
@@ -202,8 +202,8 @@ class BooleanParam(AParam):
 
     def check_when_value(self, value):
         if value not in self.values:
-            raise ValidationError({'when_value': 'This value is not possible for related input [%s]' % ', '.join(
-                self.values)})
+            raise ValidationError({'when_value': 'This value is not possible for related input [{}]'.format(', '.join(
+                self.values))})
 
     def form_widget(self, data=None):
         return {self.api_name: forms.BooleanField(**self.field_dict(data))}
@@ -231,7 +231,7 @@ class NumberParam(object):
             elif self.max_val is not None and self.min_val is not None:
                 raises = not (Decimal(self.min_val) <= Decimal(self.default.strip()) <= Decimal(self.max_val))
             if raises:
-                raise ValidationError({'default': mark_safe('Default value is not in range [%s, %s]' % (
+                raise ValidationError({'default': mark_safe('Default value is not in range [{}, {}]'.format(
                     min_val, max_val))})
         if self.min_val and self.max_val:
             if self.min_val > self.max_val:
@@ -252,7 +252,7 @@ class NumberParam(object):
         elif self.max_val is not None and self.min_val is not None:
             raises = not (Decimal(self.min_val) <= Decimal(value.strip()) <= Decimal(self.max_val))
         if raises:
-            raise ValidationError({'when_value': 'This value is not possible for related input range [%s, %s]' % (
+            raise ValidationError({'when_value': 'This value is not possible for related input range [{}, {}]'.format(
                 min_val, max_val)})
 
     def field_dict(self, data=None):
@@ -349,7 +349,7 @@ class ListParam(AParam):
             raise ValidationError('You can\'t use checkboxes with non multiple choices enabled')
         if self.default and self.default not in self.values:
             raise ValidationError(
-                {'default': 'Default value "%s" is not present in list [%s]' % (self.default, ', '.join(self.values))})
+                {'default': 'Default value "{}" is not present in list [{}]'.format(self.default, ', '.join(self.values))})
 
     @property
     def choices(self):
@@ -374,8 +374,8 @@ class ListParam(AParam):
 
     def check_when_value(self, value):
         if value not in self.values:
-            raise ValidationError({'when_value': 'This value is not possible for related input [%s]' % ', '.join(
-                self.values)})
+            raise ValidationError({'when_value': 'This value is not possible for related input [{}]'.format(', '.join(
+                self.values))})
 
     def field_dict(self, data=None):
         initial = super(ListParam, self).field_dict(data)
@@ -424,12 +424,12 @@ class FileInput(AParam):
         initial_fields = self.field_dict(data)
         initial_fields['required'] = False
         initial = {self.api_name: forms.FileField(**initial_fields),
-                   'cp_%s' % self.api_name: forms.CharField(label='Copy/paste content',
+                   'cp_{}'.formatself.api_name: forms.CharField(label='Copy/paste content',
                                                             required=False,
                                                             widget=forms.Textarea(attrs={'cols': 20, 'rows': 10})
                                                             )}
         for sample in self.input_samples.all():
-            initial['sp_%s_%s' % (self.api_name, sample.pk)] = sample.form_widget()
+            initial['sp_{}_{}'.format(self.api_name, sample.pk)] = sample.form_widget()
         return initial
 
 
@@ -449,7 +449,7 @@ class FileInputSample(WavesBaseModel):
     dependent_params = models.ManyToManyField('AParam', blank=True, through='SampleDepParam')
 
     def __str__(self):
-        return '%s (%s)' % (self.label, self.name)
+        return '{} ({})'.format(self.label, self.name)
 
     def save_base(self, *args, **kwargs):
         super(FileInputSample, self).save_base(*args, **kwargs)
@@ -501,4 +501,4 @@ class SampleDepParam(WavesBaseModel):
     set_default = models.CharField('Set value to ', max_length=200, null=False, blank=False)
 
     def __str__(self):
-        return "%s > %s=%s" % (self.sample.label, self.related_to.name, self.set_default)
+        return "{} > {}={}".format(self.sample.label, self.related_to.name, self.set_default)

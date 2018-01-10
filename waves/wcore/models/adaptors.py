@@ -41,8 +41,8 @@ class AdaptorInitParam(WavesBaseModel):
 
     def __str__(self):
         if self.crypt:
-            return "%s|********|%s" % (self.name, self.prevent_override)
-        return "%s|%s|%s" % (self.name, self.value, self.prevent_override)
+            return "{}|********|{}".format(self.name, self.prevent_override)
+        return "{}|{}|{}".format(self.name, self.value, self.prevent_override)
 
     def __init__(self, *args, **kwargs):
         super(AdaptorInitParam, self).__init__(*args, **kwargs)
@@ -146,7 +146,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
             try:
                 self._adaptor = import_string(self.clazz)(**self.run_params)
             except ImportError as e:
-                logger.error('Import Adaptor error %s ' % e)
+                logger.error('Import Adaptor error {}'.format(e))
                 self._adaptor = None
         return self._adaptor
 

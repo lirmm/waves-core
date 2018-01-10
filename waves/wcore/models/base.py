@@ -140,7 +140,7 @@ class UrlMixin(object):
         """ short cut to :func:`get_url()`
         :return: current absolute uri for Job
         """
-        return "%s%s" % (config.HOST, self.get_absolute_url())
+        return "{}{}".format(config.HOST, self.get_absolute_url())
 
     def get_url(self):
         """ Calculate and return absolute 'front-office' url for a model object
@@ -178,9 +178,9 @@ class ExportAbleMixin(object):
                 fp.write(json.dumps(data, indent=2))
                 return file_path
             except Exception as e:
-                raise ExportError('Error dumping model %s [%s]' % (self, e))
+                raise ExportError('Error dumping model {} [{}]'.format(self, e))
 
     @property
     def export_file_name(self):
         """ Create export file name, based on concrete class name"""
-        return '%s_%s.json' % (self.__class__.__name__.lower(), str(self.pk))
+        return '{}_{}.json'.format(self.__class__.__name__.lower(), str(self.pk))

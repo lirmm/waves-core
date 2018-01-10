@@ -57,7 +57,7 @@ class JobHistory(WavesBaseModel):
     is_admin = models.BooleanField('Admin Message', default=False)
 
     def __str__(self):
-        return '%s:%s:%s' % (self.status, self.job, self.message) + ('(admin)' if self.is_admin else '')
+        return '{}:{}:{}'.format(self.status, self.job, self.message) + ('(admin)' if self.is_admin else '')
 
 
 class JobAdminHistory(JobHistory):

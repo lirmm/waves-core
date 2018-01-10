@@ -53,10 +53,12 @@ class JobManager(models.Manager):
     def get_user_job(self, user):
         """
         Filter jobs according to user (logged in) according to following access rule:
-        * User is a super_user, return all jobs
-        * User is member of staff (access to Django admin): returns only jobs from services user has created,
-        jobs created by user, or where associated email is its email
-        * User is simply registered on website, returns only those created by its own
+
+            - User is a super_user, return all jobs
+            - User is member of staff (access to Django admin): returns only jobs from services user has created,
+                jobs created by user, or where associated email is its email
+            - User is simply registered on website, returns only those created by its own
+
         :param user: current user (may be Anonymous)
         :return: QuerySet
         """
@@ -441,7 +443,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         self.save(update_fields=["_adaptor"])
 
     def __str__(self):
-        return '[%s][%s]' % (self.slug, self.service)
+        return '[{}][{}]'.format(self.slug, self.service)
 
     @property
     def command(self):
@@ -461,7 +463,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: unicode
         """
         if self._command_line is None:
-            self.command_line = "%s" % self.command.create_command_line(inputs=self.job_inputs.all().order_by('order'))
+            self.command_line = "{}".format(self.command.create_command_line(inputs=self.job_inputs.all().order_by('order')))
         return self._command_line
 
     @command_line.setter
@@ -553,7 +555,6 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """
         Create non editable (i.e not submitted anywhere and used for run)
 
-        :param service_submission
         :return: None
         """
         if self.submission:
