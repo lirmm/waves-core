@@ -235,7 +235,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def available_for_user(self, user):
         """ Access rules for submission form according to user
         :param user: Request User
-        :return: True or False
+        :return: boolean
         """
         # TODO reuse manager function or use authorization dedicated class
         # RULES to set if user can access service page
@@ -273,7 +273,6 @@ class Service(BaseService):
     """
     Represents a default swappable service on the platform
     """
-
     class Meta:
         ordering = ['name']
         verbose_name = 'Online Service'
@@ -305,7 +304,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
 
     def get_runner(self):
         """ Return the run configuration associated with this submission, or the default service one if not set
-        :return: Runner
+        :return: :class:`wcore.models.Runner`
         """
         if self.runner:
             return self.runner
@@ -378,12 +377,14 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
 
     def duplicate_api_name(self, api_name):
         """ Check is another entity is set with same api_name
+
         :param api_name:
         """
         return self.__class__.objects.filter(api_name=api_name, service=self.service).exclude(pk=self.pk)
 
     def available_for_user(self, user):
         """ Access rules for submission form according to user
+
         :param user: Request User
         :return: True or False
         """
@@ -412,7 +413,8 @@ class Submission(BaseSubmission):
 
 
 class SubmissionOutput(TimeStamped, ApiModel):
-    """ Represents usual service expected output files """
+    """ Represents usual submission expected output files
+    """
 
     class Meta:
         verbose_name = 'Expected output'
@@ -446,11 +448,11 @@ class SubmissionOutput(TimeStamped, ApiModel):
                                  help_text="Leave blank for *, or set in file pattern")
 
     def __str__(self):
-        """ String representation, return label"""
-        return self.label
+        """ String representation, return label """
+        return "[{}] {}".format(self.label, self.name)
 
     def clean(self):
-        """ Check validitiy before saving"""
+        """ Check validity before saving """
         cleaned_data = super(SubmissionOutput, self).clean()
         if self.from_input and not self.file_pattern:
             raise ValidationError({'file_pattern': 'If valuated from input, you must set a file pattern'})
@@ -476,12 +478,12 @@ class SubmissionOutput(TimeStamped, ApiModel):
             return self.extension
 
     def duplicate_api_name(self, api_name):
-        """ Check is another entity is set with same api_name """
+        """ Check is another entity is set with same app_name """
         return SubmissionOutput.objects.filter(api_name=api_name, submission=self.submission).exclude(pk=self.pk)
 
 
 class SubmissionExitCode(WavesBaseModel):
-    """ Services Extended exit code, when non 0/1 usual ones"""
+    """ Services Extended exit code, when non 0/1 usual ones """
 
     class Meta:
         verbose_name = 'Exit Code'

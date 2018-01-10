@@ -386,6 +386,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     def output_files(self):
         """
         Return list of all expected outputs files, whether they exist or not on disk
+
         .. note::
             Use :func:`output_files_exists` for only existing outputs instead
 
