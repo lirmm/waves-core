@@ -34,7 +34,7 @@ class RepeatedGroup(Ordered):
     default = models.IntegerField('Default repeat', default=0)
 
     def __str__(self):
-        return '[{}]'.formatself.name
+        return '[{}]'.format(self.name)
 
 
 class AParam(PolymorphicModel, ApiModel, Ordered):
@@ -115,7 +115,8 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
         if self.required is None and not self.default and self.cmd_format not in (
                 OPT_TYPE_NAMED_OPTION, OPT_TYPE_OPTION, OPT_TYPE_NONE):
             # param is mandatory
-            raise ValidationError('Not displayed parameters must have a default value {}:{}'.format(self.name, self.label))
+            raise ValidationError(
+                'Not displayed parameters must have a default value {}:{}'.format(self.name, self.label))
         if self.parent and not self.when_value:
             raise ValidationError({'when_value': 'If you set a dependency, you must set this value'})
         if self.parent is not None:
@@ -137,7 +138,7 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
 
     @property
     def value(self):
-        return "{}_value".formatself.name
+        return "{}_value".format(self.name)
 
     def field_dict(self, data=None):
         return dict(
@@ -349,7 +350,8 @@ class ListParam(AParam):
             raise ValidationError('You can\'t use checkboxes with non multiple choices enabled')
         if self.default and self.default not in self.values:
             raise ValidationError(
-                {'default': 'Default value "{}" is not present in list [{}]'.format(self.default, ', '.join(self.values))})
+                {'default': 'Default value "{}" is not present in list [{}]'.format(self.default,
+                                                                                    ', '.join(self.values))})
 
     @property
     def choices(self):
@@ -424,10 +426,10 @@ class FileInput(AParam):
         initial_fields = self.field_dict(data)
         initial_fields['required'] = False
         initial = {self.api_name: forms.FileField(**initial_fields),
-                   'cp_{}'.formatself.api_name: forms.CharField(label='Copy/paste content',
-                                                            required=False,
-                                                            widget=forms.Textarea(attrs={'cols': 20, 'rows': 10})
-                                                            )}
+                   'cp_{}'.format(self.api_name): forms.CharField(label='Copy/paste content',
+                                                                  required=False,
+                                                                  widget=forms.Textarea(attrs={'cols': 20, 'rows': 10})
+                                                                  )}
         for sample in self.input_samples.all():
             initial['sp_{}_{}'.format(self.api_name, sample.pk)] = sample.form_widget()
         return initial

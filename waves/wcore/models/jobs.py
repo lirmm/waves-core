@@ -586,7 +586,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
 
     @property
     def public_history(self):
-        """Filter Job history elements for public (non `JobAdminHistory` elements)
+        """ Filter Job history elements for public (non `JobAdminHistory` elements)
 
         :rtype: QuerySet
         """

@@ -41,27 +41,33 @@ Installation
 
     1.2. Go to your Django settings file (usually settings.py) and add required dependencies to your INSTALLED_APPS:
 
-    You should at least find these::
+    WAVES-core application has minimum dependencies to:
+
+    - `Django polymorphic <https://django-polymorphic.readthedocs.io/>`_
+    - `Crispy forms <http://django-crispy-forms.readthedocs.io>`_
+    - `Django Rest Framework <http://www.django-rest-framework.org/>`_
+
+    Optionally, WAVES-core can use:
+
+    - `Django CkEditor <https://github.com/django-ckeditor/django-ckeditor>`_
+    - `Django Admin sortable 2 <http://django-admin-sortable2.readthedocs.io>`_
+    - `Django Jet <http://jet.geex-arts.com/>`_
+
+    You should at least find these apps installed in your project::
 
         INSTALLED_APPS = [
             'polymorphic',
-            'django.contrib.admin',
-            'django.contrib.auth',
-            'django.contrib.contenttypes',
-            'django.contrib.sessions',
-            'django.contrib.messages',
-            'django.contrib.staticfiles',
+            ...
             'waves.wcore',
             'crispy_forms',
             'rest_framework',
-            'adminsortable2',
             ...
         ]
 
-    1.3. Include the services urls in your project urls.py:
+    1.3. Include the services urls in your project urls.py::
 
-        url(r'^waves/', include('waves.wcore.urls', namespace='wcore')),
-        url(r'^waves/api/', include('waves.wcore.api.urls', namespace='wapi')),
+        url(r'^waves/', include('waves.wcore.urls', namespace='wcore'))
+        url(r'^waves/api/', include('waves.wcore.api.urls', namespace='wapi'))
 
     1.4. Create your database::
 

@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'waves.wcore',
     'crispy_forms',
     'rest_framework',
-    'adminsortable2',
+    # 'adminsortable2',
 )
 
 MIDDLEWARE = [

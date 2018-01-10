@@ -1,11 +1,11 @@
 from __future__ import unicode_literals
 
-from adminsortable2.admin import SortableInlineAdminMixin
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
 
+from waves.wcore.compat import SortableInlineAdminMixin
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
 from waves.wcore.admin.base import *
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm

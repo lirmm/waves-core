@@ -1,7 +1,7 @@
 """ Service Submission administration classes """
 from __future__ import unicode_literals
 
-from adminsortable2.admin import SortableInlineAdminMixin
+from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
@@ -13,7 +13,7 @@ from waves.wcore.admin.adaptors import SubmissionRunnerParamInLine
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.wcore.admin.forms.services import *
 from waves.wcore.admin.views import ServicePreviewForm
-from waves.wcore.compat import CompactInline
+from waves.wcore.compat import CompactInline, SortableInlineAdminMixin
 from waves.wcore.models import get_submission_model
 from waves.wcore.models.inputs import *
 from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode
@@ -128,6 +128,12 @@ class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
     ordering = ('order',)
     extra = 0
     show_change_link = True
+
+    def get_fields(self, request, obj=None):
+        if 'adminsortable2' not in settings.INSTALLED_APPS:
+            fields = ['order'] + self.fields
+            return fields
+        return super(OrganizeInputInline, self).get_fields(request, obj)
 
     def class_label(self, obj):
         if obj.parent:
