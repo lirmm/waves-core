@@ -60,6 +60,11 @@ necessarily correlated.
 
 For each 'Submission configuration', you can add, remove, order possible inputs.
 
+.. note::
+    Note on ‘form’ api entry point
+    When calling service for loading submission form, returned content is not JSON but standard HTML document. It allows to retrieve the content of the form usually displayed in a web browser, in order to integrate the form in another page issued from any other system. Form is then submitted normally on the ‘Create a new job’ entry point.
+
+
 General information
 -------------------
 

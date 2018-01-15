@@ -95,7 +95,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                                            kwargs=dict(
                                                                service_app_name=self.kwargs.get('service_app_name'),
                                                                submission_app_name=service_submission.api_name)
-                                                           )))}
+                                                           ))+ '/jobs')}
                 for service_submission in service_tool.submissions_api.all()]
 
         content = render(request=self.request,
@@ -165,7 +165,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
                                                            kwargs=dict(
                                                                service_app_name=service_api_name,
                                                                submission_app_name=submission_api_name
-                                                           ))))}]
+                                                           ))) + '/jobs')}]
         content = render(request=self.request,
                          template_name='waves/api/service_api_form.html',
                          context={'submissions': form,
@@ -220,7 +220,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
 
                 # Now job is created (or raise an exception),
                 serializer = JobSerializer(created_job, many=False, context={'request': request},
-                                           fields=('slug', 'url', 'created', 'status'))
+                                           fields=('slug', 'url', 'created', 'status', 'service', 'submission'))
                 logger.debug('Job successfully created %s ' % created_job.slug)
                 return Response(serializer.data, status=201)
             except ValidationError as e:
