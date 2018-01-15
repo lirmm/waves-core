@@ -3,7 +3,7 @@ CHANGELOG
 =========
 
 
-Version 1.1.6 - 2018-01-15
+Version 1.1.6 - 2018-01-30
 --------------------------
 
     - [waves.front] Removed: waves.front, merged back inside wcore

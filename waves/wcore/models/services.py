@@ -62,7 +62,6 @@ class ServiceManager(models.Manager):
                 )
         # Non logged in user have only access to public services
         else:
-            print "here !"
             queryset = self.filter(status=self.model.SRV_PUBLIC)
         return queryset
 

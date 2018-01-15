@@ -91,7 +91,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                  'form': ServiceSubmissionForm(instance=service_submission,
                                                parent=service_tool,
                                                form_action=request.build_absolute_uri(
-                                                   reverse('wapi:api_v2:waves-submissions-detail',
+                                                   reverse('wapi:v2:waves-submissions-detail',
                                                            kwargs=dict(
                                                                service_app_name=self.kwargs.get('service_app_name'),
                                                                submission_app_name=service_submission.api_name)
@@ -161,7 +161,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
                                                parent=submission.service,
                                                template_pack=template_pack,
                                                form_action=request.build_absolute_uri(
-                                                   reverse('wapi:api_v2:waves-submissions-detail',
+                                                   reverse('wapi:v2:waves-submissions-detail',
                                                            kwargs=dict(
                                                                service_app_name=service_api_name,
                                                                submission_app_name=submission_api_name
@@ -182,7 +182,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
         return super(ServiceSubmissionViewSet, self).list(request, *args, **kwargs)
 
     @detail_route(methods=['get', 'post'], url_path='jobs')
-    def jobs(self, request, **kwargs):
+    def jobs(self, request, *args, **kwargs):
         """
         get:
         Return a list of current user's job for this submission

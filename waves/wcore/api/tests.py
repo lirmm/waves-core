@@ -61,7 +61,7 @@ class BaseAPITestCase(APITestCase, BaseTestCase):
 
 class WavesAPIV1TestCase(BaseAPITestCase):
     def test_api_root(self):
-        api_root = self.client.get(reverse('wapi:api_v1:api-root'))
+        api_root = self.client.get(reverse('wapi:v1:api-root'))
         self.assertEqual(api_root.status_code, status.HTTP_200_OK)
         logger.debug('Results: %s ', api_root.data)
         self.assertIn('services', api_root.data.keys())
@@ -87,14 +87,14 @@ class WavesAPIV1TestCase(BaseAPITestCase):
         """
         import random
         import string
-        logger.debug('Retrieving service-list from ' + reverse('wapi:api_v2:waves-services-list'))
+        logger.debug('Retrieving service-list from ' + reverse('wapi:v2:waves-services-list'))
         logger.debug('1 %s service loaded ' % Service.objects.count())
         expected_jobs = 0
         for service in Service.objects.all():
             logger.debug("'%s' (%s) is available with %s submission(s)" % (
                 service.name, service.get_status_display(), service.submissions_api.count()))
             expected_jobs += service.submissions_api.count()
-        tool_list = self.client.get(reverse('wapi:api_v1:waves-services-list'), format="json")
+        tool_list = self.client.get(reverse('wapi:v1:waves-services-list'), format="json")
         self.assertEqual(tool_list.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(tool_list)
         logger.debug(tool_list.data)
@@ -168,7 +168,7 @@ class WavesAPIV1TestCase(BaseAPITestCase):
 
 class WavesAPIV2TestCase(BaseAPITestCase):
     def test_api_root(self):
-        api_root = self.client.get(reverse('wapi:api_v2:api-root'))
+        api_root = self.client.get(reverse('wapi:v2:api-root'))
         self.assertEqual(api_root.status_code, status.HTTP_200_OK)
         logger.debug('Results: %s ', api_root.data)
         self.assertIn('services', api_root.data.keys())
@@ -191,14 +191,14 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         """
         Ensure for any service, we can create a job according to retrieved parameters
         """
-        logger.debug('Retrieving service-list from ' + reverse('wapi:api_v2:waves-services-list'))
+        logger.debug('Retrieving service-list from ' + reverse('wapi:v2:waves-services-list'))
         logger.debug('1 %s service loaded ' % Service.objects.count())
         expected_jobs = 0
         for service in Service.objects.all():
             logger.debug("'%s' (%s) is available with %s submission(s)" % (
                 service.name, service.get_status_display(), service.submissions_api.count()))
             expected_jobs += service.submissions_api.count()
-        tool_list = self.client.get(reverse('wapi:api_v2:waves-services-list'), format="json")
+        tool_list = self.client.get(reverse('wapi:v2:waves-services-list'), format="json")
         self.assertEqual(tool_list.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(tool_list)
         logger.debug(tool_list.data)
@@ -250,14 +250,14 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                                        clazz='waves.wcore.adaptors.mocks.MockJobRunnerAdaptor')
 
         sample_job = self.create_random_job(runner=runner)
-        test_cancel = self.client.post(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
+        test_cancel = self.client.post(reverse('wapi:v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login("api_user")
-        test_cancel = self.client.post(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
+        test_cancel = self.client.post(reverse('wapi:v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_202_ACCEPTED)
         db_job = Job.objects.get(slug=sample_job.slug)
         self.assertEqual(db_job.status, const.JOB_CANCELLED)
-        test_cancel = self.client.put(reverse('wapi:api_v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
+        test_cancel = self.client.put(reverse('wapi:v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_delete_job(self):
@@ -265,14 +265,14 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                                        clazz='waves.wcore.adaptors.mocks.MockJobRunnerAdaptor')
 
         sample_job = self.create_random_job(service=self.create_random_service(runner), user=self.users['api_user'])
-        test_delete = self.client.delete(reverse('wapi:api_v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
+        test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_delete.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login('api_user')
-        test_delete = self.client.delete(reverse('wapi:api_v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
+        test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
         self.assertEqual(test_delete.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_missing_params(self):
-        tool_list = self.client.get(reverse('wapi:api_v2:waves-services-list'), format="json")
+        tool_list = self.client.get(reverse('wapi:v2:waves-services-list'), format="json")
         service_tool = tool_list.data[0]
         default_submission = self.client.get(service_tool['submissions'][0])
         job_params = self.create_job_inputs_for_submission(default_submission.data)

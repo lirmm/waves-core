@@ -73,7 +73,7 @@ class JobInputSerializer(DynamicFieldsModelSerializer):
                 "value": j_input.value,
             })
             if j_input.param_type == TYPE_FILE:
-                repres["url"] = reverse(viewname='wapi:api_v2:job-input', request=self.context['request'],
+                repres["url"] = reverse(viewname='wapi:v2:job-input', request=self.context['request'],
                                         kwargs={'slug': j_input.slug})
             to_repr[j_input.api_name] = repres
         return to_repr
@@ -100,7 +100,7 @@ class JobOutputSerializer(serializers.ModelSerializer):
                 ("label", output.name),
                 ("file_name", output.file_name),
                 ("extension", output.get_extension()),
-                ("url", reverse(viewname='wapi:api_v2:job-output', request=self.context['request'],
+                ("url", reverse(viewname='wapi:v2:job-output', request=self.context['request'],
                                 kwargs={'slug': output.slug})),
             ])
         return to_repr
@@ -117,7 +117,7 @@ class JobSerializer(DynamicFieldsModelSerializer,
         read_only_fields = (
             'title', 'status', 'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history')
         extra_kwargs = {
-            'url': {'view_name': 'wapi:api_v2:waves-jobs-detail', 'lookup_field': 'slug'}
+            'url': {'view_name': 'wapi:v2:waves-jobs-detail', 'lookup_field': 'slug'}
         }
         lookup_field = 'slug'
 
@@ -133,7 +133,7 @@ class JobSerializer(DynamicFieldsModelSerializer,
 
     def get_submission(self, obj):
         if obj.submission and obj.submission.service:
-            return reverse(viewname='wapi:api_v2:waves-submissions-detail', request=self.context['request'],
+            return reverse(viewname='wapi:v2:waves-submissions-detail', request=self.context['request'],
                            kwargs={'service_app_name': obj.submission.service.api_name,
                                    'submission_app_name': obj.submission.api_name})
         else:
@@ -141,14 +141,14 @@ class JobSerializer(DynamicFieldsModelSerializer,
 
     def get_service(self, obj):
         if obj.submission and obj.submission.service:
-            return reverse(viewname='wapi:api_v2:waves-services-detail', request=self.context['request'],
+            return reverse(viewname='wapi:v2:waves-services-detail', request=self.context['request'],
                            kwargs={'service_app_name': obj.submission.service.api_name})
         else:
             return obj.service
 
     def get_history(self, obj):
-        """ Link to job history details wapi:api_v2 endpoint """
-        return reverse(viewname='wapi:api_v2:waves-jobs-history', request=self.context['request'],
+        """ Link to job history details wapi:v2 endpoint """
+        return reverse(viewname='wapi:v2:waves-jobs-history', request=self.context['request'],
                        kwargs={'slug': obj.slug})
 
     def get_status(self, obj):

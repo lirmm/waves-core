@@ -27,18 +27,20 @@ class OutputSerializer(DynamicFieldsModelSerializer):
     def to_representation(self, instance):
         """ Representation for a output """
         to_repr = {}
-        for output in instance.all():
-            tmp_repr = [
-                ('label', output.label),
-                ('name', output.name),
-                ('file_name', output.file_pattern),
-                ('help_text', output.help_text),
-                ('edam_format', output.edam_format),
-                ('edam_data', output.edam_data)
-            ]
-            if hasattr(output, 'from_input') and output.from_input is not None:
-                tmp_repr.append(('issued_from', output.from_input.api_name))
-        to_repr[output.api_name] = collections.OrderedDict(tmp_repr)
+        outputs = instance.all()
+        if outputs:
+            for output in outputs:
+                tmp_repr = [
+                    ('label', output.label),
+                    ('name', output.name),
+                    ('file_name', output.file_pattern),
+                    ('help_text', output.help_text),
+                    ('edam_format', output.edam_format),
+                    ('edam_data', output.edam_data)
+                ]
+                if hasattr(output, 'from_input') and output.from_input is not None:
+                    tmp_repr.append(('issued_from', output.from_input.api_name))
+                to_repr[output.api_name] = collections.OrderedDict(tmp_repr)
         return to_repr
 
 
@@ -60,7 +62,7 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
         fields = ('service', 'name', 'api_name', 'form', 'jobs',
                   'inputs', 'outputs', 'title', 'email_to')
 
-    view_name = 'wapi:api_v2:waves-submissions-detail'
+    view_name = 'wapi:v2:waves-submissions-detail'
 
     inputs = InputSerializer(many=False, read_only=True, source='expected_inputs')
     form = serializers.SerializerMethodField()
@@ -73,21 +75,21 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
     email_to = serializers.CharField(write_only=True, required=False)
 
     def get_jobs(self, obj):
-        return reverse(viewname='wapi:api_v2:waves-submissions-jobs', request=self.context['request'],
+        return reverse(viewname='wapi:v2:waves-submissions-jobs', request=self.context['request'],
                        kwargs={'service_app_name': obj.service.api_name, 'submission_app_name': obj.api_name})
 
     def get_form(self, obj):
         """ Return Service form endpoint uri"""
-        return reverse(viewname='wapi:api_v2:waves-submissions-form', request=self.context['request'],
+        return reverse(viewname='wapi:v2:waves-submissions-form', request=self.context['request'],
                        kwargs={'service_app_name': obj.service.api_name, 'submission_app_name': obj.api_name})
 
     def get_service(self, obj):
         """ Return service details uri """
-        return reverse(viewname='wapi:api_v2:waves-services-detail', request=self.context['request'],
+        return reverse(viewname='wapi:v2:waves-services-detail', request=self.context['request'],
                        kwargs={'service_app_name': obj.service.api_name})
 
     def get_queryset(self):
-        """ Filter wapi:api_v2 enabled submissions """
+        """ Filter wapi:v2 enabled submissions """
         return Submission.objects.filter(availability=1)
 
 
@@ -100,7 +102,7 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
                   'jobs', 'submissions', 'form')
         lookup_field = 'api_name'
         extra_kwargs = {
-            'url': {'view_name': 'wapi:api_v2:waves-services-detail',
+            'url': {'view_name': 'wapi:v2:waves-services-detail',
                     'lookup_field': 'api_name',
                     'lookup_url_kwarg': 'service_app_name'},
         }
@@ -110,17 +112,17 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
     form = serializers.SerializerMethodField()
 
     def get_submissions(self, obj):
-        return [reverse(viewname='wapi:api_v2:waves-submissions-detail', request=self.context['request'],
+        return [reverse(viewname='wapi:v2:waves-submissions-detail', request=self.context['request'],
                         kwargs={'service_app_name': obj.api_name, 'submission_app_name': sub.api_name}) for sub in
                 obj.submissions_api.all()]
 
     def get_form(self, obj):
         if obj.submissions_api.count() > 0:
-            return reverse(viewname='wapi:api_v2:waves-services-form', request=self.context['request'],
+            return reverse(viewname='wapi:v2:waves-services-form', request=self.context['request'],
                            kwargs={'service_app_name': obj.api_name})
         return ""
 
     def get_jobs(self, obj):
         """ return uri to access current service users' jobs """
-        return reverse(viewname='wapi:api_v2:waves-services-jobs', request=self.context['request'],
+        return reverse(viewname='wapi:v2:waves-services-jobs', request=self.context['request'],
                        kwargs={'service_app_name': obj.api_name})
