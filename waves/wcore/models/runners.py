@@ -28,8 +28,8 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'Execution environment'
-        verbose_name_plural = "Executions environments"
+        verbose_name = 'Computing infrastructure'
+        verbose_name_plural = "Computing infrastructures"
 
     objects = RunnerManager()
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
@@ -88,7 +88,7 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
         abstract = True
 
     _runner = None
-    runner = models.ForeignKey(Runner, verbose_name="Execution environment", related_name='%(app_label)s_%(class)s_runs',
+    runner = models.ForeignKey(Runner, verbose_name="Computing infrastructure", related_name='%(app_label)s_%(class)s_runs',
                                null=True, blank=False, on_delete=models.SET_NULL, help_text='Service job runs configuration')
 
     @classmethod

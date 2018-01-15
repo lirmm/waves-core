@@ -405,8 +405,8 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
 
 class Submission(BaseSubmission):
     class Meta:
-        verbose_name = 'Submission form'
-        verbose_name_plural = 'Submission forms'
+        verbose_name = 'Submission method'
+        verbose_name_plural = 'Submission methods'
         ordering = ('order',)
         swappable = swapper.swappable_setting('wcore', 'Submission')
 

@@ -75,10 +75,9 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     model = Runner
     form = RunnerForm
     inlines = (RunnerParamInline, ServiceRunInline)
-    list_display = ('id', 'name', 'get_runner_clazz', 'connexion_string', 'short_description', 'nb_services')
+    list_display = ('name', 'runner_clazz', 'short_description', 'connexion_string', 'nb_services', 'id')
     list_filter = ('name', 'clazz')
-    list_editable = ('name',)
-    list_display_links = ('id',)
+    list_display_links = ('name',)
     readonly_fields = ['connexion_string']
     fieldsets = [
         ('Main', {
@@ -111,11 +110,8 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     def nb_services(self, obj):
         return len(obj.runs)
 
-    def get_runner_clazz(self, obj):
-        return obj.clazz if obj.adaptor else "Implementation class not available !"
-
-    nb_services.short_description = "Running Services"
-    get_runner_clazz.short_description = "Computing infrastructure"
+    def runner_clazz(self, obj):
+        return obj.adaptor.name if obj.adaptor else "Implementation class not available !"
 
     def save_model(self, request, obj, form, change):
         """ Add related Service / Jobs updates upon Runner modification """
@@ -128,10 +124,8 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
                     messages.info(request, message)
 
     def connexion_string(self, obj):
-        concrete = obj.adaptor
-        if concrete is not None:
-            return obj.adaptor.connexion_string()
-        else:
-            return 'n/a'
+        return obj.adaptor.connexion_string() if obj and obj.adaptor is not None else 'n/a'
 
+    nb_services.short_description = "Running Services"
+    runner_clazz.short_description = "Type"
     connexion_string.short_description = 'Connexion String'

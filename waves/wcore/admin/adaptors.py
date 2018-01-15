@@ -48,6 +48,13 @@ class RunnerParamInline(AdaptorInitParamInline):
     """ Job Runner class instantiation parameters insertion field
     Inline are automatically generated from effective implementation class 'init_params' property """
     model = AdaptorInitParam
+    verbose_name = 'Initial connexion parameter'
+    verbose_name_plural = "Connexion parameters"
+
+    def get_queryset(self, request):
+        queryset = super(RunnerParamInline, self).get_queryset(request).exclude(name='command')
+        print queryset.query
+        return queryset
 
 
 class ServiceRunnerParamInLine(AdaptorInitParamInline):

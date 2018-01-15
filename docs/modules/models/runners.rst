@@ -1,7 +1,7 @@
-Execution environments
+Computing infrastructures
 ======================
 
-Execution environment models are in charge to store the configuration for expected adaptors to run jobs
+Computing infrastructure models are in charge to store the configuration for expected adaptors to run jobs
 
 
 Runner

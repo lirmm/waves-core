@@ -21,7 +21,7 @@ def get_runners_list():
         grp_name = adaptor.__class__.__module__.split('.')[-1].capitalize()
         if grp_name not in grp_impls:
             grp_impls[grp_name] = []
-        grp_impls[grp_name].append((adaptor.__module__ + '.' + adaptor.__class__.__name__, adaptor.__class__.__name__))
+        grp_impls[grp_name].append((adaptor.__module__ + '.' + adaptor.__class__.__name__, adaptor.__class__.name))
     return sorted((grp_key, grp_val) for grp_key, grp_val in grp_impls.items())
 
 

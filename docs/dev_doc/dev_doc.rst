@@ -56,7 +56,7 @@ The base abstract class "JobAdaptor" defines methods to manage a simple job exec
 
 First of all, override class ``__init__(self, *args, **kwargs)`` method if you need more params to create your Adaptor instance.
 Then accordingly, override ``init_params(self)`` property function in order to return a dictionary for each entry expected in constructor.
-It allows WAVES-core administration module to automatically load these entries in execution environment :ref:`configuration parameters panel <environment-set-up>`.
+It allows WAVES-core administration module to automatically load these entries in Computing infrastructure :ref:`configuration parameters panel <environment-set-up>`.
 
     .. seealso::
         Look at source to find what to override and how it's already made in WAVES-core adaptors :ref:`Sources <adaptor-base-class-label>`

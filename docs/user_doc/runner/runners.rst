@@ -1,7 +1,7 @@
 .. _runner-admin-label:
 
 ========================
-Execution environments
+Computing infrastructures
 ========================
 
 Computing infrastructures shortly named "Runner" are the entry point where you can setup different configuration on where and how services' jobs
@@ -51,14 +51,14 @@ Environment setup
         :width: 90%
         :figclass: thumbnail
 
-        Execution environment init parameters
+        Computing infrastructure init parameters
 
     You can set run configuration values such as login/password, destination host, etc... depending of the WAVES adapter you select in previous panel
 
     .. note::
         You can't set up your environment till you have saved your initial configuration once.
 
-        On the top left corner, once configured, a button allows you to test your parameters in order to verify if WAVES can actually connect to the execution environment.
+        On the top left corner, once configured, a button allows you to test your parameters in order to verify if WAVES can actually connect to the Computing infrastructure.
 
     .. hint::
         You can prevent subsequent service(s) to override a value in their own configuration administration page, by checking 'Prevent override' related checkbox
@@ -66,5 +66,5 @@ Environment setup
 Running services
 ----------------
 
-    Down the page, there is a list of current services which use this execution environment.
+    Down the page, there is a list of current services which use this Computing infrastructure.
 

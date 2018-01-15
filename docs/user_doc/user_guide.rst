@@ -5,7 +5,7 @@ Services are defined by administrators, then configured to allow users to gain a
 
 Everything is made simple with help of dedicated back office entries.
 There, administrators firstly describe services in term of name, description, authors, citation links, edams ontology topics and operations,
-execution environment configuration (see “Execution adaptor”).
+Computing infrastructure configuration (see “Execution adaptor”).
 
 Once service main data are setup, administrators can configure precisely related submission to setup inputs, execution parameters, outputs, etc…
 

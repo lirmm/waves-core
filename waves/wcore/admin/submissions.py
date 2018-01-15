@@ -155,14 +155,13 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     current_obj = None
     form = ServiceSubmissionForm
     exclude = ['order']
-    list_display = ['id', 'get_api_name', 'name', 'get_service', 'availability', 'runner', 'created',
-                    'updated']
-    readonly_fields = ['get_command_line_pattern', 'display_run_params']
-    list_filter = ('service__name', 'availability')
-    list_editable = ('availability', 'name')
-    list_display_links = ('get_api_name', 'id')
+    list_display = ['name', 'api_name',  'get_service', 'availability', 'get_runner', 'updated']
+    readonly_fields = ['get_command_line_pattern', 'get_run_params']
+    list_filter = ('service__name', 'availability', 'runner')
+    list_editable = ('availability',)
+    list_display_links = ('name', )
     ordering = ('name', 'updated', 'created')
-    search_fields = ('service__name', 'label', 'override_runner__name', 'service__runner__name')
+    search_fields = ('service__name', 'label', 'runner__name', 'service__runner__name')
 
     fieldsets = [
         ('General', {
@@ -170,7 +169,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
             'classes': ['collapse', 'open']
         }),
         ('Run ', {
-            'fields': ['runner', 'display_run_params', 'get_command_line_pattern', 'binary_file'],
+            'fields': ['runner', 'get_run_params', 'get_command_line_pattern', 'binary_file'],
             'classes': ['collapse']
         }),
     ]
@@ -185,10 +184,8 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
         return urls + extended_urls
 
     # Override admin class and set this list to add your inlines to service admin
-    def display_run_params(self, obj):
+    def get_run_params(self, obj):
         return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
-
-    display_run_params.short_description = "Runner initial params"
 
     def get_inlines(self, request, obj=None):
         _inlines = [
@@ -236,14 +233,10 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     def get_name(self, obj):
         return mark_safe("<span title='Edit submission'>%s (%s)</span>" % (obj.name, obj.service))
 
-    get_name.short_description = "Name"
-
     def get_command_line_pattern(self, obj):
         if not obj.adaptor:
             return "N/A"
         return "%s %s" % (obj.adaptor.command, obj.service.command.create_command_line(inputs=obj.inputs.all()))
-
-    get_command_line_pattern.short_description = "Command line pattern"
 
     def has_add_permission(self, request):
         return False
@@ -251,10 +244,8 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     def get_service(self, obj):
         return url_to_edit_object(obj.service)
 
-    get_service.short_description = "Service"
-
-    def runner_link(self, obj):
-        return obj.get_runner()
+    def get_runner(self, obj):
+        return obj.get_runner().name if obj.get_runner() else 'N/A'
 
     def _redirect_save_back(self, request, obj):
         self.message_user(request,
@@ -267,6 +258,12 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
         if obj and not obj.runner:
             obj.adaptor_params.all().delete()
         super(ServiceSubmissionAdmin, self).save_model(request, obj, form, change)
+
+    get_run_params.short_description = "Runner initial params"
+    get_service.short_description = "Service"
+    get_runner.short_description = "Computing infrastructure"
+    get_name.short_description = "Name"
+    get_command_line_pattern.short_description = "Command line pattern"
 
 
 admin.site.register(RepeatedGroup, RepeatGroupAdmin)

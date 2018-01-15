@@ -86,8 +86,8 @@ Run configuration
 
 **General Use case**
 
-Most of the time, a service needs only one submission method, defined to run jobs on one single execution environment.
-Once configured, service jobs submitted by users are sent to the execution environment with specified run parameters and user inputs.
+Most of the time, a service needs only one submission method, defined to run jobs on one single Computing infrastructure.
+Once configured, service jobs submitted by users are sent to the Computing infrastructure with specified run parameters and user inputs.
 The job is then monitored during its execution to check for its different status, once job finish its execution,
 WAVES system retrieve results and store them on the platform to be made available online (HTML page or REST api entries).
 

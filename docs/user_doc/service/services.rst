@@ -45,7 +45,7 @@ General options
 
 * **App short code**: this value is used for generating urls and api entry points, for service, this value must be unique
 * **Short description**: Short description text about what service is about (not displayed on front but only on api)
-* **Execution environment**: Execution configuration (see :ref:`runner-admin-label` administration)
+* **Computing infrastructure**: Execution configuration (see :ref:`runner-admin-label` administration)
 * **Binary file**: You can upload here the executable file which will be used for execution
 
     .. CAUTION::

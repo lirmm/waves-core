@@ -56,7 +56,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link', 'display_run_params']
     list_display = ('id', 'get_api_name', 'name', 'status', 'get_runner', 'version', 'created_by', 'updated',
                     'submission_link')
-    list_filter = ('status', 'name', 'created_by')
+    list_filter = ('status', 'name', 'created_by', 'runner')
     list_editable = ('status', 'name')
     list_display_links = ('get_api_name', 'id')
     ordering = ('name', 'updated')

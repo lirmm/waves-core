@@ -23,7 +23,7 @@ class JobAdaptor(object):
     _required = {'command', 'protocol', 'host'}
 
     NOT_AVAILABLE_MESSAGE = "Adaptor is currently not available on platform"
-    name = 'Abstract Adaptor name'
+    name = 'Abstract Adaptor'
     #: Remote status need to be mapped with WAVES expected job status
     _states_map = {}
 
