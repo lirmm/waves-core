@@ -68,7 +68,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
             'classes': ('grp-collapse grp-closed', 'collapse', 'open')
 
         }),
-        ('Execution configuration', {
+        ('Computing infrastructure', {
             'fields': ['runner', 'binary_file', 'display_run_params'],
             'classes': ['collapse', ]
         }),
@@ -104,12 +104,11 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     def get_fieldsets(self, request, obj=None):
         base_fieldsets = super(ServiceAdmin, self).get_fieldsets(request, obj)
         if obj is None:
-            # create mode un collapse RunConfig
+            # create mode un-collapse RunConfig
             try:
                 base_fieldsets[1][1]['classes'].remove(u'collapse')
             except ValueError:
                 pass
-            # print type(base_fieldsets[1][1]['classes'][0]), base_fieldsets[1][1]['classes'][0]
         else:
             base_fieldsets[1][1]['classes'].append('collapse')
         return base_fieldsets + self.extra_fieldsets
@@ -124,7 +123,6 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
             self.inlines.insert(0, ServiceRunnerParamInLine)
         return self.inlines
 
-    # Override admin class and set this list to add your inlines to service admin
     def display_run_params(self, obj):
         return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
 

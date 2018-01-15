@@ -8,6 +8,7 @@ from django.apps import AppConfig
 from django.core.checks import Error, register
 from django.conf import settings
 
+
 class WavesConfig(AppConfig):
     """
     WAVES main application AppConfig, add signals for waves_webapp

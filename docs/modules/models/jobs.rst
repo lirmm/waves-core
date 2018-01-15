@@ -16,6 +16,7 @@ Manager
 ^^^^^^^
 .. autoclass:: waves.wcore.models.jobs.JobManager
     :members:
+    :noindex:
 
 .. _job_input_label:
 

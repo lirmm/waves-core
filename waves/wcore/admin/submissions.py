@@ -251,7 +251,6 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
         self.message_user(request,
                           format_html('Submission "<a href="{}">{}</a>" successfully saved', urlquote(request.path),
                                       obj), messages.SUCCESS)
-        messages.warning(request, "You are now editing service '{}'".format(obj.service))
         return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
 
     def save_model(self, request, obj, form, change):
@@ -264,6 +263,10 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     get_runner.short_description = "Computing infrastructure"
     get_name.short_description = "Name"
     get_command_line_pattern.short_description = "Command line pattern"
+
+    def get_model_perms(self, request):
+        # Disable direct entry to BinaryFiles
+        return {}
 
 
 admin.site.register(RepeatedGroup, RepeatGroupAdmin)

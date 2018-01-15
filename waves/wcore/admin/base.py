@@ -144,8 +144,6 @@ class WavesModelAdmin(ModelAdmin):
 
     def response_change(self, request, obj):
         if '_saveandback' in request.POST:
-            print "in response change ", request.POST.get('_saveandback')
-
             return self._redirect_save_back(request, obj)
         else:
             return super(WavesModelAdmin, self).response_change(request, obj)

@@ -53,13 +53,13 @@ class RunnerParamInline(AdaptorInitParamInline):
 
     def get_queryset(self, request):
         queryset = super(RunnerParamInline, self).get_queryset(request).exclude(name='command')
-        print queryset.query
         return queryset
 
 
 class ServiceRunnerParamInLine(AdaptorInitParamInline):
     """ Adaptors parameters for Service """
     model = AdaptorInitParam
+    fields = ['name', 'value', ]
 
     def get_queryset(self, request):
         queryset = super(ServiceRunnerParamInLine, self).get_queryset(request)

@@ -22,3 +22,8 @@ class ServiceBinaryFileAdmin(WavesModelAdmin):
         if isfile(obj.binary.path):
             return obj.binary.path
         return "N/A"
+
+    def get_model_perms(self, request):
+        # Disable direct entry to BinaryFiles
+        return {}
+

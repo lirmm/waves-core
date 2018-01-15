@@ -1,8 +1,8 @@
 .. _runner-admin-label:
 
-========================
+=========================
 Computing infrastructures
-========================
+=========================
 
 Computing infrastructures shortly named "Runner" are the entry point where you can setup different configuration on where and how services' jobs
 may be run
