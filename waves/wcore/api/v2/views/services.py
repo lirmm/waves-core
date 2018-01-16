@@ -12,10 +12,10 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, renderer_classes
 from rest_framework.exceptions import ValidationError as DRFValidationError
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework.reverse import reverse
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.renderers import StaticHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 from waves.wcore.api.v2.serializers.jobs import JobSerializer
 from waves.wcore.api.v2.serializers.services import ServiceSerializer, ServiceSubmissionSerializer
@@ -95,7 +95,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                                            kwargs=dict(
                                                                service_app_name=self.kwargs.get('service_app_name'),
                                                                submission_app_name=service_submission.api_name)
-                                                           ))+ '/jobs')}
+                                                           )) + '/jobs')}
                 for service_submission in service_tool.submissions_api.all()]
 
         content = render(request=self.request,
@@ -191,8 +191,6 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
         Create a new job from submitted inputs
 
         :param request: HTTP request
-        :param service: service app_name
-        :param submission: submission app_name
         :return: list
         """
         obj = self.get_object_or_404()

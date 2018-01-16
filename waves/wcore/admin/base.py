@@ -8,7 +8,7 @@ from django.db import models
 from django.forms import Textarea, Select
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.contrib.admin.templatetags.admin_modify import *
+from django.contrib.admin.templatetags.admin_modify import register
 from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
 
 

@@ -4,7 +4,6 @@ from django.conf.urls import url, include
 from rest_framework import routers
 
 from waves.wcore.api.v2.views import jobs, services
-from waves.wcore.views.jobs import JobOutputView, JobInputView
 
 # API router setup
 router = routers.DefaultRouter(trailing_slash=False)

@@ -12,10 +12,10 @@ from django.views.generic.detail import SingleObjectMixin
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import detail_route, permission_classes
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from waves.wcore.api.v2.serializers.jobs import JobSerializer, JobStatusSerializer
@@ -77,7 +77,7 @@ class JobViewSet(mixins.ListModelMixin,
 
 
         """
-        job = get_object_or_404(self.get_queryset())
+        job = self.get_object()
         try:
             job.run_cancel()
         except JobInconsistentStateError as e:
@@ -87,7 +87,7 @@ class JobViewSet(mixins.ListModelMixin,
 
     @detail_route(methods=['get'])
     def status(self, request, *args, **kwargs):
-        job = get_object_or_404(self.get_queryset())
+        job = self.get_object()
         serializer = JobStatusSerializer(instance=job)
         return Response(serializer.data)
 

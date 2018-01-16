@@ -11,11 +11,12 @@ from django.utils.http import urlquote
 
 from waves.wcore.admin.adaptors import SubmissionRunnerParamInLine
 from waves.wcore.admin.base import WavesModelAdmin, DynamicInlinesAdmin
-from waves.wcore.admin.forms.services import *
+from waves.wcore.admin.forms.services import SubmissionOutputForm, InputSampleForm, SampleDepForm2, InputInlineForm, \
+    ServiceSubmissionForm, SampleDepForm
 from waves.wcore.admin.views import ServicePreviewForm
 from waves.wcore.compat import CompactInline, SortableInlineAdminMixin
 from waves.wcore.models import get_submission_model
-from waves.wcore.models.inputs import *
+from waves.wcore.models.inputs import AParam, FileInputSample, FileInput, RepeatedGroup, SampleDepParam
 from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode
 from waves.wcore.utils import url_to_edit_object
 
@@ -155,11 +156,11 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     current_obj = None
     form = ServiceSubmissionForm
     exclude = ['order']
-    list_display = ['name', 'api_name',  'get_service', 'availability', 'get_runner', 'updated']
+    list_display = ['name', 'api_name', 'get_service', 'availability', 'get_runner', 'updated']
     readonly_fields = ['get_command_line_pattern', 'get_run_params']
     list_filter = ('service__name', 'availability', 'runner')
     list_editable = ('availability',)
-    list_display_links = ('name', )
+    list_display_links = ('name',)
     ordering = ('name', 'updated', 'created')
     search_fields = ('service__name', 'label', 'runner__name', 'service__runner__name')
 

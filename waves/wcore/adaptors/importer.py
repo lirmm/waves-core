@@ -7,7 +7,7 @@ import warnings
 
 import inflection
 
-from waves.wcore.adaptors.exceptions import *
+from waves.wcore.adaptors.exceptions import ImporterException
 from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.settings import waves_settings
 

@@ -9,8 +9,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.module_loading import import_string
 
-
-from waves.wcore.settings import waves_settings
 from waves.wcore.adaptors.loader import AdaptorLoader
 from waves.wcore.models.base import WavesBaseModel
 from waves.wcore.models.binaries import ServiceBinaryFile
@@ -158,7 +156,5 @@ class HasAdaptorClazzMixin(WavesBaseModel):
     def save(self, *args, **kwargs):
         super(HasAdaptorClazzMixin, self).save(*args, **kwargs)
         names = AdaptorLoader.get_class_names()
-        if self.clazz not in names:
+        if self.clazz and self.clazz not in names:
             raise RuntimeError('The class [{}] not configured as ADAPTORS_CLASSES {}'.format(self.clazz, names))
-
-

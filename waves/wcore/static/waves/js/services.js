@@ -30,8 +30,8 @@
         var dependents = $("[dependent-on='" + $(this).attr("name") + "']");
         var has_dep = $(this).val();
         console.log('Type obj:', $(this).attr('type'));
-        if ($(this).attr('type') == 'checkbox' || $(this).attr('type') == 'radio') {
-            if ($(this).prop('checked') == true)
+        if ($(this).attr('type') === 'checkbox' || $(this).attr('type') === 'radio') {
+            if ($(this).prop('checked') === true)
                 has_dep = 'True';
             else
                 has_dep = 'False';
@@ -40,7 +40,7 @@
         console.log('Event fired ! ' + has_dep);
         dependents.each(function() {
             console.log($(this), $(this).attr('dependent-4-value'), has_dep);
-            if ($(this).attr('dependent-4-value') == has_dep) {
+            if ($(this).attr('dependent-4-value') === has_dep) {
                 $('#div_id_' + $(this).attr('name')).removeClass('hid_dep_parameter');
                 $('#tab_pane_' + $(this).attr('name')).removeClass('hid_dep_parameter');
                 $(this).removeAttr('disabled');

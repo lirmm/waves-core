@@ -4,7 +4,7 @@
 (function ($) {
     $(document).ready(function () {
         var prev_val = $("#id_clazz").val();
-        $("#id_clazz").focus(function () {
+        prev_val.focus(function () {
             prev_val = $(this).val();
             console.log('Prev val' + prev_val);
         }).change(function () {
@@ -16,9 +16,9 @@
                     $(this).val(prev_val);
                 }
             } else {
-                console.log('changed ?');
-                if ($("#id_name").val() == "") {
-                    $("#id_name").val($(this).val().substring($(this).val().lastIndexOf('.') + 1));
+                var id_name = $("#id_name")
+                if (id_name.val() === "") {
+                    id_name.val($(this).val().substring($(this).val().lastIndexOf('.') + 1));
                 }
                 //$("input[type='submit'][name='_continue']").trigger('click');
             }

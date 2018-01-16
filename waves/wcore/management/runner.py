@@ -10,8 +10,8 @@ from itertools import chain
 
 from daemons.prefab import run
 
-import waves.wcore.adaptors.const
 import waves.wcore.exceptions
+from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.models import Job
 from waves.wcore.settings import waves_settings
@@ -96,7 +96,7 @@ class JobQueueRunDaemon(BaseRunDaemon):
         :return: None
         """
         jobs = Job.objects.prefetch_related('job_inputs'). \
-            prefetch_related('outputs').filter(_status__lt=waves.wcore.adaptors.const.JOB_TERMINATED)
+            prefetch_related('outputs').filter(_status__lt=JobStatus.JOB_TERMINATED)
         if jobs.count() > 0:
             logger.info("Starting queue process with %i(s) unfinished jobs", jobs.count())
         for job in jobs:
@@ -106,13 +106,13 @@ class JobQueueRunDaemon(BaseRunDaemon):
             try:
                 job.check_send_mail()
                 logger.debug("Launching Job %s (adaptor:%s)", job, runner)
-                if job.status == waves.wcore.adaptors.const.JOB_CREATED:
+                if job.status == JobStatus.JOB_CREATED:
                     job.run_prepare()
                     logger.debug("[PrepareJob] %s (adaptor:%s)", job, runner)
-                elif job.status == waves.wcore.adaptors.const.JOB_PREPARED:
+                elif job.status == JobStatus.JOB_PREPARED:
                     logger.debug("[LaunchJob] %s (adaptor:%s)", job, runner)
                     job.run_launch()
-                elif job.status == waves.wcore.adaptors.const.JOB_COMPLETED:
+                elif job.status == JobStatus.JOB_COMPLETED:
                     job.run_results()
                     logger.debug("[JobExecutionEnded] %s (adaptor:%s)", job.get_status_display(), runner)
                 else:

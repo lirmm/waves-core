@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import waves.wcore.adaptors.const
 from django.contrib import admin, messages
 from django.contrib.admin import TabularInline
 from django.db.models import Q
@@ -10,7 +9,9 @@ from waves.wcore.admin.base import WavesModelAdmin
 from waves.wcore.admin.forms.jobs import JobInputForm, JobOutputForm, JobForm
 from waves.wcore.admin.views import JobCancelView, JobRerunView
 from waves.wcore.models.history import JobHistory
-from waves.wcore.models.jobs import *
+from waves.wcore.models.jobs import JobInput, Job, JobOutput
+from waves.wcore.adaptors.const import JobStatus
+
 
 __all__ = ['JobAdmin']
 
@@ -195,12 +196,12 @@ class JobAdmin(WavesModelAdmin):
 
     def suit_row_attributes(self, obj, request):
         css_class = {
-            waves.wcore.adaptors.const.JOB_COMPLETED: 'success',
-            waves.wcore.adaptors.const.JOB_RUNNING: 'warning',
-            waves.wcore.adaptors.const.JOB_ERROR: 'error',
-            waves.wcore.adaptors.const.JOB_CANCELLED: 'error',
-            waves.wcore.adaptors.const.JOB_PREPARED: 'info',
-            waves.wcore.adaptors.const.JOB_CREATED: 'info',
+            JobStatus.JOB_COMPLETED: 'success',
+            JobStatus.JOB_RUNNING: 'warning',
+            JobStatus.JOB_ERROR: 'error',
+            JobStatus.JOB_CANCELLED: 'error',
+            JobStatus.JOB_PREPARED: 'info',
+            JobStatus.JOB_CREATED: 'info',
         }.get(obj.status)
         if css_class:
             return {'class': css_class}

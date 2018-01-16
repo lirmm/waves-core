@@ -27,7 +27,7 @@ class DownloadFileView(generic.DetailView):
         return obj
 
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.get_object()
         self.file_type = magic.from_file(self.file_path)
         export = 'export' in self.request.GET or self._force_download is True
         if 'text' not in self.file_type and not export:

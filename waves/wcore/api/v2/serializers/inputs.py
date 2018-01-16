@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer, RecursiveField
-from waves.wcore.models.inputs import *
+from waves.wcore.models.inputs import AParam, TextParam, ListParam, BooleanParam, IntegerParam, FileInput, DecimalParam
 from .fields import CommaSeparatedListField, ListElementField
 
 

@@ -7,7 +7,8 @@ from django.utils.safestring import mark_safe
 
 from waves.wcore.compat import SortableInlineAdminMixin
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
-from waves.wcore.admin.base import *
+from waves.wcore.admin.base import WavesModelAdmin, ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, \
+    DynamicInlinesAdmin
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
 from waves.wcore.admin.views import ServiceParamImportView, ServiceDuplicateView, ServiceExportView, \
     ServiceModalPreview, ServiceTestConnectionView

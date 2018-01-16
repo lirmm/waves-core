@@ -3,20 +3,17 @@ from __future__ import unicode_literals
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from waves.wcore.settings import waves_settings
-
 
 def check_db_version(func):
-
     def wrapper(*args, **kwargs):
         a = list(args)
         a.reverse()
         return func(*args, **kwargs)
+
     return func
 
 
 class BaseSerializer(serializers.ModelSerializer):
-
     class Meta:
         fields = ('db_version',)
 

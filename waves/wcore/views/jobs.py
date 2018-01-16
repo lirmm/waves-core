@@ -3,14 +3,12 @@ from __future__ import unicode_literals
 
 from uuid import UUID
 
-from django.template import TemplateDoesNotExist
+from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.urls import reverse
-from django.core.exceptions import PermissionDenied
 from django.views import generic
 
 from waves.wcore.forms.services import ServiceSubmissionForm
-
 from waves.wcore.models import JobOutput, JobInput, Job, get_submission_model, get_service_model
 from waves.wcore.views.files import DownloadFileView
 from waves.wcore.views.services import SubmissionFormView, ServiceDetailView

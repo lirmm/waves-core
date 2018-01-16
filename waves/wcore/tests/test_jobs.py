@@ -6,16 +6,14 @@ import os
 from django.core import mail
 from django.utils import timezone
 
-import waves.wcore.adaptors.const
+from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.settings import waves_settings as config
-from waves.wcore.tests import BaseTestCase
+from waves.wcore.tests.base import BaseTestCase
 
 logger = logging.getLogger(__name__)
 Service = get_service_model()
 Submission = get_submission_model()
-
-logger = logging.getLogger(__name__)
 
 
 class JobsTestCase(BaseTestCase):
@@ -26,10 +24,10 @@ class JobsTestCase(BaseTestCase):
         self.assertEqual(job.outputs.count(), 4)
         self.assertTrue(os.path.isdir(job.working_dir))
         logger.debug('Job directories has been created %s ', job.working_dir)
-        self.assertEqual(job.status, waves.wcore.adaptors.const.JOB_CREATED)
+        self.assertEqual(job.status, JobStatus.JOB_CREATED)
         self.assertEqual(job.job_history.count(), 1)
         job.message = "Test job Message"
-        job.status = waves.wcore.adaptors.const.JOB_PREPARED
+        job.status = JobStatus.JOB_PREPARED
         job.save()
         self.assertGreaterEqual(job.job_history.filter(message__contains=job.message).all(), 0)
         job.delete()
@@ -64,13 +62,13 @@ class JobsTestCase(BaseTestCase):
         logger.debug('Mail subject: %s', sent_mail.subject)
         logger.debug('Mail from: %s', sent_mail.from_email)
         logger.debug('Mail content: \n%s', sent_mail.body)
-        job.status = waves.wcore.adaptors.const.JOB_COMPLETED
+        job.status = JobStatus.JOB_COMPLETED
         # job.save()
         job.check_send_mail()
         # no more mails
         self.assertEqual(len(mail.outbox), 1)
 
-        job.status = waves.wcore.adaptors.const.JOB_TERMINATED
+        job.status = JobStatus.JOB_TERMINATED
         # job.save()
         job.check_send_mail()
         self.assertEqual(len(mail.outbox), 2)
@@ -78,7 +76,7 @@ class JobsTestCase(BaseTestCase):
         logger.debug('Mail subject: %s', sent_mail.subject)
         logger.debug('Mail from: %s', sent_mail.from_email)
         logger.debug('Mail content: \n%s', sent_mail.body)
-        job.status = waves.wcore.adaptors.const.JOB_ERROR
+        job.status = JobStatus.JOB_ERROR
         # job.save()
         job.check_send_mail()
         # mail to user and mail to admin so +2
@@ -87,7 +85,7 @@ class JobsTestCase(BaseTestCase):
         logger.debug('Mail subject: %s', sent_mail.subject)
         logger.debug('Mail from: %s', sent_mail.from_email)
         logger.debug('Mail content: \n%s', sent_mail.body)
-        job.status = waves.wcore.adaptors.const.JOB_CANCELLED
+        job.status = JobStatus.JOB_CANCELLED
         # job.save()
         job.check_send_mail()
         self.assertEqual(len(mail.outbox), 5)

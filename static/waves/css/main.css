@@ -54,9 +54,9 @@ body > .navbar-transparent {
 
 .btn {
     background-image: none;
-    /*-webkit-box-shadow: 0px 1px 0px #ddd;
-    -moz-box-shadow: 0px 1px 0px #ddd;*/
-    /*box-shadow: 0px 1px 0px #ddd;*/
+    /*-webkit-box-shadow: 0 1px 0 #ddd;
+    -moz-box-shadow: 0 1px 0 #ddd;*/
+    /*box-shadow: 0 1px 0 #ddd;*/
 }
 
 /* Home page styling */
@@ -114,11 +114,11 @@ body > .navbar-transparent {
 /* Profile page styling */
 .profile-head {
     background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAJklEQVQIW2NkAIILFy78NzAwYATRjCABZEGwAEwFiA1WBlIOUwkA72gTdDIYVO4AAAAASUVORK5CYII=/) repeat;
-    padding: 70px 0px 30px 20px;
+    padding: 70px 0 30px 20px;
 }
 
 .profile-body {
-    padding: 4px 0px;
+    padding: 4px 0;
 }
 
 .text-page {
@@ -138,7 +138,7 @@ body > .navbar-transparent {
 
 .img-dim {
     opacity: 0.5;
-    box-shadow: inset 0px 0px 64px 64px #EA1717, 0px 0px 4px 4px #EA1717;
+    box-shadow: inset 0 0 64px 64px #EA1717, 0 0 4px 4px #EA1717;
 }
 
 /* Authentication forms */

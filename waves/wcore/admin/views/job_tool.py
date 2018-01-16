@@ -7,15 +7,15 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from waves.wcore.exceptions import *
+from waves.wcore.exceptions import WavesException
 from waves.wcore.models import Job
-import waves.wcore.adaptors.const
+from waves.wcore.adaptors.const import JobStatus
 
 
 class JobCancelView(View):
     """ View after cancel a job, if possible """
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         """ Try to cancel specified job (in kwargs), redirect to current job page """
         try:
             job = get_object_or_404(Job, id=self.kwargs['job_id'])
@@ -23,7 +23,7 @@ class JobCancelView(View):
             if runner is not None:
                 runner.cancel_job(job)
             else:
-                job.status = waves.wcore.adaptors.const.JOB_CANCELLED
+                job.status = JobStatus.JOB_CANCELLED
                 job.save()
             messages.add_message(request, level=messages.SUCCESS, message="Job cancelled")
         except WavesException as e:
@@ -32,7 +32,7 @@ class JobCancelView(View):
 
 
 class JobRerunView(View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         job = get_object_or_404(Job, id=self.kwargs['job_id'])
         if job.allow_rerun:
             try:

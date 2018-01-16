@@ -4,7 +4,7 @@ import logging
 from django.urls import reverse
 
 from waves.wcore.models import get_service_model, get_submission_model
-from waves.wcore.tests import BaseTestCase
+from waves.wcore.tests.base import BaseTestCase
 
 logger = logging.getLogger(__name__)
 Service = get_service_model()
@@ -21,11 +21,11 @@ class ServicesTestCase(BaseTestCase):
             self.assertListEqual(sorted(service.run_params.keys()), sorted(service.runner.run_params.keys()))
 
     def test_access_rules(self):
-        def _test_access(url, expected_status, user=None):
+        def _test_access(the_url, expected_status, user=None):
             self.login(user) if user else None
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, expected_status,
-                             "Status code {} expected is {}".format(response.status_code, expected_status))
+            the_response = self.client.get(url)
+            self.assertEqual(the_response.status_code, expected_status,
+                             "Status code {} expected is {}".format(the_response.status_code, expected_status))
             self.client.logout() if user else None
 
         services = self.bootstrap_services()

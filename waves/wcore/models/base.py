@@ -8,10 +8,10 @@ import inflection
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
 from waves.wcore.compat import RichTextField
-from waves.wcore.settings import waves_settings as config
+from waves.wcore.settings import waves_settings
 
 __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 'ApiModel',
-           'UrlMixin', 'WavesBaseModel']
+           'UrlMixin', 'WavesBaseModel', 'ExportError']
 
 
 class WavesBaseModel(models.Model):
@@ -140,7 +140,7 @@ class UrlMixin(object):
         """ short cut to :func:`get_url()`
         :return: current absolute uri for Job
         """
-        return "{}{}".format(config.HOST, self.get_absolute_url())
+        return "{}{}".format(waves_settings.HOST, self.get_absolute_url())
 
     def get_url(self):
         """ Calculate and return absolute 'front-office' url for a model object
@@ -169,8 +169,9 @@ class ExportAbleMixin(object):
     def serialize(self):
         """ Import model object serializer, serialize and write data to disk """
         from os.path import join
+        from waves.wcore.settings import waves_settings
         import json
-        file_path = join(config.DATA_ROOT, self.export_file_name)
+        file_path = join(waves_settings.DATA_ROOT, self.export_file_name)
         with open(file_path, 'w') as fp:
             try:
                 serializer = self.serializer()

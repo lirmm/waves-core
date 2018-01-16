@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 
 from waves.wcore.forms.crispy import FormHelper
 from waves.wcore.models import get_submission_model
-from waves.wcore.models.inputs import *
+from waves.wcore.models.inputs import AParam, FileInput
 from waves.wcore.utils import random_analysis_name
 
 Submission = get_submission_model()

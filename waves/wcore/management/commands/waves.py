@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from ..command import JobQueueCommand, PurgeDaemonCommand
 from ..base import SubcommandDispatcher
-from ..subcommands import *
+from ..subcommands import CleanUpCommand, ImportCommand, DumpConfigCommand, ShowUrlsCommand
 
 CLEAN = 'clean'
 CONFIG = 'config'

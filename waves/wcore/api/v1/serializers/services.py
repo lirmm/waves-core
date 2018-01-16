@@ -4,9 +4,11 @@ from __future__ import unicode_literals
 import logging
 
 from django.contrib.staticfiles.storage import staticfiles_storage
+from rest_framework import serializers
 from rest_framework.reverse import reverse as reverse
 
-from waves.wcore.api.v1.serializers.inputs import *
+from waves.wcore.api.share import DynamicFieldsModelSerializer
+from waves.wcore.api.v1.serializers.inputs import InputSerializer
 from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.models.services import SubmissionOutput as ServiceOutput
 from waves.wcore.settings import waves_settings
@@ -14,16 +16,10 @@ from waves.wcore.settings import waves_settings
 Service = get_service_model()
 ServiceSubmission = get_submission_model()
 
-__all__ = ['InputSerializer', 'InputSerializer', 'OutputSerializer', 'ServiceSerializer',
-           'ServiceFormSerializer', 'ServiceSubmissionSerializer']
 logger = logging.getLogger(__name__)
 
 
 class InputFormatField(serializers.Field):
-    def __init__(self, read_only=False, write_only=False, required=None, default=empty, initial=empty, source=None,
-                 label=None, help_text=None, style=None, error_messages=None, validators=None, allow_null=False):
-        super(InputFormatField, self).__init__(read_only, write_only, required, default, initial, source, label,
-                                               help_text, style, error_messages, validators, allow_null)
 
     def to_representation(self, instance):
         return ', '.join(instance.splitlines()) if instance is not None else ''

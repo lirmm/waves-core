@@ -3,14 +3,13 @@ from __future__ import unicode_literals
 
 # Automate sub module import
 import swapper
-from waves.wcore.models.adaptors import *
-from waves.wcore.models.base import *
+from waves.wcore.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
 from waves.wcore.models.history import JobHistory
-from waves.wcore.models.runners import *
+from waves.wcore.models.runners import Runner
 from waves.wcore.models.binaries import ServiceBinaryFile
-from waves.wcore.models.services import *
-from waves.wcore.models.inputs import *
-from waves.wcore.models.jobs import *
+from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode
+from waves.wcore.models.inputs import AParam, TextParam, BooleanParam, IntegerParam, DecimalParam, ListParam
+from waves.wcore.models.jobs import JobOutput, JobInput, Job
 from waves.wcore.models.binaries import ServiceBinaryFile
 
 

@@ -1,22 +1,20 @@
 """ WAVES runner backoffice tools"""
 from __future__ import unicode_literals
 
-from crispy_forms.utils import render_crispy_form
 from django.conf import settings
 from django.contrib import messages
-from django.utils.safestring import mark_safe
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import JsonResponse
+from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, FormView
+
 from json_view import JSONDetailView
 from waves.wcore.adaptors.exceptions import AdaptorConnectException
-from waves.wcore.exceptions import *
 from waves.wcore.admin.forms.services import ImportForm
-from waves.wcore.models import Runner
 from waves.wcore.admin.views.export import ModelExportView
+from waves.wcore.exceptions import RunnerException
+from waves.wcore.models import Runner
 from waves.wcore.models import get_service_model
 
 Service = get_service_model()
@@ -78,10 +76,10 @@ class RunnerImportToolView(DetailView, FormView):
 
     def post(self, request, *args, **kwargs):
         runner = self.get_object()
+        tool_id = self.remote_service_id(self.request)
+        importer = runner.importer
         try:
             with transaction.atomic():
-                tool_id = self.remote_service_id(self.request)
-                importer = self.get_object().importer
                 update_service = self.request.POST.get('update_service', False)
                 if self.request.POST.get('running_services', None):
                     service = Service.objects.get(pk=self.request.POST.get('running_services'))

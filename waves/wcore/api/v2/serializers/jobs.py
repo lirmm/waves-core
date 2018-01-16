@@ -2,10 +2,7 @@
 """ Jobs API serializers """
 from __future__ import unicode_literals
 
-import codecs
 from collections import OrderedDict
-from os import stat
-from os.path import getsize, isfile
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
@@ -13,7 +10,7 @@ from rest_framework.reverse import reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
 from waves.wcore.models import JobInput, Job, JobOutput, JobHistory, get_service_model
-from waves.wcore.models.const import *
+from waves.wcore.models import const
 
 Service = get_service_model()
 User = get_user_model()
@@ -72,7 +69,7 @@ class JobInputSerializer(DynamicFieldsModelSerializer):
                 'param_type': j_input.param_type,
                 "value": j_input.value,
             })
-            if j_input.param_type == TYPE_FILE:
+            if j_input.param_type == const.TYPE_FILE:
                 repres["url"] = reverse(viewname='wapi:v2:job-input', request=self.context['request'],
                                         kwargs={'slug': j_input.slug})
             to_repr[j_input.api_name] = repres

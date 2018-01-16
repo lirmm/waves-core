@@ -8,7 +8,11 @@ from rest_framework import serializers as rest_serializer
 from waves.wcore.api import serializers
 from waves.wcore.import_export import BaseSerializer, RelatedSerializerMixin
 from waves.wcore.import_export.runners import RunnerSerializer, RunnerParamSerializer
-from waves.wcore.models import *
+
+from waves.wcore.models.inputs import AParam
+from waves.wcore.models.runners import Runner
+from waves.wcore.models.services import SubmissionExitCode, SubmissionOutput, SubmissionRunParam
+from waves.wcore.models import get_submission_model, get_service_model
 
 Submission = get_submission_model()
 Service = get_service_model()
@@ -48,7 +52,7 @@ class ServiceSubmissionSerializer(BaseSerializer, serializers.ServiceSubmissionS
     submission_inputs = ServiceInputSerializer(many=True, required=False, write_only=True, source="all_inputs")
 
     def create(self, validated_data):
-        submission_inputs = validated_data.pop('export_submission_inputs')
+        submission_inputs = validated_data.pop('export_submission_inputs', [])
         # validated_data['api_name'] = validated_data.get('service').api_name
         submission = Submission.objects.create(**validated_data)
         self.create_related(foreign={'service': submission}, serializer=ServiceInputSerializer, datas=submission_inputs)
@@ -122,7 +126,7 @@ class ServiceSerializer(BaseSerializer, serializers.ServiceSerializer, RelatedSe
 
     class Meta:
         model = Service
-        fields = ('db_version', 'name', 'version', 'description', 'short_description', 'runner',
+        fields = ('name', 'db_version', 'description', 'short_description', 'runner',
                   'srv_run_params', 'submissions', 'service_outputs', 'exit_codes')
 
     db_version = rest_serializer.SerializerMethodField()
@@ -139,11 +143,11 @@ class ServiceSerializer(BaseSerializer, serializers.ServiceSerializer, RelatedSe
     @transaction.atomic
     def create(self, validated_data):
         """ Create a new service from submitted data"""
-        submissions = validated_data.pop('submissions')
-        outputs = validated_data.pop('service_outputs')
-        ext_codes = validated_data.pop('exit_codes')
-        runner = validated_data.pop('runner')
-        srv_run_params = validated_data.pop('srv_run_params')
+        submissions = validated_data.pop('submissions', [])
+        outputs = validated_data.pop('service_outputs', [])
+        ext_codes = validated_data.pop('exit_codes', [])
+        runner = validated_data.pop('runner', [])
+        srv_run_params = validated_data.pop('srv_run_params', [])
         if not self.skip_runner:
             try:
                 run_on = Runner.objects.filter(clazz=runner['clazz']).first()
@@ -170,3 +174,6 @@ class ServiceSerializer(BaseSerializer, serializers.ServiceSerializer, RelatedSe
                                                     serializer=ExitCodeSerializer, datas=ext_codes)
         return srv_object
 
+    def get_db_version(self, obj):
+        from waves.wcore.settings import waves_settings
+        return waves_settings.DB_VERSION
