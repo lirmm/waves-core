@@ -5,7 +5,7 @@ import logging
 from os.path import getsize
 
 import magic
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
@@ -75,7 +75,6 @@ class JobViewSet(mixins.ListModelMixin,
         """
         Try to cancel job, then delete it from database, can't be undone
 
-
         """
         job = self.get_object()
         try:
@@ -108,7 +107,7 @@ class JobFileView(SingleObjectMixin):
                 return response
             except IOError:
                 # Do nothing, by default return 404 if error
-                pass
+                return HttpResponseServerError('Content not retrieved')
         return HttpResponseNotFound('Content not available')
 
 

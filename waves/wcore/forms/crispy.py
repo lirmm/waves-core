@@ -34,7 +34,7 @@ class FormHelper(CrispyFormHelper, WFormHelper):
         self.layout = Layout()
         self.template_pack = template_pack
 
-    def set_layout(self, service_input, form):
+    def set_layout(self, service_input, form=None):
         """
         Setup layout for displaying a form for a Service, append extra fields for forms if needed
         """
