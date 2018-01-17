@@ -16,12 +16,6 @@ router.register(prefix=r'jobs',
                 viewset=jobs.JobViewSet,
                 base_name='waves-jobs')
 
-router.register(r'services/(?P<service_app_name>[^/.]+)/submissions',
-                viewset=services.ServiceSubmissionViewSet,
-                base_name='waves-submissions')
-
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^jobs/outputs/(?P<slug>[\w-]+)$', jobs.JobOutputView.as_view(), name="job-output"),
-    url(r'^jobs/inputs/(?P<slug>[\w-]+)$', jobs.JobInputView.as_view(), name="job-input"),
 ]

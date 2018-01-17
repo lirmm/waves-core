@@ -99,6 +99,7 @@ class JobView(generic.DetailView):
     """ Job Detail view """
     model = Job
     slug_field = 'slug'
+    slug_url_kwarg = "unique_id"
     template_name = 'waves/jobs/job_detail.html'
     context_object_name = 'job'
 

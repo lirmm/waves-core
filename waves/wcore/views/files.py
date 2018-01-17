@@ -15,6 +15,7 @@ class DownloadFileView(generic.DetailView):
     template_name = 'waves/services/file.html'
     context_object_name = 'file'
     slug_field = 'slug'
+    slug_url_kwarg = "unique_id"
     http_method_names = ['get', ]
     _force_download = False
     file_type = None

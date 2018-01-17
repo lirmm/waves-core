@@ -41,7 +41,7 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer, serializers.Hype
 
     class Meta:
         model = ServiceSubmission
-        fields = ('label', 'service', 'submission_uri', 'form', 'inputs')
+        fields = ('label', 'service', 'submission_uri', 'inputs')
         extra_kwargs = {
             'api_name': {'view_name': 'wapi:v1:waves-submission-detail',
                          'lookup_fields': {'api_name', 'api_name'}},
@@ -50,14 +50,8 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer, serializers.Hype
     view_name = 'wapi:v1:waves-services-submissions'
     submission_uri = serializers.SerializerMethodField()
     inputs = InputSerializer(many=True, source="expected_inputs")
-    form = serializers.SerializerMethodField()
     service = serializers.SerializerMethodField()
     label = serializers.CharField(source='name')
-
-    def get_form(self, obj):
-        """ Return Service form endpoint uri"""
-        return reverse(viewname='wapi:v1:waves-services-submissions-form', request=self.context['request'],
-                       kwargs={'service': obj.service.api_name, 'api_name': obj.api_name})
 
     def get_submission_uri(self, obj):
         """ Returned service submission endpoint uri"""

@@ -249,15 +249,15 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         runner = Runner.objects.create(name="Mock Runner",
                                        clazz='waves.wcore.adaptors.mocks.MockJobRunnerAdaptor')
 
-        sample_job = self.create_random_job(runner=runner)
-        test_cancel = self.client.post(reverse('wapi:v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
+        sample_job = self.create_random_job(runner=runner, user=self.users['api_user'])
+        test_cancel = self.client.post(reverse('wapi:v2:waves-jobs-cancel', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login("api_user")
-        test_cancel = self.client.post(reverse('wapi:v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
+        test_cancel = self.client.post(reverse('wapi:v2:waves-jobs-cancel', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_202_ACCEPTED)
         db_job = Job.objects.get(slug=sample_job.slug)
         self.assertEqual(db_job.status, JobStatus.JOB_CANCELLED)
-        test_cancel = self.client.put(reverse('wapi:v2:waves-jobs-cancel', kwargs={'slug': sample_job.slug}))
+        test_cancel = self.client.put(reverse('wapi:v2:waves-jobs-cancel', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_delete_job(self):
@@ -265,10 +265,10 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                                        clazz='waves.wcore.adaptors.mocks.MockJobRunnerAdaptor')
 
         sample_job = self.create_random_job(service=self.create_random_service(runner), user=self.users['api_user'])
-        test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
+        test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_delete.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login('api_user')
-        test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'slug': sample_job.slug}))
+        test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_delete.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_missing_params(self):
