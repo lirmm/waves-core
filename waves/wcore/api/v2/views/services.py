@@ -90,6 +90,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         form = [{'submission': service_submission,
                  'form': ServiceSubmissionForm(instance=service_submission,
                                                parent=service_tool,
+                                               submit_ajax=True,
                                                form_action=request.build_absolute_uri(
                                                    reverse('wapi:v2:waves-services-submission-detail',
                                                            kwargs=dict(
@@ -237,6 +238,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
                  'form': ServiceSubmissionForm(instance=self.get_object_or_404(),
                                                parent=submission.service,
                                                template_pack=template_pack,
+                                               submit_ajax=True,
                                                form_action=request.build_absolute_uri(
                                                    reverse('wapi:v2:waves-services-submission-detail',
                                                            kwargs=dict(

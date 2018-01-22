@@ -29,7 +29,11 @@ class ServiceSubmissionForm(forms.ModelForm):
         parent = kwargs.pop('parent', None)
         user = kwargs.pop('user', None)
         form_action = kwargs.pop('form_action', None)
+        print "form action", form_action
+
         template_pack = kwargs.pop('template_pack', 'bootstrap3')
+        submit_ajax = kwargs.pop('submit_ajax', False)
+        print "submit ajax ", submit_ajax
         super(ServiceSubmissionForm, self).__init__(*args, **kwargs)
         self.helper = self.get_helper(form_tag=True, template_pack=template_pack)
         init_fields = ['title', 'slug']
@@ -57,6 +61,8 @@ class ServiceSubmissionForm(forms.ModelForm):
         self.helper.end_layout()
         if form_action:
             self.helper.form_action = form_action
+        if submit_ajax:
+            self.helper.form_class = self.helper.form_class + ' submit-ajax'
 
     def get_helper(self, **helper_args):
         # TODO add dynamic Helper class loading

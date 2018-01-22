@@ -51,7 +51,40 @@
                 }
             });
         });
-
+        var wavesSuccessCallBack = function (response) {
+            console.info("You job has been correctly submitted [id:" + response.slug + ']');
+        }
+        var wavesErrorCallBack = function (error) {
+            console.error("Job submission failed " + error.data)
+        }
+        var submit_form = function (form) {
+            return new Promise(function (resolve, reject) {
+                var form_data = new FormData(form[0])
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr("action"),
+                    processData: false,
+                    contentType: false,
+                    async: false,
+                    cache: false,
+                    data: form_data,
+                    success: function (response) {
+                        resolve(response)
+                    },
+                    error: function (error) {
+                        reject(error)
+                    }
+                })
+            })
+        }
+        $("form.submit-ajax").on('submit', function (e) {
+            e.preventDefault();
+            submit_form($(this)).then(function (response) {
+                wavesSuccessCallBack(response)
+            }, function (err) {
+                wavesErrorCallBack(err);
+            })
+        });
     })
 })(jQuery || django.jQuery);
 
