@@ -12,10 +12,10 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, renderer_classes
 from rest_framework.exceptions import ValidationError as DRFValidationError
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework.reverse import reverse
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.renderers import StaticHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 from waves.wcore.api.v2.serializers.jobs import JobSerializer
 from waves.wcore.api.v2.serializers.services import ServiceSerializer, ServiceSubmissionSerializer
@@ -43,11 +43,11 @@ def get_js(obj):
     ]
 
 
-class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
+class ServiceViewSet(viewsets.ModelViewSet):
     """
     API entry point to Services (Retrieve, job submission)
     """
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (AllowAny, )
     serializer_class = ServiceSerializer
     lookup_field = 'api_name'
     lookup_url_kwarg = 'service_app_name'
@@ -90,12 +90,13 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         form = [{'submission': service_submission,
                  'form': ServiceSubmissionForm(instance=service_submission,
                                                parent=service_tool,
+                                               submit_ajax=True,
                                                form_action=request.build_absolute_uri(
-                                                   reverse('wapi:v2:waves-submissions-detail',
+                                                   reverse('wapi:v2:waves-services-submission-detail',
                                                            kwargs=dict(
                                                                service_app_name=self.kwargs.get('service_app_name'),
                                                                submission_app_name=service_submission.api_name)
-                                                           ))+ '/jobs')}
+                                                           )) + '/jobs')}
                 for service_submission in service_tool.submissions_api.all()]
 
         content = render(request=self.request,
@@ -105,6 +106,84 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                   'css': get_css(self)},
                          content_type='')
         return HttpResponse(content=content, content_type="text/html; charset=utf8")
+
+    @detail_route(methods=['get'], url_name='submission-detail', url_path="submissions/(?P<submission_app_name>[\w-]+)")
+    def submission(self, request, service_app_name, submission_app_name):
+        obj = self.get_object()
+        submission = obj.submissions_api.filter(api_name=submission_app_name)
+        serializer = ServiceSubmissionSerializer(many=False, instance=submission[0], context={'request': self.request})
+        return Response(serializer.data)
+
+    @detail_route(methods=['get'], url_name="submission-form",
+                  url_path="submissions/(?P<submission_app_name>[\w-]+)/form")
+    @renderer_classes((StaticHTMLRenderer,))
+    def submission_form(self, request, service_app_name, submission_app_name):
+        """
+        Retrieve service form as raw html
+
+        Allows to include this part of generated code inside any HTML page
+
+        Submission is made on API.
+        """
+        obj = self.get_object()
+        submission = obj.submissions_api.filter(api_name=submission_app_name)[0]
+        template_pack = self.request.GET.get('tp', 'bootstrap3')
+        form = [{'submission': submission,
+                 'form': ServiceSubmissionForm(instance=submission,
+                                               parent=submission.service,
+                                               request=self.request,
+                                               template_pack=template_pack,
+                                               form_action=request.build_absolute_uri(
+                                                   reverse('wapi:v2:waves-services-submission-detail',
+                                                           kwargs=dict(
+                                                               service_app_name=service_app_name,
+                                                               submission_app_name=submission_app_name
+                                                           ))) + '/jobs')}]
+        content = render(request=self.request,
+                         template_name='waves/api/service_api_form.html',
+                         context={'submissions': form,
+                                  'js': get_js(self),
+                                  'css': get_css(self)})
+        return HttpResponse(content=content, content_type="text/html; charset=utf8")
+
+    @detail_route(methods=['get', 'post'], url_name='submission-jobs',
+                  url_path="submissions/(?P<submission_app_name>[\w-]+)/jobs")
+    def submission_jobs(self, request, service_app_name, submission_app_name):
+        service = self.get_object()
+        obj = service.submissions_api.filter(api_name=submission_app_name)[0]
+        if self.request.method == 'GET':
+            queryset_jobs = Job.objects.get_submission_job(user=request.user, submission=obj)
+            serializer = JobSerializer(queryset_jobs, many=True, context={'request': request},
+                                       hidden=['inputs', 'outputs', 'history'])
+            return Response(serializer.data)
+        elif self.request.method == 'POST':
+            # CREATE a new job for this submission
+            logger.debug("Create Job")
+            if logger.isEnabledFor(logging.DEBUG):
+                for param in request.data:
+                    logger.debug('param key ' + param)
+                    logger.debug(request.data[param])
+                logger.debug('Request Data %s', request.data)
+            passed_data = request.data.copy()
+            ass_email = passed_data.pop('email_to', None)
+            try:
+                passed_data.pop('api_key', None)
+                created_job = Job.objects.create_from_submission(submission=obj,
+                                                                 email_to=ass_email,
+                                                                 submitted_inputs=passed_data,
+                                                                 user=self.request.user)
+
+                # Now job is created (or raise an exception),
+                serializer = JobSerializer(created_job, many=False, context={'request': request},
+                                           fields=('slug', 'url', 'created', 'status', 'service', 'submission'))
+                logger.debug('Job successfully created %s ' % created_job.slug)
+                return Response(serializer.data, status=201)
+            except ValidationError as e:
+                logger.warning("Validation error %s", e)
+                raise DRFValidationError(e.message_dict)
+            except JobException as e:
+                logger.fatal("Create Error %s", e.message)
+                return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -160,8 +239,9 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
                  'form': ServiceSubmissionForm(instance=self.get_object_or_404(),
                                                parent=submission.service,
                                                template_pack=template_pack,
+                                               submit_ajax=True,
                                                form_action=request.build_absolute_uri(
-                                                   reverse('wapi:v2:waves-submissions-detail',
+                                                   reverse('wapi:v2:waves-services-submission-detail',
                                                            kwargs=dict(
                                                                service_app_name=service_api_name,
                                                                submission_app_name=submission_api_name
@@ -191,8 +271,6 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
         Create a new job from submitted inputs
 
         :param request: HTTP request
-        :param service: service app_name
-        :param submission: submission app_name
         :return: list
         """
         obj = self.get_object_or_404()

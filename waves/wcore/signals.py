@@ -8,6 +8,7 @@ import shutil
 
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
+from django.contrib.auth import get_user_model
 
 from waves.wcore.models import ApiModel, get_service_model, get_submission_model
 from waves.wcore.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin

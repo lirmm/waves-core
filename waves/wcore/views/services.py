@@ -90,6 +90,7 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         kwargs = super(SubmissionFormView, self).get_form_kwargs()
         extra_kwargs = {
             'parent': self.object,
+            'request': self.request
         }
         extra_kwargs.update(kwargs)
         return extra_kwargs

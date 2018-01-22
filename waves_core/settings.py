@@ -41,6 +41,8 @@ INSTALLED_APPS = (
     'waves.wcore',
     'crispy_forms',
     'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
     # 'adminsortable2',
 )
 
@@ -52,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
@@ -191,3 +194,8 @@ WAVES_CORE = {
     'JOB_LOG_LEVEL': logging.DEBUG,
 }
 INTERNAL_IPS = ("127.0.0.1", "193.49.106.227")
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:*',
+    '127.0.0.1:8099'
+)
