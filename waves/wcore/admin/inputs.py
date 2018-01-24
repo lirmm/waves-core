@@ -20,7 +20,8 @@ from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModel
 
 from waves.wcore.admin.base import WavesModelAdmin
 from waves.wcore.admin.submissions import FileInputSampleInline, SampleDependentInputInline
-from waves.wcore.models.inputs import *
+from waves.wcore.models.inputs import AParam, FileInput, BooleanParam, ListParam, IntegerParam, DecimalParam, \
+    RepeatedGroup, TextParam
 from waves.wcore.models import get_submission_model
 
 Submission = get_submission_model()

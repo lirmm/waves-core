@@ -2,10 +2,7 @@
 """ Jobs API serializers """
 from __future__ import unicode_literals
 
-import codecs
 from collections import OrderedDict
-from os import stat
-from os.path import getsize, isfile
 
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
@@ -13,7 +10,7 @@ from rest_framework.reverse import reverse
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer
 from waves.wcore.models import JobInput, Job, JobOutput, JobHistory, get_service_model
-from waves.wcore.models.const import *
+from waves.wcore.models.const import ParamType
 
 Service = get_service_model()
 User = get_user_model()
@@ -72,9 +69,12 @@ class JobInputSerializer(DynamicFieldsModelSerializer):
                 'param_type': j_input.param_type,
                 "value": j_input.value,
             })
-            if j_input.param_type == TYPE_FILE:
-                repres["url"] = reverse(viewname='wapi:v2:job-input', request=self.context['request'],
-                                        kwargs={'slug': j_input.slug})
+            if j_input.param_type == ParamType.TYPE_FILE:
+                repres["url"] = reverse(viewname='wapi:v2:waves-jobs-input-detail', request=self.context['request'],
+                                        kwargs={
+                                            'unique_id': j_input.job.slug,
+                                            'app_short_name': j_input.api_name
+                                        })
             to_repr[j_input.api_name] = repres
         return to_repr
 
@@ -100,8 +100,10 @@ class JobOutputSerializer(serializers.ModelSerializer):
                 ("label", output.name),
                 ("file_name", output.file_name),
                 ("extension", output.get_extension()),
-                ("url", reverse(viewname='wapi:v2:job-output', request=self.context['request'],
-                                kwargs={'slug': output.slug})),
+                ("url", reverse(viewname='wapi:v2:waves-jobs-output-detail', request=self.context['request'],
+                                kwargs={
+                                    'unique_id': output.job.slug,
+                                    'app_short_name': output.api_name})),
             ])
         return to_repr
 
@@ -117,7 +119,7 @@ class JobSerializer(DynamicFieldsModelSerializer,
         read_only_fields = (
             'title', 'status', 'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history')
         extra_kwargs = {
-            'url': {'view_name': 'wapi:v2:waves-jobs-detail', 'lookup_field': 'slug'}
+            'url': {'view_name': 'wapi:v2:waves-jobs-detail', 'lookup_field': 'slug', 'lookup_url_kwarg': 'unique_id'}
         }
         lookup_field = 'slug'
 
@@ -133,7 +135,7 @@ class JobSerializer(DynamicFieldsModelSerializer,
 
     def get_submission(self, obj):
         if obj.submission and obj.submission.service:
-            return reverse(viewname='wapi:v2:waves-submissions-detail', request=self.context['request'],
+            return reverse(viewname='wapi:v2:waves-services-submission-detail', request=self.context['request'],
                            kwargs={'service_app_name': obj.submission.service.api_name,
                                    'submission_app_name': obj.submission.api_name})
         else:

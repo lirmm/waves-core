@@ -31,8 +31,6 @@ class ServiceSubmissionForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         self.request = kwargs.pop('request', None)
         form_action = kwargs.pop('form_action', None)
-        print "form action", form_action
-
         template_pack = kwargs.pop('template_pack', 'bootstrap3')
         submit_ajax = kwargs.pop('submit_ajax', False)
         print "submit ajax ", submit_ajax

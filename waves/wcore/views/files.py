@@ -15,6 +15,7 @@ class DownloadFileView(generic.DetailView):
     template_name = 'waves/services/file.html'
     context_object_name = 'file'
     slug_field = 'slug'
+    slug_url_kwarg = "unique_id"
     http_method_names = ['get', ]
     _force_download = False
     file_type = None
@@ -27,7 +28,7 @@ class DownloadFileView(generic.DetailView):
         return obj
 
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.get_object()
         self.file_type = magic.from_file(self.file_path)
         export = 'export' in self.request.GET or self._force_download is True
         if 'text' not in self.file_type and not export:

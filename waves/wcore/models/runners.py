@@ -10,7 +10,7 @@ from waves.wcore.models import AdaptorInitParam
 from waves.wcore.models.adaptors import HasAdaptorClazzMixin
 from waves.wcore.models.base import Described, ExportAbleMixin
 
-__all__ = ['Runner']
+__all__ = ['Runner', 'HasRunnerParamsMixin']
 
 
 class RunnerManager(models.Manager):

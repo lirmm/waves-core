@@ -12,10 +12,10 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, renderer_classes
 from rest_framework.exceptions import ValidationError as DRFValidationError
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
-from rest_framework.renderers import StaticHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.reverse import reverse
+from rest_framework.renderers import StaticHTMLRenderer
 
 from waves.wcore.api.v2.serializers.jobs import JobSerializer
 from waves.wcore.api.v2.serializers.services import ServiceSerializer, ServiceSubmissionSerializer
@@ -43,11 +43,11 @@ def get_js(obj):
     ]
 
 
-class ServiceViewSet(viewsets.ModelViewSet):
+class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API entry point to Services (Retrieve, job submission)
     """
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = ServiceSerializer
     lookup_field = 'api_name'
     lookup_url_kwarg = 'service_app_name'
@@ -90,13 +90,12 @@ class ServiceViewSet(viewsets.ModelViewSet):
         form = [{'submission': service_submission,
                  'form': ServiceSubmissionForm(instance=service_submission,
                                                parent=service_tool,
-                                               submit_ajax=True,
                                                form_action=request.build_absolute_uri(
-                                                   reverse('wapi:v2:waves-services-submission-detail',
+                                                   reverse('wapi:v2:waves-submissions-detail',
                                                            kwargs=dict(
                                                                service_app_name=self.kwargs.get('service_app_name'),
                                                                submission_app_name=service_submission.api_name)
-                                                           )) + '/jobs')}
+                                                           ))+ '/jobs')}
                 for service_submission in service_tool.submissions_api.all()]
 
         content = render(request=self.request,
@@ -131,7 +130,6 @@ class ServiceViewSet(viewsets.ModelViewSet):
         form = [{'submission': submission,
                  'form': ServiceSubmissionForm(instance=submission,
                                                parent=submission.service,
-                                               request=self.request,
                                                template_pack=template_pack,
                                                form_action=request.build_absolute_uri(
                                                    reverse('wapi:v2:waves-services-submission-detail',
@@ -239,9 +237,8 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
                  'form': ServiceSubmissionForm(instance=self.get_object_or_404(),
                                                parent=submission.service,
                                                template_pack=template_pack,
-                                               submit_ajax=True,
                                                form_action=request.build_absolute_uri(
-                                                   reverse('wapi:v2:waves-services-submission-detail',
+                                                   reverse('wapi:v2:waves-submissions-detail',
                                                            kwargs=dict(
                                                                service_app_name=service_api_name,
                                                                submission_app_name=submission_api_name

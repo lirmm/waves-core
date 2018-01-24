@@ -5,24 +5,48 @@ import logging
 from os.path import getsize
 
 import magic
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from django.views.generic import View
-from django.views.generic.detail import SingleObjectMixin
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import detail_route, permission_classes
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from waves.wcore.api.v2.serializers.jobs import JobSerializer, JobStatusSerializer
+from waves.wcore.api.v2.serializers.jobs import JobSerializer, JobStatusSerializer, JobOutputSerializer, \
+    JobInputSerializer
 from waves.wcore.exceptions.jobs import JobInconsistentStateError
-from waves.wcore.models import Job, JobOutput, JobInput
+from waves.wcore.models import Job
 
 logger = logging.getLogger(__name__)
+
+
+class JobFileView(object):
+
+    @staticmethod
+    def response(instance):
+        if hasattr(instance, 'file_path'):
+            try:
+                mime = magic.Magic(mime=True)
+                mime_type = mime.from_file(instance.file_path)
+                with open(instance.file_path) as fp:
+                    if 'text' or 'x-empty' in mime_type:
+                        response = Response(data=fp.read())
+                    else:
+                        # TODO check behaviour when called via ajax AngularJS
+                        response = HttpResponse(content=fp)
+                        response['Content-Type'] = mime_type
+                        response['Content-Length'] = getsize(instance.file_path)
+                        response['Content-Disposition'] = 'attachment; filename=%s' % instance.file_name
+                return response
+            except IOError:
+                # Do nothing, by default return 404 if error
+                return HttpResponseNotFound('File do not exists')
+        return HttpResponseNotFound('Content not available')
 
 
 @permission_classes((IsAuthenticated,))
@@ -37,16 +61,19 @@ class JobViewSet(mixins.ListModelMixin,
     queryset = Job.objects.all()
     parser_classes = (JSONParser,)
     lookup_field = 'slug'
+    lookup_url_kwarg = 'unique_id'
     filter_fields = ('_status', 'updated', 'submission')
     http_method_names = ['get', 'options', 'post', 'delete']
 
     @detail_route(methods=['post'], url_path="cancel")
-    def cancel(self, request, slug):
+    def cancel(self, request, unique_id):
         """
         Update Job according to requested action
         """
         # TODO check permissions
-        job = get_object_or_404(self.get_queryset(), slug=slug)
+        job = self.get_object()
+        if job.client != self.request.user:
+            return HttpResponseForbidden("Action not allowed")
         try:
             job.run_cancel()
         except JobInconsistentStateError as e:
@@ -75,9 +102,8 @@ class JobViewSet(mixins.ListModelMixin,
         """
         Try to cancel job, then delete it from database, can't be undone
 
-
         """
-        job = get_object_or_404(self.get_queryset())
+        job = self.get_object()
         try:
             job.run_cancel()
         except JobInconsistentStateError as e:
@@ -87,34 +113,41 @@ class JobViewSet(mixins.ListModelMixin,
 
     @detail_route(methods=['get'])
     def status(self, request, *args, **kwargs):
-        job = get_object_or_404(self.get_queryset())
+        job = self.get_object()
         serializer = JobStatusSerializer(instance=job)
         return Response(serializer.data)
 
+    @detail_route(methods=['get'], url_name='output-detail', url_path="outputs/(?P<app_short_name>[\w-]+)")
+    @permission_classes((IsAuthenticated,))
+    def output(self, request, unique_id, app_short_name):
+        job = self.get_object()
+        instance = job.outputs.filter(api_name=app_short_name)
+        if instance:
+            return JobFileView.response(instance[0])
+        else:
+            return HttpResponseNotFound('Not found')
 
-class JobFileView(SingleObjectMixin):
+    @detail_route(methods=['get'], url_path="outputs$")
+    def outputs(self, request, unique_id):
+        job = self.get_object()
+        serializer = JobOutputSerializer(instance=job.outputs.all(), context={'request': self.request})
+        return Response(serializer.data)
 
-    def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if hasattr(instance, 'file_path'):
-            try:
-                mime = magic.Magic(mime=True)
-                with open(instance.file_path) as fp:
-                    response = HttpResponse(content=fp)
-                    response['Content-Type'] = mime.from_file(instance.file_path)
-                    response['Content-Length'] = getsize(instance.file_path)
-                    response['Content-Disposition'] = 'attachment; filename=%s' \
-                                                      % instance.file_name
-                return response
-            except IOError:
-                # Do nothing, by default return 404 if error
-                pass
-        return HttpResponseNotFound('Content not available')
+    @detail_route(methods=['get'], url_path="inputs$")
+    def inputs(self, request, unique_id):
+        """ List all inputs for this job
+        """
+        job = self.get_object()
+        serializer = JobInputSerializer(instance=job.job_inputs.all(),
+                                        context={'request': self.request})
+        return Response(serializer.data)
 
-
-class JobOutputView(JobFileView, View):
-    model = JobOutput
-
-
-class JobInputView(JobFileView, View):
-    model = JobInput
+    @detail_route(methods=['get'], url_name='input-detail', url_path="inputs/(?P<app_short_name>[\w-]+)")
+    @permission_classes((IsAuthenticated,))
+    def input(self, request, unique_id, app_short_name):
+        job = self.get_object()
+        instance = job.job_inputs.filter(api_name=app_short_name)
+        if instance:
+            return JobFileView.response(instance[0])
+        else:
+            return HttpResponseNotFound('Not found')

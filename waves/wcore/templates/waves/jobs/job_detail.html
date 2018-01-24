@@ -21,6 +21,7 @@
                 clearTimeout(reloading);
             }
         }
+
         $(function () {
             $('#reloadCB').change(function () {
                 console.log('toggle fired' + $(this).prop('checked'));
@@ -46,8 +47,8 @@
                             </h2>
                             <div class="text-right">
                                 Auto Refresh
-                                <input type="checkbox" data-toggle="toggle" data-size="small" id="reloadCB"></div>
-                            </p>
+                                <input type="checkbox" data-toggle="toggle" data-size="small" id="reloadCB">
+                            </div>
                         </div>
                         <div class="panel-body">
                             {% include "waves/jobs/parts/job_detail.html" with job=job %}
@@ -90,8 +91,9 @@
                     </div>
                     <div class="panel panel-default">
                         <div class="panel-body text-right">
-                            {%  if job.submission %}
-                                <a class="btn btn-primary" href="{% url 'wcore:service_details' job.submission.service.api_name %}">Back to
+                            {% if job.submission %}
+                                <a class="btn btn-primary"
+                                   href="{% url 'wcore:service_details' job.submission.service.api_name %}">Back to
                                     service</a>
                                 {% online_exec_button service=job.submission.service label="New job" %}
                             {% endif %}
@@ -106,7 +108,7 @@
                             </div>
                             <div class="panel-body text-right">
                                 <a class="btn btn-warning" href="{% url 'admin:wcore_job_change' job.id %}">Job</a>
-                                <a class="btn btn-warning" href="{{ job.submission  }}">Service</a>
+                                <a class="btn btn-warning" href="{{ job.submission }}">Service</a>
                             </div>
                         </div>
                     {% endif %}

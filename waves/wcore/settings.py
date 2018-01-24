@@ -99,9 +99,9 @@ class WavesSettings(object):
     WAVES settings object, allow WAVES settings access from properties
     """
 
-    def __init__(self, waves_settings=None, defaults=None, imports_string=None):
-        if waves_settings:
-            self._waves_settings = waves_settings
+    def __init__(self, waves_up_settings=None, defaults=None, imports_string=None):
+        if waves_up_settings:
+            self._waves_settings = waves_up_settings
         self.defaults = defaults or DEFAULTS
         self.import_strings = imports_string or IMPORT_STRINGS
 
@@ -139,7 +139,7 @@ waves_settings = WavesSettings(None, DEFAULTS, IMPORT_STRINGS)
 
 def reload_waves_settings(*args, **kwargs):
     global waves_settings
-    setting, value = kwargs['setting'], kwargs['value']
+    setting, value = kwargs.get('setting'), kwargs.get('value')
     if setting == 'WAVES_CORE':
         waves_settings = WavesSettings(value, DEFAULTS, IMPORT_STRINGS)
 

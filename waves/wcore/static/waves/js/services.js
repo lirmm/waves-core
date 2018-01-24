@@ -68,9 +68,6 @@
                     async: false,
                     cache: false,
                     data: form_data,
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken)
-                    },
                     success: function (response) {
                         resolve(response)
                     },

@@ -20,7 +20,7 @@ from django.db import (
 from rest_framework.exceptions import ValidationError
 
 from waves.wcore.models import Job
-from waves.wcore.serializers import ServiceSerializer
+from waves.wcore.import_export.services import ServiceSerializer
 from waves.wcore.settings import waves_settings as config
 
 __all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand', 'ShowUrlsCommand']
@@ -205,7 +205,6 @@ class DumpConfigCommand(BaseCommand):
         :param options: Command options (expected none)
         """
         from django.conf import settings
-        from waves.wcore import settings as config
         self.stdout.write("************************************************")
         self.stdout.write('Current Django default database: %s' % settings.DATABASES['default']['ENGINE'])
         self.stdout.write('Current Django static dir: %s' % settings.STATICFILES_DIRS)
@@ -236,12 +235,12 @@ class ShowUrlsCommand(BaseCommand):
                 i.name = ''
             return i.name
 
-        def show_urls(urls):
-            for url in urls.url_patterns:
-                if isinstance(url, RegexURLResolver):
-                    show_urls(url)
-                elif isinstance(url, RegexURLPattern):
-                    all_urls.append(url)
+        def show_urls(the_urls):
+            for the_url in the_urls.url_patterns:
+                if isinstance(the_url, RegexURLResolver):
+                    show_urls(the_url)
+                elif isinstance(the_url, RegexURLPattern):
+                    all_urls.append(the_url)
 
         show_urls(urls)
 

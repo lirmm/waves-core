@@ -10,12 +10,13 @@ from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 
-from waves.wcore.models import ApiModel, get_service_model, get_submission_model
+from waves.wcore.models import get_service_model, get_submission_model
+from waves.wcore.models.base import ApiModel
 from waves.wcore.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
 from waves.wcore.models.binaries import ServiceBinaryFile
-from waves.wcore.models.inputs import *
+from waves.wcore.models.inputs import FileInputSample, FileInput
 from waves.wcore.models.jobs import Job, JobOutput
-from waves.wcore.models.runners import *
+from waves.wcore.models.runners import Runner
 from waves.wcore.models.services import SubmissionExitCode
 from waves.wcore.utils import get_all_subclasses
 

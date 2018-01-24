@@ -16,8 +16,8 @@
             // language=JQuery-CSS
             var modalContent = $('#popup_modal_content');
             console.log('Js-pop-up-modal called ' + $('#popup_modal'));
-            if ($(this).attr('modal-title') !== null) {
-                modalContent.find('.modal-header').html("<h4>" + $(this).attr('modal-title') + "</h4>");
+            if ($(this).attr('js-modal-title') !== null) {
+                modalContent.find('.modal-header').html("<h4>" + $(this).attr('js-modal-title') + "</h4>");
             }
             modalContent.find('.modal-body').load($(this).attr('href'), function () {
                 console.log('open modal');

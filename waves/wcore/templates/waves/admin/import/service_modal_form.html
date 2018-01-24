@@ -38,11 +38,12 @@
 
     <script type="text/javascript">
         (function ($) {
-            $('#form_import').submit(function (e) {
+            var form_import = $('#form_import')
+            form_import.submit(function (e) {
                 $.ajax({
-                    type: $("#form_import").attr('method'),
-                    url: $("#form_import").attr('action'),
-                    data: $("#form_import").serialize(),
+                    type: form_import.attr('method'),
+                    url: form_import.attr('action'),
+                    data: form_import.serialize(),
                     // dataType: 'json',
                     beforeSend: function () {
                         $('#launch-import').attr('disabled', 'disabled');

@@ -22,7 +22,7 @@ class WavesConfig(AppConfig):
         Just import waves signals
         :return: None
         """
-        import waves.wcore.signals
+        from waves.wcore import signals
 
 
 @register()

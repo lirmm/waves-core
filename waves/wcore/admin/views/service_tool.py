@@ -2,18 +2,20 @@
 """ WAVES Service back-office Import view"""
 from __future__ import unicode_literals
 
+from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.db import DatabaseError
+
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.views import generic
 from django.views.generic import View
-from django.contrib import messages
-from django.core.urlresolvers import reverse
-from waves.wcore.settings import waves_settings
-from waves.wcore.models import get_service_model
-from waves.wcore.views.services import SubmissionFormView, Service
+from django.core.exceptions import ObjectDoesNotExist
 from waves.wcore.admin.views.export import ModelExportView
-from waves.wcore.admin.views.runner_tool import RunnerImportToolView, ObjectDoesNotExist, RunnerTestConnectionView
+from waves.wcore.admin.views.runner_tool import RunnerImportToolView, RunnerTestConnectionView
+from waves.wcore.models import get_service_model
+from waves.wcore.settings import waves_settings
+from waves.wcore.views.services import SubmissionFormView
 
 Service = get_service_model()
 
@@ -24,11 +26,11 @@ Service = get_service_model()
 class ServiceParamImportView(RunnerImportToolView):
     """ Import view for Service from adaptor"""
 
-    def get_object(self, request):
+    def get_object(self, queryset=None):
         try:
             self.object = Service.objects.get(id=self.kwargs.get('service_id'))
         except ObjectDoesNotExist as e:
-            messages.error(request, message='Unable to retrieve runner from request')
+            messages.error(self.request, message='Unable to retrieve runner from request')
 
     def get_form_kwargs(self):
         kwargs = super(ServiceParamImportView, self).get_form_kwargs()
@@ -91,4 +93,3 @@ class ServiceModalPreview(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super(ServiceModalPreview, self).get_context_data(**kwargs)
         return context
-

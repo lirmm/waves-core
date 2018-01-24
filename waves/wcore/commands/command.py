@@ -1,32 +1,30 @@
 from __future__ import unicode_literals
-import waves.wcore.models.const as wconst
+
+from waves.wcore.models.const import OptType
 
 
 def command_line_element(cmd_format, name, cmd_value):
     if cmd_value == 'None':
         return ''
-    if cmd_format == wconst.OPT_TYPE_VALUATED:
+    if cmd_format == OptType.OPT_TYPE_VALUATED:
         return '--%s=%s' % (name, cmd_value)
-    elif cmd_format == wconst.OPT_TYPE_SIMPLE:
+    elif cmd_format == OptType.OPT_TYPE_SIMPLE:
         return '-%s %s' % (name, cmd_value)
-    elif cmd_format == wconst.OPT_TYPE_OPTION:
+    elif cmd_format == OptType.OPT_TYPE_OPTION:
         return '-%s' % name
-    elif cmd_format == wconst.OPT_TYPE_NAMED_OPTION:
+    elif cmd_format == OptType.OPT_TYPE_NAMED_OPTION:
         return '--%s' % name
-    elif cmd_format == wconst.OPT_TYPE_POSIX:
+    elif cmd_format == OptType.OPT_TYPE_POSIX:
         return '%s' % cmd_value
-    elif cmd_format == wconst.OPT_TYPE_NAMED_PARAM:
+    elif cmd_format == OptType.OPT_TYPE_NAMED_PARAM:
         return '%s=%s' % (name, cmd_value)
-    elif cmd_format == wconst.OPT_TYPE_NONE:
+    elif cmd_format == OptType.OPT_TYPE_NONE:
         return ''
     # By default it's OPT_TYPE_SIMPLE way
     return '-%s %s' % (name, cmd_value)
 
 
 class BaseCommand(object):
-    def __init__(self):
-        # type: () -> object
-        pass
 
     def create_command_line(self, inputs):
         """

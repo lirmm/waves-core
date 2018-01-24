@@ -7,13 +7,13 @@ from django import forms
 from django.conf import settings
 
 from waves.wcore.models import get_service_model, get_submission_model
-from waves.wcore.models.inputs import *
+from waves.wcore.models.inputs import ListParam, AParam, BooleanParam, FileInput, \
+    FileInputSample
 from waves.wcore.models.runners import Runner
 from waves.wcore.models.services import SubmissionOutput, SubmissionExitCode
 from waves.wcore.settings import waves_settings as config
 
 Submission = get_submission_model()
-
 Service = get_service_model()
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm', 'InputInlineForm', 'SubmissionExitCodeForm',
@@ -40,6 +40,7 @@ class ImportForm(forms.Form):
         model = Runner
         fields = ('name', 'running_services', 'tool')
         # fields = ('name', 'tool')
+
     """
     Service Import Form
     """

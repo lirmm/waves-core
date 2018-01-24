@@ -120,13 +120,3 @@ class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.CreateAPIView,
         except JobException as e:
             logger.fatal("Create Error %s", e.message)
             return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ServiceJobSubmissionViewForm(ServiceJobSubmissionView):
-    """ Service Form content view """
-
-    def get(self, request, *args, **kwargs):
-        """ GET accessor """
-        submission = self.get_object()
-        serializer = ServiceFormSerializer(many=False, context={'request': request}, instance=submission)
-        return Response(serializer.data)
