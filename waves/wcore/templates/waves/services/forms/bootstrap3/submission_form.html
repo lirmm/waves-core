@@ -1,5 +1,5 @@
 {% load crispy_forms_tags %}
-{% with single_submission=submissions.count %}
+{% with single_submission=submissions|length %}
     {% if single_submission > 1 %}
         <ul class="nav nav-tabs">
             {% for sub in submissions %}
@@ -13,19 +13,23 @@
         </ul>
         <div id="my-tab-content" class="tab-content panel-body">
     {% endif %}
-{% for sub in submissions %}
-    <!-- form {{ sub.submission.name  }}  | {{ sub.submission.api_name }}-->
-    <div class="tab-pane {% if forloop.first %}active{% endif %}"
-         id="{{ sub.submission.api_name }}">
-        {% if preview %}
-            <blockquote>Availability : {{ sub.submission.get_availability_display }}</blockquote>
+    {% for sub in submissions %}
+        <!-- form {{ sub.submission.name  }}  | {{ sub.submission.api_name }}-->
+        {% if single_submission > 1 %}
+        <div class="tab-pane {% if forloop.first %}active{% endif %}"
+             id="{{ sub.submission.api_name }}">
+            {% if preview %}
+                <blockquote>Availability : {{ sub.submission.get_availability_display }}</blockquote>
+            {% endif %}
+            <div>
         {% endif %}
-        <div>
-            {% crispy sub.form %}
+                {% crispy sub.form %}
+        {% if single_submission > 1 %}
+            </div>
         </div>
-    </div>
-    <!-- END form {{ sub.submission.name  }} -->
-{% endfor %}
+        {% endif %}
+        <!-- END form {{ sub.submission.name  }} -->
+    {% endfor %}
 {% if single_submission > 1 %}
     </div>
 {% endif %}

@@ -6,13 +6,13 @@ from __future__ import unicode_literals
 import os
 import shutil
 
+from django.conf import settings
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
-from django.contrib.auth import get_user_model
 
 from waves.wcore.models import get_service_model, get_submission_model
-from waves.wcore.models.base import ApiModel
 from waves.wcore.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
+from waves.wcore.models.base import ApiModel
 from waves.wcore.models.binaries import ServiceBinaryFile
 from waves.wcore.models.inputs import FileInputSample, FileInput
 from waves.wcore.models.jobs import Job, JobOutput
@@ -22,6 +22,14 @@ from waves.wcore.utils import get_all_subclasses
 
 Service = get_service_model()
 Submission = get_submission_model()
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
+        from rest_framework.authtoken.models import Token
+        if created or Token.objects.filter(user=instance).count() == 0:
+            Token.objects.create(user=instance)
 
 
 @receiver(pre_save, sender=Job)

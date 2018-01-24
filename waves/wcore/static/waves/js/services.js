@@ -51,13 +51,29 @@
                 }
             });
         });
-        var wavesSuccessCallBack = function (response) {
+        window.wavesSuccessCallBack = function (response) {
+            alert ('Initial');
             console.info("You job has been correctly submitted [id:" + response.slug + ']');
         }
-        var wavesErrorCallBack = function (error) {
+        window.wavesErrorCallBack = function (error) {
             console.error("Job submission failed " + error.data)
         }
-        var submit_form = function (form) {
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+        window.submit_form = function (form) {
             return new Promise(function (resolve, reject) {
                 var form_data = new FormData(form[0])
                 $.ajax({
@@ -68,6 +84,9 @@
                     async: false,
                     cache: false,
                     data: form_data,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader ("Authorization", "Token " + getCookie('waves_token'));
+                    },
                     success: function (response) {
                         resolve(response)
                     },
@@ -77,14 +96,7 @@
                 })
             })
         }
-        $("form.submit-ajax").on('submit', function (e) {
-            e.preventDefault();
-            submit_form($(this)).then(function (response) {
-                wavesSuccessCallBack(response)
-            }, function (err) {
-                wavesErrorCallBack(err);
-            })
-        });
+
     })
 })(jQuery || django.jQuery);
 

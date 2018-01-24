@@ -1,20 +1,4 @@
 {% load staticfiles crispy_forms_tags waves_tags %}
-{% if css %}
-    {% service_inc 'css' %}
-{% endif %}
 <!-- Service forms -->
 {% submission_form %}
 <!-- End Service form -->
-{% if js %}
-    {% service_inc 'js' %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            window.wavesSuccessCallBack = function (response) {
-                alert('this is mine which is called !!!')
-            }
-            window.wavesErrorCallBack = function (error) {
-                console.log("Job submission failed " + error.data)
-            }
-        })
-    </script>
-{% endif %}

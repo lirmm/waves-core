@@ -75,3 +75,16 @@ Installation
         python manage.py migrate
         python manage.py check
 
+
+    1.5. Extra configuration:
+
+    Depending on your needs, you might want to expose WAVES API to any registered user, if so have a look at:
+
+    - https://github.com/ottoyiu/django-cors-headers for allowing cross-origin Resource Sharing
+    - http://www.django-rest-framework.org/api-guide/authentication for methods to authenticate API POST calls
+
+    WAVES-core allows simple "key" authentication with standard token Authentication processes, to use it simply add
+    'rest_framework.authtoken' in INSTALLED_APPS. Each future api calls, simply need a valid Authorization header as explained here:
+    http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+
+    WAVES-core declares a (very) simple authentication procedure with
