@@ -29,7 +29,6 @@ class ServiceSubmissionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         self.parent = kwargs.pop('parent', None)
         self.user = kwargs.pop('user', None)
-        self.request = kwargs.pop('request', None)
         self.form_action = kwargs.pop('form_action', None)
         self.template_pack = kwargs.pop('template_pack', 'bootstrap3')
         self.submit_ajax = kwargs.pop("submit_ajax", False)
@@ -59,15 +58,7 @@ class ServiceSubmissionForm(forms.ModelForm):
         self.helper.end_layout()
         if self.form_action:
             self.helper.form_action = self.form_action
-        print "self submit ajax", self.submit_ajax
-
-        if self.submit_ajax and self.request:
-            self.helper.form_action = self.request.build_absolute_uri(
-                reverse('wapi:v2:waves-services-submission-detail',
-                        kwargs=dict(
-                            service_app_name=self.instance.service.api_name,
-                            submission_app_name=self.instance.api_name
-                        )) + '/jobs')
+        if self.submit_ajax:
             self.helper.form_class = self.helper.form_class + ' submit-ajax'
 
     def get_helper(self, **helper_args):

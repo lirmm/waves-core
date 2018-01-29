@@ -51,52 +51,47 @@
                 }
             });
         });
-        window.wavesSuccessCallBack = function (response) {
-            alert ('Initial');
-            console.info("You job has been correctly submitted [id:" + response.slug + ']');
-        }
-        window.wavesErrorCallBack = function (error) {
-            console.error("Job submission failed " + error.data)
-        }
-        window.getCookie = function(cname) {
-            var name = cname + "=";
-            var decodedCookie = decodeURIComponent(document.cookie);
-            var ca = decodedCookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
-        window.submit_form = function (form) {
-            return new Promise(function (resolve, reject) {
-                var form_data = new FormData(form[0])
-                $.ajax({
-                    type: 'POST',
-                    url: form.attr("action"),
-                    processData: false,
-                    contentType: false,
-                    async: false,
-                    cache: false,
-                    data: form_data,
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader ("Authorization", "Token " + getCookie('waves_token'));
-                    },
-                    success: function (response) {
-                        resolve(response)
-                    },
-                    error: function (error) {
-                        reject(error)
-                    }
-                })
-            })
-        }
 
+
+        document.submit_waves_api_form = function (form, token) {
+            /***
+             * Provide simple WAVES-core api form submission using ajax JQuery, based on a classic token base authentication scheme
+             *
+             * @type {FormData}
+             */
+            var form_data = new FormData(form);
+            //return new Promise(function (resolve, reject) {
+                if (token != null) {
+                    return $.ajax({
+                        type: 'POST',
+                        url: form.action,
+                        processData: false,
+                        contentType: false,
+                        data: form_data,
+                        beforeSend: function (xhr) {
+                            // Add auth token to XHR request
+                            xhr.setRequestHeader("Authorization", "Token " + token);
+                        },
+                        /*success: function (response) {
+                            // return the response data from WAVES-core api service
+                            resolve(response);
+                        },
+                        error: function (jqXHR, textStatus, error) {
+                            // retrieve detail error message provided by WAVES-core api service
+                            reject(jqXHR, textStatus, error);
+                        }*/
+                    })
+                } else {
+                    console.error("Token not provided, it's required for WAVES-core token based submission process");
+                }
+            //})
+        }
+        $(document).on('submit', "form.submit-ajax", function (event) {
+            /**
+             * Avoid default behavior on all form.submit-ajax submit event, may force ajax submission
+             */
+            event.preventDefault();
+        })
     })
 })(jQuery || django.jQuery);
 

@@ -91,13 +91,12 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                  'form': ServiceSubmissionForm(instance=service_submission,
                                                parent=service_tool,
                                                submit_ajax=True,
-                                               request=self.request,
                                                form_action=request.build_absolute_uri(
-                                                   reverse('wapi:v2:waves-services-submission-detail',
+                                                   reverse('wapi:v2:waves-services-submission-jobs',
                                                            kwargs=dict(
                                                                service_app_name=self.kwargs.get('service_app_name'),
                                                                submission_app_name=service_submission.api_name)
-                                                           ))+ '/jobs')}
+                                                           )))}
                 for service_submission in service_tool.submissions_api.all()]
 
         content = render(request=self.request,
@@ -126,24 +125,25 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
         Submission is made on API.
         """
+        print "in hee"
         obj = self.get_object()
         submission = obj.submissions_api.filter(api_name=submission_app_name)[0]
         template_pack = self.request.GET.get('tp', 'bootstrap3')
         form = [{'submission': submission,
                  'form': ServiceSubmissionForm(instance=submission,
                                                parent=submission.service,
+                                               submit_ajax=True,
                                                template_pack=template_pack,
                                                form_action=request.build_absolute_uri(
-                                                   reverse('wapi:v2:waves-services-submission-detail',
+                                                   reverse('wapi:v2:waves-services-submission-jobs',
                                                            kwargs=dict(
                                                                service_app_name=service_app_name,
                                                                submission_app_name=submission_app_name
-                                                           ))) + '/jobs')}]
+                                                           ))))}]
         content = render(request=self.request,
                          template_name='waves/api/service_api_form.html',
                          context={'submissions': form,
-                                  'js': get_js(self),
-                                  'css': get_css(self)})
+                                  'js': get_js(self)})
         return HttpResponse(content=content, content_type="text/html; charset=utf8")
 
     @detail_route(methods=['get', 'post'], url_name='submission-jobs',
@@ -238,6 +238,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
         form = [{'submission': submission,
                  'form': ServiceSubmissionForm(instance=self.get_object_or_404(),
                                                parent=submission.service,
+                                               submit_ajax=True,
                                                template_pack=template_pack,
                                                form_action=request.build_absolute_uri(
                                                    reverse('wapi:v2:waves-services-submission-detail',

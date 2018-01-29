@@ -3,7 +3,7 @@ CHANGELOG
 =========
 
 
-Version 1.1.6 - 2018-01-30
+Version 1.1.6 - 2018-01-31
 --------------------------
 
     - [waves.front] Removed: waves.front, merged back inside wcore
@@ -16,6 +16,7 @@ Version 1.1.6 - 2018-01-30
     - [Adaptors] Moved: Saga common processes in dedicated class SagaAdaptor
     - [FileInput] Added: Configuration for enabling/disabling copy/paste form element
     - [Docs]: Introduce Administrator guide / Developer guide
+    - [Api]: Introduced standard token authentication for form integration
 
 Version 1.1.5 - 2017-11-30
 --------------------------
