@@ -72,7 +72,7 @@ class JobSubmissionView(ServiceDetailView, SubmissionFormView):
         return super(JobSubmissionView, self).get(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('wcore:job_details', kwargs={'slug': self.job.slug})
+        return reverse('wcore:job_details', kwargs={'unique_id': self.job.slug})
 
     def _get_selected_submission(self):
         slug = self.request.POST.get('slug', None)

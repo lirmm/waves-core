@@ -11,6 +11,7 @@ from waves.wcore.admin.views import JobCancelView, JobRerunView
 from waves.wcore.models.history import JobHistory
 from waves.wcore.models.jobs import JobInput, Job, JobOutput
 from waves.wcore.adaptors.const import JobStatus
+from waves.wcore.utils import url_to_edit_object
 
 
 __all__ = ['JobAdmin']
@@ -143,7 +144,7 @@ class JobAdmin(WavesModelAdmin):
         return urls + extended_urls
 
     def submission_name(self, obj):
-        return obj.submission.name
+        return url_to_edit_object(obj.submission)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context or {}
@@ -214,7 +215,7 @@ class JobAdmin(WavesModelAdmin):
 
     def get_run_on(self, obj):
         if obj.submission is not None and obj.submission.get_runner():
-            return obj.submission.get_runner().name
+            return url_to_edit_object(obj.submission.get_runner())
         else:
             return "Undefined"
 

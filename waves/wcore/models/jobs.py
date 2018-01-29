@@ -534,7 +534,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: the absolute uri of this job (without host)
         """
         from django.core.urlresolvers import reverse
-        return reverse('wcore:job_details', kwargs={'slug': self.slug})
+        return reverse('wcore:job_details', kwargs={'unique_id': self.slug})
 
     @property
     def stdout(self):
@@ -857,6 +857,10 @@ class JobInput(Ordered, Slugged, ApiModel):
                                      default=OptType.OPT_TYPE_POSIX)
     #: retrieved upon creation from related AParam object
     label = models.CharField('Label', max_length=100, editable=False, null=True)
+
+    @property
+    def required(self):
+        return True
 
     def natural_key(self):
         return self.job.natural_key(), self.name

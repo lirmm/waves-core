@@ -125,7 +125,6 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
         Submission is made on API.
         """
-        print "in hee"
         obj = self.get_object()
         submission = obj.submissions_api.filter(api_name=submission_app_name)[0]
         template_pack = self.request.GET.get('tp', 'bootstrap3')

@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
 
-from waves.wcore.models.const import OptType
+from waves.wcore.models.const import OptType, ParamType
 
 
-def command_line_element(cmd_format, name, cmd_value):
+def command_line_element(elem):
+    cmd_format = elem.cmd_format
+    name = elem.name
+    cmd_value = elem.value if elem.required is not None else elem.default
     if cmd_value == 'None':
         return ''
     if cmd_format == OptType.OPT_TYPE_VALUATED:
@@ -40,6 +43,6 @@ class BaseCommand(object):
     @staticmethod
     def get_command_line_element_list(inputs):
         if len(inputs) > 0:
-            return [command_line_element(e.cmd_format, e.name, e.value) for e in inputs]
+            return [command_line_element(e) for e in inputs]
         else:
             return []
