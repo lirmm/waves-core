@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 import saga
 import logging
 
-from waves.wcore.adaptors import const, JobAdaptor
+from waves.wcore.adaptors import JobAdaptor
+from waves.wcore.adaptors.const import JobStatus, JobRunDetails
 from waves.wcore.adaptors import exceptions
 
 logger = logging.getLogger(__name__)
@@ -16,14 +17,14 @@ class SagaAdaptor(JobAdaptor):
     """
     _session = None
     _states_map = {
-        saga.job.UNKNOWN: const.JOB_UNDEFINED,
-        saga.job.NEW: const.JOB_QUEUED,
-        saga.job.PENDING: const.JOB_QUEUED,
-        saga.job.RUNNING: const.JOB_RUNNING,
-        saga.job.SUSPENDED: const.JOB_SUSPENDED,
-        saga.job.CANCELED: const.JOB_CANCELLED,
-        saga.job.DONE: const.JOB_COMPLETED,
-        saga.job.FAILED: const.JOB_ERROR,
+        saga.job.UNKNOWN: JobStatus.JOB_UNDEFINED,
+        saga.job.NEW: JobStatus.JOB_QUEUED,
+        saga.job.PENDING: JobStatus.JOB_QUEUED,
+        saga.job.RUNNING: JobStatus.JOB_RUNNING,
+        saga.job.SUSPENDED: JobStatus.JOB_SUSPENDED,
+        saga.job.CANCELED: JobStatus.JOB_CANCELLED,
+        saga.job.DONE: JobStatus.JOB_COMPLETED,
+        saga.job.FAILED: JobStatus.JOB_ERROR,
     }
 
     def __init__(self, command='', protocol='', host="localhost", **kwargs):
@@ -126,6 +127,14 @@ class SagaAdaptor(JobAdaptor):
         except saga.SagaException as exc:
             raise exceptions.AdaptorJobException(exc.message)
 
+    def _job_description(self, job):
+        desc = dict(working_directory=job.working_dir,
+                    executable=self.command,
+                    arguments=job.command_line,
+                    output=job.stdout,
+                    error=job.stderr)
+        return desc
+
     def _job_results(self, job):
         try:
             saga_job = self.connector.get_job(str(job.remote_job_id))
@@ -140,7 +149,7 @@ class SagaAdaptor(JobAdaptor):
         date_created = remote_job.created if remote_job.created else ""
         date_started = remote_job.started if remote_job.started else ""
         date_finished = remote_job.finished if remote_job.finished else ""
-        details = const.JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
+        details = JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
                                       remote_job.exit_code,
                                       date_created,
                                       date_started,

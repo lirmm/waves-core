@@ -22,16 +22,13 @@ class WavesConfig(AppConfig):
         Just import waves signals
         :return: None
         """
-        import waves.wcore.signals
+        from waves.wcore import signals
 
 
 @register()
 def check_waves_config(app_configs=('waves.wcore',), **kwargs):
     """
     WAVES configuration check up, added to classic ``manage.py check`` Django command
-
-    .. TODO:
-        Add more control on WAVES configuration
 
     :param app_configs:
     :param kwargs:

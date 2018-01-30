@@ -4,8 +4,8 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 
 from waves.wcore.api.share import DynamicFieldsModelSerializer, RecursiveField
-from waves.wcore.models.const import *
-from waves.wcore.models.inputs import *
+from waves.wcore.models.const import ParamType
+from waves.wcore.models.inputs import AParam, TextParam, DecimalParam, IntegerParam, FileInput, BooleanParam, ListParam
 from .fields import ListElementField
 
 base_fields = ['label', 'name', 'default', 'format', 'type', 'mandatory', 'short_description', 'multiple',
@@ -24,11 +24,11 @@ class AParamSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_type(param):
-        if param.type == TYPE_LIST:
+        if param.type == ParamType.TYPE_LIST:
             return "select"
-        elif param.type == TYPE_DECIMAL:
+        elif param.type == ParamType.TYPE_DECIMAL:
             return "float"
-        elif param.type == TYPE_INT:
+        elif param.type == ParamType.TYPE_INT:
             return "number"
         return param.type
 
@@ -150,10 +150,10 @@ class ConditionalInputSerializer(DynamicFieldsModelSerializer):
 
     @staticmethod
     def get_param_type(param):
-        if param.type == TYPE_LIST:
+        if param.type == ParamType.TYPE_LIST:
             return "select"
-        elif param.type == TYPE_DECIMAL:
+        elif param.type == ParamType.TYPE_DECIMAL:
             return "float"
-        elif param.type == TYPE_INT:
+        elif param.type == ParamType.TYPE_INT:
             return "number"
         return param.type

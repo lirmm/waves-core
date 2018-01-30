@@ -5,7 +5,6 @@ import json
 import logging
 import os
 import shutil
-import six
 from os import path as path
 from os.path import join
 
@@ -20,13 +19,14 @@ from django.utils.encoding import smart_text
 from django.utils.html import format_html
 
 import waves.wcore.adaptors.exceptions
-from waves.wcore.adaptors.const import *
+from waves.wcore.adaptors.const import JobStatus, JobRunDetails
 from waves.wcore.adaptors.mails import JobMailer
 from waves.wcore.exceptions import WavesException
-from waves.wcore.exceptions.jobs import *
-from waves.wcore.models import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel, FileInputSample, \
-    SubmissionOutput
-from waves.wcore.models.const import *
+from waves.wcore.exceptions.jobs import JobInconsistentStateError, JobMissingMandatoryParam
+from waves.wcore.models.const import OptType, ParamType
+from waves.wcore.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
+from waves.wcore.models.inputs import FileInputSample
+from waves.wcore.models.services import SubmissionOutput
 from waves.wcore.settings import waves_settings
 from waves.wcore.utils import random_analysis_name
 from waves.wcore.utils.storage import allow_display_online
@@ -78,7 +78,7 @@ class JobManager(models.Manager):
         :param service: service model object to filter
         :return: QuerySet
         """
-        return self.get_user_job(user).filter(submission__service__in=[service,])
+        return self.get_user_job(user).filter(submission__service__in=[service, ])
 
     def get_submission_job(self, user, submission):
         """
@@ -104,15 +104,15 @@ class JobManager(models.Manager):
             if user.is_superuser or user.is_staff:
                 # return all pending jobs
                 return self.filter(_status__in=(
-                    JOB_CREATED,
-                    JOB_PREPARED,
-                    JOB_QUEUED,
-                    JOB_RUNNING))
+                    JobStatus.JOB_CREATED,
+                    JobStatus.JOB_PREPARED,
+                    JobStatus.JOB_QUEUED,
+                    JobStatus.JOB_RUNNING))
             # get only user jobs
-            return self.filter(_status__in=(JOB_CREATED,
-                                            JOB_PREPARED,
-                                            JOB_QUEUED,
-                                            JOB_RUNNING),
+            return self.filter(_status__in=(JobStatus.JOB_CREATED,
+                                            JobStatus.JOB_PREPARED,
+                                            JobStatus.JOB_QUEUED,
+                                            JobStatus.JOB_RUNNING),
                                client=user)
         # User is not supposed to be None
         return self.none()
@@ -126,10 +126,10 @@ class JobManager(models.Manager):
         :return: QuerySet
         """
         if user is not None:
-            self.filter(status=JOB_CREATED,
+            self.filter(status=JobStatus.JOB_CREATED,
                         client=user,
                         **extra_filter).order_by('-created')
-        return self.filter(_status=JOB_CREATED,
+        return self.filter(_status=JobStatus.JOB_CREATED,
                            **extra_filter).order_by('-created').all()
 
     @transaction.atomic
@@ -209,7 +209,7 @@ class JobManager(models.Manager):
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
         job._command_line = job.command_line
-        if force_status is not None and force_status in STATUS_MAP.keys():
+        if force_status is not None and force_status in JobStatus.STATUS_MAP.keys():
             job.status = force_status
         job.save()
         return job
@@ -240,8 +240,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
     submission = models.ForeignKey(swapper.get_model_name('wcore', 'Submission'), related_name='service_jobs',
                                    null=True, on_delete=models.SET_NULL)
     #: Job status issued from last retrieve on DB
-    _status = models.IntegerField('Job status', choices=STATUS_LIST,
-                                  default=JOB_CREATED)
+    _status = models.IntegerField('Job status', choices=JobStatus.STATUS_LIST,
+                                  default=JobStatus.JOB_CREATED)
     #: Job last status for which we sent a notification email
     status_mail = models.IntegerField(editable=False, default=9999)
     #: Job associated client, may be null for anonymous submission
@@ -311,7 +311,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: None
         """
         if value != self._status:
-            message = smart_text(self.message) or "New job status {}".format(value)
+            message = "[{}] {}".format(value, smart_text(self.message)) if self.message else "New job status {}".format(value)
             self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
             self.job_history.create(message=message, status=value)
         self._status = value
@@ -363,7 +363,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: list of JobInput models instance
         :rtype: queryset
         """
-        return self.job_inputs.filter(param_type=TYPE_FILE)
+        return self.job_inputs.filter(param_type=ParamType.TYPE_FILE)
 
     @property
     def output_files_exists(self):
@@ -405,7 +405,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: list of `JobInput` models instance
         :rtype: [list of JobInput objects]
         """
-        return self.job_inputs.exclude(param_type=TYPE_FILE)
+        return self.job_inputs.exclude(param_type=ParamType.TYPE_FILE)
 
     @property
     def working_dir(self):
@@ -463,7 +463,8 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: unicode
         """
         if self._command_line is None:
-            self.command_line = "{}".format(self.command.create_command_line(inputs=self.job_inputs.all().order_by('order')))
+            self.command_line = "{}".format(
+                self.command.create_command_line(inputs=self.job_inputs.all().order_by('order')))
         return self._command_line
 
     @command_line.setter
@@ -479,11 +480,11 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: a css class (based on bootstrap)
         :rtype: unicode
         """
-        if self.status in (JOB_UNDEFINED, JOB_SUSPENDED):
+        if self.status in (JobStatus.JOB_UNDEFINED, JobStatus.JOB_SUSPENDED):
             return 'warning'
-        elif self.status == JOB_ERROR:
+        elif self.status == JobStatus.JOB_ERROR:
             return 'danger'
-        elif self.status == JOB_CANCELLED:
+        elif self.status == JobStatus.JOB_CANCELLED:
             return 'info'
         else:
             return 'success'
@@ -495,20 +496,20 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :rtype: int
         """
         mailer = JobMailer()
-        if self.status != self.status_mail and self.status == JOB_ERROR:
+        if self.status != self.status_mail and self.status == JobStatus.JOB_ERROR:
             mailer.send_job_admin_error(self)
         if waves_settings.NOTIFY_RESULTS and self.notify:
             if self.email_to is not None and self.status != self.status_mail:
                 # should send a email
                 try:
                     nb_sent = 0
-                    if self.status == JOB_CREATED:
+                    if self.status == JobStatus.JOB_CREATED:
                         nb_sent = mailer.send_job_submission_mail(self)
-                    elif self.status == JOB_TERMINATED:
+                    elif self.status == JobStatus.JOB_TERMINATED:
                         nb_sent = mailer.send_job_completed_mail(self)
-                    elif self.status == JOB_ERROR:
+                    elif self.status == JobStatus.JOB_ERROR:
                         nb_sent = mailer.send_job_error_email(self)
-                    elif self.status == JOB_CANCELLED:
+                    elif self.status == JobStatus.JOB_CANCELLED:
                         nb_sent = mailer.send_job_cancel_email(self)
                     # Avoid resending emails when last status mail already sent
                     self.status_mail = self.status
@@ -533,7 +534,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: the absolute uri of this job (without host)
         """
         from django.core.urlresolvers import reverse
-        return reverse('wcore:job_details', kwargs={'slug': self.slug})
+        return reverse('wcore:job_details', kwargs={'unique_id': self.slug})
 
     @property
     def stdout(self):
@@ -602,15 +603,17 @@ class Job(TimeStamped, Slugged, UrlMixin):
         if self.nb_retry <= waves_settings.JOBS_MAX_RETRY:
             self.nb_retry += 1
             if message is not None:
-                self.job_history.create(message='[Retry]%s' % smart_text(message), status=self.status)
+                self.job_history.create(message='[Retry] {}'.format(smart_text(message)), status=self.status)
+            else:
+                self.job_history.create(message='[Retry] {}'.format(self.get_status_display()), status=self.status)
         else:
             self.error(message)
 
     def error(self, message):
         """ Set job Status to ERROR, save error reason in JobAdminHistory, save job"""
         self.logger.error('Job error: %s', smart_text(message))
-        self.message = '[Error]%s' % smart_text(message)
-        self.status = JOB_ERROR
+        self.message = '[Error] {}'.format(smart_text(message))
+        self.status = JobStatus.JOB_ERROR
 
     def fatal_error(self, exception):
         logger.fatal('Job workflow fatal error: %s', exception)
@@ -623,7 +626,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """
         Report action to specified job adaptor
 
-        :param action: action one of [prepare, run, cancel, status, results, run_details]
+        :param action: action one of [prepare, run, cancel, status, results, retrieve_run_details]
         :return: None
         """
         try:
@@ -651,28 +654,28 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def next_status(self):
         """ Automatically retrieve next expected status """
-        if self.status in NEXT_STATUS:
-            return NEXT_STATUS[self.status]
+        if self.status in JobStatus.NEXT_STATUS:
+            return JobStatus.NEXT_STATUS[self.status]
         else:
-            return JOB_UNDEFINED
+            return JobStatus.JOB_UNDEFINED
 
     def run_prepare(self):
         """ Ask job adaptor to prepare run (manage input files essentially) """
         self._run_action('prepare_job')
-        self.status = JOB_PREPARED
+        self.status = JobStatus.JOB_PREPARED
 
     def run_launch(self):
         """ Ask job adaptor to actually launch job """
         self._run_action('run_job')
-        self.status = JOB_QUEUED
+        self.status = JobStatus.JOB_QUEUED
 
     def run_status(self):
         """ Ask job adaptor current job status """
         self._run_action('job_status')
         self.logger.debug('job current state :%s', self.status)
-        if self.status == JOB_COMPLETED:
+        if self.status == JobStatus.JOB_COMPLETED:
             self.run_results()
-        if self.status == JOB_UNDEFINED and self.nb_retry > waves_settings.JOBS_MAX_RETRY:
+        if self.status == JobStatus.JOB_UNDEFINED and self.nb_retry > waves_settings.JOBS_MAX_RETRY:
             self.run_cancel()
         self.save()
         return self.status
@@ -685,26 +688,38 @@ class Job(TimeStamped, Slugged, UrlMixin):
     def run_results(self):
         """ Ask job adaptor to get results files (dowload files if needed) """
         self._run_action('job_results')
-        self.run_details()
+        self.retrieve_run_details()
         self.logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
                           os.stat(join(self.working_dir, self.stderr)).st_size)
         if self.exit_code != 0:
             if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
                 logger.error('Error found %s %s ', self.exit_code, smart_text(self.stderr_txt))
             self.message = "Error detected in job.stderr"
-            self.status = JOB_ERROR
+            self.status = JobStatus.JOB_ERROR
         else:
             if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
-                self.status = JOB_WARNING
+                self.status = JobStatus.JOB_WARNING
                 logger.warning('Exit Code %s but found stderr %s ', self.exit_code,
                                smart_text(self.stderr_txt))
             else:
                 self.message = "Data retrieved"
-                self.status = JOB_TERMINATED
+                self.status = JobStatus.JOB_TERMINATED
 
-    def run_details(self):
+    def retrieve_run_details(self):
         """ Ask job adaptor to get JobRunDetails information (started, finished, exit_code ...)"""
+        if self.run_details is None:
+            file_run_details = join(self.working_dir, 'job_run_details.json')
+            try:
+                remote_details = self._run_action('job_run_details')
+            except waves.wcore.adaptors.exceptions.AdaptorException:
+                remote_details = self.default_run_details()
+            with open(file_run_details, 'w') as fp:
+                json.dump(obj=remote_details, fp=fp, ensure_ascii=False)
+            return remote_details
+        return self.run_details
 
+    @property
+    def run_details(self):
         file_run_details = join(self.working_dir, 'job_run_details.json')
         if os.path.isfile(file_run_details):
             # Details have already been downloaded
@@ -715,14 +730,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
             except TypeError:
                 self.logger.error("Unable to retrieve data from file %s", file_run_details)
                 return self.default_run_details()
-        else:
-            try:
-                remote_details = self._run_action('job_run_details')
-            except waves.wcore.adaptors.exceptions.AdaptorException:
-                remote_details = self.default_run_details()
-            with open(file_run_details, 'w') as fp:
-                json.dump(obj=remote_details, fp=fp, ensure_ascii=False)
-            return remote_details
+        return None
 
     @property
     def stdout_txt(self):
@@ -738,7 +746,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     @property
     def allow_rerun(self):
         """ set whether current job state allow rerun """
-        return self.status not in (JOB_CREATED, JOB_UNDEFINED)
+        return self.status not in (JobStatus.JOB_CREATED, JobStatus.JOB_UNDEFINED)
 
     def re_run(self):
         """ Reset attributes and mark job as CREATED to be re-run"""
@@ -746,7 +754,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         self.nb_retry = 0
         self.job_history.all().update(is_admin=True)
         self.job_history.create(message='Marked for re-run', status=self.status)
-        self.status = JOB_CREATED
+        self.status = JobStatus.JOB_CREATED
         self._command_line = None
 
         for job_out in self.outputs.all():
@@ -756,13 +764,13 @@ class Job(TimeStamped, Slugged, UrlMixin):
         self.save()
 
     def default_run_details(self):
-        """ Get and retriver a JobRunDetails namedtuple with defaults values"""
-        prepared = self.job_history.filter(status=JOB_PREPARED).first()
-        finished = self.job_history.filter(status__gte=JOB_COMPLETED).first()
+        """ Get and retriver a JobStatus.JobRunDetails namedtuple with defaults values"""
+        prepared = self.job_history.filter(status=JobStatus.JOB_PREPARED).first()
+        finished = self.job_history.filter(status__gte=JobStatus.JOB_COMPLETED).first()
         prepared_date = prepared.timestamp.isoformat() if prepared is not None else ""
         finished_date = finished.timestamp.isoformat() if finished is not None else ""
         return JobRunDetails(self.id, str(self.slug), self.remote_job_id, self.title, self.exit_code,
-                             self.created.isoformat(), prepared_date, finished_date, '')
+                                       self.created.isoformat(), prepared_date, finished_date, '')
 
 
 class JobInputManager(models.Manager):
@@ -797,7 +805,7 @@ class JobInputManager(models.Manager):
                           cmd_format=service_input.cmd_format,
                           label=service_input.label,
                           value=str(submitted_input))
-        if service_input.param_type == TYPE_FILE:
+        if service_input.param_type == ParamType.TYPE_FILE:
             if isinstance(submitted_input, File):
                 # classic uploaded file
                 filename = path.join(job.working_dir, submitted_input.name)
@@ -834,6 +842,7 @@ class JobInput(Ordered, Slugged, ApiModel):
     """
     Job Inputs is association between a Job, a SubmissionParam, setting a value specific for this job
     """
+
     class Meta:
         unique_together = ('name', 'value', 'job')
 
@@ -846,14 +855,19 @@ class JobInput(Ordered, Slugged, ApiModel):
     #: Each input may have its own identifier on remote adaptor
     remote_input_id = models.CharField('Remote input ID (on adaptor)', max_length=255, editable=False, null=True)
     #: retrieved upon creation from related AParam object
-    param_type = models.CharField('Param param_type', choices=IN_TYPE, max_length=50, editable=False, null=True)
+    param_type = models.CharField('Param param_type', choices=ParamType.IN_TYPE, max_length=50, editable=False,
+                                  null=True)
     #: retrieved upon creation from related AParam object
     name = models.CharField('Param name', max_length=50, editable=False, null=True)
     #: retrieved upon creation from related AParam object
-    cmd_format = models.IntegerField('Parameter Type', choices=OPT_TYPE, editable=False, null=True,
-                                     default=OPT_TYPE_POSIX)
+    cmd_format = models.IntegerField('Parameter Type', choices=OptType.OPT_TYPE, editable=False, null=True,
+                                     default=OptType.OPT_TYPE_POSIX)
     #: retrieved upon creation from related AParam object
     label = models.CharField('Label', max_length=100, editable=False, null=True)
+
+    @property
+    def required(self):
+        return True
 
     def natural_key(self):
         return self.job.natural_key(), self.name
@@ -871,14 +885,14 @@ class JobInput(Ordered, Slugged, ApiModel):
         :return: path to file
         :rtype: unicode
         """
-        if self.param_type == TYPE_FILE:
+        if self.param_type == ParamType.TYPE_FILE:
             return os.path.join(self.job.working_dir, str(self.value))
         else:
             return ""
 
     @property
     def file_name(self):
-        if self.param_type == TYPE_FILE:
+        if self.param_type == ParamType.TYPE_FILE:
             return self.value
         else:
             return ""
@@ -889,15 +903,15 @@ class JobInput(Ordered, Slugged, ApiModel):
 
         :return: determined from related SubmissionParam type
         """
-        if self.param_type in (TYPE_FILE, TYPE_TEXT):
+        if self.param_type in (ParamType.TYPE_FILE, ParamType.TYPE_TEXT):
             return self.value
-        elif self.param_type == TYPE_BOOLEAN:
+        elif self.param_type == ParamType.TYPE_BOOLEAN:
             return bool(self.value)
-        elif self.param_type == TYPE_INT:
+        elif self.param_type == ParamType.TYPE_INT:
             return int(self.value)
-        elif self.param_type == TYPE_DECIMAL:
+        elif self.param_type == ParamType.TYPE_DECIMAL:
             return float(self.value)
-        elif self.param_type == TYPE_LIST:
+        elif self.param_type == ParamType.TYPE_LIST:
             if self.value == 'None':
                 return False
             return self.value
@@ -940,7 +954,7 @@ class JobInput(Ordered, Slugged, ApiModel):
 
     @property
     def available(self):
-        return self.param_type == TYPE_FILE and os.path.isfile(self.file_path) \
+        return self.param_type == ParamType.TYPE_FILE and os.path.isfile(self.file_path) \
                and os.path.getsize(self.file_path) > 0
 
     def get_absolute_url(self):
@@ -983,7 +997,7 @@ class JobOutputManager(models.Manager):
             logger.debug("Output issued from input %s[%s]", from_input.name, from_input.api_name)
             value_to_normalize = submitted_inputs.get(from_input.api_name, from_input.default)
             logger.debug('Value to normalize init 1 %s', value_to_normalize)
-            if from_input.param_type == TYPE_FILE:
+            if from_input.param_type == ParamType.TYPE_FILE:
                 logger.debug('From input is defined as a file')
                 if type(value_to_normalize) is file or isinstance(value_to_normalize, File):
                     logger.debug('Value to normalize is a real file %s', value_to_normalize.name)

@@ -8,7 +8,7 @@ from django.db import models
 from django.forms import Textarea, Select
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.contrib.admin.templatetags.admin_modify import *
+from django.contrib.admin.templatetags.admin_modify import register
 from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
 
 
@@ -71,7 +71,8 @@ class ExportInMassMixin(admin.ModelAdmin):
     def get_actions(self, request):
         """ Add action 'export_in_mass' """
         actions = super(ExportInMassMixin, self).get_actions(request)
-        actions['export_in_mass'] = (export_in_mass, 'export_in_mass', "Export selected to disk")
+        # TODO reactivate export
+        # actions['export_in_mass'] = (export_in_mass, 'export_in_mass', "Export selected to disk")
         return actions
 
 
@@ -81,7 +82,8 @@ class DuplicateInMassMixin(admin.ModelAdmin):
     def get_actions(self, request):
         """ Add action 'duplicate_in_mass' """
         actions = super(DuplicateInMassMixin, self).get_actions(request)
-        actions['duplicate_in_mass'] = (duplicate_in_mass, 'duplicate_in_mass', "Duplicate selected")
+        # TODO reactivate duplication
+        # actions['duplicate_in_mass'] = (duplicate_in_mass, 'duplicate_in_mass', "Duplicate selected")
         return actions
 
 
@@ -101,7 +103,7 @@ class WavesModelAdmin(ModelAdmin):
     class Media:
         js = (
             'waves/admin/js/admin.js',
-            'waves/admin/js/modal.js'
+            'waves/admin/js/waves_modal.js'
         )
         css = {
             'screen': ('waves/admin/css/admin.css',

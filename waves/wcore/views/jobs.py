@@ -3,14 +3,12 @@ from __future__ import unicode_literals
 
 from uuid import UUID
 
-from django.template import TemplateDoesNotExist
+from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.urls import reverse
-from django.core.exceptions import PermissionDenied
 from django.views import generic
 
 from waves.wcore.forms.services import ServiceSubmissionForm
-
 from waves.wcore.models import JobOutput, JobInput, Job, get_submission_model, get_service_model
 from waves.wcore.views.files import DownloadFileView
 from waves.wcore.views.services import SubmissionFormView, ServiceDetailView
@@ -74,7 +72,7 @@ class JobSubmissionView(ServiceDetailView, SubmissionFormView):
         return super(JobSubmissionView, self).get(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('wcore:job_details', kwargs={'slug': self.job.slug})
+        return reverse('wcore:job_details', kwargs={'unique_id': self.job.slug})
 
     def _get_selected_submission(self):
         slug = self.request.POST.get('slug', None)
@@ -101,6 +99,7 @@ class JobView(generic.DetailView):
     """ Job Detail view """
     model = Job
     slug_field = 'slug'
+    slug_url_kwarg = "unique_id"
     template_name = 'waves/jobs/job_detail.html'
     context_object_name = 'job'
 

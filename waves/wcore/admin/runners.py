@@ -18,7 +18,7 @@ from waves.wcore.models import Runner, get_service_model, get_submission_model
 Service = get_service_model()
 Submission = get_submission_model()
 
-__all__ = ['RunnerAdmin']
+__all__ = ['RunnerAdmin', 'RunnerTestConnectionView', 'RunnerImportToolView', 'RunnerExportView']
 
 
 class ServiceRunInline(TabularInline):

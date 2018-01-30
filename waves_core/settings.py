@@ -41,18 +41,19 @@ INSTALLED_APPS = (
     'waves.wcore',
     'crispy_forms',
     'rest_framework',
-    # 'adminsortable2',
+    'rest_framework.authtoken',
+    'corsheaders',
 )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'waves_core.urls'
@@ -102,10 +103,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.11/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-gb'
 
 TIME_ZONE = 'UTC'
 
@@ -114,9 +112,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
 
@@ -136,7 +131,6 @@ MEDIA_URL = "/media/"
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-LOGGING_CONFIG = None
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -144,12 +138,6 @@ LOGGING = {
         'verbose': {
             'format': '[%(levelname)s][%(asctime)s][%(name)s.%(funcName)s:%(lineno)s] - %(message)s',
             'datefmt': "%H:%M:%S"
-        },
-        'simple': {
-            'format': '[%(levelname)s] - %(message)s'
-        },
-        'trace': {
-            'format': '[%(levelname)s][%(asctime)s] - %(message)s'
         },
     },
     'handlers': {
@@ -173,10 +161,10 @@ LOGGING = {
 
     }
 }
-logging.config.dictConfig(LOGGING)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     )
@@ -191,3 +179,7 @@ WAVES_CORE = {
     'JOB_LOG_LEVEL': logging.DEBUG,
 }
 INTERNAL_IPS = ("127.0.0.1", "193.49.106.227")
+CORS_ORIGIN_WHITELIST = (
+    'localhost:*',
+    '127.0.0.1:8099'
+)

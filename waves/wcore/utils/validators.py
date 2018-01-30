@@ -2,25 +2,12 @@ from __future__ import unicode_literals
 
 import os
 
-import waves.wcore.models.services
 from django.core.exceptions import ValidationError
-from waves.wcore.models.const import *
 
-"""
-Dynamic inputs fields validation for job creation
-TYPE_BOOLEAN = 'boolean'
-TYPE_FILE = 'file'
-TYPE_LIST = 'select'
-TYPE_INTEGER = 'int'
-TYPE_FLOAT = 'float'
-TYPE_TEXT = 'text'
-"""
+from waves.wcore.models.const import ParamType
 
 
-# TODO check to go with https://docs.djangoproject.com/en/1.9/ref/validators/
-# https://docs.djangoproject.com/en/1.9/ref/forms/validation/
-
-
+# TODO activate dedicated validators for job Input [https://docs.djangoproject.com/en/1.9/ref/validators/]
 class ServiceInputValidator(object):
     """
     Dynamic validation class for SubmissionParam objects, according to SubmissionParam param_type and format
@@ -52,11 +39,11 @@ class ServiceInputValidator(object):
         # Add check format values
         self.specific_message = ' allowed values are "yes", "true", "1", "no", "false", "0", "None"'
         return str(value).lower() in ("yes", "true", "1", 'no', 'false', '0', 'none') and type(
-            value) == bool and the_input.type == TYPE_BOOLEAN
+            value) == bool and the_input.type == ParamType.TYPE_BOOLEAN
 
     def _validate_input_file(self, the_input, value):
         from django.core.files.base import File
-        assert the_input.type == TYPE_FILE
+        assert the_input.type == ParamType.TYPE_FILE
         self.specific_message = 'allowed extension are %s' % str([e[1] for e in the_input.choices])
         # TODO Check file consistency with BioPython ?
         filter_extension = the_input.choices
@@ -75,7 +62,7 @@ class ServiceInputValidator(object):
         return True
 
     def _validate_input_int(self, the_input, value):
-        assert the_input.type == waves.wcore.adaptors.const.TYPE_INTEGER
+        assert the_input.type == ParamType.TYPE_INT
         self.specific_message = 'value %s is not a valid integer' % value
         if not the_input.mandatory and value is None:
             return True
@@ -92,7 +79,7 @@ class ServiceInputValidator(object):
         return self._validate_input_int(the_input, value)
 
     def _validate_input_float(self, the_input, value):
-        assert the_input.type == waves.wcore.adaptors.const.TYPE_FLOAT
+        assert the_input.type == ParamType.TYPE_DECIMAL
         self.specific_message = 'value %s is not a valid float' % value
         if not the_input.mandatory and value is None:
             return True
@@ -110,7 +97,7 @@ class ServiceInputValidator(object):
         return any(e[0] == value for e in the_input.choices)
 
     def _validate_input_text(self, the_input, value):
-        assert the_input.type == TYPE_TEXT
+        assert the_input.type == ParamType.TYPE_TEXT
         assert isinstance(value, basestring) or value is None, 'value %s is not a valid string' % value
         self.specific_message = 'value %s is not a valid string' % value
         return True

@@ -15,7 +15,7 @@ from waves.wcore.models.base import WavesBaseModel, Ordered, ApiModel
 from waves.wcore.settings import waves_settings
 from waves.wcore.utils.storage import file_sample_directory, waves_storage
 from waves.wcore.utils.validators import validate_list_comma, validate_list_param
-from waves.wcore.models.const import *
+from waves.wcore.models.const import OptType, ParamType
 
 __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam', 'NumberParam',
            'ListParam', 'IntegerParam', 'TextParam', 'FileInputSample', 'SampleDepParam']
@@ -59,8 +59,8 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
                                                             (None, "Not submitted by user")},
                                        default=True, help_text="Submitted and/or Required")
     default = models.CharField('Default value', max_length=50, null=True, blank=True)
-    cmd_format = models.IntegerField('Command line format', choices=OPT_TYPE,
-                                     default=OPT_TYPE_SIMPLE,
+    cmd_format = models.IntegerField('Command line format', choices=OptType.OPT_TYPE,
+                                     default=OptType.OPT_TYPE_SIMPLE,
                                      help_text='Command line pattern')
     edam_formats = models.CharField('Edam format(s)', max_length=255, null=True, blank=True,
                                     help_text="comma separated list of supported edam format")
@@ -109,11 +109,11 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
 
     @property
     def param_type(self):
-        return TYPE_TEXT
+        return ParamType.TYPE_TEXT
 
     def clean(self):
         if self.required is None and not self.default and self.cmd_format not in (
-                OPT_TYPE_NAMED_OPTION, OPT_TYPE_OPTION, OPT_TYPE_NONE):
+                OptType.OPT_TYPE_NAMED_OPTION, OptType.OPT_TYPE_OPTION, OptType.OPT_TYPE_NONE):
             # param is mandatory
             raise ValidationError(
                 'Not displayed parameters must have a default value {}:{}'.format(self.name, self.label))
@@ -161,7 +161,7 @@ class TextParam(AParam):
 
     @property
     def param_type(self):
-        return TYPE_TEXT
+        return ParamType.TYPE_TEXT
 
     def field_dict(self, data=None):
         initial = super(TextParam, self).field_dict(data)
@@ -182,7 +182,7 @@ class BooleanParam(AParam):
 
     @property
     def param_type(self):
-        return TYPE_BOOLEAN
+        return ParamType.TYPE_BOOLEAN
 
     @property
     def choices(self):
@@ -210,7 +210,7 @@ class BooleanParam(AParam):
         return {self.api_name: forms.BooleanField(**self.field_dict(data))}
 
 
-class NumberParam(object):
+class NumberParam(AParam):
     """ Abstract Base class for 'number' validation """
 
     class Meta:
@@ -268,7 +268,6 @@ class NumberParam(object):
 class DecimalParam(NumberParam, AParam):
     """ Number param (decimal or float) """
 
-    # TODO add specific validator
     class Meta:
         verbose_name = "Decimal"
         verbose_name_plural = "Decimal"
@@ -282,7 +281,7 @@ class DecimalParam(NumberParam, AParam):
 
     @property
     def param_type(self):
-        return TYPE_DECIMAL
+        return ParamType.TYPE_DECIMAL
 
     def form_widget(self, data=None):
         widget = forms.DecimalField(**self.field_dict(data))
@@ -294,7 +293,6 @@ class IntegerParam(NumberParam, AParam):
     """ Integer param """
 
     class Meta:
-        # TODO add specific validator
         verbose_name = "Integer"
         verbose_name_plural = "Integer"
 
@@ -307,7 +305,7 @@ class IntegerParam(NumberParam, AParam):
 
     @property
     def param_type(self):
-        return TYPE_INT
+        return ParamType.TYPE_INT
 
     def form_widget(self, data=None):
         widget = forms.IntegerField(**self.field_dict(data))
@@ -364,7 +362,7 @@ class ListParam(AParam):
 
     @property
     def param_type(self):
-        return TYPE_LIST
+        return ParamType.TYPE_LIST
 
     @property
     def labels(self):
@@ -420,7 +418,7 @@ class FileInput(AParam):
 
     @property
     def param_type(self):
-        return TYPE_FILE
+        return ParamType.TYPE_FILE
 
     def form_widget(self, data=None):
         initial_fields = self.field_dict(data)

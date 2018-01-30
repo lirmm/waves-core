@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import ConfigParser
 from django.conf import settings
-from os.path import join, dirname, isfile
+from os.path import join, isfile
 
 configFile = join(settings.BASE_DIR, 'tests', 'settings.ini')
 assert(isfile(configFile))

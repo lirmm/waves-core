@@ -12,7 +12,7 @@
             $(this).addClass('related-widget-wrapper-link change-related')
         });
         $(document).on('formset:added', function (event, $row, formsetName) {
-            if (formsetName == 'inputs') {
+            if (formsetName === 'inputs') {
                 // Do something
                 event.preventDefault();
                 event.stopPropagation();

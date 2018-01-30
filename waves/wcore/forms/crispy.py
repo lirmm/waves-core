@@ -2,12 +2,11 @@ from __future__ import unicode_literals
 
 from crispy_forms import bootstrap
 from crispy_forms.helper import FormHelper as CrispyFormHelper
-from crispy_forms.layout import *
+from crispy_forms.layout import Layout, Field, Div, HTML, Reset, Submit
 
-from waves.wcore.settings import waves_settings
-from waves.wcore.models.inputs import *
-from waves.wcore.models.inputs import FileInputSample
 from waves.wcore.forms.helper import WFormHelper
+from waves.wcore.models.inputs import FileInputSample, FileInput
+from waves.wcore.settings import waves_settings
 
 __all__ = ['FormHelper']
 
@@ -35,7 +34,7 @@ class FormHelper(CrispyFormHelper, WFormHelper):
         self.layout = Layout()
         self.template_pack = template_pack
 
-    def set_layout(self, service_input):
+    def set_layout(self, service_input, form=None):
         """
         Setup layout for displaying a form for a Service, append extra fields for forms if needed
         """

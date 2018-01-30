@@ -7,7 +7,8 @@ from django.utils.safestring import mark_safe
 
 from waves.wcore.compat import SortableInlineAdminMixin
 from waves.wcore.admin.adaptors import ServiceRunnerParamInLine
-from waves.wcore.admin.base import *
+from waves.wcore.admin.base import WavesModelAdmin, ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, \
+    DynamicInlinesAdmin
 from waves.wcore.admin.forms.services import SubmissionInlineForm, ServiceForm
 from waves.wcore.admin.views import ServiceParamImportView, ServiceDuplicateView, ServiceExportView, \
     ServiceModalPreview, ServiceTestConnectionView
@@ -117,8 +118,9 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         _inlines = [
             ServiceSubmissionInline
         ]
-        self.inlines = _inlines
-        if obj and obj.runner is not None \
+        if obj is not None:
+            self.inlines = _inlines
+        if obj and obj.get_runner() is not None \
                 and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
             self.inlines.insert(0, ServiceRunnerParamInLine)
         return self.inlines

@@ -6,20 +6,30 @@ from __future__ import unicode_literals
 import os
 import shutil
 
+from django.conf import settings
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
-from waves.wcore.models import ApiModel, get_service_model, get_submission_model
+from waves.wcore.models import get_service_model, get_submission_model
 from waves.wcore.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
+from waves.wcore.models.base import ApiModel
 from waves.wcore.models.binaries import ServiceBinaryFile
-from waves.wcore.models.inputs import *
+from waves.wcore.models.inputs import FileInputSample, FileInput
 from waves.wcore.models.jobs import Job, JobOutput
-from waves.wcore.models.runners import *
+from waves.wcore.models.runners import Runner
 from waves.wcore.models.services import SubmissionExitCode
 from waves.wcore.utils import get_all_subclasses
 
 Service = get_service_model()
 Submission = get_submission_model()
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
+        from rest_framework.authtoken.models import Token
+        if created or Token.objects.filter(user=instance).count() == 0:
+            Token.objects.create(user=instance)
 
 
 @receiver(pre_save, sender=Job)
@@ -45,7 +55,7 @@ def job_post_save_handler(sender, instance, created, **kwargs):
             instance.make_job_dirs()
             instance.create_non_editable_inputs()
             instance.create_default_outputs()
-            instance.job_history.create(message="Job Defaults created", status=instance.status)
+            instance.job_history.create(message="Job defaults created", status=instance.status)
 
 
 @receiver(post_delete, sender=Job)
@@ -64,7 +74,7 @@ def service_post_delete_handler(sender, instance, **kwargs):
 @receiver(post_save, sender=Service)
 def service_post_save_handler(sender, instance, created, **kwargs):
     """ service post delete handler """
-    if created and not kwargs.get('raw', False):
+    if created and not kwargs.get('raw', False) and instance.submissions.count() == 0:
         instance.submissions.add(Submission.objects.create(name='default', service=instance))
 
 

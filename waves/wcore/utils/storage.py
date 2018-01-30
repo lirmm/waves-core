@@ -54,6 +54,5 @@ def allow_display_online(file_name):
         return False
 
 
-
 waves_storage = WavesStorage()
 binary_storage = BinaryStorage()

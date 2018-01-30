@@ -45,12 +45,16 @@ class JobMissingMandatoryParam(JobSubmissionException):
 class JobInconsistentStateError(JobException):
     """ Job current status is inconsistent for requested action
 
-    :param job: current Job
-    :param expected: list oc expected status
-    :param msg: extended message to add to standard log_exception message
     """
 
-    def __init__(self, message="", job=None, expected=[]):
+    def __init__(self, message="", job=None, expected=None):
+        """
+        :param job: current Job
+        :param expected: list oc expected status
+        :param message: extended message to add to standard log_exception message
+        """
+        if expected is None:
+            expected = []
         if job:
             message = u'{} [{}] - Inconsistent job  state: "{}" - expected {}'.format(
                 message, job.slug, job.get_status_display(), [str(i[1]) for i in expected], )

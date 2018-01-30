@@ -10,7 +10,7 @@ from waves.wcore.models import AdaptorInitParam
 from waves.wcore.models.adaptors import HasAdaptorClazzMixin
 from waves.wcore.models.base import Described, ExportAbleMixin
 
-__all__ = ['Runner']
+__all__ = ['Runner', 'HasRunnerParamsMixin']
 
 
 class RunnerManager(models.Manager):
@@ -23,8 +23,6 @@ class RunnerManager(models.Manager):
 
 class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     """ Represents a generic job adaptor meta information (resolved at runtime via clazz attribute) """
-
-    # TODO manage cleanly change in actual clazz value (when changed)
 
     class Meta:
         ordering = ['name']
@@ -43,7 +41,6 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
         :return: an Importer new instance
         """
-        # TODO recheck importer
         if self.adaptor is not None:
             importer = self.adaptor.importer
             importer._runner = self

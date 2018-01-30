@@ -41,13 +41,12 @@ class JobOutputForm(ReadOnlyForm):
     def get_file_path(self, obj):
         return obj.file_path
 
-
 class JobForm(forms.ModelForm):
     class Meta:
         model = Job
         fields = ['title', 'submission', '_status', 'client', 'email_to']
         widgets = {
             'service': widgets.Select(attrs={'disabled': 'disabled'}),
-            'client': widgets.Select(attrs={'disabled': 'disabled'})
+            'client': widgets.Select(attrs={'disabled': 'disabled'}),
         }
 

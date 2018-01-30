@@ -5,7 +5,7 @@ from os.path import join
 
 import saga
 
-from waves.wcore.adaptors.exceptions import *
+from waves.wcore.adaptors.exceptions import AdaptorJobException
 from waves.wcore.adaptors.saga_python import SagaAdaptor
 
 logger = logging.getLogger(__name__)
@@ -22,14 +22,6 @@ class LocalShellAdaptor(SagaAdaptor):
 
     def __init__(self, command=None, protocol='fork', host="localhost", **kwargs):
         super(LocalShellAdaptor, self).__init__(command, protocol, host, **kwargs)
-
-    def _job_description(self, job):
-        desc = dict(working_directory=job.working_dir,
-                    executable=self.command,
-                    arguments=job.command_line,
-                    output=job.stdout,
-                    error=job.stderr)
-        return desc
 
 
 class SshShellAdaptor(LocalShellAdaptor):
@@ -107,7 +99,7 @@ class SshShellAdaptor(LocalShellAdaptor):
     def job_work_dir(self, job, mode=saga.filesystem.READ):
         """ Setup remote host working dir """
         return saga.filesystem.Directory(saga.Url('%s/%s' % (self.remote_dir, str(job.slug))), mode,
-                                                session=self.session)
+                                         session=self.session)
 
     def _prepare_job(self, job):
         """

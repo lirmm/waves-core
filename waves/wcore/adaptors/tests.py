@@ -4,7 +4,7 @@ import logging
 import os
 import unittest
 
-import waves.wcore.adaptors.const
+from waves.wcore.adaptors.const import JobStatus
 import waves.wcore.adaptors.test_settings
 from waves.wcore.adaptors.cluster import SshClusterAdaptor
 from waves.wcore.adaptors.exceptions import AdaptorException, AdaptorNotAvailableException
@@ -12,7 +12,7 @@ from waves.wcore.adaptors.mocks import MockJobRunnerAdaptor
 from waves.wcore.adaptors.shell import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.wcore.exceptions.jobs import JobInconsistentStateError
 from waves.wcore.settings import waves_settings
-from waves.wcore.tests import BaseTestCase, TestJobWorkflowMixin
+from waves.wcore.tests.base import BaseTestCase, TestJobWorkflowMixin
 from waves.wcore.utils.encrypt import Encrypt
 from .loader import AdaptorLoader
 
@@ -149,7 +149,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
         self.adaptor = MockJobRunnerAdaptor(unexpected_param='unexpected value')
         self.jobs.append(self.current_job)
         self.debug_job_state()
-        self.current_job.status = waves.wcore.adaptors.const.JOB_RUNNING
+        self.current_job.status = JobStatus.JOB_RUNNING
         logger.debug('Test Prepare')
         self.debug_job_state()
         with self.assertRaises(JobInconsistentStateError):
@@ -157,20 +157,20 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
 
         self.debug_job_state()
         logger.debug('Test Run')
-        self.current_job.status = waves.wcore.adaptors.const.JOB_UNDEFINED
+        self.current_job.status = JobStatus.JOB_UNDEFINED
         with self.assertRaises(JobInconsistentStateError):
             self.current_job.run_launch()
         self.debug_job_state()
         logger.debug('Test Cancel')
-        self.current_job.status = waves.wcore.adaptors.const.JOB_COMPLETED
+        self.current_job.status = JobStatus.JOB_COMPLETED
         with self.assertRaises(JobInconsistentStateError):
             self.current_job.run_cancel()
             # self.adaptor.cancel_job(self.current_job)
         logger.debug('Internal state %s, current %s', self.current_job._status, self.current_job.status)
         # status hasn't changed
-        self.assertEqual(self.current_job.status, waves.wcore.adaptors.const.JOB_COMPLETED)
+        self.assertEqual(self.current_job.status, JobStatus.JOB_COMPLETED)
         logger.debug('%i => %s', len(self.current_job.job_history.values()), self.current_job.job_history.values())
         # assert that no history element has been added
-        self.current_job.status = waves.wcore.adaptors.const.JOB_RUNNING
+        self.current_job.status = JobStatus.JOB_RUNNING
         self.current_job.run_cancel()
-        self.assertTrue(self.current_job.status == waves.wcore.adaptors.const.JOB_CANCELLED)
+        self.assertTrue(self.current_job.status == JobStatus.JOB_CANCELLED)

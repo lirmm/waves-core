@@ -56,7 +56,9 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         return self.object
 
     def get_success_url(self):
-        return reverse('wcore:submission', kwargs={'pk': self.get_object().id})
+        if 'preview' in self.request.path:
+            return self.request.path
+        return reverse('wcore:job_details', kwargs={'unique_id': self.job.slug})
 
     def _get_selected_submission(self):
         slug = self.request.POST.get('slug', None)
@@ -90,6 +92,7 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         kwargs = super(SubmissionFormView, self).get_form_kwargs()
         extra_kwargs = {
             'parent': self.object,
+            'request': self.request
         }
         extra_kwargs.update(kwargs)
         return extra_kwargs
@@ -142,12 +145,12 @@ class ServiceListView(generic.ListView):
     context_object_name = 'available_services'
 
     def get_queryset(self):
-        return Service.objects.filter(status__gte=Service.SRV_RESTRICTED).prefetch_related('submissions')
+        return Service.objects.get_services(self.request.user).prefetch_related('submissions')
 
 
 class ServiceDetailView(generic.DetailView):
     model = Service
-    # template_name = 'waves/services/service_details.html'
+    template_name = 'waves/services/service_details.html'
     context_object_name = 'service'
     queryset = Service.objects.all().prefetch_related('submissions')
     object = None

@@ -5,7 +5,7 @@ import logging
 
 from waves.wcore.import_export.services import ServiceSerializer
 from waves.wcore.models import get_service_model, get_submission_model
-from waves.wcore.tests import BaseTestCase
+from waves.wcore.tests.base import BaseTestCase
 
 logger = logging.getLogger(__name__)
 Service = get_service_model()
@@ -21,7 +21,8 @@ class SerializationTestCase(BaseTestCase):
         self.assertGreater(init_count, 0)
         file_paths = []
         for srv in Service.objects.all():
-            file_paths.append(srv.serialize())
+            file_out = srv.serialize()
+            file_paths.append(file_out)
         for exp in file_paths:
             with open(exp) as fp:
                 serializer = ServiceSerializer(data=json.load(fp))

@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 
-import waves.wcore.adaptors.const
+from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.models.base import WavesBaseModel
 
 
@@ -50,7 +50,7 @@ class JobHistory(WavesBaseModel):
     timestamp = models.DateTimeField('Date time', auto_now_add=True, help_text='History timestamp')
     #: Job Status for this event
     status = models.IntegerField('Job Status', help_text='History job status', null=True,
-                                 choices=waves.wcore.adaptors.const.STATUS_LIST)
+                                 choices=JobStatus.STATUS_LIST)
     #: Job event message
     message = models.TextField('History log', blank=True, null=True, help_text='History log')
     #: Event is only intended for Admin

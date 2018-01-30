@@ -5,10 +5,11 @@ import logging
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 
 from waves.wcore.forms.crispy import FormHelper
 from waves.wcore.models import get_submission_model
-from waves.wcore.models.inputs import *
+from waves.wcore.models.inputs import AParam, FileInput
 from waves.wcore.utils import random_analysis_name
 
 Submission = get_submission_model()
@@ -26,19 +27,19 @@ class ServiceSubmissionForm(forms.ModelForm):
     email = forms.EmailField(label="Mail me results", required=False)
 
     def __init__(self, *args, **kwargs):
-        parent = kwargs.pop('parent', None)
-        user = kwargs.pop('user', None)
-        form_action = kwargs.pop('form_action', None)
-        template_pack = kwargs.pop('template_pack', 'bootstrap3')
+        self.parent = kwargs.pop('parent', None)
+        self.user = kwargs.pop('user', None)
+        self.form_action = kwargs.pop('form_action', None)
+        self.template_pack = kwargs.pop('template_pack', 'bootstrap3')
+        self.submit_ajax = kwargs.pop("submit_ajax", False)
         super(ServiceSubmissionForm, self).__init__(*args, **kwargs)
-        self.helper = self.get_helper(form_tag=True, template_pack=template_pack)
+        self.helper = self.get_helper(form_tag=True, template_pack=self.template_pack)
         init_fields = ['title', 'slug']
         if self.instance.service.email_on:
             init_fields.append('email')
         self.fields['title'].initial = 'Job %s' % random_analysis_name()
         self.fields['slug'].initial = str(self.instance.slug)
         self.list_inputs = list(self.instance.expected_inputs.order_by('-required', 'order'))
-        # self.fields = self.instance.form_fields(self.data)
         self.helper.init_layout(fields=self.fields)
 
         extra_fields = []
@@ -55,8 +56,10 @@ class ServiceSubmissionForm(forms.ModelForm):
                 self.helper.set_layout(dependent_input)
         self.list_inputs.extend(extra_fields)
         self.helper.end_layout()
-        if form_action:
-            self.helper.form_action = form_action
+        if self.form_action:
+            self.helper.form_action = self.form_action
+        if self.submit_ajax:
+            self.helper.form_class = self.helper.form_class + ' submit-ajax'
 
     def get_helper(self, **helper_args):
         # TODO add dynamic Helper class loading

@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import json
 
 from waves.wcore.adaptors.utils import check_ready
-from waves.wcore.adaptors import const
+from waves.wcore.adaptors.const import JobStatus, JobRunDetails
 from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.adaptors.utils import check_ready
 from waves.wcore.exceptions.jobs import JobInconsistentStateError
@@ -56,9 +56,6 @@ class JobAdaptor(object):
         :return: A dictionary containing expected init params
         :rtype: dict
         """
-        # TODO multiple dictionary entries to setup the form display in back-office (same way as AdaptorParam model)
-        # (ex: dict(command={'list':['value1', 'value'2']))
-
         return dict(command=self.command, protocol=self.protocol, host=self.host)
 
     @property
@@ -105,11 +102,11 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobPrepareException` if error during preparation process
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'created'
         """
-        if job.status > const.JOB_CREATED:
-            raise JobInconsistentStateError(job=job, expected=[const.STATUS_LIST[1]])
+        if job.status > JobStatus.JOB_CREATED:
+            raise JobInconsistentStateError(job=job, expected=[JobStatus.STATUS_LIST[1]])
         self.connect()
         self._prepare_job(job)
-        job.status = const.JOB_PREPARED
+        job.status = JobStatus.JOB_PREPARED
         return job
 
     @check_ready
@@ -121,11 +118,11 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobRunException` if error during launch
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
-        if job.status != const.JOB_PREPARED:
-            raise JobInconsistentStateError(job=job, expected=[const.STATUS_LIST[2]])
+        if job.status != JobStatus.JOB_PREPARED:
+            raise JobInconsistentStateError(job=job, expected=[JobStatus.STATUS_LIST[2]])
         self.connect()
         self._run_job(job)
-        job.status = const.JOB_QUEUED
+        job.status = JobStatus.JOB_QUEUED
         return job
 
     @check_ready
@@ -138,13 +135,13 @@ class JobAdaptor(object):
         :raise: :class:`waves.wcore.adaptors.exceptions.JobRunException` if error during launch
         :raise: :class:`waves.wcore.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
-        if job.status >= const.JOB_COMPLETED:
-            raise JobInconsistentStateError(job=job, expected=const.STATUS_LIST[0:5],
+        if job.status >= JobStatus.JOB_COMPLETED:
+            raise JobInconsistentStateError(job=job, expected=JobStatus.STATUS_LIST[0:5],
                                             message="Job can't be cancelled")
         self.connect()
         try:
             self._cancel_job(job)
-            job.status = const.JOB_CANCELLED
+            job.status = JobStatus.JOB_CANCELLED
         except AdaptorException as exc:
             job.job_history.create(
                 message="Job for %s '%s' could not be remotely cancelled: %s " % (self.__class__.__name__,
@@ -164,7 +161,7 @@ class JobAdaptor(object):
         self.connect()
         job.status = self._states_map[self._job_status(job)]
         job.logger.info('Current remote state %s mapped to %s', self._job_status(job),
-                        const.STATUS_MAP.get(job.status, 'Undefined'))
+                        JobStatus.STATUS_MAP.get(job.status, 'Undefined'))
         return job
 
     @check_ready

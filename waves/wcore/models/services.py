@@ -15,14 +15,14 @@ from django.db import models
 from django.db import transaction
 from django.db.models import Q
 
-import waves.wcore.adaptors.const
-from waves.wcore.models.adaptors import *
+from waves.wcore.adaptors.const import JobStatus
+from waves.wcore.models.adaptors import AdaptorInitParam
 from waves.wcore.models.runners import HasRunnerParamsMixin
-from waves.wcore.models.base import *
+from waves.wcore.models.base import TimeStamped, Described, ExportAbleMixin, Ordered, Slugged, ApiModel, WavesBaseModel
 from waves.wcore.settings import waves_settings
 
 __all__ = ['ServiceRunParam', 'ServiceManager', "SubmissionExitCode",
-           'SubmissionOutput', 'SubmissionRunParam']
+           'SubmissionOutput', 'SubmissionRunParam', 'BaseSubmission', 'BaseService']
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +79,10 @@ class ServiceRunParam(AdaptorInitParam):
 class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
     class Meta:
         abstract = True
+        ordering = ['name']
+        verbose_name = 'Online Service'
+        verbose_name_plural = "Online Services"
+        unique_together = (('api_name', 'version', 'status'),)
 
     #: Service DRAFT status: online access granted only to creator
     SRV_DRAFT = 0
@@ -185,7 +189,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
         """
         from waves.wcore.models import Job
         return Job.objects.filter(submission__in=self.submissions.all(),
-                                  _status__in=waves.wcore.adaptors.const.PENDING_STATUS)
+                                  _status__in=JobStatus.PENDING_STATUS)
 
     @property
     def command(self):
@@ -258,7 +262,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     @property
     def running_jobs(self):
         return self.jobs.filter(
-            status__in=[waves.wcore.adaptors.const.JOB_CREATED, waves.wcore.adaptors.const.JOB_COMPLETED])
+            status__in=[JobStatus.JOB_CREATED, JobStatus.JOB_COMPLETED])
 
     def get_admin_url(self):
         return reverse('admin:{}_{}_change'.format(self._meta.app_label, self._meta.model_name), args=[self.pk])
@@ -272,10 +276,6 @@ class Service(BaseService):
     Represents a default swappable service on the platform
     """
     class Meta:
-        ordering = ['name']
-        verbose_name = 'Online Service'
-        verbose_name_plural = "Online Services"
-        unique_together = (('api_name', 'version', 'status'),)
         swappable = swapper.swappable_setting('wcore', 'Service')
 
 
@@ -359,7 +359,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     @property
     def pending_jobs(self):
         """ Get current Service Jobs """
-        return self.service_jobs.filter(_status__in=waves.wcore.adaptors.const.PENDING_STATUS)
+        return self.service_jobs.filter(_status__in=JobStatus.PENDING_STATUS)
 
     def form_fields(self, data):
         form_fields = collections.OrderedDict({

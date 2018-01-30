@@ -5,7 +5,7 @@ import logging
 from django.utils.module_loading import import_string
 
 from waves.wcore.adaptors import JobAdaptor
-from waves.wcore.tests import BaseTestCase, TestJobWorkflowMixin
+from waves.wcore.tests.base import BaseTestCase, TestJobWorkflowMixin
 
 logger = logging.getLogger(__name__)
 
