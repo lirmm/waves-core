@@ -55,7 +55,7 @@ def job_post_save_handler(sender, instance, created, **kwargs):
             instance.make_job_dirs()
             instance.create_non_editable_inputs()
             instance.create_default_outputs()
-            instance.job_history.create(message="Job Defaults created", status=instance.status)
+            instance.job_history.create(message="Job defaults created", status=instance.status)
 
 
 @receiver(post_delete, sender=Job)

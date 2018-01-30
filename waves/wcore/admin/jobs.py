@@ -119,7 +119,7 @@ class JobAdmin(WavesModelAdmin):
                        'connexion_string', 'get_command_line', 'working_dir', 'exit_code', 'get_run_details')
 
     fieldsets = [
-        ('Main', {'classes': ('collapse', 'suit-tab', 'suit-tab-general',),
+        ('Main', {'classes': ('', 'suit-tab', 'suit-tab-general',),
                   'fields': ['title', 'slug', 'email_to', '_status', 'created', 'updated',
                              'client', 'exit_code', 'get_run_details']
                   }
@@ -152,7 +152,6 @@ class JobAdmin(WavesModelAdmin):
         extra_context['show_save_and_add_another'] = False
         extra_context['show_save_and_continue'] = False
         extra_context['show_save'] = False
-
         return super(JobAdmin, self).change_view(request, object_id, form_url, extra_context)
 
     def get_slug(self, obj):

@@ -311,7 +311,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         :return: None
         """
         if value != self._status:
-            message = smart_text(self.message) or "New job status {}".format(value)
+            message = "[{}] {}".format(value, smart_text(self.message)) if self.message else "New job status {}".format(value)
             self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
             self.job_history.create(message=message, status=value)
         self._status = value
@@ -603,14 +603,16 @@ class Job(TimeStamped, Slugged, UrlMixin):
         if self.nb_retry <= waves_settings.JOBS_MAX_RETRY:
             self.nb_retry += 1
             if message is not None:
-                self.job_history.create(message='[Retry]%s' % smart_text(message), status=self.status)
+                self.job_history.create(message='[Retry] {}'.format(smart_text(message)), status=self.status)
+            else:
+                self.job_history.create(message='[Retry] {}'.format(self.get_status_display()), status=self.status)
         else:
             self.error(message)
 
     def error(self, message):
         """ Set job Status to ERROR, save error reason in JobAdminHistory, save job"""
         self.logger.error('Job error: %s', smart_text(message))
-        self.message = '[Error]%s' % smart_text(message)
+        self.message = '[Error] {}'.format(smart_text(message))
         self.status = JobStatus.JOB_ERROR
 
     def fatal_error(self, exception):
