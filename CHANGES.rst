@@ -16,7 +16,8 @@ Version 1.1.6 - 2018-01-31
     - [Adaptors] Moved: Saga common processes in dedicated class SagaAdaptor
     - [FileInput] Added: Configuration for enabling/disabling copy/paste form element
     - [Docs]: Introduce Administrator guide / Developer guide
-    - [Api]: Introduced standard token authentication for form integration
+    - [Api]: Introduce standard token authentication for API form integration
+    - [Db]: Removed migrations files - causing fails migrate with overridden Submission model - added makemigration upon install
 
 Version 1.1.5 - 2017-11-30
 --------------------------

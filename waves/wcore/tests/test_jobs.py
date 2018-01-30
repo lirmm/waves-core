@@ -35,7 +35,6 @@ class JobsTestCase(BaseTestCase):
         logger.debug('Job directories has been deleted')
 
     def test_job_history(self):
-        # TODO check messages sent to history
         job = self.create_random_job()
         job.job_history.create(message="Test Admin message", status=job.status, is_admin=True)
         job.job_history.create(message="Test public message", status=job.status)
@@ -51,7 +50,7 @@ class JobsTestCase(BaseTestCase):
         job = self.create_random_job()
 
         job.status_time = timezone.datetime.now()
-        logger.debug("Job link: %s", job.link)
+        logger.info("Job link: %s", job.link)
         logger.debug("Job notify: %s", job.notify)
         job.check_send_mail()
         self.assertEqual(len(mail.outbox), 1)

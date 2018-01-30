@@ -118,8 +118,9 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         _inlines = [
             ServiceSubmissionInline
         ]
-        self.inlines = _inlines
-        if obj and obj.runner is not None \
+        if obj is not None:
+            self.inlines = _inlines
+        if obj and obj.get_runner() is not None \
                 and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
             self.inlines.insert(0, ServiceRunnerParamInLine)
         return self.inlines

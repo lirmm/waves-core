@@ -37,7 +37,6 @@ class JobFileView(object):
                     if 'text' or 'x-empty' in mime_type:
                         response = Response(data=fp.read())
                     else:
-                        # TODO check behaviour when called via ajax AngularJS
                         response = HttpResponse(content=fp)
                         response['Content-Type'] = mime_type
                         response['Content-Length'] = getsize(instance.file_path)
@@ -70,7 +69,6 @@ class JobViewSet(mixins.ListModelMixin,
         """
         Update Job according to requested action
         """
-        # TODO check permissions
         job = self.get_object()
         if job.client != self.request.user:
             return HttpResponseForbidden("Action not allowed")

@@ -56,9 +56,6 @@ class JobAdaptor(object):
         :return: A dictionary containing expected init params
         :rtype: dict
         """
-        # TODO multiple dictionary entries to setup the form display in back-office (same way as AdaptorParam model)
-        # (ex: dict(command={'list':['value1', 'value'2']))
-
         return dict(command=self.command, protocol=self.protocol, host=self.host)
 
     @property

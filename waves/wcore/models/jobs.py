@@ -624,7 +624,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
         """
         Report action to specified job adaptor
 
-        :param action: action one of [prepare, run, cancel, status, results, run_details]
+        :param action: action one of [prepare, run, cancel, status, results, retrieve_run_details]
         :return: None
         """
         try:
@@ -686,7 +686,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
     def run_results(self):
         """ Ask job adaptor to get results files (dowload files if needed) """
         self._run_action('job_results')
-        self.run_details()
+        self.retrieve_run_details()
         self.logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
                           os.stat(join(self.working_dir, self.stderr)).st_size)
         if self.exit_code != 0:
@@ -703,9 +703,21 @@ class Job(TimeStamped, Slugged, UrlMixin):
                 self.message = "Data retrieved"
                 self.status = JobStatus.JOB_TERMINATED
 
-    def run_details(self):
+    def retrieve_run_details(self):
         """ Ask job adaptor to get JobRunDetails information (started, finished, exit_code ...)"""
+        if self.run_details is None:
+            file_run_details = join(self.working_dir, 'job_run_details.json')
+            try:
+                remote_details = self._run_action('job_run_details')
+            except waves.wcore.adaptors.exceptions.AdaptorException:
+                remote_details = self.default_run_details()
+            with open(file_run_details, 'w') as fp:
+                json.dump(obj=remote_details, fp=fp, ensure_ascii=False)
+            return remote_details
+        return self.run_details
 
+    @property
+    def run_details(self):
         file_run_details = join(self.working_dir, 'job_run_details.json')
         if os.path.isfile(file_run_details):
             # Details have already been downloaded
@@ -716,14 +728,7 @@ class Job(TimeStamped, Slugged, UrlMixin):
             except TypeError:
                 self.logger.error("Unable to retrieve data from file %s", file_run_details)
                 return self.default_run_details()
-        else:
-            try:
-                remote_details = self._run_action('job_run_details')
-            except waves.wcore.adaptors.exceptions.AdaptorException:
-                remote_details = self.default_run_details()
-            with open(file_run_details, 'w') as fp:
-                json.dump(obj=remote_details, fp=fp, ensure_ascii=False)
-            return remote_details
+        return None
 
     @property
     def stdout_txt(self):

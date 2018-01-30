@@ -5,3 +5,4 @@ recursive-include waves/wcore/templates *
 recursive-include waves/front/templates *
 recursive-include docs *
 recursive-exclude waves_core *
+recursive-exclude waves/wcore/migrations *

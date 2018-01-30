@@ -36,10 +36,7 @@ dependencies_fields = ['parent', 'when_value']
 class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
     """ Base Input admin """
     base_model = AParam
-
     exclude = ['order', 'repeat_group']
-
-    # TODO NEXT VERSION
     readonly_fields = []
     _object = None
 
@@ -73,7 +70,6 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
         return self._object
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        # TODO when non popup access disabled, following if would be obsolete
         if request.current_obj:
             if db_field.name == 'repeat_group':
                 kwargs['queryset'] = RepeatedGroup.objects.filter(submission=request.current_obj.submission)
@@ -108,7 +104,7 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
         form.base_fields['parent'].widget.can_add_related = False
         form.base_fields['parent'].widget.can_change_related = False
         form.base_fields['parent'].widget.can_delete_related = False
-        # TODO reactivate repeat_group management from inside inputs
+        # TODO reactivate repeat_group v1.1.7
         # form.base_fields['repeat_group'].widget.can_add_related = False
         # form.base_fields['repeat_group'].widget.can_change_related = False
         # form.base_fields['repeat_group'].widget.can_delete_related = False
@@ -150,7 +146,6 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
                 'popup_response_data': popup_response_data
             })
         elif "_addanother" in request.POST:
-            # TODO add new param and setup submission foreign key
             pass
         else:
             post_url_continue = reverse('admin:wcore_submission_change', args=[obj.submission.id])
@@ -173,7 +168,6 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
                 'popup_response_data': popup_response_data,
             })
         elif "_addanother" in request.POST:
-            # TODO add new param and setup submission foreign key
             pass
         else:
             opts = self.model._meta
@@ -200,9 +194,6 @@ class FileInputAdmin(AParamAdmin):
     extra_fieldset_title = 'File params'
 
     inlines = [FileInputSampleInline, SampleDependentInputInline]
-    # TODO activate sample selection dependencies (both on forms and on submission)
-    # TOD, SampleDependentInputInline,]
-    # readonly_fields = ['default', ]
     fieldsets = [
         ('General', {
             'fields': required_base_fields + ['allow_copy_paste', 'max_size', 'allowed_extensions'],

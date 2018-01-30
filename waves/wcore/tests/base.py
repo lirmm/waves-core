@@ -231,7 +231,7 @@ class TestJobWorkflowMixin(TestCase):
             time.sleep(3)
         if job.status in (JobStatus.JOB_COMPLETED, JobStatus.JOB_TERMINATED):
             # Get job run details
-            job.run_details()
+            job.retrieve_run_details()
             time.sleep(3)
             history = job.job_history.first()
             logger.debug("History timestamp %s", localtime(history.timestamp))
@@ -242,6 +242,7 @@ class TestJobWorkflowMixin(TestCase):
                 if not isfile(output_job.file_path):
                     logger.warning("Job <<%s>> did not output expected %s (test_data/jobs/%s/) ",
                                    job.title, output_job.value, job.slug)
+                    self.fail('Expected output not present')
                 else:
                     logger.info("Expected output file found : %s ", output_job.file_path)
             self.assertTrue(job.status == JobStatus.JOB_TERMINATED)

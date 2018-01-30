@@ -148,7 +148,6 @@ class ImportCommand(BaseCommand):
 
     def handle(self, *args, **options):
         """ Handle import for services """
-        # TODO handle single Runner / import export
         exported_files = []
         type_mode = options.get('type_model', 'service')
         if type_mode != 'service':

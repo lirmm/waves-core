@@ -1,38 +1,5 @@
 {% extends "waves/services/../services/base.html" %}
 {% load waves_tags %}
-{% block scripts %}
-    {{ block.super }}
-    <script>
-        var reloading;
-
-        function checkReloading() {
-            if (window.location.hash === "#autoreload") {
-                reloading = setTimeout("window.location.reload();", 5000);
-                $('#reloadCB').bootstrapToggle('on');
-            }
-        }
-
-        function toggleAutoRefresh(checked) {
-            if (checked) {
-                window.location.replace("#autoreload");
-                reloading = setTimeout("window.location.reload();", 5000);
-            } else {
-                window.location.replace("#");
-                clearTimeout(reloading);
-            }
-        }
-
-        $(function () {
-            $('#reloadCB').change(function () {
-                console.log('toggle fired' + $(this).prop('checked'));
-                toggleAutoRefresh($(this).prop('checked'));
-            })
-        });
-        // $("#reloadCB").onSwitchChange(toggleAutoRefresh($("#reloadCB")));
-        window.onload = checkReloading;
-
-    </script>
-{% endblock %}
 {% block content_main %}
     <div id="sec1">
         <div class="text-page container">
@@ -45,10 +12,6 @@
                                 {{ job.service }} job
                                 <span class="label label-{{ job.label_class }} pull-right">{{ job.get_status_display }}</span>
                             </h2>
-                            <div class="text-right">
-                                Auto Refresh
-                                <input type="checkbox" data-toggle="toggle" data-size="small" id="reloadCB">
-                            </div>
                         </div>
                         <div class="panel-body">
                             {% include "waves/jobs/parts/job_detail.html" with job=job %}

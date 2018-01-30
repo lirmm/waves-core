@@ -22,7 +22,7 @@ from waves.wcore.models.base import TimeStamped, Described, ExportAbleMixin, Ord
 from waves.wcore.settings import waves_settings
 
 __all__ = ['ServiceRunParam', 'ServiceManager', "SubmissionExitCode",
-           'SubmissionOutput', 'SubmissionRunParam']
+           'SubmissionOutput', 'SubmissionRunParam', 'BaseSubmission', 'BaseService']
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +79,10 @@ class ServiceRunParam(AdaptorInitParam):
 class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
     class Meta:
         abstract = True
+        ordering = ['name']
+        verbose_name = 'Online Service'
+        verbose_name_plural = "Online Services"
+        unique_together = (('api_name', 'version', 'status'),)
 
     #: Service DRAFT status: online access granted only to creator
     SRV_DRAFT = 0
@@ -272,10 +276,6 @@ class Service(BaseService):
     Represents a default swappable service on the platform
     """
     class Meta:
-        ordering = ['name']
-        verbose_name = 'Online Service'
-        verbose_name_plural = "Online Services"
-        unique_together = (('api_name', 'version', 'status'),)
         swappable = swapper.swappable_setting('wcore', 'Service')
 
 

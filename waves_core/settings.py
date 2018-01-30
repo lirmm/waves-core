@@ -43,7 +43,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    # 'adminsortable2',
 )
 
 MIDDLEWARE = [
@@ -132,7 +131,6 @@ MEDIA_URL = "/media/"
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-LOGGING_CONFIG = None
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -140,12 +138,6 @@ LOGGING = {
         'verbose': {
             'format': '[%(levelname)s][%(asctime)s][%(name)s.%(funcName)s:%(lineno)s] - %(message)s',
             'datefmt': "%H:%M:%S"
-        },
-        'simple': {
-            'format': '[%(levelname)s] - %(message)s'
-        },
-        'trace': {
-            'format': '[%(levelname)s][%(asctime)s] - %(message)s'
         },
     },
     'handlers': {
@@ -169,7 +161,6 @@ LOGGING = {
 
     }
 }
-logging.config.dictConfig(LOGGING)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

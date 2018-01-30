@@ -1,9 +1,11 @@
 from __future__ import unicode_literals
 
+import json
 from django.contrib import admin, messages
 from django.contrib.admin import TabularInline
 from django.db.models import Q
 from django.conf.urls import url
+from django.utils.safestring import mark_safe
 
 from waves.wcore.admin.base import WavesModelAdmin
 from waves.wcore.admin.forms.jobs import JobInputForm, JobOutputForm, JobForm
@@ -12,7 +14,6 @@ from waves.wcore.models.history import JobHistory
 from waves.wcore.models.jobs import JobInput, Job, JobOutput
 from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.utils import url_to_edit_object
-
 
 __all__ = ['JobAdmin']
 
@@ -106,8 +107,6 @@ class JobAdmin(WavesModelAdmin):
         JobHistoryInline,
         JobInputInline,
         JobOutputInline,
-        # TODO add jobOutputExitCode
-        # TODO add JobRunDetails
     ]
     actions = [mark_rerun, delete_model]
     list_filter = ('_status', 'client')
@@ -117,12 +116,12 @@ class JobAdmin(WavesModelAdmin):
     search_fields = ('client__email', 'get_run_on')
     readonly_fields = ('title', 'slug', 'submission_service_name', 'email_to', '_status', 'created', 'updated',
                        'get_run_on', 'command_line', 'remote_job_id', 'submission_name', 'nb_retry',
-                       'connexion_string', 'get_command_line', 'working_dir')
+                       'connexion_string', 'get_command_line', 'working_dir', 'exit_code', 'get_run_details')
 
     fieldsets = [
         ('Main', {'classes': ('collapse', 'suit-tab', 'suit-tab-general',),
                   'fields': ['title', 'slug', 'email_to', '_status', 'created', 'updated',
-                             'client']
+                             'client', 'exit_code', 'get_run_details']
                   }
          ),
         ('Submission', {
@@ -138,10 +137,12 @@ class JobAdmin(WavesModelAdmin):
         extended_urls = [
             url(r'^job/(?P<job_id>[0-9]+)/cancel/$', JobCancelView.as_view(), name='job_cancel'),
             url(r'^job/(?P<job_id>[0-9]+)/rerun/$', JobRerunView.as_view(), name='job_rerun'),
-            # TODO change this to download view in BO
-            # url(r'^job/(?P<job_id>[0-9]+)/download/(?P<slug>)$', JobRerunView.as_view(), name='job_rerun'),
         ]
         return urls + extended_urls
+
+    def get_run_details(self, obj):
+        return "N/A" if obj.run_details is None else mark_safe("<pre>" + "".join(
+            ['\n{}: {}'.format(det[0], det[1]) for det in vars(obj.run_details).items()]) + "</pre>")
 
     def submission_name(self, obj):
         return url_to_edit_object(obj.submission)

@@ -20,9 +20,6 @@ from waves.wcore.views.services import SubmissionFormView
 Service = get_service_model()
 
 
-# TODO in manage permission
-# from django.contrib.auth.decorators import permission_required
-# @permission_required('services.can_edit')
 class ServiceParamImportView(RunnerImportToolView):
     """ Import view for Service from adaptor"""
 

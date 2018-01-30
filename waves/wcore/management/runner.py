@@ -90,9 +90,6 @@ class JobQueueRunDaemon(BaseRunDaemon):
         - Retrieve all current non terminated job, and process according to current status.
         - Jobs are run on a stateless process
 
-        .. todo::
-            Implement this as separated forked processes for each jobs, inspired by Galaxy queue treatment.
-
         :return: None
         """
         jobs = Job.objects.prefetch_related('job_inputs'). \

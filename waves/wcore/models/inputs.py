@@ -268,7 +268,6 @@ class NumberParam(AParam):
 class DecimalParam(NumberParam, AParam):
     """ Number param (decimal or float) """
 
-    # TODO add specific validator
     class Meta:
         verbose_name = "Decimal"
         verbose_name_plural = "Decimal"
@@ -294,7 +293,6 @@ class IntegerParam(NumberParam, AParam):
     """ Integer param """
 
     class Meta:
-        # TODO add specific validator
         verbose_name = "Integer"
         verbose_name_plural = "Integer"
 

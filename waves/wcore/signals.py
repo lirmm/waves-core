@@ -74,7 +74,7 @@ def service_post_delete_handler(sender, instance, **kwargs):
 @receiver(post_save, sender=Service)
 def service_post_save_handler(sender, instance, created, **kwargs):
     """ service post delete handler """
-    if created and not kwargs.get('raw', False):
+    if created and not kwargs.get('raw', False) and instance.submissions.count() == 0:
         instance.submissions.add(Submission.objects.create(name='default', service=instance))
 
 

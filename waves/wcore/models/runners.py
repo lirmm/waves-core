@@ -24,8 +24,6 @@ class RunnerManager(models.Manager):
 class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     """ Represents a generic job adaptor meta information (resolved at runtime via clazz attribute) """
 
-    # TODO manage cleanly change in actual clazz value (when changed)
-
     class Meta:
         ordering = ['name']
         verbose_name = 'Computing infrastructure'
@@ -43,7 +41,6 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
         :return: an Importer new instance
         """
-        # TODO recheck importer
         if self.adaptor is not None:
             importer = self.adaptor.importer
             importer._runner = self
