@@ -56,11 +56,13 @@ Installation
     You should at least find these apps installed in your project::
 
         INSTALLED_APPS = [
-            'polymorphic',
+            'polymorphic', # mandatory
             ...
-            'waves.wcore',
-            'crispy_forms',
-            'rest_framework',
+            'waves.wcore', # mandatory
+            'crispy_forms', # mandatory
+            'rest_framework', # mandatory
+            'rest_framework.authtoken', # optional see http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+            'corsheaders', # optional see https://github.com/ottoyiu/django-cors-headers
             ...
         ]
 
@@ -83,7 +85,7 @@ Installation
     - https://github.com/ottoyiu/django-cors-headers for allowing cross-origin Resource Sharing
     - http://www.django-rest-framework.org/api-guide/authentication for methods to authenticate API POST calls
 
-    WAVES-core allows simple "key" authentication with standard token Authentication processes, to use it simply add
+    WAVES-core allows simple "token" authentication with standard token Authentication processes, to use it simply add
     'rest_framework.authtoken' in INSTALLED_APPS. Each future api calls, simply need a valid Authorization header as explained here:
     http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
 
