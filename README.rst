@@ -27,6 +27,7 @@ Installation
 
     - You can use it as a stand alone application.
     - WAVES core comply to standard reusable project layout for Django. So you may include it as a dependency in your own project
+    - Complete documentation available on `readthedocs <https://waves-core.readthedocs.io>`_
     - See :ref:`installation-label` for detailed info.
 
 Contribute
