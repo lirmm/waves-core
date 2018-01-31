@@ -7,6 +7,7 @@ Welcome to WAVES's CORE Documentation !
     readme
     authors
     license
+    extensions
 
 .. toctree::
     :caption: Changelog
