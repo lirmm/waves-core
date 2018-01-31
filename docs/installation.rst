@@ -32,12 +32,14 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
     1.1. Install waves package:
 
+        Use pip to install waves-core as thrid party package.
+
         ``pip install waves-core``
 
         If you want to install the latest development version (at your own risk :-))
             ``pip install -e git+https://github.com/lirmm/waves-core.git#egg=waves-core``
 
-    1.2. Go to your Django settings file (usually settings.py) and add required dependencies to your INSTALLED_APPS:
+    1.2. Activate WAVES-core in Django settings, add required dependencies to your INSTALLED_APPS:
 
     WAVES-core application has minimum dependencies to:
 
@@ -59,6 +61,7 @@ You can install WAVES-core either as a stand alone application, or inside any ex
             'waves.wcore', # mandatory
             'crispy_forms', # mandatory
             'rest_framework', # mandatory
+            ...
             'rest_framework.authtoken', # optional see http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
             'corsheaders', # optional see https://github.com/ottoyiu/django-cors-headers
             'adminsortable2', # optional see https://django-admin-sortable2.readthedocs.io
@@ -72,8 +75,8 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
     1.4. Create your database::
 
-        python manage.py makemigrations
-        python manage.py migrate
+        python manage.py makemigrations wcore
+        python manage.py migrate wcore
         python manage.py check
 
     1.5. Extra configuration:
@@ -119,8 +122,11 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
     .. code-block:: bash
 
-        (.venv) user@host:~your_app$ ./manage.py migrate
         (.venv) user@host:~your_app$ ./manage.py check
+        (.venv) user@host:~your_app$ ./manage.py makemigrations wcore
+        (.venv) user@host:~your_app$ ./manage.py migrate
+        (.venv) user@host:~your_app$ ./manage.py createsuperuser
+
 
     2.4. If everything is ok:
 
