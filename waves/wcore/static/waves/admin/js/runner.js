@@ -4,7 +4,7 @@
 (function ($) {
     $(document).ready(function () {
         var prev_val = $("#id_clazz").val();
-        prev_val.focus(function () {
+        $("#id_clazz").focus(function () {
             prev_val = $(this).val();
             console.log('Prev val' + prev_val);
         }).change(function () {
