@@ -23,7 +23,7 @@ setup(
     description='WAVES - core package',
     url='http://waves.atgc-montpellier.fr',
     author='Marc Chakiachvili',
-    author_email='marc.chakiachvili@lirmm.fr, marc@archi-logic.fr',
+    author_email='marc.chakiachvili@gmail.com',
     install_requires=[
         'coreapi==2.3.3',
         'Django==1.11.8',

@@ -1,8 +1,8 @@
 """
 WAVES django components library
 """
-__version_detail__ = '1.1.6'
-__version__ = '1.1.6-RC2'
+__version_detail__ = '1.1.6-RC2'
+__version__ = '1.1.6'
 __author__ = 'Marc Chakiachvili, MAB Team'
 __licence__ = 'GPLv3'
 __copyright__ = "Copyright(C) 2015-2017, LIRMM - UM - CNRS"

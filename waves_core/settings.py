@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'adminsortable2'
 )
 
 MIDDLEWARE = [
@@ -145,6 +146,13 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
+        'daemon_log_file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'daemon.log'),
+            'formatter': 'verbose',
+            'backupCount': 10,
+            'maxBytes': 1024*1024*5
+        },
     },
 
     'loggers': {
@@ -154,8 +162,8 @@ LOGGING = {
             'level': 'WARNING',
         },
         'waves': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
+            'handlers': ['daemon_log_file'],
+            'level': 'INFO',
             'propagate': True,
         },
 
