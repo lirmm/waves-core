@@ -24,14 +24,14 @@
             Jobs
         </a>
     </li>
-    <li>
+    <!--li>
         <a type="button" href="{% url 'admin:service_export_form' original.pk %}"
            title="View online"
            class="btn btn-high btn-info"
            id="view_jobs">
             Export
         </a>
-    </li>
+    </li-->
     {% if original.runner %}
         <li>
             <a type="button" href="{% url 'admin:wcore_runner_change' original.runner.pk %}"
