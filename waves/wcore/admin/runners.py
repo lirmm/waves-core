@@ -94,9 +94,9 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     def get_urls(self):
         urls = super(RunnerAdmin, self).get_urls()
         extended_urls = [
-            url(r'^runner/(?P<pk>\d+)/import/$', RunnerImportToolView.as_view(), name="runner_import_form"),
-            url(r'^runner/(?P<pk>\d+)/export$', RunnerExportView.as_view(), name="runner_export_form"),
-            url(r'^runner/(?P<pk>\d+)/check$', RunnerTestConnectionView.as_view(), name="runner_test_connection"),
+            url(r'^(?P<pk>\d+)/import$', RunnerImportToolView.as_view(), name="runner_import_form"),
+            url(r'^(?P<pk>\d+)/export$', RunnerExportView.as_view(), name="runner_export_form"),
+            url(r'^(?P<pk>\d+)/check$', RunnerTestConnectionView.as_view(), name="runner_test_connection"),
         ]
         return urls + extended_urls
 

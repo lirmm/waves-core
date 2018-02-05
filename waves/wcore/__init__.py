@@ -10,5 +10,3 @@ __db_version__ = "1.3"
 __name__ = "Waves Core package"
 
 default_app_config = 'waves.wcore.apps.WavesConfig'
-
-
