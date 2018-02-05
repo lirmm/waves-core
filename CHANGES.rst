@@ -6,7 +6,7 @@ Version 1.1.7 - 2018-02-07
 --------------------------
 
     - [Updated] - shared logging behaviour in Jobs / Importer
-
+    - [Corrected] - service import method
 
 Version 1.1.6 - 2018-01-31
 --------------------------

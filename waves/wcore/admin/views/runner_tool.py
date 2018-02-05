@@ -110,14 +110,14 @@ class RunnerImportToolView(DetailView, FormView):
                 if len(importer.warnings) == 0 and len(importer.errors) == 0:
                     messages.add_message(self.request, level=messages.SUCCESS, message='All parameters imported :-)')
                 messages.add_message(self.request, level=messages.INFO,
-                                     message="Import log in %s" % importer.log_file(tool_id))
+                                     message="Import log in %s" % importer.log_file)
                 return JsonResponse(data, status=200)
         except Exception as e:
             data = {'url_redirect': runner.get_admin_url()}
             messages.add_message(self.request, level=messages.ERROR,
                                  message=mark_safe("Import failed :-( :<pre>%s</pre>" % e.message))
             messages.add_message(self.request, level=messages.INFO,
-                                 message="Import log in %s" % importer.log_file(tool_id))
+                                 message="Import log in %s" % importer.log_file)
             return JsonResponse(data, status=200)
 
 
