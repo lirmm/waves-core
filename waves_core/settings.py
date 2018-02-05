@@ -162,8 +162,8 @@ LOGGING = {
             'level': 'WARNING',
         },
         'waves': {
-            'handlers': ['daemon_log_file'],
-            'level': 'INFO',
+            'handlers': ['console'],
+            'level': 'DEBUG',
             'propagate': True,
         },
 

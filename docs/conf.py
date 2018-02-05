@@ -23,7 +23,6 @@ import django
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../src'))
 sys.path.append(get_python_lib())
 os.environ['DJANGO_SETTINGS_MODULE'] = 'waves_core.settings'
 # settings.configure()

@@ -76,7 +76,3 @@ venv/
 /staticfiles/
 /tests/settings.ini
 /tests/data/*.json
-/waves/wcore/migrations/*
-!/waves/wcore/migrations/.gitkeep
-!/waves/wcore/migrations/__init__.py
-

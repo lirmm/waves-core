@@ -23,6 +23,7 @@ from waves.wcore.adaptors.const import JobStatus, JobRunDetails
 from waves.wcore.adaptors.mails import JobMailer
 from waves.wcore.exceptions import WavesException
 from waves.wcore.exceptions.jobs import JobInconsistentStateError, JobMissingMandatoryParam
+from waves.wcore.utils.logged import LoggerClass
 from waves.wcore.models.const import OptType, ParamType
 from waves.wcore.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
 from waves.wcore.models.inputs import FileInputSample
@@ -215,7 +216,7 @@ class JobManager(models.Manager):
         return job
 
 
-class Job(TimeStamped, Slugged, UrlMixin):
+class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
     """
     A job represent a request for executing a service, it requires values from specified required input from related
     service
@@ -268,30 +269,19 @@ class Job(TimeStamped, Slugged, UrlMixin):
     #: Should Waves Notify client about Job Status
     notify = models.BooleanField("Notify this result", default=False, editable=False)
 
-    _logger = None
+    LOG_LEVEL = waves_settings.JOB_LOG_LEVEL
 
     @property
-    def log_file(self):
-        """ Return path to job dedicated log file
-
-        :return: str"""
-        return os.path.join(self.working_dir, 'job.log')
+    def log_dir(self):
+        return self.working_dir
 
     @property
-    def logger(self):
-        """ Get or create a new logger for this job
+    def logger_name(self):
+        return 'waves.job.%s' % str(self.slug)
 
-        :return: Logger"""
-        self._logger = logging.getLogger('waves.job.%s' % str(self.slug))
-        if not len(self._logger.handlers):
-            # Add handler only once !
-            hdlr = logging.FileHandler(self.log_file)
-            formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-            hdlr.setFormatter(formatter)
-            self._logger.propagate = False
-            self._logger.addHandler(hdlr)
-            self._logger.setLevel(waves_settings.JOB_LOG_LEVEL)
-        return self._logger
+    @property
+    def logger_file_name(self):
+        return 'job.log'
 
     @property
     def random_title(self):
