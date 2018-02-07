@@ -435,6 +435,9 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
     def __str__(self):
         return '[{}][{}]'.format(self.slug, self.service)
 
+    def __unicode__(self):
+        return '[{}][{}]'.format(self.slug, self.service)
+
     @property
     def command(self):
         """ Return current related service command effective class
@@ -868,6 +871,9 @@ class JobInput(Ordered, Slugged, ApiModel):
     def __str__(self):
         return u'%s' % self.name
 
+    def __unicode__(self):
+        return u'%s' % self.name
+
     @property
     def file_path(self):
         """Absolute file path to associated file (if any)
@@ -1056,6 +1062,9 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
         return self.job.natural_key(), self._name
 
     def __str__(self):
+        return '%s - %s' % (self.name, self.value)
+
+    def __unicode__(self):
         return '%s - %s' % (self.name, self.value)
 
     @property

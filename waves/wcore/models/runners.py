@@ -51,6 +51,9 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     def __str__(self):
         return self.name
 
+    def __unicode__(self):
+        return self.name
+
     @property
     def serializer(self, context=None):
         """ Retrieve a serializer for json export """

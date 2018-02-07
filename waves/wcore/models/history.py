@@ -59,6 +59,9 @@ class JobHistory(WavesBaseModel):
     def __str__(self):
         return '{}:{}:{}'.format(self.status, self.job, self.message) + ('(admin)' if self.is_admin else '')
 
+    def __unicode__(self):
+        return '{}:{}:{}'.format(self.status, self.job, self.message) + ('(admin)' if self.is_admin else '')
+
 
 class JobAdminHistory(JobHistory):
     """A Job Event intended only for Admin use

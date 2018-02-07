@@ -152,6 +152,12 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
         """
         return "{} v({})".format(self.name, self.version)
 
+    def __unicode__(self):
+        """ String representation
+        :return: str
+        """
+        return "{} v({})".format(self.name, self.version)
+
     def set_defaults(self):
         super(BaseService, self).set_defaults()
         for sub in self.submissions.all():
@@ -318,6 +324,9 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     def __str__(self):
         return '{}'.format(self.name)
 
+    def __unicode__(self):
+        return '{}'.format(self.name)
+
     @property
     def expected_inputs(self):
         """ Retrieve only expected inputs to submit a job """
@@ -450,6 +459,10 @@ class SubmissionOutput(TimeStamped, ApiModel):
         """ String representation, return label """
         return "[{}] {}".format(self.label, self.name)
 
+    def __unicode__(self):
+        """ String representation, return label """
+        return "[{}] {}".format(self.label, self.name)
+
     def clean(self):
         """ Check validity before saving """
         cleaned_data = super(SubmissionOutput, self).clean()
@@ -497,6 +510,9 @@ class SubmissionExitCode(WavesBaseModel):
     is_error = models.BooleanField('Is an Error', default=False, blank=False)
 
     def __str__(self):
+        return '{}:{}...'.format(self.exit_code, self.message[0:20])
+
+    def __unicode__(self):
         return '{}:{}...'.format(self.exit_code, self.message[0:20])
 
 

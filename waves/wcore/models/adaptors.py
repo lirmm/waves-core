@@ -42,6 +42,11 @@ class AdaptorInitParam(WavesBaseModel):
             return "{}|********|{}".format(self.name, self.prevent_override)
         return "{}|{}|{}".format(self.name, self.value, self.prevent_override)
 
+    def __unicode__(self):
+        if self.crypt:
+            return "{}|********|{}".format(self.name, self.prevent_override)
+        return "{}|{}|{}".format(self.name, self.value, self.prevent_override)
+
     def __init__(self, *args, **kwargs):
         super(AdaptorInitParam, self).__init__(*args, **kwargs)
         self._value = None

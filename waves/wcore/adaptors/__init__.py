@@ -30,6 +30,9 @@ class JobAdaptor(object):
     def __str__(self):
         return self.__class__.__name__
 
+    def __unicode__(self):
+        return self.__class__.__name__
+
     def __init__(self, command='', protocol='', host="localhost", **kwargs):
         """ Initialize a adaptor
         Set _initialized value (True or False) if all non default expected params are set

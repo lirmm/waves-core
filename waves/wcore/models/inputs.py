@@ -36,6 +36,9 @@ class RepeatedGroup(Ordered):
     def __str__(self):
         return '[{}]'.format(self.name)
 
+    def __unicode__(self):
+        return '[{}]'.format(self.name)
+
 
 class AParam(PolymorphicModel, ApiModel, Ordered):
     class Meta:
@@ -126,6 +129,9 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
                 raise ValidationError('Input "{}" depends on missing value: \'{}\'  '.format(dep.label, dep.when_value))
 
     def __str__(self):
+        return self.label + ' (' + self.__class__.__name__ + ')'
+
+    def __unicode__(self):
         return self.label + ' (' + self.__class__.__name__ + ')'
 
     @property
@@ -451,6 +457,9 @@ class FileInputSample(WavesBaseModel):
     def __str__(self):
         return '{} ({})'.format(self.label, self.name)
 
+    def __unicode__(self):
+        return '{} ({})'.format(self.label, self.name)
+
     def save_base(self, *args, **kwargs):
         super(FileInputSample, self).save_base(*args, **kwargs)
 
@@ -501,4 +510,7 @@ class SampleDepParam(WavesBaseModel):
     set_default = models.CharField('Set value to ', max_length=200, null=False, blank=False)
 
     def __str__(self):
+        return "{} > {}={}".format(self.sample.label, self.related_to.name, self.set_default)
+
+    def __unicode__(self):
         return "{} > {}={}".format(self.sample.label, self.related_to.name, self.set_default)
