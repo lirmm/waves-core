@@ -2,6 +2,12 @@
 CHANGELOG
 =========
 
+Version 1.1.8 - 2018-02-10
+--------------------------
+
+    - [JS] Corrected: event association on add new input in submission form
+    - [Daemon] Corrected: log any fatal exception during job processing in job file
+
 Version 1.1.7 - 2018-02-07
 --------------------------
 

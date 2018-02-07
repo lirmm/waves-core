@@ -118,8 +118,8 @@ class JobQueueRunDaemon(BaseRunDaemon):
                 logger.error("Error Job %s (adaptor:%s-state:%s): %s", job, runner, job.get_status_display(),
                              e.message)
             except Exception as exc:
-                logger.error('Current job raised unrecoverable exception %s', exc)
-                job.fatal_error()
+                logger.exception('Current job raised unrecoverable exception %s', exc)
+                job.fatal_error(exc)
             finally:
                 logger.info("Queue job terminated at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
                 job.check_send_mail()

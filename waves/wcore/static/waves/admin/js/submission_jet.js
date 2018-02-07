@@ -77,13 +77,12 @@ var RelatedInlinePopup = function () {
     };
     $(document).ready(function () {
         var rel = new RelatedInlinePopup();
-        $('#inputs-group').find('tr.add-row a').each(function () {
-            $(this).off("click");
-            $(this).on('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                $('#add_submission_input_link').trigger('click');
-            });
+        $('#inputs-group').find('tr.add-row').each(function(){ alert($(this).text())});
+        $(document).on("click", "tr.add-row a", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $('#add_submission_input_link').trigger('click');
+            return true;
         });
         $('#add_submission_input_link').click(function(event){
             event.preventDefault();
