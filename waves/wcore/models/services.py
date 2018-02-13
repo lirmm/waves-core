@@ -452,7 +452,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     #: Help text displayed on results
     help_text = models.TextField('Help Text', null=True, blank=True, )
     #: Expected file extension
-    extension = models.CharField('File extension', max_length=5, blank=True, default="",
+    extension = models.CharField('File extension', max_length=15, blank=True, default="",
                                  help_text="Leave blank accept all, or set in file pattern")
 
     def __str__(self):

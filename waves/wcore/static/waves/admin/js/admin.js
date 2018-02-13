@@ -1,5 +1,6 @@
 /**
- * Created by marc on 23/09/16.
+ * Created by Marc Chakiachvili on 23/09/16.
+ * Standard JQuery library to attache events to Django BO
  */
 (function ($) {
     $(document).ready(function () {

@@ -91,7 +91,7 @@ class ServiceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ServiceForm, self).__init__(*args, **kwargs)
         self.fields['restricted_client'].label = "Restrict access to specified user"
-        if not self.fields['created_by'].initial:
+        if 'created_by' in self.fields and not self.fields['created_by'].initial:
             self.fields['created_by'].initial = self.current_user
         if not config.NOTIFY_RESULTS:
             self.fields['email_on'].widget.attrs['disabled'] = 'disabled'

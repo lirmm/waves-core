@@ -24,3 +24,8 @@
         </div>
     </div>
 {% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    {% service_inc 'js' %}
+{% endblock scripts %}

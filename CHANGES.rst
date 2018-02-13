@@ -2,11 +2,13 @@
 CHANGELOG
 =========
 
-Version 1.1.8 - 2018-02-10
+Version 1.1.8.x - 2018-02-10
 --------------------------
 
     - [JS] Corrected: event association on add new input in submission form
     - [Daemon] Corrected: log any fatal exception during job processing in job file
+    - [Admin Service] Corrected: key error when editing service on 'created_by'
+    - [Admin Service] Corrected: inline popup on add ExitCode
 
 Version 1.1.7 - 2018-02-07
 --------------------------

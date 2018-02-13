@@ -1,5 +1,7 @@
 /**
- * Created by marc on 22/11/16.
+ * Created by Marc Chakiachvili on 22/11/16.
+ * This is a first version, should be made available through a proper JS library.
+ *
  */
 (function ($) {
     $(document).ready(function () {
@@ -22,7 +24,7 @@
             input.trigger('fileselect', [numFiles, label]);
         });
 
-        $(".has_dependent").change(function (elem) {
+        $(document).on('change', ".has_dependent", function (elem) {
             /*
               * for each inputs with related_inputs, hide all except the one corresponding
               * to input value
@@ -71,15 +73,7 @@
                         beforeSend: function (xhr) {
                             // Add auth token to XHR request
                             xhr.setRequestHeader("Authorization", "Token " + token);
-                        },
-                        /*success: function (response) {
-                            // return the response data from WAVES-core api service
-                            resolve(response);
-                        },
-                        error: function (jqXHR, textStatus, error) {
-                            // retrieve detail error message provided by WAVES-core api service
-                            reject(jqXHR, textStatus, error);
-                        }*/
+                        }
                     })
                 } else {
                     console.error("Token not provided, it's required for WAVES-core token based submission process");

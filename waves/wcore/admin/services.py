@@ -163,9 +163,13 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         request.current_obj = obj
         form = super(ServiceAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
-        form.base_fields['created_by'].widget.can_change_related = False
-        form.base_fields['created_by'].widget.can_add_related = False
-        form.base_fields['created_by'].widget.can_delete_related = False
+        try:
+            form.base_fields['created_by'].widget.can_change_related = False
+            form.base_fields['created_by'].widget.can_add_related = False
+            form.base_fields['created_by'].widget.can_delete_related = False
+        except KeyError:
+            # nothing to do
+            pass
 
         return form
 

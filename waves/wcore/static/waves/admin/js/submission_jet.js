@@ -78,7 +78,7 @@ var RelatedInlinePopup = function () {
     $(document).ready(function () {
         var rel = new RelatedInlinePopup();
         $('#inputs-group').find('tr.add-row').each(function(){ alert($(this).text())});
-        $(document).on("click", "tr.add-row a", function (e) {
+        $(document).on("click", "#inputs-group tr.add-row a", function (e) {
             e.preventDefault();
             e.stopPropagation();
             $('#add_submission_input_link').trigger('click');
