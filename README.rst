@@ -22,6 +22,13 @@ Features
     - Follow and manage remote REST API access to your service platform
     - Manage user's access to your services
 
+Side projects
+-------------
+
+    - WAVES galaxy adapters `<https://www.github.com/lirmm/waves-galaxy>`_
+    - WAVES demo project `<https://www.github.com/lirmm/waves-demo>`_
+
+
 Installation
 ------------
 

@@ -12,7 +12,6 @@ from daemons.prefab import run
 
 import waves.wcore.exceptions
 from waves.wcore.adaptors.const import JobStatus
-from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.models import Job
 from waves.wcore.settings import waves_settings
 
@@ -102,20 +101,20 @@ class JobQueueRunDaemon(BaseRunDaemon):
                 logger.debug('[Runner]-------\n%s\n----------------', runner.dump_config())
             try:
                 job.check_send_mail()
-                logger.debug("Launching Job %s (adaptor:%s)", job, runner)
+                logger.debug("Launching Job %s (adapter:%s)", job, runner)
                 if job.status == JobStatus.JOB_CREATED:
                     job.run_prepare()
-                    logger.debug("[PrepareJob] %s (adaptor:%s)", job, runner)
+                    logger.debug("[PrepareJob] %s (adapter:%s)", job, runner)
                 elif job.status == JobStatus.JOB_PREPARED:
-                    logger.debug("[LaunchJob] %s (adaptor:%s)", job, runner)
+                    logger.debug("[LaunchJob] %s (adapter:%s)", job, runner)
                     job.run_launch()
                 elif job.status == JobStatus.JOB_COMPLETED:
                     job.run_results()
-                    logger.debug("[JobExecutionEnded] %s (adaptor:%s)", job.get_status_display(), runner)
+                    logger.debug("[JobExecutionEnded] %s (adapter:%s)", job.get_status_display(), runner)
                 else:
                     job.run_status()
-            except (waves.wcore.exceptions.WavesException, AdaptorException) as e:
-                logger.error("Error Job %s (adaptor:%s-state:%s): %s", job, runner, job.get_status_display(),
+            except (waves.wcore.exceptions.WavesException, adapterException) as e:
+                logger.error("Error Job %s (adapter:%s-state:%s): %s", job, runner, job.get_status_display(),
                              e.message)
             except Exception as exc:
                 logger.exception('Current job raised unrecoverable exception %s', exc)

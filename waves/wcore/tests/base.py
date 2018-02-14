@@ -259,9 +259,9 @@ class TestJobWorkflowMixin(TestCase):
 
     def sample_runner(self, adaptor=None):
         """
-        Return a new adaptor model instance from adaptor class object
+        Return a new adapter model instance from adapter class object
         Args:
-            adaptor: a JobRunnerAdaptor object
+            adapter: a JobRunneradapter object
         Returns:
             Runner model instance
         """

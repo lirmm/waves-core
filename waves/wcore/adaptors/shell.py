@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class LocalShellAdaptor(SagaAdaptor):
     """
-    Local script job adaptor, command line tools must be in path or specified as absolute path
+    Local script job adapter, command line tools must be in path or specified as absolute path
     """
     name = "Local script"
     #: Saga-python protocol scheme
@@ -26,7 +26,7 @@ class LocalShellAdaptor(SagaAdaptor):
 
 class SshShellAdaptor(LocalShellAdaptor):
     """
-    Saga-python base SSH adaptor (Shell remote calls)
+    Saga-python base SSH adapter (Shell remote calls)
     Run locally on remote host job command
     """
     name = 'Shell script over SSH (user/pass)'

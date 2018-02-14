@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import logging
-import os
 import re
 import warnings
 
@@ -47,7 +46,7 @@ class AdaptorImporter(LoggerClass):
 
     def __init__(self, adaptor):
         """
-        Initialize a Import from it's source adaptor
+        Initialize a Import from it's source adapter
 
         :param adaptor: a JobAdaptor object, providing connection support
         """
@@ -75,11 +74,11 @@ class AdaptorImporter(LoggerClass):
 
     def import_service(self, tool_id, for_service=None, update_service=False):
         """
-        For specified Adaptor remote tool identifier, try to import submission params
+        For specified adapter remote tool identifier, try to import submission params
 
         :param update_service: update or not for_service if specified
         :param for_service: Specified is service should be updated or created
-        :param tool_id: Adaptors provider remote tool identifier
+        :param tool_id: adapters provider remote tool identifier
         :return: Update service with new submission according to retrieved parameters
         :rtype: :class:`waves.wcore.adaptors.models.services.Service`
         """
@@ -202,7 +201,7 @@ class AdaptorImporter(LoggerClass):
         raise NotImplementedError()
 
     def map_type(self, type_value):
-        """ Map remote adaptor types to JobInput/JobOutput WAVES TYPE"""
+        """ Map remote adapter types to JobInput/JobOutput WAVES TYPE"""
         return self._type_map.get(type_value, 'text')
 
 

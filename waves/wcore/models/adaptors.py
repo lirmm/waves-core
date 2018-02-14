@@ -19,7 +19,7 @@ __all__ = ['AdaptorInitParam', 'HasAdaptorClazzMixin']
 
 
 class AdaptorInitParam(WavesBaseModel):
-    """ Base Class For adaptor initialization params """
+    """ Base Class For adapter initialization params """
 
     class Meta:
         ordering = ['name']
@@ -75,7 +75,7 @@ class AdaptorInitParam(WavesBaseModel):
 
 class HasAdaptorClazzMixin(WavesBaseModel):
     """
-    AdaptorClazzMixin models class has a associated concrete adaptor class element,
+    AdaptorClazzMixin models class has a associated concrete adapter class element,
     where setup params wan be set in AdaptorInitParams models instance.
     """
 
@@ -84,7 +84,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
 
     _adaptor = None
     _clazz = None
-    clazz = models.CharField('Adaptor object', max_length=100, null=False,
+    clazz = models.CharField('adapter object', max_length=100, null=False,
                              help_text="This is the concrete class used to perform job execution")
     adaptor_params = GenericRelation(AdaptorInitParam)
 
@@ -92,7 +92,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
                                     help_text="If set, 'Execution parameter' param line:'command' will be ignored")
 
     def set_defaults(self):
-        """Set runs params with defaults issued from adaptor class object """
+        """Set runs params with defaults issued from adapter class object """
         # Reset all old values
         self.adaptor_params.all().delete()
         object_ctype = ContentType.objects.get_for_model(self)
@@ -140,7 +140,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
 
     @property
     def adaptor(self):
-        """ Get and returned an initialized concrete adaptor class parametrized with params defined in db
+        """ Get and returned an initialized concrete adapter class parametrized with params defined in db
 
         :return: a subclass JobAdaptor object instance
         :rtype: JobAdaptor
@@ -149,13 +149,13 @@ class HasAdaptorClazzMixin(WavesBaseModel):
             try:
                 self._adaptor = import_string(self.clazz)(**self.run_params)
             except ImportError as e:
-                logger.error('Import Adaptor error {}'.format(e))
+                logger.error('Import Adapter error {}'.format(e))
                 self._adaptor = None
         return self._adaptor
 
     @adaptor.setter
     def adaptor(self, adaptor):
-        """ Allow to temporarily override current adaptor instance """
+        """ Allow to temporarily override current adapter instance """
         self._adaptor = adaptor
 
     def save(self, *args, **kwargs):

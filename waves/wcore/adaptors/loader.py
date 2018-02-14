@@ -23,7 +23,7 @@ class AdaptorLoader(object):
             params = {}
         loaded = next((x(**params) for x in waves_settings.ADAPTORS_CLASSES if x == clazz), None)
         if loaded is None:
-            raise AdaptorNotAvailableException("This adaptor class %s is not available " % clazz)
+            raise AdaptorNotAvailableException("This adapter class %s is not available " % clazz)
         return loaded
 
     @classmethod

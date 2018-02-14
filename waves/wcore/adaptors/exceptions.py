@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 
 class AdaptorException(Exception):
-    """ Base Adaptor exception class, should be raise upon specific Adaptor class exception catch
+    """ Base adapter exception class, should be raise upon specific adapter class exception catch
     this exception class is supposed to be catched
     """
     pass
@@ -10,14 +10,14 @@ class AdaptorException(Exception):
 
 class AdaptorConnectException(AdaptorException):
     """
-    Adaptor Connection Error
+    adapter Connection Error
     """
     pass
 
 
 class AdaptorExecException(AdaptorException):
     """
-    Adaptor execution error
+    adapter execution error
     """
     pass
 
@@ -28,18 +28,18 @@ class AdaptorNotAvailableException(AdaptorExecException):
 
 class AdaptorJobException(AdaptorException):
     """
-    Adaptor JobRun Exception
+    adapter JobRun Exception
     """
     pass
 
 
 class AdaptorNotReady(AdaptorException):
-    """ Adaptor is not properly initialized to be used """
+    """ adapter is not properly initialized to be used """
     pass
 
 
 class AdaptorInitError(AdaptorException):
-    """ Each adaptor expects some attributes for initialization, this exception should be raised when some mandatory
+    """ Each adapter expects some attributes for initialization, this exception should be raised when some mandatory
     parameters are missing
     """
     pass

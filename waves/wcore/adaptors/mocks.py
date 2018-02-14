@@ -1,4 +1,4 @@
-""" Mock Adaptor class for tests purpose
+""" Mock Adapter class for tests purpose
 """
 from __future__ import unicode_literals
 

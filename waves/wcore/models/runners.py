@@ -22,7 +22,7 @@ class RunnerManager(models.Manager):
 
 
 class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
-    """ Represents a generic job adaptor meta information (resolved at runtime via clazz attribute) """
+    """ Represents a generic job adapter meta information (resolved at runtime via clazz attribute) """
 
     class Meta:
         ordering = ['name']
@@ -37,7 +37,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     @property
     def importer(self):
         """
-        Return an Service AdaptorImporter instance, using either
+        Return an Service adapterImporter instance, using either
 
         :return: an Importer new instance
         """
@@ -115,7 +115,7 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
     @property
     def run_params(self):
         """
-        Return a list of tuples representing current service adaptor init params
+        Return a list of tuples representing current service adapter init params
 
         :return: a Dictionary (param_name=param_service_value or runner_param_default if not set
         :rtype: dict
@@ -138,7 +138,7 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
         return self.runner
 
     def set_defaults(self):
-        """Set runs params with defaults issued from adaptor class object """
+        """Set runs params with defaults issued from adapter class object """
         # Reset all old values
         self.adaptor_params.all().delete()
         object_ctype = ContentType.objects.get_for_model(self)

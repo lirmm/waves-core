@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class SagaAdaptor(JobAdaptor):
     """
-    Main Saga-python WAVES adaptor container
+    Main Saga-python WAVES adapter container
 
     """
     _session = None
@@ -72,7 +72,7 @@ class SagaAdaptor(JobAdaptor):
 
     @property
     def saga_host(self):
-        """ Construct Saga-python adaptor uri scheme """
+        """ Construct Saga-python adapter uri scheme """
         return '%s://%s' % (self.protocol, self.host)
 
     def _init_service(self):

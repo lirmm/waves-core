@@ -251,19 +251,19 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
     #: Email to notify job status to
     email_to = models.EmailField('Email results', null=True, blank=True, help_text='Notify results to this email')
     #: Job ExitCode (mainly for admin purpose)
-    exit_code = models.IntegerField('Job system exit code', default=0, help_text="Job exit code on relative adaptor")
+    exit_code = models.IntegerField('Job system exit code', default=0, help_text="Job exit code on relative adapter")
     #: Tell whether job results files are available for download from client
     results_available = models.BooleanField('Results are available', default=False, editable=False)
     #: Job last status retry count (max before Error set in conf)
     nb_retry = models.IntegerField('Nb Retry', editable=False, default=0)
-    #: Jobs are remotely executed, store the adaptor job identifier
+    #: Jobs are remotely executed, store the adapter job identifier
     remote_job_id = models.CharField('Remote job ID', max_length=255, editable=False, null=True)
-    #: Jobs sometime can gain access to a remote history, store the adaptor history identifier
+    #: Jobs sometime can gain access to a remote history, store the adapter history identifier
     remote_history_id = models.CharField('Remote history ID', max_length=255, editable=False, null=True)
     #: Final generated command line
     _command_line = models.CharField('Final generated command line', max_length=255, editable=False, null=True)
     #: adaptor serialized values
-    _adaptor = models.TextField('Adaptor classed used for this Job', editable=False, null=True)
+    _adaptor = models.TextField('Adapter classed used for this Job', editable=False, null=True)
     #: remind th Service Name
     service = models.CharField('Service name', max_length=255, editable=False, null=True, default="")
     #: Should Waves Notify client about Job Status
@@ -409,7 +409,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
 
     @property
     def adaptor(self):
-        """ Return current related service adaptor effective class
+        """ Return current related service adapter effective class
 
         :return: a JobRunnerAdaptor
         :rtype: `waves.wcore.adaptors.runner.JobRunnerAdaptor`
@@ -420,11 +420,11 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
                 return adaptor
             except Exception as e:
-                self.logger.exception("Unable to load %s adaptor %s", self._adaptor, e.message)
+                self.logger.exception("Unable to load %s adapter %s", self._adaptor, e.message)
         elif self.submission:
             return self.submission.adaptor
         else:
-            self.logger.exception("None adaptor ...")
+            self.logger.exception("None adapter ...")
         return None
 
     @adaptor.setter
@@ -617,14 +617,14 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
 
     def _run_action(self, action):
         """
-        Report action to specified job adaptor
+        Report action to specified job adapter
 
         :param action: action one of [prepare, run, cancel, status, results, retrieve_run_details]
         :return: None
         """
         try:
             if self.adaptor is None:
-                raise WavesException("No Adaptor, impossible to run")
+                raise WavesException("No Adapter, impossible to run")
             else:
                 returned = getattr(self.adaptor, action)(self)
                 self.nb_retry = 0
@@ -653,17 +653,17 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
             return JobStatus.JOB_UNDEFINED
 
     def run_prepare(self):
-        """ Ask job adaptor to prepare run (manage input files essentially) """
+        """ Ask job adapter to prepare run (manage input files essentially) """
         self._run_action('prepare_job')
         self.status = JobStatus.JOB_PREPARED
 
     def run_launch(self):
-        """ Ask job adaptor to actually launch job """
+        """ Ask job adapter to actually launch job """
         self._run_action('run_job')
         self.status = JobStatus.JOB_QUEUED
 
     def run_status(self):
-        """ Ask job adaptor current job status """
+        """ Ask job adapter current job status """
         self._run_action('job_status')
         self.logger.debug('job current state :%s', self.status)
         if self.status == JobStatus.JOB_COMPLETED:
@@ -674,12 +674,12 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         return self.status
 
     def run_cancel(self):
-        """ Ask job adaptor to cancel job if possible """
+        """ Ask job adapter to cancel job if possible """
         self.message = 'Job cancelled'
         self._run_action('cancel_job')
 
     def run_results(self):
-        """ Ask job adaptor to get results files (dowload files if needed) """
+        """ Ask job adapter to get results files (dowload files if needed) """
         self._run_action('job_results')
         self.retrieve_run_details()
         self.logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
@@ -699,7 +699,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
                 self.status = JobStatus.JOB_TERMINATED
 
     def retrieve_run_details(self):
-        """ Ask job adaptor to get JobRunDetails information (started, finished, exit_code ...)"""
+        """ Ask job adapter to get JobRunDetails information (started, finished, exit_code ...)"""
         if self.run_details is None:
             file_run_details = join(self.working_dir, 'job_run_details.json')
             try:
@@ -845,8 +845,8 @@ class JobInput(Ordered, Slugged, ApiModel):
     #: Value set to this service input for this job
     value = models.CharField('Input content', max_length=255, null=True, blank=True,
                              help_text='Input value (filename, boolean value, int value etc.)')
-    #: Each input may have its own identifier on remote adaptor
-    remote_input_id = models.CharField('Remote input ID (on adaptor)', max_length=255, editable=False, null=True)
+    #: Each input may have its own identifier on remote adapter
+    remote_input_id = models.CharField('Remote input ID (on adapter)', max_length=255, editable=False, null=True)
     #: retrieved upon creation from related AParam object
     param_type = models.CharField('Param param_type', choices=ParamType.IN_TYPE, max_length=50, editable=False,
                                   null=True)
@@ -1027,7 +1027,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     #: Job Output value
     value = models.CharField('Output value', max_length=200, null=True, blank=True, default="")
     #: Each output may have its own identifier on remote adaptor
-    remote_output_id = models.CharField('Remote output ID (on adaptor)', max_length=255, editable=False, null=True)
+    remote_output_id = models.CharField('Remote output ID (on adapter)', max_length=255, editable=False, null=True)
     _name = models.CharField('Name', max_length=50, null=False, blank=False, help_text='Output displayed name')
     extension = models.CharField('File extension', max_length=5, null=False, default="")
 

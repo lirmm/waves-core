@@ -11,7 +11,7 @@ __all__ = ['RunnerForm']
 
 def get_runners_list():
     """
-    Retrieve enabled waves.wcore.adaptors list from waves settings env file
+    Retrieve enabled waves.wcore.adapters list from waves settings env file
     :return: a list of Tuple 'value'/'label'
     """
     from waves.wcore.adaptors.loader import AdaptorLoader

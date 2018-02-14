@@ -21,7 +21,7 @@ Service = get_service_model()
 
 
 class ServiceParamImportView(RunnerImportToolView):
-    """ Import view for Service from adaptor"""
+    """ Import view for Service from adapter"""
 
     def get_object(self, queryset=None):
         try:

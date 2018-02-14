@@ -26,7 +26,7 @@ Version 1.1.6 - 2018-01-31
     - [Models] Removed: removed fields api_on and web_on in Service model
     - [Jobs] Changed: JobInconsistentState treatment in job workflow
     - [Models] Added: 'topics' and 'operations' property for reading EDAMS ontology data in Service templates
-    - [Adaptors] Moved: Saga common processes in dedicated class SagaAdaptor
+    - [Adapters] Moved: Saga common processes in dedicated class SagaAdaptor
     - [FileInput] Added: Configuration for enabling/disabling copy/paste form element
     - [Docs]: Introduce Administrator guide / Developer guide
     - [Api]: Introduce standard token authentication for API form integration
@@ -50,7 +50,7 @@ Version 1.1.3 - 2017-10-18
 --------------------------
 
     - Corrected bugs in Galaxy tool import
-    - Changed importer API to resolve problem with included runner / adaptor params
+    - Changed importer API to resolve problem with included runner / adapter params
     - added SRV_IMPORT_LOG_LEVEL to configuration
 
 Version 1.1.2 - 2017-09-30

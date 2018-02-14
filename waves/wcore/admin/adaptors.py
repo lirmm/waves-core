@@ -35,7 +35,7 @@ class AdaptorInitParamInline(GenericTabularInline):
         return False
 
     def default_value(self, obj):
-        """ Get default values from related adaptor concrete class instance """
+        """ Get default values from related adapter concrete class instance """
         init_value = getattr(obj.content_object, 'crypt')
         if init_value is not None:
             return "*" * len(init_value) if init_value is not None else '-'
@@ -57,7 +57,7 @@ class RunnerParamInline(AdaptorInitParamInline):
 
 
 class ServiceRunnerParamInLine(AdaptorInitParamInline):
-    """ Adaptors parameters for Service """
+    """ adapters parameters for Service """
     model = AdaptorInitParam
     fields = ['name', 'value', ]
 
@@ -71,7 +71,7 @@ class ServiceRunnerParamInLine(AdaptorInitParamInline):
 
 
 class SubmissionRunnerParamInLine(AdaptorInitParamInline):
-    """ Adaptors parameters for submission when overridden """
+    """ adapters parameters for submission when overridden """
     model = AdaptorInitParam
     fields = ['name', 'value', ]
 

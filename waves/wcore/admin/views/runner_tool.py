@@ -57,9 +57,9 @@ class RunnerImportToolView(DetailView, FormView):
             if len(self.tool_list) == 0:
                 messages.info(request, "No tool retrieved")
         except RunnerException as exc:
-            messages.error(request, message="Connection error to remote adaptor %s" % exc)
+            messages.error(request, message="Connection error to remote adapter %s" % exc)
         except NotImplementedError:
-            messages.error(request, message="This adaptor does not allow service import")
+            messages.error(request, message="This adapter does not allow service import")
             if settings.DEBUG:
                 raise
         except Exception as e:

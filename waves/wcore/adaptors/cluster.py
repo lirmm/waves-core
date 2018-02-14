@@ -6,7 +6,7 @@ from waves.wcore.adaptors.saga_python import SagaAdaptor
 
 class LocalClusterAdaptor(SagaAdaptor):
     """
-    Encapsulate some of Saga-python adaptors for common cluster calculation devices onto WAVES adaptor logic
+    Encapsulate some of Saga-python adapters for common cluster calculation devices onto WAVES adapter logic
     """
     NOT_AVAILABLE_MESSAGE = "A valid local %s cluster is needed to run this tests"
 
@@ -28,7 +28,7 @@ class LocalClusterAdaptor(SagaAdaptor):
 
     @property
     def init_params(self):
-        """ Base init_params for Cluster JobAdaptor """
+        """ Base init_params for Cluster JobAdapter """
         base = super(LocalClusterAdaptor, self).init_params
         base.update(dict(queue=self.queue))
         return base
