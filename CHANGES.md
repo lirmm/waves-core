@@ -4,45 +4,45 @@ CHANGELOG
 Version 1.1.8.x - 2018-02-10
 ----------------------------
 
-    - [JS] Corrected: event association on add new input in submission form
-    - [Daemon] Corrected: log any fatal exception during job processing in job file
-    - [Admin Service] Corrected: key error when editing service on 'created_by'
-    - [Admin Service] Corrected: inline popup on add ExitCode
+- [JS] Corrected: event association on add new input in submission form
+- [Daemon] Corrected: log any fatal exception during job processing in job file
+- [Admin Service] Corrected: key error when editing service on 'created_by'
+- [Admin Service] Corrected: inline popup on add ExitCode
 
 Version 1.1.7 - 2018-02-07
 --------------------------
 
-    - [Updated] - shared logging behaviour in Jobs / Importer
-    - [Corrected] - service import method
+- [Updated] - shared logging behaviour in Jobs / Importer
+- [Corrected] - service import method
 
 Version 1.1.6 - 2018-01-31
 --------------------------
 
-    - [waves.front] Removed: waves.front, merged back inside wcore
-    - [Admin] Added: admin urls directly in related Wcore ModelAdmins
-    - [Models] Added: fields authors and citation to Service model
-    - [API] Added: Add Job cancel and delete services
-    - [Models] Removed: removed fields api_on and web_on in Service model
-    - [Jobs] Changed: JobInconsistentState treatment in job workflow
-    - [Models] Added: 'topics' and 'operations' property for reading EDAMS ontology data in Service templates
-    - [Adapters] Moved: Saga common processes in dedicated class SagaAdaptor
-    - [FileInput] Added: Configuration for enabling/disabling copy/paste form element
-    - [Docs]: Introduce Administrator guide / Developer guide
-    - [Api]: Introduce standard token authentication for API form integration
-    - [Db]: Removed migrations files - causing fails migrate with overridden Submission model - added makemigration upon install
+- [waves.front] Removed: waves.front, merged back inside wcore
+- [Admin] Added: admin urls directly in related Wcore ModelAdmins
+- [Models] Added: fields authors and citation to Service model
+- [API] Added: Add Job cancel and delete services
+- [Models] Removed: removed fields api_on and web_on in Service model
+- [Jobs] Changed: JobInconsistentState treatment in job workflow
+- [Models] Added: 'topics' and 'operations' property for reading EDAMS ontology data in Service templates
+- [Adapters] Moved: Saga common processes in dedicated class SagaAdaptor
+- [FileInput] Added: Configuration for enabling/disabling copy/paste form element
+- [Docs]: Introduce Administrator guide / Developer guide
+- [Api]: Introduce standard token authentication for API form integration
+- [Db]: Removed migrations files - causing fails migrate with overridden Submission model - added makemigration upon install
 
 Version 1.1.5 - 2017-11-30
 --------------------------
 
-    - Corrected: .type property on JobInput
-    - Added: filter_fields on job ViewSet
-    - Added: job instance attribute in JobSubmissionViewSet (create_job)
-    - Added: submission label in Job detail api results
+- Corrected: .type property on JobInput
+- Added: filter_fields on job ViewSet
+- Added: job instance attribute in JobSubmissionViewSet (create_job)
+- Added: submission label in Job detail api results
 
 Version 1.1.4 - 2017-10-24
 --------------------------
 
-    - Corrected fixture loading conflict with signals on api_name duplicate check
+- Corrected fixture loading conflict with signals on api_name duplicate check
 
 
 Version 1.1.3 - 2017-10-18
