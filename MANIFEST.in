@@ -1,5 +1,5 @@
 include LICENSE.rst
-include README.rst
+include README.md
 recursive-include waves/wcore/static *
 recursive-include waves/wcore/templates *
 recursive-include waves/front/templates *
