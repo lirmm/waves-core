@@ -1,8 +1,8 @@
-===============
 License (GPLv3)
 ===============
 
 WAVES-core is free software:
+
 you can redistribute it and/or modify it under the terms of the GNU General Public License version 3
 as published by the `Free Software Foundation <http://www.fsf.org/>`__.
 
@@ -18,7 +18,7 @@ The GNU operating system which is under the same license has an informative
 
 
 Note to developers
-==================
+------------------
 
 We very much appreciate you using our code to do fun and interesting things with.
 We hope that while doing this you may find and fix bugs or make enhancements that

@@ -1,4 +1,3 @@
-======
 README
 ======
 
@@ -25,7 +24,7 @@ Features
 Side projects
 -------------
 
-    - WAVES galaxy adapters `<https://www.github.com/lirmm/waves-galaxy>`_
+    - WAVES galaxy adapter `<https://www.github.com/lirmm/waves-galaxy>`_
     - WAVES demo project `<https://www.github.com/lirmm/waves-demo>`_
 
 
@@ -35,18 +34,9 @@ Installation
     - You can use it as a stand alone application.
     - WAVES core comply to standard reusable project layout for Django. So you may include it as a dependency in your own project
     - Complete documentation available on `readthedocs <https://waves-core.readthedocs.io>`_
-    - See :ref:`installation-label` for detailed info.
 
-Contribute
-----------
-
-.. include:: ../CONTRIBUTING.rst
-    :start-line: 4
-    :end-line: 8
 
 Support
 -------
 
     If you are having issues, (or just want to say hello): we have a mailing list located at: waves-webapp@googlegroups.com
-
-
