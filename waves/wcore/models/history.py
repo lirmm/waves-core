@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
-from django.db import models
+from django.db import models, IntegrityError
+
 
 from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.models.base import WavesBaseModel
@@ -61,6 +62,12 @@ class JobHistory(WavesBaseModel):
 
     def __unicode__(self):
         return '{}:{}:{}'.format(self.status, self.job, self.message) + ('(admin)' if self.is_admin else '')
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        try:
+            super(JobHistory, self).save(force_insert, force_update, using, update_fields)
+        except IntegrityError:
+            pass
 
 
 class JobAdminHistory(JobHistory):

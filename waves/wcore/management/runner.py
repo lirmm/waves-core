@@ -38,12 +38,14 @@ class BaseRunDaemon(run.RunDaemon):
             If you plan to override this function, remember to always call parent method in order to terminate process
         """
         logger.debug("exit_callback")
+        LOG.info("Cleanup on exit")
 
     def preloop_callback(self):
         """
         Override this method if you want to do initialization before actual daemon process infinite loop
         """
         logger.debug("preloop_callback")
+        LOG.info("warming up on start")
 
     def run(self):
         """
@@ -52,6 +54,7 @@ class BaseRunDaemon(run.RunDaemon):
         try:
             self.preloop_callback()
             logger.debug("Starting loopback...")
+            LOG.info("Starting daemon")
             while True:
                 self.loop_callback()
         except (SystemExit, KeyboardInterrupt) as exc:
@@ -71,6 +74,12 @@ class BaseRunDaemon(run.RunDaemon):
             LOG.info("Process is stopped.")
         else:
             LOG.info("Process is running.")
+
+    def stop(self):
+        print "sopt !"
+        if self.pid is None:
+            LOG.info('No process running')
+        super(BaseRunDaemon, self).stop()
 
 
 class JobQueueRunDaemon(BaseRunDaemon):
