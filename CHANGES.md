@@ -8,6 +8,7 @@ Version 1.1.8.x - 2018-02-10
 - [Daemon] Corrected: log any fatal exception during job processing in job file
 - [Admin Service] Corrected: key error when editing service on 'created_by'
 - [Admin Service] Corrected: inline popup on add ExitCode
+- [Settings] Added: check for WAVES directories access rights
 
 Version 1.1.7 - 2018-02-07
 --------------------------
