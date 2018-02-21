@@ -54,8 +54,8 @@ DEFAULTS = {
     'DB_VERSION': __db_version__,
     'DATA_ROOT': join(getattr(settings, 'BASE_DIR', '/tmp'), 'data'),
     'JOB_BASE_DIR': join(getattr(settings, 'BASE_DIR', '/tmp'), 'data', 'jobs'),
-    'BINARIES_DIR': join(getattr(settings, 'BASE_DIR', '/tmp'), 'bin'),
-    'SAMPLE_DIR': join(getattr(settings, 'MEDIA_ROOT', '/tmp'), 'sample'),
+    'BINARIES_DIR': join(getattr(settings, 'BASE_DIR', '/tmp'), 'data', 'bin'),
+    'SAMPLE_DIR': join(getattr(settings, 'BASE_DIR', '/tmp'), 'data', 'sample'),
     'UPLOAD_MAX_SIZE': 20 * 1024 * 1024,
     'HOST': HOSTNAME,
     'ADMIN_EMAIL': 'admin@your-site.com',
@@ -79,10 +79,11 @@ DEFAULTS = {
         'waves.wcore.adaptors.cluster.SshClusterAdaptor',
         'waves.wcore.adaptors.cluster.SshKeyClusterAdaptor',
     ),
-    'TEMPLATES_PACKS': ['bootstrap3', 'bootstrap2'],
     'PERMISSION_CLASSES': (),
     'MAILER_CLASS': 'waves.wcore.mails.JobMailer',
 }
+
+TEMPLATES_PACKS = ['bootstrap3', 'bootstrap2'],
 
 IMPORT_STRINGS = [
     'ADAPTORS_CLASSES',

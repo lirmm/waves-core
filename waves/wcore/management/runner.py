@@ -11,6 +11,7 @@ from itertools import chain
 from daemons.prefab import run
 
 import waves.wcore.exceptions
+from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.models import Job
 from waves.wcore.settings import waves_settings
@@ -122,7 +123,7 @@ class JobQueueRunDaemon(BaseRunDaemon):
                     logger.debug("[JobExecutionEnded] %s (adapter:%s)", job.get_status_display(), runner)
                 else:
                     job.run_status()
-            except (waves.wcore.exceptions.WavesException, adapterException) as e:
+            except (waves.wcore.exceptions.WavesException, AdaptorException) as e:
                 logger.error("Error Job %s (adapter:%s-state:%s): %s", job, runner, job.get_status_display(),
                              e.message)
             except Exception as exc:

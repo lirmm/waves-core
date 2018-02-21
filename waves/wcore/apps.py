@@ -4,9 +4,12 @@ WAVES app Django application descriptor
 """
 from __future__ import unicode_literals
 
+import os
+from os import access
+
 from django.apps import AppConfig
-from django.core.checks import Error, register
 from django.conf import settings
+from django.core.checks import Error, register, Warning
 
 
 class WavesConfig(AppConfig):
@@ -22,7 +25,6 @@ class WavesConfig(AppConfig):
         Just import waves signals
         :return: None
         """
-        from waves.wcore import signals
 
 
 @register()
@@ -68,4 +70,21 @@ def check_waves_config(app_configs=('waves.wcore',), **kwargs):
                 id="waves.wcore.E003"
             )
         )
+    from waves.wcore.settings import waves_settings
+    # test log dir
+    # Test WAVES DIR
+    for directory in ['DATA_ROOT', 'JOB_BASE_DIR', 'BINARIES_DIR', 'SAMPLE_DIR']:
+        if not os.path.isdir(getattr(waves_settings, directory)):
+            errors.append(Error(
+                "Directory %s [%s] does not exists " % (directory, getattr(waves_settings, directory)),
+                hint='Create this directory with group permission for your WAVES daemon system user',
+                obj=waves_settings,
+                id="waves.wcore.E004"))
+        elif not access(getattr(waves_settings, directory), os.W_OK):
+            errors.append(Warning(
+                "Directory %s [%s] is not writable by WAVES" % (directory, getattr(waves_settings, directory)),
+                hint='Try changing group permission to a group where your user belong',
+                obj=waves_settings,
+                id="waves.wcore.W001"))
+
     return errors
