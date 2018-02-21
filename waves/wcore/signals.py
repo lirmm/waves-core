@@ -51,6 +51,7 @@ def job_post_save_handler(sender, instance, created, **kwargs):
     """ job post save handler """
     if not kwargs.get('raw', False):
         if created:
+            print "created job dirs !"
             # create job working dirs locally
             instance.make_job_dirs()
             instance.create_non_editable_inputs()

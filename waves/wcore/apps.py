@@ -25,6 +25,8 @@ class WavesConfig(AppConfig):
         Just import waves signals
         :return: None
         """
+        import waves.wcore.signals
+
 
 
 @register()
