@@ -6,8 +6,8 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 
 
 def import_version():
-    from waves.wcore import __version__
-    return __version__
+    from waves.wcore import __version_detail__
+    return __version_detail__
 
 
 # allow setup.py to be run from any path

@@ -55,13 +55,9 @@
                     <ul id="nav-bar-user" class="nav navbar-nav navbar-right">
                         {% if user.is_authenticated %}
                             <li><a href="{% url 'admin:logout' %}">Logout</a></li>
-                            {% if user.is_staff %}
-                                <li><a href="{% url 'admin:index' %}">Admin</a></li>
-                            {% endif %}
-                        {% else %}
-                            <li>
-                                <a href="{% url 'admin:index' %}" role="button">Log in</a>
-                            </li>
+                        {% endif %}
+                        {% if user.is_staff or not user.is_authenticated%}
+                            <li><a href="{% url 'admin:index' %}">Admin</a></li>
                         {% endif %}
                     </ul>
                 {% endblock %}

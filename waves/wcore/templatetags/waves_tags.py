@@ -18,7 +18,8 @@ def online_exec_button(context, service, label=None):
 
 @register.simple_tag
 def get_app_version():
-    return waves_settings.VERSION
+    from waves.wcore import __version_detail__, __version__
+    return "%s (%s)" % (__version__, __version_detail__)
 
 
 @register.inclusion_tag('waves/services/forms/service_inc.html')
