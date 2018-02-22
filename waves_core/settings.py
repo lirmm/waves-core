@@ -162,9 +162,9 @@ LOGGING = {
             'level': 'WARNING',
         },
         'waves': {
-            'handlers': ['log_file'],
+            'handlers': ['log_file', 'console'],
             'level': 'DEBUG',
-            'propagate': True,
+            'propagate': False,
         },
 
     }

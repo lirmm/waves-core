@@ -247,8 +247,17 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
         """
         # TODO reuse manager function or use authorization dedicated class
         # RULES to set if user can access service page
-        return self.runner is not None and ((self.status > self.SRV_TEST) or (self.created_by == user) or
-                                            (self.status == self.SRV_TEST and user.is_staff) or user.is_superuser)
+        # TODO reuse manager function or use authorization dedicated class
+        if waves_settings.ALLOW_JOB_SUBMISSION is False or self.get_runner() is None:
+            return False
+        if self.status == self.SRV_PUBLIC or user.is_superuser():
+            return True
+        # RULES to set if user can access submissions
+        return ((self.status == self.SRV_REGISTERED and not user.is_anonymous()) or
+                (self.status == self.SRV_DRAFT and self.created_by == user) or
+                (self.status == self.SRV_TEST and user.is_staff) or
+                (self.status == self.SRV_RESTRICTED and (
+                        user in self.restricted_client.all() or user.is_staff)))
 
     @property
     def serializer(self, context=None):
@@ -281,6 +290,7 @@ class Service(BaseService):
     """
     Represents a default swappable service on the platform
     """
+
     class Meta:
         swappable = swapper.swappable_setting('wcore', 'Service')
 
@@ -395,20 +405,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         :param user: Request User
         :return: True or False
         """
-        # TODO reuse manager function or use authorization dedicated class
-        if waves_settings.ALLOW_JOB_SUBMISSION is False:
-            return False
-        if user.is_anonymous():
-            return self.service.status == self.service.SRV_PUBLIC
-        # RULES to set if user can access submissions
-        return self.get_runner() is not None and (
-                (self.service.status == self.service.SRV_PUBLIC) or
-                (self.service.status == self.service.SRV_REGISTERED and not user.is_anonymous()) or
-                (self.service.status == self.service.SRV_DRAFT and self.service.created_by == user) or
-                (self.service.status == self.service.SRV_TEST and user.is_staff) or
-                (self.service.status == self.service.SRV_RESTRICTED and (
-                        user in self.service.restricted_client.all() or user.is_staff)) or
-                user.is_superuser)
+        return self.service.available_for_user(user)
 
 
 class Submission(BaseSubmission):

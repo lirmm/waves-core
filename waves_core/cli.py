@@ -41,8 +41,8 @@ LOGGING = {
             'level': 'WARNING',
         },
         'waves': {
-            'handlers': ['waves_log_file'],
-            'level': 'ERROR',
+            'handlers': ['waves_log_file', 'console'],
+            'level': 'DEBUG',
         },
         'waves.daemon': {
             'handlers': ['waves_log_file'],
@@ -58,3 +58,4 @@ LOGGING = {
     }
 }
 logging.config.dictConfig(LOGGING)
+print "in cli config"

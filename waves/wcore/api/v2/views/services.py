@@ -5,7 +5,7 @@ import logging
 
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from rest_framework import status
@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.reverse import reverse
 from rest_framework.renderers import StaticHTMLRenderer
-
+from waves.wcore.api.permissions import ServiceAccessPermission
 from waves.wcore.api.v2.serializers.jobs import JobSerializer
 from waves.wcore.api.v2.serializers.services import ServiceSerializer, ServiceSubmissionSerializer
 from waves.wcore.exceptions.jobs import JobException
@@ -47,7 +47,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API entry point to Services (Retrieve, job submission)
     """
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (ServiceAccessPermission,)
     serializer_class = ServiceSerializer
     lookup_field = 'api_name'
     lookup_url_kwarg = 'service_app_name'
@@ -171,7 +171,6 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                                                  email_to=ass_email,
                                                                  submitted_inputs=passed_data,
                                                                  user=self.request.user)
-
                 # Now job is created (or raise an exception),
                 serializer = JobSerializer(created_job, many=False, context={'request': request},
                                            fields=('slug', 'url', 'created', 'status', 'service', 'submission'))
@@ -191,7 +190,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
     Interact with jobs
 
     """
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (ServiceAccessPermission,)
     serializer_class = ServiceSubmissionSerializer
     lookup_url_kwarg = 'submission_app_name'
     lookup_field = 'api_name'
@@ -234,6 +233,7 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
         submission_api_name = self.kwargs.get('submission_app_name')
         submission = self.get_object_or_404()
         template_pack = self.request.GET.get('tp', 'bootstrap3')
+        form_action = self.request.GET.get('fa', False)
         form = [{'submission': submission,
                  'form': ServiceSubmissionForm(instance=self.get_object_or_404(),
                                                parent=submission.service,

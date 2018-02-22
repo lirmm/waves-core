@@ -301,7 +301,8 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         :return: None
         """
         if value != self._status:
-            message = "[{}] {}".format(value, smart_text(self.message)) if self.message else "New job status {}".format(value)
+            message = "[{}] {}".format(value, smart_text(self.message)) if self.message else "New job status {}".format(
+                value)
             self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
             self.job_history.create(message=message, status=value)
         self._status = value
@@ -768,7 +769,15 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         prepared_date = prepared.timestamp.isoformat() if prepared is not None else ""
         finished_date = finished.timestamp.isoformat() if finished is not None else ""
         return JobRunDetails(self.id, str(self.slug), self.remote_job_id, self.title, self.exit_code,
-                                       self.created.isoformat(), prepared_date, finished_date, '')
+                             self.created.isoformat(), prepared_date, finished_date, '')
+
+    def available_for_user(self, user):
+        """ Access rules for submission form according to user
+        :param user: Request User
+        :return: boolean
+        """
+        # RULES to set if user can access service page
+        return True
 
 
 class JobInputManager(models.Manager):

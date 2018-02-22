@@ -179,7 +179,6 @@ class WavesAPIV2TestCase(BaseAPITestCase):
             logger.debug('ServiceTool: %s', tool_details.data['name'])
             self.assertIsNotNone(tool_details.data['submissions'])
 
-
     def test_create_job_api(self):
         """
         Ensure for any service, we can create a job according to retrieved parameters
