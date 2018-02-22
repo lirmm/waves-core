@@ -303,7 +303,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         if value != self._status:
             message = "[{}] {}".format(value, smart_text(self.message)) if self.message else "New job status {}".format(
                 value)
-            self.logger.debug('JobHistory saved [%s] status: %s', self.get_status_display(), message)
+            logger.debug('JobHistory saved [%s][%s] status: %s', self.slug, self.get_status_display(), message)
             self.job_history.create(message=message, status=value)
         self._status = value
 
@@ -508,7 +508,6 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
                         nb_sent = mailer.send_job_cancel_email(self)
                     # Avoid resending emails when last status mail already sent
                     self.status_mail = self.status
-                    self.logger.info("Try to send email to %s [%s]", self.email_to, self.status)
                     if nb_sent > 0:
                         self.job_history.create(message='Sent notification email', status=self.status, is_admin=True)
                     else:
@@ -519,9 +518,9 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
                     logger.error('Mail error: %s %s', e.__class__.__name__, e.message)
                     pass
             elif not self.email_to:
-                self.logger.warn('Job %s email not set', self.slug)
+                logger.warn('Job [%s] email not sent to %s', self.slug, self.email_to)
         else:
-            self.logger.info('Jobs notification are not activated')
+            logger.debug('Jobs notification are not activated')
 
     def get_absolute_url(self):
         """Reverse url for this Job according to Django urls configuration
@@ -610,7 +609,8 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
 
     def error(self, message):
         """ Set job Status to ERROR, save error reason in JobAdminHistory, save job"""
-        self.logger.error('Job error: %s', smart_text(message))
+        with open(join(self.working_dir, self.stderr), "a") as f:
+            f.write('Job error: %s', smart_text(message))
         self.message = '[Error] {}'.format(smart_text(message))
         self.status = JobStatus.JOB_ERROR
 

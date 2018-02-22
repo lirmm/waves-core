@@ -19,19 +19,22 @@ class LoggerClass(object):
         self._logger = logging.getLogger(self.logger_name)
         if not len(self._logger.handlers):
             # Add handler only once !
-            hdlr = logging.FileHandler(self.log_file)
             try:
+                hdlr = logging.FileHandler(self.log_file)
                 mode = os.stat(self.log_file).st_mode
                 if not bool(mode & stat.S_IWGRP):
                     os.chmod(self.log_file, 0o664)
+                formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+                hdlr.setFormatter(formatter)
+                self._logger.propagate = False
+                self._logger.addHandler(hdlr)
+                self._logger.setLevel(self.LOG_LEVEL)
             except OSError as e:
                 logger = logging.getLogger()
                 logger.exception("Hard exception %s %s", e.message, e.filename)
-            formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-            hdlr.setFormatter(formatter)
-            self._logger.propagate = False
-            self._logger.addHandler(hdlr)
-            self._logger.setLevel(self.LOG_LEVEL)
+            except IOError as err:
+                self._logger = logging.getLogger("waves.errors")
+                self._logger.warn('This object %s is not able to log where it should %s', self.pk, self.log_file)
         return self._logger
 
     @property

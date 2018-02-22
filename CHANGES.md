@@ -5,6 +5,7 @@ Version 1.1.9.x - 2018-03-10
 ----------------------------
 
 - [SITES] Added multi-site association with api_users, allow returning site url prefix for jobs urls
+- [LOGGING] JobLogging: degraded mode, output to 'waves.errors' logger
 
 
 Version 1.1.8.x - 2018-02-10
