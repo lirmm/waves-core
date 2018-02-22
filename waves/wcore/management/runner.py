@@ -17,7 +17,7 @@ from waves.wcore.models import Job
 from waves.wcore.settings import waves_settings
 
 logger = logging.getLogger('waves.daemon')
-LOG = logging.getLogger('daemons.django.wcore')
+LOG = logging.getLogger('daemons')
 
 
 class BaseRunDaemon(run.RunDaemon):
@@ -46,7 +46,7 @@ class BaseRunDaemon(run.RunDaemon):
         Override this method if you want to do initialization before actual daemon process infinite loop
         """
         logger.debug("preloop_callback")
-        LOG.info("warming up on start")
+        LOG.info("Warming up on start")
 
     def run(self):
         """
@@ -54,7 +54,6 @@ class BaseRunDaemon(run.RunDaemon):
         """
         try:
             self.preloop_callback()
-            logger.debug("Starting loopback...")
             LOG.info("Starting daemon")
             while True:
                 self.loop_callback()
@@ -63,11 +62,18 @@ class BaseRunDaemon(run.RunDaemon):
             pass
         except Exception as exc:
             # Something unexpected happened?
+            LOG.error("Error starting deamon %s ", exc.__class__.__name__)
             logger.exception("Unexpected Exception %s", exc)
 
     def status(self):
         if self.pid < 0 or self.pid is None:
             LOG.warning("Process pid does not exists")
+            if os.path.isfile(self.pidfile):
+                try:
+                    os.remove(self.pidfile)
+                    LOG.info("Removed pid file %s", self.pidfile)
+                except OSError:
+                    LOG.error('Unable to remove pid file')
             return
         try:
             os.kill(self.pid, 0)
@@ -77,7 +83,6 @@ class BaseRunDaemon(run.RunDaemon):
             LOG.info("Process is running.")
 
     def stop(self):
-        print "sopt !"
         if self.pid is None:
             LOG.info('No process running')
         super(BaseRunDaemon, self).stop()
@@ -126,6 +131,10 @@ class JobQueueRunDaemon(BaseRunDaemon):
             except (waves.wcore.exceptions.WavesException, AdaptorException) as e:
                 logger.error("Error Job %s (adapter:%s-state:%s): %s", job, runner, job.get_status_display(),
                              e.message)
+            except IOError as exc:
+                logger.error('IO error on job %s [%s]', job.slug, exc)
+                job.status = JobStatus.JOB_ERROR
+                job.save()
             except Exception as exc:
                 logger.exception('Current job raised unrecoverable exception %s', exc)
                 job.fatal_error(exc)
