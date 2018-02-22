@@ -146,9 +146,9 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
-        'daemon_log_file': {
+        'log_file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'daemon.log'),
+            'filename': os.path.join(BASE_DIR, 'waves.log'),
             'formatter': 'verbose',
             'backupCount': 10,
             'maxBytes': 1024*1024*5
@@ -162,7 +162,7 @@ LOGGING = {
             'level': 'WARNING',
         },
         'waves': {
-            'handlers': ['console'],
+            'handlers': ['log_file'],
             'level': 'DEBUG',
             'propagate': True,
         },

@@ -28,7 +28,6 @@ class WavesConfig(AppConfig):
         import waves.wcore.signals
 
 
-
 @register()
 def check_waves_config(app_configs=('waves.wcore',), **kwargs):
     """

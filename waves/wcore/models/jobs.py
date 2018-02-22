@@ -325,6 +325,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         """ Create job working dir """
         if not os.path.isdir(self.working_dir):
             os.makedirs(self.working_dir, mode=0o775)
+            os.chmod(self.working_dir, 0o775)
 
     def delete_job_dirs(self):
         """ Upon job deletion in database, cleanup associated working dirs """
@@ -571,12 +572,16 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         output_dict = dict(job=self, value=self.stdout, _name='Standard output')
         out = JobOutput.objects.create(**output_dict)
         self.outputs.add(out)
-        open(join(self.working_dir, self.stdout), 'w').close()
+        std_file = join(self.working_dir, self.stdout)
+        open(std_file, 'w').close()
+        os.chmod(std_file, 0o664)
         output_dict['value'] = self.stderr
         output_dict['_name'] = "Standard error"
         out1 = JobOutput.objects.create(**output_dict)
         self.outputs.add(out1)
-        open(join(self.working_dir, self.stderr), 'w').close()
+        std_file = join(self.working_dir, self.stderr)
+        open(std_file, 'w').close()
+        os.chmod(std_file, 0o664)
 
     @property
     def public_history(self):

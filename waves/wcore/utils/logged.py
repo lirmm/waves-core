@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 import logging
 import os
 from django.conf import settings
+import stat
 
 
 class LoggerClass(object):
-
     LOG_LEVEL = logging.DEBUG
     log_dir = os.path.dirname(settings.BASE_DIR)
     _logger = None
@@ -20,6 +20,13 @@ class LoggerClass(object):
         if not len(self._logger.handlers):
             # Add handler only once !
             hdlr = logging.FileHandler(self.log_file)
+            try:
+                mode = os.stat(self.log_file).st_mode
+                if not bool(mode & stat.S_IWGRP):
+                    os.chmod(self.log_file, 0o664)
+            except OSError as e:
+                logger = logging.getLogger()
+                logger.exception("Hard exception %s %s", e.message, e.filename)
             formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
             hdlr.setFormatter(formatter)
             self._logger.propagate = False

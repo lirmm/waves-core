@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+Version 1.1.9.x - 2018-03-10
+----------------------------
+
+- [SITES] Added multi-site association with api_users, allow returning site url prefix for jobs urls
+
+
 Version 1.1.8.x - 2018-02-10
 ----------------------------
 
@@ -9,6 +15,7 @@ Version 1.1.8.x - 2018-02-10
 - [Admin Service] Corrected: key error when editing service on 'created_by'
 - [Admin Service] Corrected: inline popup on add ExitCode
 - [Settings] Added: check for WAVES directories access rights
+- [File Permission] Changed to 775/664 job created dirs/files.
 
 Version 1.1.7 - 2018-02-07
 --------------------------
