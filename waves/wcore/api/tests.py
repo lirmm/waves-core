@@ -191,6 +191,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                 service.name, service.get_status_display(), service.submissions_api.count()))
             expected_jobs += service.submissions_api.count()
         tool_list = self.client.get(reverse('wapi:v2:waves-services-list'), format="json")
+        print tool_list
         self.assertEqual(tool_list.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(tool_list)
         logger.debug(tool_list.data)

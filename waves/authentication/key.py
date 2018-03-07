@@ -14,13 +14,12 @@ class ApiKeyAuthentication(authentication.BaseAuthentication):
         auth = request.POST.get('api_key', request.GET.get('api_key', None))
 
         if not auth:
-            msg = _('Invalid api key. No provided.')
-            raise exceptions.AuthenticationFailed(msg)
+            return None
 
         try:
             token = auth
         except UnicodeError:
-            msg = _('Invalid api key header. api key string should not contain invalid characters.')
+            msg = _('Invalid api key. api key string should not contain invalid characters.')
             raise exceptions.AuthenticationFailed(msg)
 
         return self.authenticate_credentials(token)

@@ -173,10 +173,10 @@ LOGGING = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'waves.authentication.key.ApiKeyAuthentication',
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'waves.authentication.key.ApiKeyAuthentication',
     )
 }
 ALLOWED_TEMPLATE_PACKS = ['bootstrap3', 'bootstrap4']
