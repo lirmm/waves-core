@@ -8,6 +8,7 @@ Version 1.1.9.x - 2018-03-10
     - Added multi-site association allow returning site url prefix for jobs urls
     - Test if job.client user has a 'site' property, in such case, retrieve domain name to generate Job / JobOutputs link
 - [LOGGING] JobLogging: degraded mode, output to 'waves.errors' logger
+- [Service list] Corrected: list services fails when services are not all public.
 
 
 Version 1.1.8.x - 2018-02-10

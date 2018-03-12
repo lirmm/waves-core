@@ -250,7 +250,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
         # TODO reuse manager function or use authorization dedicated class
         if waves_settings.ALLOW_JOB_SUBMISSION is False or self.get_runner() is None:
             return False
-        if self.status == self.SRV_PUBLIC or user.is_superuser():
+        if self.status == self.SRV_PUBLIC or user.is_superuser:
             return True
         # RULES to set if user can access submissions
         return ((self.status == self.SRV_REGISTERED and not user.is_anonymous()) or
