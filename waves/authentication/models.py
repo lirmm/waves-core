@@ -10,16 +10,18 @@ from django.utils.translation import ugettext_lazy as _
 
 
 @python_2_unicode_compatible
-class ApiKey(models.Model):
+class WavesApiUser(models.Model):
     """
     The default authorization token model.
     """
     key = models.CharField(_("Key"), max_length=40, primary_key=True)
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, related_name='auth_api_key',
+        settings.AUTH_USER_MODEL, related_name='waves_user',
         on_delete=models.CASCADE, verbose_name=_("User")
     )
     created = models.DateTimeField(_("Created"), auto_now_add=True)
+    domain = models.CharField(_('Origin Site'), null=True, blank=True, max_length=255)
+    ip_list = models.CharField(_('Ip List'), null=True, blank=True, max_length=255)
 
     class Meta:
         abstract = 'waves.authentication' not in settings.INSTALLED_APPS
@@ -29,7 +31,7 @@ class ApiKey(models.Model):
     def save(self, *args, **kwargs):
         if not self.key:
             self.key = self.generate_key()
-        return super(ApiKey, self).save(*args, **kwargs)
+        return super(WavesApiUser, self).save(*args, **kwargs)
 
     def generate_key(self):
         return binascii.hexlify(os.urandom(20)).decode()

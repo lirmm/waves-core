@@ -76,3 +76,4 @@ venv/
 /staticfiles/
 /tests/settings.ini
 /tests/data/*.json
+local.env

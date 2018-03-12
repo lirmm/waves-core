@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     'waves.authentication',
     'crispy_forms',
     'rest_framework',
-    'rest_framework.authtoken',
     'corsheaders',
     'adminsortable2'
 )
@@ -173,10 +172,10 @@ LOGGING = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        'waves.authentication.auth.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'waves.authentication.key.ApiKeyAuthentication',
+        'waves.authentication.auth.ApiKeyAuthentication',
     )
 }
 ALLOWED_TEMPLATE_PACKS = ['bootstrap3', 'bootstrap4']

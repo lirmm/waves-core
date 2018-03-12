@@ -23,15 +23,6 @@ from waves.wcore.utils import get_all_subclasses
 Service = get_service_model()
 Submission = get_submission_model()
 
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
-        from rest_framework.authtoken.models import Token
-        if created or Token.objects.filter(user=instance).count() == 0:
-            Token.objects.create(user=instance)
-
-
 @receiver(pre_save, sender=Job)
 def job_pre_save_handler(sender, instance, **kwargs):
     """ job presave handler """

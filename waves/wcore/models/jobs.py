@@ -1058,9 +1058,9 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     @property
     def link(self):
-        if self.job.client and hasattr(self.job.client, 'site'):
+        if self.job.client and 'waves.authentication' in settings.INSTALLED_APPS:
             # changer les variables d'url des templates
-            base_url = self.job.client.site.domain
+            base_url = self.job.client.waves_user.site
             return "{}{}".format(base_url, self.get_absolute_url())
         return super(JobOutput, self).link()
 
