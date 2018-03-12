@@ -150,24 +150,6 @@ class JobManager(models.Manager):
         default_email = user.email if user and not user.is_anonymous() else None
         follow_email = email_to or default_email
         client = user if user and not user.is_anonymous() else None
-        if update is None:
-            job = self.create(email_to=follow_email,
-                              client=client,
-                              title=submitted_inputs.get('title', None),
-                              submission=submission,
-                              service=submission.service.name,
-                              _adaptor=submission.adaptor.serialize(),
-                              notify=submission.service.email_on)
-        else:
-            job = update
-            job.submission = submission
-            job.adaptor = submission.adaptor
-            job.notify = submission.service.email_on
-            job.service = submission.service.name
-        if job.logger.isEnabledFor(logging.DEBUG):
-            job.logger.debug('Received data :')
-            for key in submitted_inputs:
-                job.logger.debug('Param %s: %s', key, submitted_inputs[key])
         mandatory_params = submission.expected_inputs.filter(required=True)
         missing = {m.name: '%s (:%s:) is required field' % (m.label, m.api_name) for m in mandatory_params if
                    m.api_name not in submitted_inputs.keys()}
@@ -176,6 +158,21 @@ class JobManager(models.Manager):
             logger.warning("Expected mandatory %s", [(m.label, m.api_name) for m in mandatory_params])
             logger.warning("Missing %s", [m for m in missing])
             raise ValidationError(missing)
+        if update is None:
+            job = Job(email_to=follow_email,
+                      client=client,
+                      title=submitted_inputs.get('title', None),
+                      submission=submission,
+                      service=submission.service.name,
+                      _adaptor=submission.adaptor.serialize(),
+                      notify=submission.service.email_on)
+        else:
+            job = update
+            job.submission = submission
+            job.adaptor = submission.adaptor
+            job.notify = submission.service.email_on
+            job.service = submission.service.name
+
         # First create inputs
         submission_inputs = submission.inputs.filter(api_name__in=submitted_inputs.keys()).exclude(required=None)
         for service_input in submission_inputs:
@@ -185,6 +182,12 @@ class JobManager(models.Manager):
             # test service input mandatory, without default and no value
             if service_input.required and not service_input.default and incoming_input is None:
                 raise JobMissingMandatoryParam(service_input.label, job)
+            if job.logger.isEnabledFor(logging.DEBUG):
+                job.logger.debug('Received data :')
+                for key in submitted_inputs:
+                    job.logger.debug('Param %s: %s', key, submitted_inputs[key])
+            job.save()
+
             if incoming_input:
                 logger.debug('Retrieved "%s" for service input "%s:%s"', incoming_input, service_input.label,
                              service_input.name)
@@ -270,6 +273,14 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
     notify = models.BooleanField("Notify this result", default=False, editable=False)
 
     LOG_LEVEL = waves_settings.JOB_LOG_LEVEL
+
+    @property
+    def link(self):
+        if self.client and hasattr(self.client, 'site'):
+            # changer les variables d'url des templates
+            base_url = self.client.site.domain
+            return "{}{}".format(base_url, self.get_absolute_url())
+        return super(Job, self).link()
 
     @property
     def log_dir(self):
@@ -1044,6 +1055,14 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     remote_output_id = models.CharField('Remote output ID (on adapter)', max_length=255, editable=False, null=True)
     _name = models.CharField('Name', max_length=50, null=False, blank=False, help_text='Output displayed name')
     extension = models.CharField('File extension', max_length=5, null=False, default="")
+
+    @property
+    def link(self):
+        if self.job.client and hasattr(self.job.client, 'site'):
+            # changer les variables d'url des templates
+            base_url = self.job.client.site.domain
+            return "{}{}".format(base_url, self.get_absolute_url())
+        return super(JobOutput, self).link()
 
     @property
     def name(self):
