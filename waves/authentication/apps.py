@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class ApiKeyConfig(AppConfig):
     name = 'waves.authentication'
-    verbose_name = _("Simple Api Key auth")
+    verbose_name = _("WAVES Api Authentication")
 
     def ready(self):
         """

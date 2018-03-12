@@ -20,13 +20,13 @@ class WavesApiUser(models.Model):
         on_delete=models.CASCADE, verbose_name=_("User")
     )
     created = models.DateTimeField(_("Created"), auto_now_add=True)
-    domain = models.CharField(_('Origin Site'), null=True, blank=True, max_length=255)
-    ip_list = models.CharField(_('Ip List'), null=True, blank=True, max_length=255)
+    domain = models.CharField(_('Origin URL(s)'), null=True, blank=True, max_length=255, help_text="Comma separated list")
+    ip_list = models.CharField(_('Ip(s) List'), null=True, blank=True, max_length=255, help_text="Comma separated list")
 
     class Meta:
         abstract = 'waves.authentication' not in settings.INSTALLED_APPS
-        verbose_name = _("Waves Api key")
-        verbose_name_plural = _("Waves Api keys")
+        verbose_name = _("Waves Api auth")
+        verbose_name_plural = _("Waves Api auths")
 
     def save(self, *args, **kwargs):
         if not self.key:
