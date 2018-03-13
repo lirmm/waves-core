@@ -157,7 +157,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     form = ServiceSubmissionForm
     exclude = ['order']
     list_display = ['name', 'api_name', 'get_service', 'availability', 'get_runner', 'updated']
-    readonly_fields = ['get_command_line_pattern', 'get_run_params']
+    readonly_fields = ['get_command_line_pattern', 'get_run_params', 'api_url']
     list_filter = ('service__name', 'availability', 'runner')
     list_editable = ('availability',)
     list_display_links = ('name',)
@@ -166,7 +166,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
 
     fieldsets = [
         ('General', {
-            'fields': ['service', 'name', 'availability', 'api_name'],
+            'fields': ['service', 'name', 'availability', 'api_name', 'api_url'],
             'classes': ['collapse', 'open']
         }),
         ('Run ', {
@@ -187,6 +187,16 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     # Override admin class and set this list to add your inlines to service admin
     def get_run_params(self, obj):
         return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
+
+    def api_url(self, obj):
+        from rest_framework.reverse import reverse
+        return reverse('wapi:v2:waves-services-submission-detail',
+                       kwargs=dict(
+                           service_app_name=obj.service.api_name,
+                           submission_app_name=obj.api_name
+                       ))
+
+    api_url.short_description = "Api url"
 
     def get_inlines(self, request, obj=None):
         _inlines = [

@@ -54,7 +54,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     form = ServiceForm
 
     filter_horizontal = ['restricted_client']
-    readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link', 'display_run_params']
+    readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link', 'display_run_params', 'api_url']
     list_display = ('id', 'get_api_name', 'name', 'status', 'get_runner', 'version', 'created_by', 'updated',
                     'submission_link')
     list_filter = ('status', 'name', 'created_by', 'runner')
@@ -89,6 +89,12 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     def get_runner(self, obj):
         return obj.runner
 
+    def api_url(self, obj):
+        from rest_framework.reverse import reverse
+        return reverse(viewname='wapi:v2:waves-services-detail',
+                       kwargs={'service_app_name': obj.api_name})
+
+    api_url.short_description = "Api url"
     get_runner.short_description = "Default execution config."
 
     def get_urls(self):
