@@ -56,6 +56,10 @@ class TestApiAuth(APITestCase):
 
     def test_filter_domain(self):
         user = User.objects.create(username='TestDomain', is_active=True)
+        # No domain / ip list at all
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + user.waves_user.key)
+        response = self.client.get('/test-key-auth')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         user.waves_user.domain = 'waves.test.com'
         user.waves_user.save()
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + user.waves_user.key)

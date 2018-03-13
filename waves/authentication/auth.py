@@ -11,7 +11,7 @@ class WavesAuth(object):
 
     @staticmethod
     def check_api_user(waves_user, request):
-        if waves_user.domain is not None:
+        if waves_user.domain:
             domains = waves_user.domain.split(',')
             if 'REMOTE_HOST' not in request.META:
                 msg = _('Origin host not sent, but expected.')
@@ -19,8 +19,7 @@ class WavesAuth(object):
             if request.META['REMOTE_HOST'] not in domains:
                 msg = _('Invalid origin host header.')
                 raise exceptions.AuthenticationFailed(msg)
-        if waves_user.ip_list is not None:
-
+        if waves_user.ip_list:
             ip_list = waves_user.ip_list.split(',')
             if 'REMOTE_ADDR' not in request.META:
                 msg = _('Origin IP not sent, but expected.')

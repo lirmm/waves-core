@@ -58,4 +58,3 @@ LOGGING = {
     }
 }
 logging.config.dictConfig(LOGGING)
-print "in cli config"

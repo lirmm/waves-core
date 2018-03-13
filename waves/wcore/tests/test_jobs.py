@@ -8,12 +8,14 @@ from django.utils import timezone
 
 from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.models import get_service_model, get_submission_model
+from django.contrib.auth import get_user_model
 from waves.wcore.settings import waves_settings as config
 from waves.wcore.tests.base import BaseTestCase
 
 logger = logging.getLogger(__name__)
 Service = get_service_model()
 Submission = get_submission_model()
+User = get_user_model()
 
 
 class JobsTestCase(BaseTestCase):
@@ -49,7 +51,10 @@ class JobsTestCase(BaseTestCase):
             raise
 
     def test_mail_job(self):
-        job = self.create_random_job()
+        user = User.objects.create(username='TestDomain', is_active=True)
+        user.waves_user.domain = 'https://waves.test.com'
+        user.waves_user.save()
+        job = self.create_random_job(user=user)
 
         job.status_time = timezone.datetime.now()
         logger.info("Job link: %s", job.link)
@@ -60,6 +65,7 @@ class JobsTestCase(BaseTestCase):
         self.assertTrue(job.service in sent_mail.subject)
         self.assertEqual(job.email_to, sent_mail.to[0])
         self.assertEqual(config.SERVICES_EMAIL, sent_mail.from_email)
+
         logger.debug('Mail subject: %s', sent_mail.subject)
         logger.debug('Mail from: %s', sent_mail.from_email)
         logger.debug('Mail content: \n%s', sent_mail.body)

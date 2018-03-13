@@ -2,10 +2,10 @@ from __future__ import unicode_literals
 
 import logging
 
-from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import get_template
 
+from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.settings import waves_settings as config
 
 logger = logging.getLogger(__name__)
@@ -45,12 +45,11 @@ class JobMailer(object):
         if self.mail_activated and job.notify:
             context = self.get_context_data()
             context['job'] = job
-            mail_subject = "Waves Job [%s]" % job.title if subject is None else subject
+            mail_subject = "[WAVES - %s] -- %s -- " % (job.title, job.get_status_display()) if subject is None else subject
             try:
                 message = get_template(template_name=template).render(context)
                 msg = EmailMessage(subject=mail_subject, body=message, to=[job.email_to],
                                    from_email=config.SERVICES_EMAIL)
-                msg.content_subtype = 'html'
                 msg.send(fail_silently=True)
             except Exception as e:
                 logger.exception("Failed to send mail to %s from %s :%s", job.email_to, config.SERVICES_EMAIL, e)
@@ -65,7 +64,7 @@ class JobMailer(object):
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(job, "waves/emails/job_submitted.html")
+        return self._send_job_mail(job, "waves/emails/job_submitted.tpl")
 
     def send_job_completed_mail(self, job):
         """
@@ -74,7 +73,7 @@ class JobMailer(object):
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(job, "waves/emails/job_completed.html")
+        return self._send_job_mail(job, "waves/emails/job_completed.tpl")
 
     def send_job_error_email(self, job):
         """
@@ -83,7 +82,16 @@ class JobMailer(object):
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(job, "waves/emails/job_error.html")
+        return self._send_job_mail(job, "waves/emails/job_error.tpl")
+
+    def send_job_warning_email(self, job):
+        """
+        Send Job error email
+
+        :return: the number of mail sent, should be 0 or 1
+        :rtype: int
+        """
+        return self._send_job_mail(job, "waves/emails/job_warning.tpl")
 
     def send_job_cancel_email(self, job):
         """
@@ -92,11 +100,50 @@ class JobMailer(object):
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(job, "waves/emails/job_cancelled.html")
+        return self._send_job_mail(job, "waves/emails/job_cancelled.tpl")
 
     def send_job_admin_error(self, job):
         """ Admin mail to notify run error
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        return self._send_job_mail(job, "waves/emails/job_admin_error.html")
+        return self._send_job_mail(job, "waves/emails/job_admin_error.tpl")
+
+    def check_send_mail(self, job):
+        """According to job status, check needs for sending notification emails
+
+        :return: the nmmber of mail sent (should be one)
+        :rtype: int
+        """
+        if job.status != job.status_mail and job.status == JobStatus.JOB_ERROR:
+            self.send_job_admin_error(job)
+        if config.NOTIFY_RESULTS and job.notify:
+            if job.email_to is not None and job.status != job.status_mail:
+                # should send a email
+                try:
+                    nb_sent = 0
+                    if job.status == JobStatus.JOB_CREATED:
+                        nb_sent = self.send_job_submission_mail(job)
+                    elif job.status == JobStatus.JOB_TERMINATED:
+                        nb_sent = self.send_job_completed_mail(job)
+                    elif job.status == JobStatus.JOB_ERROR:
+                        nb_sent = self.send_job_error_email(job)
+                    elif job.status == JobStatus.JOB_WARNING:
+                        nb_sent = self.send_job_warning_email(job)
+                    elif job.status == JobStatus.JOB_CANCELLED:
+                        nb_sent = self.send_job_cancel_email(job)
+                    # Avoid resending emails when last status mail already sent
+                    job.status_mail = job.status
+                    if nb_sent > 0:
+                        job.job_history.create(message='Sent notification email', status=job.status, is_admin=True)
+                    else:
+                        job.job_history.create(message='Mail not sent', status=job.status, is_admin=True)
+                    job.save()
+                    return nb_sent
+                except Exception as e:
+                    logger.error('Mail error: %s %s', e.__class__.__name__, e.message)
+                    pass
+            elif not job.email_to:
+                logger.warn('Job [%s] email not sent to %s', job.slug, job.email_to)
+        else:
+            logger.debug('Jobs notification are not activated')

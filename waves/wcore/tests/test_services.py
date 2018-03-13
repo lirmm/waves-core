@@ -72,7 +72,7 @@ class ServicesTestCase(BaseTestCase):
         service.status = service.SRV_REGISTERED
         service.save()
         url = reverse('wcore:service_details', kwargs={'service_app_name': service.api_name})
-        _test_access(url, 200)
+        _test_access(url, 403)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
         _test_access(url, 200, 'api_user')

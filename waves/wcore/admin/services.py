@@ -80,7 +80,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         ('Details', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
             'fields': ['created', 'updated', 'description', 'edam_topics',
-                       'edam_operations', 'remote_service_id', ]
+                       'edam_operations', 'remote_service_id', 'api_url']
         }),
     ]
 

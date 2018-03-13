@@ -20,7 +20,6 @@ from django.utils.html import format_html
 
 import waves.wcore.adaptors.exceptions
 from waves.wcore.adaptors.const import JobStatus, JobRunDetails
-from waves.wcore.adaptors.mails import JobMailer
 from waves.wcore.exceptions import WavesException
 from waves.wcore.exceptions.jobs import JobInconsistentStateError, JobMissingMandatoryParam
 from waves.wcore.utils.logged import LoggerClass
@@ -276,10 +275,9 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
 
     @property
     def link(self):
-        if self.client and hasattr(self.client, 'site'):
+        if self.client and 'waves.authentication' in settings.INSTALLED_APPS:
             # changer les variables d'url des templates
-            base_url = self.client.site.domain
-            return "{}{}".format(base_url, self.get_absolute_url())
+            return "{}{}".format(self.client.waves_user.main_domain, self.get_absolute_url())
         return super(Job, self).link()
 
     @property
@@ -501,37 +499,8 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         :return: the nmmber of mail sent (should be one)
         :rtype: int
         """
-        mailer = JobMailer()
-        if self.status != self.status_mail and self.status == JobStatus.JOB_ERROR:
-            mailer.send_job_admin_error(self)
-        if waves_settings.NOTIFY_RESULTS and self.notify:
-            if self.email_to is not None and self.status != self.status_mail:
-                # should send a email
-                try:
-                    nb_sent = 0
-                    if self.status == JobStatus.JOB_CREATED:
-                        nb_sent = mailer.send_job_submission_mail(self)
-                    elif self.status == JobStatus.JOB_TERMINATED:
-                        nb_sent = mailer.send_job_completed_mail(self)
-                    elif self.status == JobStatus.JOB_ERROR:
-                        nb_sent = mailer.send_job_error_email(self)
-                    elif self.status == JobStatus.JOB_CANCELLED:
-                        nb_sent = mailer.send_job_cancel_email(self)
-                    # Avoid resending emails when last status mail already sent
-                    self.status_mail = self.status
-                    if nb_sent > 0:
-                        self.job_history.create(message='Sent notification email', status=self.status, is_admin=True)
-                    else:
-                        self.job_history.create(message='Mail not sent', status=self.status, is_admin=True)
-                    self.save()
-                    return nb_sent
-                except Exception as e:
-                    logger.error('Mail error: %s %s', e.__class__.__name__, e.message)
-                    pass
-            elif not self.email_to:
-                logger.warn('Job [%s] email not sent to %s', self.slug, self.email_to)
-        else:
-            logger.debug('Jobs notification are not activated')
+        mailer = waves_settings.MAILER_CLASS()
+        mailer.check_send_mail(self)
 
     def get_absolute_url(self):
         """Reverse url for this Job according to Django urls configuration
@@ -621,7 +590,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
     def error(self, message):
         """ Set job Status to ERROR, save error reason in JobAdminHistory, save job"""
         with open(join(self.working_dir, self.stderr), "a") as f:
-            f.write('Job error: %s', smart_text(message))
+            f.write('Job error: %s' % smart_text(message))
         self.message = '[Error] {}'.format(smart_text(message))
         self.status = JobStatus.JOB_ERROR
 
@@ -856,7 +825,7 @@ class JobInputManager(models.Manager):
         return new_input
 
 
-class JobInput(Ordered, Slugged, ApiModel):
+class JobInput(Ordered, Slugged, ApiModel, UrlMixin):
     """
     Job Inputs is association between a Job, a SubmissionParam, setting a value specific for this job
     """
@@ -882,6 +851,13 @@ class JobInput(Ordered, Slugged, ApiModel):
                                      default=OptType.OPT_TYPE_POSIX)
     #: retrieved upon creation from related AParam object
     label = models.CharField('Label', max_length=100, editable=False, null=True)
+
+    @property
+    def link(self):
+        if self.job.client and 'waves.authentication' in settings.INSTALLED_APPS:
+            # changer les variables d'url des templates
+            return "{}{}".format(self.job.client.waves_user.main_domain, self.get_absolute_url())
+        return super(JobOutput, self).link()
 
     @property
     def required(self):
@@ -1060,8 +1036,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     def link(self):
         if self.job.client and 'waves.authentication' in settings.INSTALLED_APPS:
             # changer les variables d'url des templates
-            base_url = self.job.client.waves_user.site
-            return "{}{}".format(base_url, self.get_absolute_url())
+            return "{}{}".format(self.job.client.waves_user.main_domain, self.get_absolute_url())
         return super(JobOutput, self).link()
 
     @property

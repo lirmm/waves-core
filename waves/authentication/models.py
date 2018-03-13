@@ -8,6 +8,8 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
+from waves.wcore.settings import waves_settings
+
 
 @python_2_unicode_compatible
 class WavesApiUser(models.Model):
@@ -38,3 +40,7 @@ class WavesApiUser(models.Model):
 
     def __str__(self):
         return self.key
+
+    @property
+    def main_domain(self):
+        return self.domain.split(",")[0] if self.domain else waves_settings.HOST

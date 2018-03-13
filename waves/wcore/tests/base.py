@@ -46,7 +46,6 @@ logger = logging.getLogger(__name__)
         'KEEP_REGISTERED_JOBS': 120,
         'NOTIFY_RESULTS': True,
         'REGISTRATION_ALLOWED': True,
-        'SERVICES_EMAIL': 'service@test-waves.com',
         'TEMPLATE_PACK': getattr(settings, 'CRISPY_TEMPLATE_PACK', 'bootstrap3'),
         'SECRET_KEY': getattr(settings, 'SECRET_KEY', '')[0:32],
         'ADAPTORS_CLASSES': (
@@ -69,7 +68,9 @@ class BaseTestCase(TestCase):
     runners = []
 
     def setUp(self):
+        from waves.wcore.settings import waves_settings
         super(BaseTestCase, self).setUp()
+
         super_user = User.objects.create(email='superadmin@waves.wcore.fr', username="superadmin", is_superuser=True)
         super_user.set_password('superadmin')
         super_user.save()
