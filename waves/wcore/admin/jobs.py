@@ -160,19 +160,6 @@ class JobAdmin(WavesModelAdmin):
     def get_working_dir(self, obj):
         return obj.working_dir
 
-    def get_queryset(self, request):
-        if request.user.is_superuser:
-            return super(JobAdmin, self).get_queryset(request)
-        else:
-            qs = Job.objects.filter(
-                Q(submission__service__created_by=request.user) |
-                Q(client=request.user) |
-                Q(email_to=request.user.email))
-            ordering = self.get_ordering(request)
-            if ordering:
-                qs = qs.order_by(*ordering)
-            return qs
-
     def get_list_filter(self, request):
         return super(JobAdmin, self).get_list_filter(request)
 
