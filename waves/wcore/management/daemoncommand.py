@@ -59,7 +59,6 @@ class DaemonCommand(BaseCommand):
         """
         try:
             self.action = options.pop('action')
-            logging.basicConfig(filename=self.log_file, level=self.log_level)
             if self._class is None:
                 raise CommandError('You must set the destination Daemon class')
             d = self._class(pidfile=self.pidfile)

@@ -14,5 +14,5 @@ urlpatterns = [
     url(r'^jobs/(?P<unique_id>[\w-]+)/$', JobView.as_view(), name="job_details"),
     url(r'^jobs/inputs/(?P<slug>[\w-]+)/$', JobInputView.as_view(), name="job_input"),
     url(r'^jobs/outputs/(?P<slug>[\w-]+)/$', JobOutputView.as_view(), name="job_output"),
-    url(r'^jobs/$', login_required(JobListView.as_view()), name="job_list"),
+    url(r'^jobs/', login_required(JobListView.as_view()), name="job_list"),
 ]
