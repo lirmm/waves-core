@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 from collections import OrderedDict
 
+from os.path import isfile, join
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.reverse import reverse
@@ -92,6 +93,15 @@ class JobOutputSerializer(serializers.ModelSerializer):
         model = JobOutput
         fields = ('name', 'download_url', 'content')
 
+    def get_url(self, output):
+        if isfile(output.file_path):
+            return reverse(viewname='wapi:v2:waves-jobs-output-detail', request=self.context['request'],
+                           kwargs={
+                               'unique_id': output.job.slug,
+                               'app_short_name': output.api_name})
+        else:
+            return None
+
     def to_representation(self, instance):
         """ Representation for a output """
         to_repr = {}
@@ -100,10 +110,7 @@ class JobOutputSerializer(serializers.ModelSerializer):
                 ("label", output.name),
                 ("file_name", output.file_name),
                 ("extension", output.get_extension()),
-                ("url", reverse(viewname='wapi:v2:waves-jobs-output-detail', request=self.context['request'],
-                                kwargs={
-                                    'unique_id': output.job.slug,
-                                    'app_short_name': output.api_name})),
+                ("url", self.get_url(output)),
             ])
         return to_repr
 
@@ -117,7 +124,8 @@ class JobSerializer(DynamicFieldsModelSerializer,
         fields = ('url', 'slug', 'title', 'service', 'submission', 'client', 'status', 'created',
                   'updated', 'inputs', 'outputs', 'history', 'last_message')
         read_only_fields = (
-            'title', 'status', 'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url', 'history')
+            'title', 'status', 'status_code', 'status_txt', 'slug', 'client', 'service', 'created', 'updated', 'url',
+            'history')
         extra_kwargs = {
             'url': {'view_name': 'wapi:v2:waves-jobs-detail', 'lookup_field': 'slug', 'lookup_url_kwarg': 'unique_id'}
         }
