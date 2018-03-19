@@ -15,8 +15,10 @@ import logging.config
 import environ
 from django.contrib import messages
 
+
 env = environ.Env()
-environ.Env.read_env(os.path.join(os.path.dirname(__file__), 'local.env'))
+if os.path.isfile(os.path.join(os.path.dirname(__file__), 'local.env')):
+    environ.Env.read_env(os.path.join(os.path.dirname(__file__), 'local.env'))
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

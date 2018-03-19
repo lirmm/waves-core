@@ -15,4 +15,3 @@ saga-python==0.47
 setproctitle==1.1.10
 six==1.11.0
 swapper==1.1.0
-

@@ -26,7 +26,7 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
     1.1. Clone repository:
 
-    Current version is |version|
+    Current version is |version| (|release|)
 
     .. code-block:: bash
 
