@@ -24,7 +24,7 @@ import django
 sys.path.append(os.path.abspath('.'))
 sys.path.append(os.path.abspath('..'))
 sys.path.append(get_python_lib())
-os.environ['DJANGO_SETTINGS_MODULE'] = 'waves_core.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'waves_core.rtd'
 # settings.configure()
 django.setup()
 
