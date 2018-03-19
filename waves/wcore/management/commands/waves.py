@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.core.management import BaseCommand
 from ..command import JobQueueCommand, PurgeDaemonCommand
 from ..base import SubcommandDispatcher
 from ..subcommands import CleanUpCommand, ImportCommand, DumpConfigCommand, ShowUrlsCommand
@@ -16,7 +17,7 @@ SHOWURLS = 'show_urls'
 class Command(SubcommandDispatcher):
     """ WAVES dedicated administration Django subcommand line interface (./manage.py) """
     help = 'WAVES Administration dedicated commands: type manage.py waves <sub_command> --help for sub-commands help'
-    command_list = (CLEAN, CONFIG, LOAD, QUEUE, PURGE, SHOWURLS)
+    command_list = (CLEAN, CONFIG, LOAD, SHOWURLS)
 
     def _subcommand(self, name):
         if name == CLEAN:
@@ -36,5 +37,3 @@ class Command(SubcommandDispatcher):
 
     def _subcommand_names(self):
         return self.command_list
-
-

@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 import json
 import logging
 import os
-import sys
 import uuid
 from shutil import rmtree
 
@@ -19,6 +18,7 @@ from django.db import (
 )
 from rest_framework.exceptions import ValidationError
 
+from waves.wcore.management.utils import choice_input
 from waves.wcore.models import Job
 from waves.wcore.import_export.services import ServiceSerializer
 from waves.wcore.settings import waves_settings as config
@@ -26,62 +26,6 @@ from waves.wcore.settings import waves_settings as config
 __all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand', 'ShowUrlsCommand']
 
 logger = logging.getLogger(__name__)
-
-
-def boolean_input(question, default=None):
-    """
-    Ask for a boolean response from user
-    :param question: Question to ask
-    :param default: Default answer
-    :return: True or False
-    :rtype: bool
-    """
-    result = raw_input("%s: " % question)
-    if not result and default is not None:
-        return default
-    while len(result) < 1 or result[0].lower() not in "yn":
-        result = raw_input("Please answer yes(y) or no(n): ")
-    return result[0].lower() == "y"
-
-
-def choice_input(question, choices, default=None):
-    """
-    Ask user for choice in a list, indexed by integer response
-
-    :param default:
-    :param question: The question to ask
-    :param choices: List of possible choices
-    :return: Selected choice by user
-    :rtype: int
-    """
-    print("%s:" % question)
-    for i, choice in enumerate(choices):
-        print("-%s) %s" % (i + 1, choice))
-    result = raw_input("Select an option: ")
-    try:
-        value = int(result)
-        if 0 < value <= len(choices):
-            return value
-    except ValueError:
-        if default:
-            return default
-        else:
-            return choice_input('Please select a valid value', choices, default)
-
-
-def text_input(question, default=None):
-    result = raw_input("%s (type Enter to keep default): " % question)
-    if not result and default is not None:
-        return default
-    return str(result)
-
-
-def action_cancelled(out):
-    """
-    Simply cancel current action, output confirmation
-    """
-    out.write('Action cancelled.')
-    sys.exit(3)
 
 
 class CleanUpCommand(BaseCommand):
@@ -148,6 +92,7 @@ class ImportCommand(BaseCommand):
 
     def handle(self, *args, **options):
         """ Handle import for services """
+        raise CommandError("This command has been disabled")
         exported_files = []
         type_mode = options.get('type_model', 'service')
         if type_mode != 'service':
@@ -212,9 +157,7 @@ class DumpConfigCommand(BaseCommand):
         self.stdout.write('Current Django allowed hosts: %s' % settings.ALLOWED_HOSTS)
         self.stdout.write("************************************************")
         self.stdout.write("****  WAVES current setup *****")
-        var_dict = vars(config)
-
-        for key, val in var_dict['DEFAULTS'].items():
+        for key, val in settings.WAVES_CORE.items():
             self.stdout.write('%s: %s' % (key, val))
         self.stdout.write("************************************************")
 

@@ -22,6 +22,11 @@ class JobQueueCommand(DaemonCommand):
     pidfile_timeout = 5
     _class = JobQueueRunDaemon
 
+    def handle(self, **options):
+        import warnings
+        warnings.warn("This method is deprecated: please use ./manage.py wqueue start instead")
+        exit(0)
+
 
 class PurgeDaemonCommand(DaemonCommand):
     help = 'Clean up old jobs '
@@ -29,4 +34,7 @@ class PurgeDaemonCommand(DaemonCommand):
     pidfile_path = os.path.join(waves_settings.DATA_ROOT, 'waves_clean.pid')
     _class = PurgeDaemon
 
-
+    def handle(self, **options):
+        import warnings
+        warnings.warn("This method is deprecated: please use ./manage.py wpurge start instead")
+        exit(0)
