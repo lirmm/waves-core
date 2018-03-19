@@ -25,7 +25,7 @@ class ServicesTestCase(BaseTestCase):
             self.login(user) if user else None
             the_response = self.client.get(url)
             self.assertEqual(the_response.status_code, expected_status,
-                             "Status code {} expected is {}".format(the_response.status_code, expected_status))
+                             "Status code {} [expected: {}]".format(the_response.status_code, expected_status))
             self.client.logout() if user else None
 
         services = self.bootstrap_services()
@@ -88,10 +88,11 @@ class ServicesTestCase(BaseTestCase):
         service.status = service.SRV_RESTRICTED
         service.save()
         url = reverse('wcore:service_details', kwargs={'service_app_name': service.api_name})
-        _test_access(url, 200)
+        url_service = reverse('wcore:service_details', kwargs={'service_app_name': service.api_name})
+        _test_access(url, 403)
         _test_access(url, 200, 'superadmin')
         _test_access(url, 200, 'admin')
-        _test_access(url, 200, 'api_user')
+        _test_access(url, 403, 'api_user')
         # SAME for submission
         url = reverse('wcore:job_submission', kwargs={'service_app_name': service.api_name})
         _test_access(url, 403)
@@ -101,6 +102,7 @@ class ServicesTestCase(BaseTestCase):
         # Add api_user to restricted client
         service.restricted_client.add(self.users['api_user'])
         service.save()
+        _test_access(url_service, 200, 'api_user')
         _test_access(url, 200, 'api_user')
         logger.debug('Test RESTRICTED status OK')
         logger.debug('Test PUBLIC status ...')

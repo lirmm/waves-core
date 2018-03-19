@@ -44,10 +44,10 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
     class Meta:
         verbose_name_plural = "Inputs"
         verbose_name = "Input"
-        base_manager_name = 'base_objects'
+        # base_manager_name = 'base_objects'
         ordering = ('order',)
 
-    objects = PolymorphicManager()
+    # objects = PolymorphicManager()
     # order = models.PositiveIntegerField('Ordering in forms', default=0)
     #: Input Label
     label = models.CharField('Label', max_length=100, blank=False, null=False, help_text='Input displayed label')

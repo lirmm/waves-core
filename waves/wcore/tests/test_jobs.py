@@ -64,8 +64,6 @@ class JobsTestCase(BaseTestCase):
         sent_mail = mail.outbox[-1]
         self.assertTrue(job.service in sent_mail.subject)
         self.assertEqual(job.email_to, sent_mail.to[0])
-        self.assertEqual(config.SERVICES_EMAIL, sent_mail.from_email)
-
         logger.debug('Mail subject: %s', sent_mail.subject)
         logger.debug('Mail from: %s', sent_mail.from_email)
         logger.debug('Mail content: \n%s', sent_mail.body)

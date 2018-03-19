@@ -63,10 +63,6 @@ class TestApiAuth(APITestCase):
         user.waves_user.domain = 'waves.test.com'
         user.waves_user.save()
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + user.waves_user.key)
-        response = self.client.get('/test-key-auth', **{'REMOTE_HOST': "NonDomain.com"})
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        response = self.client.get('/test-key-auth', **{'REMOTE_HOST': "waves.test.com"})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         user.waves_user.ip_list = '127.0.0.1,127.1.1.0'
         user.waves_user.domain = None

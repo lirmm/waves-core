@@ -1,60 +1,68 @@
 from __future__ import unicode_literals
 
 from waves_core.settings import *
-from os.path import join, dirname
 
-LOGGING_CONFIG = None
+CLI_LOG_LEVEL = env.str("CLI_LOG_LEVEL", 'WARNING')
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt': "%d/%b/%Y %H:%M:%S"
-        },
-        'simple': {
-            'format': '%(levelname)s %(name)s: %(message)s'
+            'format': '[%(levelname)s][%(asctime)s][%(name)s.%(funcName)s:%(lineno)s] - %(message)s',
+            'datefmt': "%Y-%m-%d %H:%M:%S"
         },
     },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-            'formatter': 'simple',
+            'formatter': 'verbose'
         },
-        'waves_log_file': {
+        'log_file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': join(BASE_DIR, 'logs', 'daemon.log'),
-            'formatter': 'simple',
+            'filename': os.path.join(LOG_DIR, 'waves-cli.log'),
+            'formatter': 'verbose',
             'backupCount': 10,
-            'maxBytes': 50000
+            'maxBytes': 1024*1024*5
         },
     },
+
     'loggers': {
-        'root': {
-            'handlers': ['waves_log_file', 'console'],
-            'propagate': False,
-            'level': 'ERROR',
-        },
-        'radical.saga': {
-            'handlers': ['waves_log_file'],
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
             'level': 'WARNING',
         },
         'waves': {
-            'handlers': ['waves_log_file', 'console'],
-            'level': 'DEBUG',
+            'handlers': ['log_file'],
+            'level': CLI_LOG_LEVEL,
+            'propagate': True,
+        },
+        'django_crontab': {
+            'handlers': ['log_file'],
+            'propagate': True,
+            'level': CLI_LOG_LEVEL,
         },
         'waves.daemon': {
-            'handlers': ['waves_log_file'],
-            'propagate': True,
+            'handlers': ['log_file'],
+            'propagate': False,
             'level': 'INFO',
         },
-        'daemons.django.wcore': {
+        'daemons': {
             'handlers': ['console'],
-            'propagate': True,
+            'propagate': False,
             'level': 'INFO',
         },
 
     }
 }
-logging.config.dictConfig(LOGGING)
+
+# CRONTAB JOBS
+CRONTAB_COMMAND_SUFFIX = env.str('CRONTAB_COMMAND_SUFFIX', '2>&1')
+CRONTAB_COMMAND_PREFIX = env.str('CRONTAB_COMMAND_PREFIX', '')
+CRONTAB_DJANGO_SETTINGS_MODULE = 'waves_atgc.cli'
+CRONTAB_LOCK_JOBS = True
+CRONJOBS = [
+    ('*/5 * * * *', 'django.core.management.call_command', ['wqueue', 'start']),
+    ('*/5 * * * *', 'django.core.management.call_command', ['wpurge', 'start']),
+]

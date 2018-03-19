@@ -328,12 +328,12 @@ class AllParamModelAdmin(PolymorphicParentModelAdmin):
     base_model = AParam
     exclude = ('order',)
     child_models = (
-        (TextParam, TextParamAdmin),
-        (FileInput, FileInputAdmin),
-        (BooleanParam, BooleanParamAdmin),
-        (DecimalParam, DecimalParamAdmin),
-        (IntegerParam, IntegerParamAdmin),
-        (ListParam, ListParamAdmin),
+        TextParam, # TextParamAdmin),
+        FileInput, # FileInputAdmin),
+        BooleanParam, # BooleanParamAdmin),
+        DecimalParam, # DecimalParamAdmin),
+        IntegerParam, # IntegerParamAdmin),
+        ListParam, # ListParamAdmin),
     )
     list_filter = (PolymorphicChildModelFilter, 'submission', 'submission__service')
     list_display = ('get_class_label', 'label', 'name', 'submission')
