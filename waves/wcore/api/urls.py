@@ -7,7 +7,6 @@ urlpatterns = [
     url(r'^', include('waves.wcore.api.v2.urls', namespace='v2')),
     url(r'^v1/', include('waves.wcore.api.v1.urls', namespace='v1')),
 ]
-if 'rest_framework.authtoken' in settings.INSTALLED_APPS:
-    from rest_framework.authtoken import views
-
+if 'waves.authentication' in settings.INSTALLED_APPS:
+    from waves.authentication import views
     urlpatterns.append(url(r'^api-token-auth', views.obtain_auth_token))

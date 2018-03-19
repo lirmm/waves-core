@@ -58,9 +58,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, **kwargs):
         """ List all available services """
-        serializer = ServiceSerializer(self.get_queryset(), many=True, context={'request': request},
-                                       fields=('url', 'name', 'short_description',
-                                               'version', 'created', 'updated', 'form', 'submissions', 'jobs'))
+        serializer = ServiceSerializer(self.get_queryset(), many=True, context={'request': request})
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):

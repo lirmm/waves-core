@@ -131,11 +131,17 @@ You can install WAVES-core either as a stand alone application, or inside any ex
     - see `DRF authentication <http://www.django-rest-framework.org/api-guide/authentication>`_ for authenticating methods API POST calls
 
     .. note::
-        WAVES-core allows simple "token" authentication with standard token Authentication processes, to use it simply add
-        'rest_framework.authtoken' in INSTALLED_APPS.
+        WAVES-core allows simple "api_key" authentication with standard token Authentication processes, to use it simply add
+        'waves.authentication' in INSTALLED_APPS.
+
+        This then allow to call WAVES API services with a api_key:
+            - with Authorization token header
+            - with GET / POST parameter with api_key value.
 
         Each authenticated api service need a valid Authorization header as explained here:
         http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+
+        To use this service with apache in mod_wsgi: please mind to enable "WSGIPassAuthorization On" parameter in conf
 
 3. Go for production:
 ---------------------
