@@ -36,7 +36,7 @@ setup(
         'psutil==5.4.0',
         'pycrypto==2.6.1',
         'python-magic==0.4.13',
-        'saga-python==0.47.2',
+        'saga-python==0.47',
         'setproctitle==1.1.10',
         'six==1.11.0',
         'swapper==1.1.0',
