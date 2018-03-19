@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-Version 1.1.9.x - 2018-03-10
+Version 1.6.x - 2018-03-10
 ----------------------------
 
 - [USERS] - Added API USER class, unifying authentication, url redirection dedicated to REST Api users 
@@ -15,7 +15,7 @@ Version 1.1.9.x - 2018-03-10
 - [API ServiceList] Changed: changed format for service submission list
  
 
-Version 1.1.8.x - 2018-02-10
+Version 1.5.x - 2018-02-10
 ----------------------------
 
 - [JS] Corrected: event association on add new input in submission form
@@ -25,13 +25,13 @@ Version 1.1.8.x - 2018-02-10
 - [Settings] Added: check for WAVES directories access rights
 - [File Permission] Changed to 775/664 job created dirs/files.
 
-Version 1.1.7 - 2018-02-07
+Version 1.3 - 2018-02-07
 --------------------------
 
 - [Updated] - shared logging behaviour in Jobs / Importer
 - [Corrected] - service import method
 
-Version 1.1.6 - 2018-01-31
+Version 1.2 - 2018-01-31
 --------------------------
 
 - [waves.front] Removed: waves.front, merged back inside wcore
