@@ -191,7 +191,6 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                 service.name, service.get_status_display(), service.submissions_api.count()))
             expected_jobs += service.submissions_api.count()
         tool_list = self.client.get(reverse('wapi:v2:waves-services-list'), format="json")
-        print tool_list
         self.assertEqual(tool_list.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(tool_list)
         logger.debug(tool_list.data)
@@ -205,7 +204,9 @@ class WavesAPIV2TestCase(BaseAPITestCase):
             self.assertTrue('submissions' in tool_data)
             submissions = tool_data.get('submissions')
             logger.debug(submissions)
-            for submission_url in submissions:
+            for submission in submissions:
+                print "submission", submission['submission_app_name']
+                submission_url = submission['url']
                 submission_srv = self.client.get(submission_url)
                 self.assertEqual(submission_srv.status_code, status.HTTP_200_OK)
                 submission_data = submission_srv.data
@@ -267,7 +268,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
     def test_missing_params(self):
         tool_list = self.client.get(reverse('wapi:v2:waves-services-list'), format="json")
         service_tool = tool_list.data[0]
-        default_submission = self.client.get(service_tool['submissions'][0])
+        default_submission = self.client.get(service_tool['submissions'][0]['url'])
         job_params = self.create_job_inputs_for_submission(default_submission.data)
         removed_params = job_params.pop('input_file')
         self.login("api_user")

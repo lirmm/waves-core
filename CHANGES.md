@@ -12,6 +12,7 @@ Version 1.1.9.x - 2018-03-10
 - [Admin JobList] Corrected: remove wrong filter on jobAdmin queryset (1.1.9.3)
 - [API ServiceList] Added: added service_app_name to returned json
 - [API Submission] Changed: api_name => submission_app_name in returned json
+- [API ServiceList] Changed: changed format for service submission list
  
 
 Version 1.1.8.x - 2018-02-10

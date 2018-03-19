@@ -114,8 +114,9 @@ class ServiceSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedMod
 
     def get_submissions(self, obj):
         return [
-            {sub.api_name: reverse(viewname='wapi:v2:waves-services-submission-detail', request=self.context['request'],
-                                   kwargs={'service_app_name': obj.api_name, 'submission_app_name': sub.api_name})} for
+            {'submission_app_name': sub.api_name,
+             'url': reverse(viewname='wapi:v2:waves-services-submission-detail', request=self.context['request'],
+                            kwargs={'service_app_name': obj.api_name, 'submission_app_name': sub.api_name})} for
             sub in obj.submissions_api.all()]
 
     def get_form(self, obj):
