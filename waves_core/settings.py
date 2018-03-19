@@ -34,7 +34,7 @@ DEBUG = env.bool('DEBUG', True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 # Application definition
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'polymorphic',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,7 +48,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'corsheaders',
     'adminsortable2'
-)
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
