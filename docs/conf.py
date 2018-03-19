@@ -69,7 +69,7 @@ copyright = waves.__copyright__
 # built documents.
 #
 # The short X.Y version.
-version = waves.__version___
+version = waves.__version__
 # The full version, including alpha/beta/rc tags.
 release = waves.__version_detail__
 
