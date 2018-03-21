@@ -128,43 +128,6 @@ STATICFILES_FINDERS = (
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '[%(levelname)s][%(asctime)s][%(name)s.%(funcName)s:%(lineno)s] - %(message)s',
-            'datefmt': "%H:%M:%S"
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
-        'log_file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'waves.log'),
-            'formatter': 'verbose',
-            'backupCount': 10,
-            'maxBytes': 1024 * 1024 * 5
-        },
-    },
-
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'propagate': True,
-            'level': 'WARNING',
-        },
-        'waves': {
-            'handlers': ['log_file', 'console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-
-    }
-}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -180,8 +143,6 @@ MESSAGE_TAGS = {
     messages.ERROR: 'error'
 }
 
-WAVES_CORE = {
-}
 # SECURITY
 CORS_ORIGIN_WHITELIST = env.list('CORS_ORIGIN_WHITELIST', default=['localhost'])
 CORS_ORIGIN_REGEX_WHITELIST = env.list('CORS_ORIGIN_REGEX_WHITELIST', default=['localhost:*'])
