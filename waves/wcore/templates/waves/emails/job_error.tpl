@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------------
-[WAVES-NOTIFICATION] - Your job for '{{ job.service.name }}' - job unfortunately failed :-(
+[WAVES-NOTIFICATION] - Your job for '{{ job.service }}' - job unfortunately failed :-(
 -------------------------------------------------------------------------------------------
 
 Your job {{ job.title }} unfortunately failed

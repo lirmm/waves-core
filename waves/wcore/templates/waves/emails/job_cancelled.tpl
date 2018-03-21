@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------------
-[WAVES-NOTIFICATION] - Your job for '{{ job.service.name }}' - job automatically cancelled :-(
+[WAVES-NOTIFICATION] - Your job for '{{ job.service }}' - job automatically cancelled :-(
 -----------------------------------------------------------------------------------------------
 
 Your job {{ job.title }} was automatically cancelled

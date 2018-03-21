@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------------------
-[WAVES-NOTIFICATION] - Your job for '{{ job.service.name }}' - job terminated with warnings :-(
+[WAVES-NOTIFICATION] - Your job for '{{ job.service }}' - job terminated with warnings :-(
 -----------------------------------------------------------------------------------------------
 
 Your job {{ job.title }} terminated, but with warnings.

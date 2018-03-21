@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------------
-[WAVES-NOTIFICATION] - Job submission for '{{ job.service.name }}' - your job is {{ job.get_status_display|lower }}
+[WAVES-NOTIFICATION] - Job submission for '{{ job.service }}' - your job is {{ job.get_status_display|lower }}
 -------------------------------------------------------------------------------------------
 
 
