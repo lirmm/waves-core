@@ -24,7 +24,8 @@ class JobStatusSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return OrderedDict({
-            'code': instance.status,
+            'status': instance.status,
+            'status_code': instance.status,
             'label': instance.get_status_display()
         })
 

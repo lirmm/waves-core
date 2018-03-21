@@ -205,7 +205,6 @@ class WavesAPIV2TestCase(BaseAPITestCase):
             submissions = tool_data.get('submissions')
             logger.debug(submissions)
             for submission in submissions:
-                print "submission", submission['submission_app_name']
                 submission_url = submission['url']
                 submission_srv = self.client.get(submission_url)
                 self.assertEqual(submission_srv.status_code, status.HTTP_200_OK)
@@ -223,6 +222,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                                             data=job_inputs_params,
                                             format='multipart')
                 logger.debug(response)
+                print response
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 job = Job.objects.get(slug=response.data['slug'])
                 self.assertEqual(job.email_to, 'wavesapi@waves.wcore.fr')

@@ -158,13 +158,13 @@ class JobManager(models.Manager):
             logger.warning("Missing %s", [m for m in missing])
             raise ValidationError(missing)
         if update is None:
-            job = Job(email_to=follow_email,
-                      client=client,
-                      title=submitted_inputs.get('title', None),
-                      submission=submission,
-                      service=submission.service.name,
-                      _adaptor=submission.adaptor.serialize(),
-                      notify=submission.service.email_on)
+            job = Job.objects.create(email_to=follow_email,
+                                     client=client,
+                                     title=submitted_inputs.get('title', None),
+                                     submission=submission,
+                                     service=submission.service.name,
+                                     _adaptor=submission.adaptor.serialize(),
+                                     notify=submission.service.email_on)
         else:
             job = update
             job.submission = submission
