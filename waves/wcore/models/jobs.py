@@ -226,8 +226,6 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
     # non persistent field, used for history savings see signals
     #: Current message associated with job object, not directly stored in job table, but in history
     message = None
-    #: Job status time (for history)
-    status_time = None
     #: Job run details retrieved or not
     _run_details = None
 

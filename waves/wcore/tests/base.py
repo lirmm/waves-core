@@ -236,7 +236,6 @@ class TestJobWorkflowMixin(TestCase):
             time.sleep(3)
             history = job.job_history.first()
             logger.debug("History timestamp %s", localtime(history.timestamp))
-            logger.debug("Job status timestamp %s", job.status_time)
             self.assertTrue(job.results_available, "Job results are not available")
             for output_job in job.outputs.all():
                 # TODO reactivate job output verification as soon as possible

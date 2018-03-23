@@ -64,7 +64,7 @@ LOGGING = {
 # CRONTAB JOBS
 CRONTAB_COMMAND_SUFFIX = env.str('CRONTAB_COMMAND_SUFFIX', '2>&1')
 CRONTAB_COMMAND_PREFIX = env.str('CRONTAB_COMMAND_PREFIX', '')
-CRONTAB_DJANGO_SETTINGS_MODULE = 'waves_atgc.cli'
+CRONTAB_DJANGO_SETTINGS_MODULE = 'waves_core.cli'
 CRONTAB_LOCK_JOBS = True
 CRONJOBS = [
     ('*/5 * * * *', 'django.core.management.call_command', ['wqueue', 'start']),

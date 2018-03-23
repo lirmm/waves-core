@@ -56,7 +56,6 @@ class JobsTestCase(BaseTestCase):
         user.waves_user.save()
         job = self.create_random_job(user=user)
 
-        job.status_time = timezone.datetime.now()
         logger.info("Job link: %s", job.link)
         logger.debug("Job notify: %s", job.notify)
         job.check_send_mail()
