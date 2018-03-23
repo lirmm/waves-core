@@ -2,7 +2,7 @@
 [WAVES-NOTIFICATION] - Job submission for '{{ job.service }}' - your job is {{ job.get_status_display|lower }}
 -------------------------------------------------------------------------------------------
 
-Your job {{ job.title }} is now prepared for running
+Your job "{{ job.title }}" is now prepared for running
 
     List of inputs data
     {% for out in job.input_files %}
