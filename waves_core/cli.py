@@ -4,10 +4,11 @@ from waves_core.settings import *
 
 CLI_LOG_LEVEL = env.str("CLI_LOG_LEVEL", 'WARNING')
 
+'''
 INSTALLED_APPS += [
     'django_crontab'
 ]
-
+'''
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

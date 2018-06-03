@@ -113,7 +113,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-MEDIA_ROOT = env.str('MEDIA_ROOT', os.path.join(BASE_DIR, 'media'))
+MEDIA_ROOT = env.str('MEDIA_ROOT', os.path.join(BASE_DIR, 'data/media'))
 MEDIA_URL = "/media/"
 STATIC_ROOT = env.str('STATIC_ROOT', os.path.join(BASE_DIR, 'staticfiles'))
 
@@ -186,7 +186,7 @@ vars().update(EMAIL_CONFIG)
 
 MANAGERS = env.tuple('MANAGERS', default=[('Vincent Lefort', 'vincent.lefort@lirmm.fr')])
 
-LOG_DIR = env.str("LOG_DIR", os.path.join(BASE_DIR, 'logs'))
+LOG_DIR = env.str("LOG_DIR", os.path.join(BASE_DIR, 'data/logs'))
 APP_LOG_LEVEL = env.str("APP_LOG_LEVEL", 'WARNING')
 
 LOGGING = {

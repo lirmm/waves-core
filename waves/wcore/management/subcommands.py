@@ -192,5 +192,5 @@ class ShowUrlsCommand(BaseCommand):
         for url in all_urls:
             if 'waves.wcore.api' in url.lookup_str:
                 # print('| {0.regex.pattern:20} | {0.name:20} | {0.lookup_str:20} | {0.default_args} |'.format(url))
-                print url
+                print(url)
         print('-' * 100)

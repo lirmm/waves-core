@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.conf.urls import url, include
 from rest_framework import routers
 
-from views import jobs, services
+from waves.wcore.api.v1.views import jobs, services
 from waves.wcore.views.jobs import JobOutputView, JobInputView
 
 # API router setup

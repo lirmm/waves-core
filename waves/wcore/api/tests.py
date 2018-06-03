@@ -222,7 +222,6 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                                             data=job_inputs_params,
                                             format='multipart')
                 logger.debug(response)
-                print response
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 job = Job.objects.get(slug=response.data['slug'])
                 self.assertEqual(job.email_to, 'wavesapi@waves.wcore.fr')

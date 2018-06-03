@@ -39,7 +39,6 @@ class TestApiAuth(APITestCase):
     def test_api_key_auth(self):
         user = User.objects.create(username='Test', is_active=True)
         response = self.client.get('/test-key-auth')
-        print "user token  ", user.waves_user.key
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         response = self.client.get('/test-key-auth', data={'api_key': user.waves_user.key})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
