@@ -62,9 +62,8 @@ celerybeat-schedule
 .venv
 venv/
 
-/data/logs/*
+# default dirs
 !/data/logs/.gitkeep
-/data/*
 !/data/.gitkeep
 /data/bin/*
 !/data/bin/.gitkeep
@@ -74,10 +73,15 @@ venv/
 !/data/media/.gitkeep
 /data/sample/*
 !/data/sample/.gitkeep
-*.sqlite3
-/data/tests/jobs/
+# tests dirs
 !/data/tests/jobs/.gitkeep
+/tests/settings.ini
+/tests/jobs/*
+!/tests/jobs/.gitkeep
+!/tests/settings.ini.sample
+*.sqlite3
 /staticfiles/
 /tests/settings.ini
 /data/tests/*.json
 local.env
+
