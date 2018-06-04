@@ -132,7 +132,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         return self.inlines
 
     def display_run_params(self, obj):
-        return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
+        return obj.display_params()
 
     display_run_params.short_description = "Runner initial params"
 

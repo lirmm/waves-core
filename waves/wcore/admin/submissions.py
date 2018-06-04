@@ -186,7 +186,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
 
     # Override admin class and set this list to add your inlines to service admin
     def get_run_params(self, obj):
-        return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
+        return obj.display_params()
 
     def api_url(self, obj):
         from rest_framework.reverse import reverse

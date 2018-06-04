@@ -4,6 +4,9 @@ CHANGELOG
 Version 1.6.x - 2018-03-10
 ----------------------------
 
+- [Layout] - Corrected missing directories
+- [ignore] - Added ignored files
+- [Bug] - Corrected display in BO for passwords
 - [USERS] - Added API USER class, unifying authentication, url redirection dedicated to REST Api users 
     - Added multi-site association allow returning site url prefix for jobs urls
     - Test if job.client user has a 'site' property, in such case, retrieve domain name to generate Job / JobOutputs link

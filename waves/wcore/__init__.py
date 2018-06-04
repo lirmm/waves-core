@@ -1,7 +1,7 @@
 """
 WAVES django components library
 """
-__version_detail__ = '1.6.2'
+__version_detail__ = '1.6.3'
 __version__ = '1.6'
 __author__ = 'Marc Chakiachvili, MAB Team'
 __licence__ = 'GPLv3'
