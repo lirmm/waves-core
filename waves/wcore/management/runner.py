@@ -93,7 +93,7 @@ class JobQueueRunDaemon(BaseRunDaemon):
     Dedicated command to summarize current WAVES specific settings
     """
     help = 'Managing WAVES job queue states'
-    SLEEP_TIME = 2
+    SLEEP_TIME = waves_settings.PURGE_WAIT
     pidfile = os.path.join(waves_settings.DATA_ROOT, 'waves_queue.pid')
     pidfile_timeout = 5
 
