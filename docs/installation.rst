@@ -49,19 +49,19 @@ You can install WAVES-core either as a stand alone application, or inside any ex
     .. code-block:: bash
 
         (.venv) user@host:~your_app$ ./manage.py check
-        (.venv) user@host:~your_app$ ./manage.py makemigrations wcore
+        (.venv) user@host:~your_app$ ./manage.py makemigrations wcore (may only display "No changes detected in app 'wcore'"
         (.venv) user@host:~your_app$ ./manage.py migrate
-        (.venv) user@host:~your_app$ ./manage.py createsuperuser
+        (.venv) user@host:~your_app$ ./manage.py createsuperuser (then follow instructions)
 
 
     1.4. If everything is ok:
 
-    You can start your test server like this:
+    You can start your test server and job queue like this:
 
     .. code-block:: bash
 
-        (.venv) user@host:~your_app$ ./manage.py waves queue start
         (.venv) user@host:~your_app$ ./manage.py runserver
+        (.venv) user@host:~your_app$ ./manage.py wqueue start
 
 2. Install WAVES-core inside existing Django project
 ----------------------------------------------------
@@ -102,6 +102,7 @@ You can install WAVES-core either as a stand alone application, or inside any ex
             'polymorphic', # mandatory
             ...
             'waves.wcore', # mandatory
+            'waves.authentication', # mandatory if API token access needed
             'crispy_forms', # mandatory
             'rest_framework', # mandatory
             ...
