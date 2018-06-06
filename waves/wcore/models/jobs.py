@@ -668,19 +668,13 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         self.retrieve_run_details()
         self.logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
                           os.stat(join(self.working_dir, self.stderr)).st_size)
-        if self.exit_code != 0:
-            if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
-                logger.error('Error found %s %s ', self.exit_code, smart_text(self.stderr_txt))
-            self.message = "Error detected in job.stderr"
+        if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
+            logger.error('Error found %s %s ', self.exit_code, smart_text(self.stderr_txt))
+            self.job_history.create(message='job.stderr is not empty', status=JobStatus.JOB_WARNING)
             self.status = JobStatus.JOB_WARNING
         else:
-            if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
-                self.status = JobStatus.JOB_WARNING
-                logger.warning('Exit Code %s but found stderr %s ', self.exit_code,
-                               smart_text(self.stderr_txt))
-            else:
-                self.message = "Data retrieved"
-                self.status = JobStatus.JOB_TERMINATED
+            self.message = "Data retrieved"
+            self.status = JobStatus.JOB_TERMINATED
 
     def retrieve_run_details(self):
         """ Ask job adapter to get JobRunDetails information (started, finished, exit_code ...)"""
