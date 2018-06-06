@@ -5,10 +5,11 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
+import django.db.models.manager
 import uuid
+import swapper
 import waves.wcore.compat
 import waves.wcore.models.base
-import waves.wcore.utils.logged
 import waves.wcore.utils.storage
 import waves.wcore.utils.validators
 
@@ -19,7 +20,9 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        swapper.dependency('auth', 'User'),
+        swapper.dependency('wcore', 'Service'),
+        swapper.dependency('wcore', 'Submission')
     ]
 
     operations = [
@@ -44,7 +47,8 @@ class Migration(migrations.Migration):
                 ('edam_operations', models.TextField(blank=True, help_text='Comma separated list of Edam ontology operations', null=True, verbose_name='Edam operations')),
             ],
             options={
-                'swappable': 'WCORE_SERVICE_MODEL',
+                # 'swappable': 'WCORE_SERVICE_MODEL',
+                'swappable': swapper.swappable_setting('wcore', 'Service'),
             },
             bases=(waves.wcore.models.base.ExportAbleMixin, models.Model),
         ),
@@ -62,7 +66,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ('order',),
-                'swappable': 'WCORE_SUBMISSION_MODEL',
+                # 'swappable': 'WCORE_SUBMISSION_MODEL',
+                'swappable': swapper.swappable_setting('wcore', 'Submission'),
                 'verbose_name': 'Submission method',
                 'verbose_name_plural': 'Submission methods',
             },
@@ -142,8 +147,8 @@ class Migration(migrations.Migration):
                 ('_adaptor', models.TextField(editable=False, null=True, verbose_name='Adapter classed used for this Job')),
                 ('service', models.CharField(default='', editable=False, max_length=255, null=True, verbose_name='Service name')),
                 ('notify', models.BooleanField(default=False, editable=False, verbose_name='Notify this result')),
-                ('client', models.ForeignKey(blank=True, help_text='Associated registered user', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='clients_job', to=settings.AUTH_USER_MODEL)),
-                ('submission', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='service_jobs', to=settings.WCORE_SUBMISSION_MODEL)),
+                ('client', models.ForeignKey(blank=True, help_text='Associated registered user', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='clients_job', to=swapper.get_model_name('auth', 'User'))),
+                ('submission', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='service_jobs', to=swapper.get_model_name('wcore', 'Submission'))),
             ],
             options={
                 'ordering': ['-updated', '-created'],
@@ -209,7 +214,7 @@ class Migration(migrations.Migration):
                 ('max_repeat', models.IntegerField(blank=True, null=True, verbose_name='Max repeat')),
                 ('min_repeat', models.IntegerField(default=0, verbose_name='Min repeat')),
                 ('default', models.IntegerField(default=0, verbose_name='Default repeat')),
-                ('submission', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='submission_groups', to=settings.WCORE_SUBMISSION_MODEL)),
+                ('submission', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='submission_groups', to=swapper.get_model_name('wcore', 'Submission'))),
             ],
             options={
                 'ordering': ['order'],
@@ -266,7 +271,7 @@ class Migration(migrations.Migration):
                 ('exit_code', models.IntegerField(default=0, verbose_name='Exit code value')),
                 ('message', models.CharField(max_length=255, verbose_name='Exit code message')),
                 ('is_error', models.BooleanField(default=False, verbose_name='Is an Error')),
-                ('submission', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='exit_codes', to=settings.WCORE_SUBMISSION_MODEL)),
+                ('submission', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='exit_codes', to=swapper.get_model_name('wcore', 'Submission'))),
             ],
             options={
                 'verbose_name': 'Exit Code',
@@ -388,7 +393,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submissionoutput',
             name='submission',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='outputs', to=settings.WCORE_SUBMISSION_MODEL),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='outputs', to=swapper.get_model_name('wcore', 'Submission')),
         ),
         migrations.AddField(
             model_name='sampledepparam',
@@ -428,7 +433,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='aparam',
             name='submission',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='inputs', to=settings.WCORE_SUBMISSION_MODEL),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='inputs', to=swapper.get_model_name('wcore', 'Submission')),
         ),
         migrations.AddField(
             model_name='submission',
@@ -443,7 +448,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submission',
             name='service',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='submissions', to=settings.WCORE_SERVICE_MODEL),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='submissions', to=swapper.get_model_name('wcore', 'Service')),
         ),
         migrations.AddField(
             model_name='service',
@@ -453,12 +458,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='service',
             name='created_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=swapper.get_model_name('auth', 'User')),
         ),
         migrations.AddField(
             model_name='service',
             name='restricted_client',
-            field=models.ManyToManyField(blank=True, help_text="Public access is granted to everyone, If status is 'Restricted' you may restrict access to specific users here.", related_name='wcore_service_restricted_services', to=settings.AUTH_USER_MODEL, verbose_name='Restricted clients'),
+            field=models.ManyToManyField(blank=True, help_text="Public access is granted to everyone, If status is 'Restricted' you may restrict access to specific users here.", related_name='wcore_service_restricted_services', to=swapper.get_model_name('auth', 'User'), verbose_name='Restricted clients'),
         ),
         migrations.AddField(
             model_name='service',

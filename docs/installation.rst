@@ -60,13 +60,22 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
     .. code-block:: bash
 
-        (.venv) user@host:~your_app$ ./manage.py runserver
         (.venv) user@host:~your_app$ ./manage.py wqueue start
+        (.venv) user@host:~your_app$ ./manage.py runserver
+
+    Go to http://127.0.0.1:8000:admin to setup your services
+    WAVES comes with default front pages visible at http://127.0.0.1:8000
+
 
 2. Install WAVES-core inside existing Django project
 ----------------------------------------------------
 
     To create a Django project, have a look at `Django tutorial <https://docs.djangoproject.com/en/2.11/intro/tutorial01/>`_
+
+    .. seealso::
+
+        WAVES is a reusable app see: https://docs.djangoproject.com/en/1.11/intro/reusable-apps/#your-project-and-your-reusable-app
+
 
     2.0. Setup a virtualenv for your project:
 
