@@ -672,7 +672,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
             if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
                 logger.error('Error found %s %s ', self.exit_code, smart_text(self.stderr_txt))
             self.message = "Error detected in job.stderr"
-            self.status = JobStatus.JOB_ERROR
+            self.status = JobStatus.JOB_WARNING
         else:
             if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
                 self.status = JobStatus.JOB_WARNING
