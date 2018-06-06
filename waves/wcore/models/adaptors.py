@@ -126,7 +126,8 @@ class HasAdaptorClazzMixin(WavesBaseModel):
 
     def display_params(self):
         """ return string representation for related params """
-        return ['%s:%s' % (name, value if name != 'password' else "*" * len(value)) for name, value in self.run_params.items()]
+        return ['%s:%s' % (name, value if name != 'password' else "*****") for name, value in
+                self.run_params.items()]
 
     @property
     def adaptor_defaults(self):

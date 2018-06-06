@@ -107,6 +107,7 @@ class SshShellAdaptor(LocalShellAdaptor):
           - Create remote working dir
           - Upload job input files
         """
+        job.logger.debug('Prepaed job in ShellAdapter')
         try:
             work_dir = self.job_work_dir(job, saga.filesystem.CREATE_PARENTS)
             for input_file in job.input_files:
