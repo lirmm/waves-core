@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from uuid import UUID
+import logging
 
 from django.contrib import messages
 from django.db import transaction
@@ -17,7 +18,7 @@ from waves.wcore.settings import waves_settings
 
 Submission = get_submission_model()
 Service = get_service_model()
-
+logger = logging.getLogger(__name__)
 
 class SubmissionFormView(generic.FormView, generic.DetailView):
     model = Service
@@ -124,10 +125,12 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
                 "Job successfully submitted %s" % self.job.slug
             )
         except JobException as e:
+            logger.exception("JobException %s: %s", self.job.id, e.message)
             messages.error(
                 self.request,
                 "An unexpected error occurred, sorry for the inconvenience, our team has been noticed"
             )
+
             return self.render_to_response(self.get_context_data(form=form))
         return super(SubmissionFormView, self).form_valid(form)
 
@@ -171,9 +174,11 @@ class ServiceDetailView(generic.DetailView):
     def get_template_names(self):
         try:
             get_template(
-                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_details.html')
+                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version +
+                '_details.html')
             return [
-                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version + '_details.html']
+                'waves/override/service_' + self.get_object().api_name + '_' + self.get_object().version +
+                '_details.html']
         except TemplateDoesNotExist:
             try:
                 get_template('waves/override/service_' + self.get_object().api_name + '_details.html')

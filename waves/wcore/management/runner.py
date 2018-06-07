@@ -57,7 +57,7 @@ class BaseRunDaemon(run.RunDaemon):
             LOG.info("Starting daemon")
             while True:
                 self.loop_callback()
-        except (SystemExit, KeyboardInterrupt) as exc:
+        except (SystemExit, KeyboardInterrupt):
             # Normal exit getting a signal from the parent process
             pass
         except Exception as exc:

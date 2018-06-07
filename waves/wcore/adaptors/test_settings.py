@@ -1,6 +1,11 @@
 from __future__ import unicode_literals
 
-import ConfigParser
+# python 3 compatibility
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
+
 from django.conf import settings
 from os.path import join, isfile
 

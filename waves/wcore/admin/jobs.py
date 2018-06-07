@@ -1,18 +1,16 @@
 from __future__ import unicode_literals
 
-import json
+from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin import TabularInline
-from django.db.models import Q
-from django.conf.urls import url
 from django.utils.safestring import mark_safe
 
+from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.admin.base import WavesModelAdmin
 from waves.wcore.admin.forms.jobs import JobInputForm, JobOutputForm, JobForm
 from waves.wcore.admin.views import JobCancelView, JobRerunView
 from waves.wcore.models.history import JobHistory
 from waves.wcore.models.jobs import JobInput, Job, JobOutput
-from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.utils import url_to_edit_object
 
 __all__ = ['JobAdmin']

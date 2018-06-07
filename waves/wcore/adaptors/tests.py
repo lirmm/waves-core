@@ -62,6 +62,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
                 unserialized = AdaptorLoader.unserialize(serialized)
                 self.assertEqual(adaptor.__class__, unserialized.__class__)
             except AdaptorException as e:
+                logger.exception("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
                 pass
             else:
                 logger.info("Adaptor not available for testing protocol %s " % adaptor.name)
@@ -74,6 +75,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
                     logger.debug("Saga host %s, protocol %s", adaptor.saga_host, adaptor.host)
                     self.assertTrue(adaptor.saga_host.startswith(adaptor.protocol))
             except AdaptorException as e:
+                logger.exception("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
                 pass
             else:
                 logger.info("Adaptor not available for testing protocol %s " % adaptor.name)
@@ -103,7 +105,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
                     logger.debug('Connected to %s ', self.adaptor.connexion_string())
                     self.adaptor.disconnect()
             except AdaptorException as e:
-                pass
+                logger.warning("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
 
     def test_local_cp_job(self):
         adaptor = self.adaptors[0]

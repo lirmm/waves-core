@@ -8,6 +8,7 @@ import os
 import uuid
 from shutil import rmtree
 
+# noinspection PyProtectedMember,PyProtectedMember
 from django.conf.urls import RegexURLPattern, RegexURLResolver
 from django.core import urlresolvers
 from django.core.exceptions import ObjectDoesNotExist
@@ -92,7 +93,6 @@ class ImportCommand(BaseCommand):
 
     def handle(self, *args, **options):
         """ Handle import for services """
-        raise CommandError("This command has been disabled")
         exported_files = []
         type_mode = options.get('type_model', 'service')
         if type_mode != 'service':

@@ -4,11 +4,10 @@ from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.test import override_settings
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.test import APITestCase
 from rest_framework.views import Response
-from rest_framework.permissions import IsAuthenticated
 
-from waves.authentication.auth import ApiKeyAuthentication
 from waves.wcore.api.views.base import WavesAuthenticatedView
 
 User = get_user_model()

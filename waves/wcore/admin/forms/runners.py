@@ -33,6 +33,7 @@ class RunnerForm(ModelForm):
         model = Runner
         exclude = ['id']
 
+    # noinspection PyClassHasNoInit
     class Media:
         """ Medias """
         js = ('waves/admin/js/runner.js',

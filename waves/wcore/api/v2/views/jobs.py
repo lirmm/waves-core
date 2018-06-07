@@ -6,8 +6,6 @@ from os.path import getsize
 
 import magic
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden
-from django.shortcuts import get_object_or_404
-from django.views.generic import View
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets

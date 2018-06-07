@@ -1,11 +1,12 @@
 from __future__ import unicode_literals
 
 import os
+import logging
 
 from django.core.exceptions import ValidationError
 
 from waves.wcore.models.const import ParamType
-
+logger = logging.getLogger(__name__)
 
 # TODO activate dedicated validators for job Input [https://docs.djangoproject.com/en/1.9/ref/validators/]
 class ServiceInputValidator(object):
@@ -32,6 +33,7 @@ class ServiceInputValidator(object):
         except AssertionError as e:
             form.add_error(the_input.name, 'Wrong input "%s": %s' % (the_input, e.message))
         except AttributeError as e:
+            logger.exception("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
             form.add_error(the_input.name,
                            'Unknown param_type for input: %s - param_type: %s' % (the_input, the_input.type))
 
@@ -98,7 +100,7 @@ class ServiceInputValidator(object):
 
     def _validate_input_text(self, the_input, value):
         assert the_input.type == ParamType.TYPE_TEXT
-        assert isinstance(value, basestring) or value is None, 'value %s is not a valid string' % value
+        assert isinstance(value, str) or value is None, 'value %s is not a valid string' % value
         self.specific_message = 'value %s is not a valid string' % value
         return True
 

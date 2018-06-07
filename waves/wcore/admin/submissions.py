@@ -143,8 +143,10 @@ class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
             while init:
                 level += 1
                 init = init.parent
+            # noinspection PyProtectedMember
             return mark_safe("<span class='icon-arrow-right'></span>" * level +
                              "%s (%s)" % (obj._meta.verbose_name, obj.when_value))
+        # noinspection PyProtectedMember
         return obj._meta.verbose_name
 
     def get_queryset(self, request):

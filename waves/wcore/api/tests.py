@@ -269,7 +269,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         service_tool = tool_list.data[0]
         default_submission = self.client.get(service_tool['submissions'][0]['url'])
         job_params = self.create_job_inputs_for_submission(default_submission.data)
-        removed_params = job_params.pop('input_file')
+        job_params.pop('input_file')
         self.login("api_user")
         response = self.client.post(default_submission.data['jobs'],
                                     data=job_params,

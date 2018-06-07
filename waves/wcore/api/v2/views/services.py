@@ -5,17 +5,17 @@ import logging
 
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, renderer_classes
 from rest_framework.exceptions import ValidationError as DRFValidationError
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
-from rest_framework.reverse import reverse
 from rest_framework.renderers import StaticHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+
 from waves.wcore.api.permissions import ServiceAccessPermission
 from waves.wcore.api.v2.serializers.jobs import JobSerializer
 from waves.wcore.api.v2.serializers.services import ServiceSerializer, ServiceSubmissionSerializer
@@ -68,7 +68,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
     @detail_route(methods=['get'])
-    def jobs(self, request, *args, **kwargs):
+    def jobs(self, request):
         """ Retrieves services Jobs """
         service_tool = get_object_or_404(self.get_queryset(), api_name=self.kwargs.get('service_app_name'))
         queryset_jobs = Job.objects.get_service_job(user=request.user, service=service_tool)

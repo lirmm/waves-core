@@ -25,7 +25,7 @@ class ServicesTestCase(BaseTestCase):
             self.login(user) if user else None
             the_response = self.client.get(url)
             self.assertEqual(the_response.status_code, expected_status,
-                             "Status code {} [expected: {}]".format(the_response.status_code, expected_status))
+                             "{} Status code {} [expected: {}]".format(the_url, the_response.status_code, expected_status))
             self.client.logout() if user else None
 
         services = self.bootstrap_services()

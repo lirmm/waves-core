@@ -45,7 +45,8 @@ class JobMailer(object):
         if self.mail_activated and job.notify:
             context = self.get_context_data()
             context['job'] = job
-            mail_subject = "[WAVES - %s] -- %s -- " % (job.title, job.get_status_display()) if subject is None else subject
+            mail_subject = "[WAVES - %s] -- %s -- " % (
+                job.title, job.get_status_display()) if subject is None else subject
             try:
                 message = get_template(template_name=template).render(context)
                 msg = EmailMessage(subject=mail_subject, body=message, to=[job.email_to],
@@ -53,7 +54,8 @@ class JobMailer(object):
                 msg.send(fail_silently=True)
                 job.job_history.create(message='Notification email sent', status=job.status, is_admin=True)
             except Exception as e:
-                job.job_history.create(message='Notification email not sent %s' % e.message, status=job.status, is_admin=True)
+                job.job_history.create(message='Notification email not sent %s' % e.message, status=job.status,
+                                       is_admin=True)
                 logger.exception("Failed to send mail to %s from %s :%s", job.email_to, config.SERVICES_EMAIL, e)
         else:
             logger.info('Mail not sent to %s, mails are not activated', job.email_to)

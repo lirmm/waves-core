@@ -849,14 +849,11 @@ class JobInput(Ordered, Slugged, ApiModel, UrlMixin):
         if self.job.client and 'waves.authentication' in settings.INSTALLED_APPS:
             # changer les variables d'url des templates
             return "{}{}".format(self.job.client.waves_user.main_domain, self.get_absolute_url())
-        return super(JobOutput, self).link()
+        return super(JobInput, self).link()
 
     @property
     def required(self):
         return True
-
-    def natural_key(self):
-        return self.job.natural_key(), self.name
 
     def save(self, *args, **kwargs):
         super(JobInput, self).save(*args, **kwargs)
@@ -1057,9 +1054,6 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
         elif self.value == self.job.stderr:
             return "standard_error"
         return self.api_name
-
-    def natural_key(self):
-        return self.job.natural_key(), self._name
 
     def __str__(self):
         return '%s - %s' % (self.name, self.value)

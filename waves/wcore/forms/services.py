@@ -5,7 +5,6 @@ import logging
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.urls import reverse
 
 from waves.wcore.forms.crispy import FormHelper
 from waves.wcore.models import get_submission_model

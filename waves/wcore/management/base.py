@@ -85,7 +85,7 @@ class SubcommandDispatcher(BaseCommand):
         options = parser.parse_args(argv[2:3])
         cmd_options = vars(options)
         # Move positional args out of options to mimic legacy optparse
-        args = cmd_options.pop('args', ())
+        cmd_options.pop('args', ())
         """
         if self.use_argparse:
             # only parse current

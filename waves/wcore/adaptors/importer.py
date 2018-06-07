@@ -142,18 +142,19 @@ class AdaptorImporter(LoggerClass):
                 self.logger.info("Name:%s;default:%s;required:%s", service_input, service_input.type,
                                   service_input.get_required_display())
                 self.logger.debug("Full input:")
-                [self.logger.debug('%s: %s', item, value) for (item, value) in vars(service_input).iteritems()]
+                [self.logger.debug('%s: %s', item, value) for (item, value) in vars(service_input).items()]
             self.logger.info('-------------')
             self.logger.info('-- Outputs --')
             self.logger.info('-------------')
             for service_output in self.submission.outputs.all():
                 self.logger.info(service_output)
-                [self.logger.debug('%s: %s', item, value) for (item, value) in vars(service_output).iteritems()]
+                [self.logger.debug('%s: %s', item, value) for (item, value) in vars(service_output).items()]
             self.logger.info('------------------------------------')
             self.adaptor.command = tool_id
             self.submission.save()
             return self.service, self.submission
         except ImporterException as e:
+            logger.exception("Import service error %s", e.message)
             return None, None
 
     def list_services(self):

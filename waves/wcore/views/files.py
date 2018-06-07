@@ -18,6 +18,7 @@ class DownloadFileView(generic.DetailView):
     http_method_names = ['get', ]
     _force_download = False
     file_type = None
+    object = None
 
     def get_object(self, queryset=None):
         """ Retrieve object and validate that it has expected file_path"""
@@ -40,7 +41,7 @@ class DownloadFileView(generic.DetailView):
         # Sniff if we need to return a CSV export
         export = 'export' in self.request.GET or self._force_download is True
         if export:
-            wrapper = FileWrapper(file(self.file_path))
+            wrapper = FileWrapper(open(self.file_path, 'r'))
             response = HttpResponse(wrapper, content_type='application/force-download')
             response['Content-Disposition'] = 'attachment; filename="' + self.file_name + '"'
             response['X-Sendfile'] = smart_str(self.file_path)
