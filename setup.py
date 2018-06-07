@@ -28,7 +28,7 @@ setup(
         'coreapi==2.3.3',
         'Django<=1.11',
         'daemons==1.3.0',
-        'django-admin-sortable2=0.6.19',
+        'django-admin-sortable2==0.6.19',
         'django-cors-headers==2.2.0',
         'django-crispy-forms==1.7.2',
         'django-polymorphic==2.0.2',
