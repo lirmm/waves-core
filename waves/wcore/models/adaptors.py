@@ -119,7 +119,7 @@ class HasAdaptorClazzMixin(WavesBaseModel):
 
             .. WARNING::
 
-            This method may return password non encoded value
+                This method will display raw password non encoded value
 
         """
         return {init.name: init.get_value() for init in self.adaptor_params.all()}

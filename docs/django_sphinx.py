@@ -32,6 +32,8 @@ def process_docstring(app, what, name, obj, options, lines):
                 verbose_name = force_unicode(field.verbose_name).capitalize()
             except UnicodeError:
                 verbose_name = ''
+            except AttributeError:
+                verbose_name = ''
 
             if help_text:
                 # Add the model field to the end of the docstring as a param

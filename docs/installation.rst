@@ -20,6 +20,17 @@ Installation
 
 You can install WAVES-core either as a stand alone application, or inside any existing Django project
 
+0. Prerequisites
+----------------
+    .. note::
+        In order to install WAVES you will need:
+            - python 2.7.X (WAVES is not yet compatible with python 3.5)
+            - pip package manager
+            - A web server: `Apache <https://httpd.apache.org/>`_ or `NGINX <https://nginx.org/>`_
+            - A database backend (Mysql or Postgres) but by default WAVES runs with sqlite
+
+    In case you need to use MySQL with WAVES, you may install following dependencies:
+
 
 1. Install WAVES-core as stand alone application
 ------------------------------------------------
@@ -32,7 +43,11 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
         user@host:$ git clone https://github.com/lirmm/waves-core.git [your_app]
         user@host:$ cd [your_app]
-        user@host:~your_app$ git checkout tags/v[VERSION]
+
+    .. note::
+        To checkout a particular version:
+
+        user@host:~your_app$ git checkout tags/[VERSION]
 
     1.2. Install dependencies:
 
@@ -153,7 +168,21 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
         To use this service with apache in mod_wsgi: please mind to enable "WSGIPassAuthorization On" parameter in conf
 
-3. Go for production:
----------------------
+3. Use other than SqlLite default DB layer:
+-------------------------------------------
 
-    Please refer to `Django Official documentation <https://docs.djangoproject.com/fr/1.11/howto/deployment/>`_
+    You may need to install the Python and MySQL development headers and libraries like so:
+
+        - sudo apt-get install python-dev default-libmysqlclient-dev # Debian / Ubuntu
+        - sudo yum install python-devel mysql-devel # Red Hat / CentOS
+        - brew install mysql-connector-c # macOS (Homebrew) (Currently, it has bug. See below)
+
+    On Windows, there are binary wheels you can install without MySQLConnector/C or MSVC.
+
+    Then install pip mysql package in your virtualenv:
+
+        ``pip install mysqlclient``
+
+    .. seealso::
+
+        https://docs.djangoproject.com/fr/1.11/ref/databases/
