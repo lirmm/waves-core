@@ -74,14 +74,13 @@ venv/
 /data/sample/*
 !/data/sample/.gitkeep
 # tests dirs
-!/data/tests/jobs/.gitkeep
 /tests/settings.ini
-/tests/jobs/*
-!/tests/jobs/.gitkeep
+/tests/data/jobs/*/*
+!/tests/data/jobs/.gitkeep
 !/tests/settings.ini.sample
 *.sqlite3
 /staticfiles/
-/tests/settings.ini
+/tests/data/*.json
 /data/tests/*.json
 local.env
 
