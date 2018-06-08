@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 from __future__ import unicode_literals
 import os
 import logging.config
-import environ
 from django.contrib import messages
 
 
