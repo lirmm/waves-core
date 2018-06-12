@@ -83,4 +83,4 @@ venv/
 /tests/data/*.json
 /data/tests/*.json
 local.env
-
+*.pid
