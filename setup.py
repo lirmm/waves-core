@@ -10,6 +10,13 @@ def import_version():
     return __version_detail__
 
 
+def import_requirements():
+    with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as f:
+        content = f.readlines()
+        # you may also want to remove whitespace characters like `\n` at the end of each line
+        content = [x.strip() for x in content]
+        return content
+
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
@@ -24,24 +31,7 @@ setup(
     url='http://waves.atgc-montpellier.fr',
     author='Marc Chakiachvili',
     author_email='marc.chakiachvili@gmail.com',
-    install_requires=[
-        'coreapi==2.3.3',
-        'Django<=1.11',
-        'daemons==1.3.0',
-        'django-admin-sortable2==0.6.19',
-        'django-cors-headers==2.2.0',
-        'django-crispy-forms==1.7.2',
-        'django-polymorphic==2.0.2',
-        'djangorestframework==3.8.2',
-        'inflection==0.3.1',
-        'psutil==5.4.5',
-        'pycrypto==2.6.1',
-        'python-magic==0.4.15',
-        'saga-python==0.47.6',
-        'setproctitle==1.1.10',
-        'six==1.11.0',
-        'swapper==1.1.0',
-    ],
+    install_requires=import_requirements(),
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
