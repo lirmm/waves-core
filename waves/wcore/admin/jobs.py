@@ -163,7 +163,7 @@ class JobAdmin(WavesModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser or (
-                obj is not None and (obj.client == request.user or obj.service.created_by == request.user))
+                obj is not None and (obj.client == request.user or obj.submission.service.created_by == request.user))
 
     def get_actions(self, request):
         actions = super(JobAdmin, self).get_actions(request)
