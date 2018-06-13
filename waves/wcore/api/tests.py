@@ -276,3 +276,13 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                                     format='multipart')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertDictContainsSubset(response.data, {u'input_file': [u'File Input (:input_file:) is required field']})
+
+    def test_token_auth(self):
+
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.users['api_user'].waves_user.key)
+        response = self.client.get(reverse("wapi:v2:waves-jobs-list"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_api_key_auth(self):
+        response = self.client.get(reverse("wapi:v2:waves-jobs-list") + "?api_key=" + self.users['api_user'].waves_user.key)
+        self.assertEqual(response.status_code, 200)

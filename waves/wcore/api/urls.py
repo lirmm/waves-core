@@ -2,8 +2,12 @@ from __future__ import unicode_literals
 
 from django.conf.urls import url, include
 from django.conf import settings
+from rest_framework_swagger.views import get_swagger_view
+
+schema_view = get_swagger_view(title='WAVES API')
 
 urlpatterns = [
+    url(r'^openapi$', schema_view),
     url(r'^', include('waves.wcore.api.v2.urls', namespace='v2')),
     url(r'^v1/', include('waves.wcore.api.v1.urls', namespace='v1')),
 ]

@@ -145,7 +145,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['get', 'post'], url_name='submission-jobs',
                   url_path="submissions/(?P<submission_app_name>[\w-]+)/jobs")
-    def submission_jobs(self, request, service_app_name, submission_app_name):
+    def submission_jobs(self, request, service_app_name, submission_app_name, *args, **kwargs):
         service = self.get_object()
         obj = service.submissions_api.filter(api_name=submission_app_name)[0]
         if self.request.method == 'GET':
@@ -165,9 +165,11 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
             ass_email = passed_data.pop('email_to', None)
             try:
                 passed_data.pop('api_key', None)
+                # bad hack to allow openapi calls
+                data = passed_data.pop('inputs', passed_data)
                 created_job = Job.objects.create_from_submission(submission=obj,
                                                                  email_to=ass_email,
-                                                                 submitted_inputs=passed_data,
+                                                                 submitted_inputs=data,
                                                                  user=self.request.user)
                 # Now job is created (or raise an exception),
                 serializer = JobSerializer(created_job, many=False, context={'request': request},
@@ -258,49 +260,3 @@ class ServiceSubmissionViewSet(viewsets.ReadOnlyModelViewSet):
         """
         return super(ServiceSubmissionViewSet, self).list(request, *args, **kwargs)
 
-    @detail_route(methods=['get', 'post'], url_path='jobs')
-    def jobs(self, request, *args, **kwargs):
-        """
-        get:
-        Return a list of current user's job for this submission
-
-        post:
-        Create a new job from submitted inputs
-
-        :param request: HTTP request
-        :return: list
-        """
-        obj = self.get_object_or_404()
-        if self.request.method == 'GET':
-            queryset_jobs = Job.objects.get_submission_job(user=request.user, submission=obj)
-            serializer = JobSerializer(queryset_jobs, many=True, context={'request': request},
-                                       fields=['url', 'slug', 'title', 'status', 'created', 'updated', 'last_message'])
-            return Response(serializer.data)
-        elif self.request.method == 'POST':
-            # CREATE a new job for this submission
-            logger.debug("Create Job")
-            if logger.isEnabledFor(logging.DEBUG):
-                for param in request.data:
-                    logger.debug('param key ' + param)
-                    logger.debug(request.data[param])
-                logger.debug('Request Data %s', request.data)
-            passed_data = request.data.copy()
-            ass_email = passed_data.pop('email_to', None)
-            try:
-                passed_data.pop('api_key', None)
-                created_job = Job.objects.create_from_submission(submission=obj,
-                                                                 email_to=ass_email,
-                                                                 submitted_inputs=passed_data,
-                                                                 user=self.request.user)
-
-                # Now job is created (or raise an exception),
-                serializer = JobSerializer(created_job, many=False, context={'request': request},
-                                           fields=('slug', 'url', 'created', 'status', 'service', 'submission'))
-                logger.debug('Job successfully created %s ' % created_job.slug)
-                return Response(serializer.data, status=201)
-            except ValidationError as e:
-                logger.warning("Validation error %s", e)
-                raise DRFValidationError(e.message_dict)
-            except JobException as e:
-                logger.fatal("Create Error %s", e.message)
-                return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)

@@ -99,7 +99,7 @@ class ServiceSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedMod
     class Meta:
         model = Service
         fields = ('url', 'name', 'version', 'short_description', 'service_app_name',
-                  'jobs', 'submissions', 'form', 'created', 'updated')
+                  'jobs', 'submissions', 'form', 'created', 'updated', 'inputs')
         lookup_field = 'api_name'
         extra_kwargs = {
             'url': {'view_name': 'wapi:v2:waves-services-detail',
@@ -108,6 +108,7 @@ class ServiceSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedMod
         }
 
     jobs = serializers.SerializerMethodField()
+    inputs = serializers.DictField(write_only=True)
     submissions = serializers.SerializerMethodField()
     form = serializers.SerializerMethodField()
     service_app_name = serializers.CharField(source='api_name')
