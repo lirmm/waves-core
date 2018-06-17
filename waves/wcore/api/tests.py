@@ -5,6 +5,7 @@ import random
 import string
 
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -262,7 +263,8 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         self.assertEqual(test_delete.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login('api_user')
         test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'unique_id': sample_job.slug}))
-        self.assertEqual(test_delete.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(test_delete.status_code, status.HTTP_200_OK)
+        self.assertRaises(ObjectDoesNotExist, Job.objects.get, pk=sample_job.pk)
 
     def test_missing_params(self):
         tool_list = self.client.get(reverse('wapi:v2:waves-services-list'), format="json")
@@ -284,5 +286,6 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_api_key_auth(self):
-        response = self.client.get(reverse("wapi:v2:waves-jobs-list") + "?api_key=" + self.users['api_user'].waves_user.key)
+        response = self.client.get(
+            reverse("wapi:v2:waves-jobs-list") + "?api_key=" + self.users['api_user'].waves_user.key)
         self.assertEqual(response.status_code, 200)
