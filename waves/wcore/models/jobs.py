@@ -780,7 +780,6 @@ class JobInputManager(models.Manager):
         if service_input.param_type == ParamType.TYPE_FILE:
             if isinstance(submitted_input, File):
                 # classic uploaded file
-                print "Submitted Files class ", submitted_input.__class__.__name__
                 filename = path.join(job.working_dir, submitted_input.name)
                 with open(filename, 'wb+') as uploaded_file:
                     for chunk in submitted_input.chunks():

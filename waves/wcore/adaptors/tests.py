@@ -5,8 +5,9 @@ import os
 import unittest
 
 from django.conf import settings
-from waves.wcore.adaptors.const import JobStatus
+
 from waves.wcore.adaptors.cluster import SshClusterAdaptor
+from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.adaptors.exceptions import AdaptorException, AdaptorNotAvailableException
 from waves.wcore.adaptors.mocks import MockJobRunnerAdaptor
 from waves.wcore.adaptors.shell import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
