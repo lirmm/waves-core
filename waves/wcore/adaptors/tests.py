@@ -41,7 +41,11 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
                                                             settings.WAVES_TEST_SSH_USER_PASS),
                                                         basedir=settings.WAVES_TEST_SSH_BASE_DIR,
                                                         host=settings.WAVES_TEST_SSH_HOST)
-
+        if hasattr(settings, "WAVES_TEST_SGE_CELL"):
+            self.adaptors['localSge'] = SshClusterAdaptor(protocol='sge', command='cp',
+                                                          queue=settings.WAVES_TEST_SGE_CELL,
+                                                          basedir=settings.WAVES_TEST_SGE_BASE_DIR,
+                                                          host="localhost")
         if hasattr(settings, "WAVES_SSH_TEST_SGE_CELL"):
             self.adaptors['sshSge'] = SshClusterAdaptor(protocol='sge', command='cp',
                                                         queue=settings.WAVES_SSH_TEST_SGE_CELL,

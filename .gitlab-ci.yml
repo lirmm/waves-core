@@ -41,5 +41,8 @@ before_script:
 # and then adding `--settings app.settings.ci` (or similar) to the test command
 
 test:
+  variables:
+    WAVES_SSH_TEST_SGE_CELL="$WAVES_SSH_TEST_SGE_CELL"
+    WAVES_TEST_SGE_BASE_DIR="$WAVES_TEST_SGE_BASE_DIR"
   script:
   - python manage.py test
