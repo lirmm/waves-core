@@ -21,6 +21,7 @@ before_script:
   # Uncomment next line if your Django app needs a JS runtime:
   # - apt-get update -q && apt-get install nodejs -yqq
   - pip install -r requirements.txt
+  - pip install coverage==4.5.1
 
 # To get Django tests to work you may need to create a settings file using
 # the following DATABASES:
@@ -40,7 +41,8 @@ before_script:
 
 test:
   variables:
-    WAVES_SSH_TEST_SGE_CELL="$WAVES_SSH_TEST_SGE_CELL"
-    WAVES_TEST_SGE_BASE_DIR="$WAVES_TEST_SGE_BASE_DIR"
+    WAVES_SSH_TEST_SGE_CELL: $WAVES_SSH_TEST_SGE_CELL
+    WAVES_TEST_SGE_BASE_DIR: $WAVES_TEST_SGE_BASE_DIR
   script:
   - python manage.py test
+  - coverage run --source='.' manage.py test waves
