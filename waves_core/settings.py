@@ -229,12 +229,12 @@ LOGGING = {
 
     'loggers': {
         'django': {
-            'handlers': ['log_file', 'console'],
+            'handlers': ['console'],
             'propagate': True,
-            'level': 'WARNING',
+            'level': 'ERROR',
         },
         'waves': {
-            'handlers': ['log_file', 'console'],
+            'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
         },

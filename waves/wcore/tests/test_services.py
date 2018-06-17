@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import logging
+
 from django.urls import reverse
 
 from waves.wcore.models import get_service_model, get_submission_model
