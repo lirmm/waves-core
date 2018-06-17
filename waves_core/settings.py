@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'waves.authentication',
     'crispy_forms',
     'rest_framework',
-    'rest_framework_swagger',
     'corsheaders',
     'adminsortable2'
 ]
