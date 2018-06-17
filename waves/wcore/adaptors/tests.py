@@ -104,7 +104,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
             self.assertEqual(new_instance.protocol, "httpTest")
 
     def test_credentials(self):
-        for adaptor in self.adaptors:
+        for name, adaptor in self.adaptors.items():
             logger.debug('Connecting to %s', adaptor.name)
             logger.debug('With init params %s', adaptor.init_params)
             try:
@@ -118,7 +118,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
                 logger.warning("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
 
     def test_local_cp_job(self):
-        adaptor = self.adaptors[0]
+        adaptor = self.adaptors['local']
         logger.debug('Connecting to %s', adaptor.name)
         job = self.create_cp_job(source_file=self.get_sample(),
                                  submission=self.create_random_service().default_submission)
@@ -126,18 +126,20 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
         logger.info('job command line %s ', job.command_line)
         self.run_job_workflow(job)
 
-    @unittest.skip("Waiting for slurm enabled on HPC")
     def test_slurm_cp_job(self):
-        adaptor = self.adaptors[4]
-        logger.debug('Connecting to %s', adaptor.name)
-        job = self.create_cp_job(source_file=self.get_sample(),
-                                 submission=self.create_random_service().default_submission)
-        job.adaptor = adaptor
-        logger.info('job command line %s ', job.command_line)
-        self.run_job_workflow(job)
+        if self.adaptors.has_key("sshSlurm"):
+            adaptor = self.adaptors["sshSlurm"]
+            logger.debug('Connecting to %s', adaptor.name)
+            job = self.create_cp_job(source_file=self.get_sample(),
+                                     submission=self.create_random_service().default_submission)
+            job.adaptor = adaptor
+            logger.info('job command line %s ', job.command_line)
+            self.run_job_workflow(job)
+        else:
+            self.skipTest("No Slurm configured")
 
     def test_all_cp_jobs(self):
-        for adaptor in self.adaptors:
+        for name, adaptor in self.adaptors.items():
             try:
                 logger.debug('Connecting to %s', adaptor.name)
                 job = self.create_cp_job(source_file=self.get_sample(),

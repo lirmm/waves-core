@@ -241,7 +241,7 @@ LOGGING = {
     }
 }
 
-configFile = join(settings.BASE_DIR, 'tests', 'settings.ini')
+configFile = join(BASE_DIR, 'tests', 'settings.ini')
 try:
     assert (isfile(configFile))
     Config = ConfigParser.SafeConfigParser()
