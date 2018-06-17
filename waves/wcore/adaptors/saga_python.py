@@ -63,7 +63,12 @@ class SagaAdaptor(JobAdaptor):
     def available(self):
         try:
             service = self._init_service()
-        except saga.NoSuccess as e:
+            self.connect()
+        except saga.SagaException as e:
+            raise exceptions.AdaptorNotAvailableException(e.message)
+        except AssertionError as e:
+            raise exceptions.AdaptorNotAvailableException(e.message)
+        except BaseException as e:
             raise exceptions.AdaptorNotAvailableException(e.message)
         return service.valid
 
@@ -150,9 +155,9 @@ class SagaAdaptor(JobAdaptor):
         date_started = remote_job.started if remote_job.started else ""
         date_finished = remote_job.finished if remote_job.finished else ""
         details = JobRunDetails(job.id, str(job.slug), remote_job.id, remote_job.name,
-                                      remote_job.exit_code,
-                                      date_created,
-                                      date_started,
-                                      date_finished,
-                                      remote_job.execution_hosts)
+                                remote_job.exit_code,
+                                date_created,
+                                date_started,
+                                date_finished,
+                                remote_job.execution_hosts)
         return details

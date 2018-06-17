@@ -93,14 +93,25 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
         return Submission.objects.filter(availability=1)
 
 
+from waves.wcore.models import JobInput
+
+
+class SubmittedInputsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobInput
+        fields = ('api_name', 'job', 'value')
+
+
 class ServiceSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedModelSerializer):
     """ Serialize a service """
 
     class Meta:
         model = Service
         fields = ('url', 'name', 'version', 'short_description', 'service_app_name',
-                  'jobs', 'submissions', 'form', 'created', 'updated')
+                  'jobs', 'submissions', 'form', 'created', 'updated', 'inputs', 'title', "email_to")
         lookup_field = 'api_name'
+        read_only_fields = ('url', 'name', 'version', 'short_description',
+                            'jobs', 'submissions', 'form', 'created', 'updated')
         extra_kwargs = {
             'url': {'view_name': 'wapi:v2:waves-services-detail',
                     'lookup_field': 'api_name',
@@ -110,7 +121,10 @@ class ServiceSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedMod
     jobs = serializers.SerializerMethodField()
     submissions = serializers.SerializerMethodField()
     form = serializers.SerializerMethodField()
-    service_app_name = serializers.CharField(source='api_name')
+    service_app_name = serializers.CharField(source='api_name', read_only=True)
+    inputs = SubmittedInputsSerializer(many=True, write_only=True, required=False)
+    title = serializers.CharField(write_only=True, required=False)
+    email_to = serializers.EmailField(write_only=True, required=False)
 
     def get_submissions(self, obj):
         return [

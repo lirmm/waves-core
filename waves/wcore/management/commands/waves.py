@@ -1,8 +1,7 @@
 from __future__ import unicode_literals
 
-from django.core.management import BaseCommand
-from ..command import JobQueueCommand, PurgeDaemonCommand
 from ..base import SubcommandDispatcher
+from ..command import JobQueueCommand, PurgeDaemonCommand
 from ..subcommands import CleanUpCommand, ImportCommand, DumpConfigCommand, ShowUrlsCommand
 
 CLEAN = 'clean'

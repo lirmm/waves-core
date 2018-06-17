@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from waves.wcore.models.const import OptType, ParamType
+from waves.wcore.models.const import OptType
 
 
 def command_line_element(elem):

@@ -22,4 +22,5 @@ class ObtainAuthToken(APIView):
         token, created = WavesApiUser.objects.get_or_create(user=user)
         return Response({'auth_api_key': token.key})
 
+
 obtain_auth_token = ObtainAuthToken.as_view()

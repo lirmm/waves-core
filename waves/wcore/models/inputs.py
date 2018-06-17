@@ -218,6 +218,8 @@ class BooleanParam(AParam):
 
 class NumberParam(AParam):
     """ Abstract Base class for 'number' validation """
+    min_val = None
+    max_val = None
 
     class Meta:
         proxy = True

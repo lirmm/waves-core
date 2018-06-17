@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import logging
+
 from django.urls import reverse
 
 from waves.wcore.models import get_service_model, get_submission_model
@@ -25,7 +26,7 @@ class ServicesTestCase(BaseTestCase):
             self.login(user) if user else None
             the_response = self.client.get(url)
             self.assertEqual(the_response.status_code, expected_status,
-                             "Status code {} [expected: {}]".format(the_response.status_code, expected_status))
+                             "{} Status code {} [expected: {}]".format(the_url, the_response.status_code, expected_status))
             self.client.logout() if user else None
 
         services = self.bootstrap_services()

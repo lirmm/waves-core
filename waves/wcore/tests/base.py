@@ -69,6 +69,7 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         from waves.wcore.settings import waves_settings
+        waves_settings.defaults
         super(BaseTestCase, self).setUp()
 
         super_user = User.objects.create(email='superadmin@waves.wcore.fr', username="superadmin", is_superuser=True)
@@ -173,13 +174,9 @@ class BaseTestCase(TestCase):
             self.services.append(srv)
         return self.services
 
-    def create_test_file(self, path, index):
-        full_path = join(waves_settings.DATA_ROOT, str(index) + '_' + path)
-        f = open(full_path, 'w')
-        f.write('sample content for input file %s' % (str(index) + '_' + path))
-        f.close()
-        f = open(full_path, 'rb')
-        return f
+    def get_test_file(self, path, index):
+        from waves.wcore.settings import waves_settings
+        return open(join(waves_settings.DATA_ROOT, "test.fasta"), 'rb')
 
 
 class TestJobWorkflowMixin(TestCase):
@@ -260,10 +257,9 @@ class TestJobWorkflowMixin(TestCase):
     def sample_runner(self, adaptor=None):
         """
         Return a new adapter model instance from adapter class object
-        Args:
-            adapter: a JobRunneradapter object
         Returns:
             Runner model instance
+            :param adaptor:
         """
         from waves.wcore.adaptors.mocks import MockJobRunnerAdaptor
         impl = adaptor or MockJobRunnerAdaptor()

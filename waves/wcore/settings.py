@@ -79,6 +79,7 @@ DEFAULTS = {
         'waves.wcore.adaptors.cluster.SshClusterAdaptor',
         'waves.wcore.adaptors.cluster.SshKeyClusterAdaptor',
     ),
+    'PURGE_WAIT': 86400,
     'PERMISSION_CLASSES': (),
     'MAILER_CLASS': 'waves.wcore.mails.JobMailer',
 }

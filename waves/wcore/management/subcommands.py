@@ -1,6 +1,6 @@
 """ WAVES specific ADMIN commands """
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 
 import json
 import logging
@@ -8,6 +8,7 @@ import os
 import uuid
 from shutil import rmtree
 
+# noinspection PyProtectedMember,PyProtectedMember
 from django.conf.urls import RegexURLPattern, RegexURLResolver
 from django.core import urlresolvers
 from django.core.exceptions import ObjectDoesNotExist
@@ -92,7 +93,6 @@ class ImportCommand(BaseCommand):
 
     def handle(self, *args, **options):
         """ Handle import for services """
-        raise CommandError("This command has been disabled")
         exported_files = []
         type_mode = options.get('type_model', 'service')
         if type_mode != 'service':
@@ -192,5 +192,5 @@ class ShowUrlsCommand(BaseCommand):
         for url in all_urls:
             if 'waves.wcore.api' in url.lookup_str:
                 # print('| {0.regex.pattern:20} | {0.name:20} | {0.lookup_str:20} | {0.default_args} |'.format(url))
-                print url
+                print(url)
         print('-' * 100)

@@ -23,6 +23,7 @@ class BaseSerializer(serializers.ModelSerializer):
 class RelatedSerializerMixin(object):
     """ Add serializers capability to create related easily"""
 
+    # noinspection PyUnresolvedReferences
     def create_related(self, foreign, serializer, datas):
         """ Create related objects (foreign key to current service model object"""
         created = []

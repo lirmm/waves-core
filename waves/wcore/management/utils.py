@@ -9,11 +9,11 @@ def boolean_input(question, default=None):
     :return: True or False
     :rtype: bool
     """
-    result = raw_input("%s: " % question)
+    result = input("%s: " % question)
     if not result and default is not None:
         return default
     while len(result) < 1 or result[0].lower() not in "yn":
-        result = raw_input("Please answer yes(y) or no(n): ")
+        result = input("Please answer yes(y) or no(n): ")
     return result[0].lower() == "y"
 
 
@@ -30,7 +30,7 @@ def choice_input(question, choices, default=None):
     print("%s:" % question)
     for i, choice in enumerate(choices):
         print("-%s) %s" % (i + 1, choice))
-    result = raw_input("Select an option: ")
+    result = input("Select an option: ")
     try:
         value = int(result)
         if 0 < value <= len(choices):
@@ -43,7 +43,7 @@ def choice_input(question, choices, default=None):
 
 
 def text_input(question, default=None):
-    result = raw_input("%s (type Enter to keep default): " % question)
+    result = input("%s (type Enter to keep default): " % question)
     if not result and default is not None:
         return default
     return str(result)

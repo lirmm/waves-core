@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from waves.wcore.adaptors import JobAdaptor
 
 
+# noinspection PyAbstractClass
 class PublicApiAdaptor(JobAdaptor):
     """ Base Class for remote public API calls"""
     port = ''

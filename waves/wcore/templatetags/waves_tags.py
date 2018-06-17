@@ -11,8 +11,10 @@ register = template.Library()
 def online_exec_button(context, service, label=None):
     """ for service, setup if current usr can submit jobs """
     if service.default_submission:
-        return {'available_for_submission': service.default_submission.available_for_user(context['user']) and context.get('preview') is None,
-                'label': label, 'service': service}
+        return {
+            'available_for_submission': service.default_submission.available_for_user(context['user']) and context.get(
+                'preview') is None,
+            'label': label, 'service': service}
     return {}
 
 

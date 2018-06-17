@@ -23,14 +23,16 @@ def process_docstring(app, what, name, obj, options, lines):
                 # Decode and strip any html out of the field's help text
             try:
                 help_text = strip_tags(force_unicode(field.help_text))
-            except:
+            except StandardError:
                 help_text = ''
 
             # Decode and capitalize the verbose name, for use if there isn't
             # any help text
             try:
                 verbose_name = force_unicode(field.verbose_name).capitalize()
-            except:
+            except UnicodeError:
+                verbose_name = ''
+            except AttributeError:
                 verbose_name = ''
 
             if help_text:
@@ -57,8 +59,8 @@ def process_docstring(app, what, name, obj, options, lines):
                 latelines.append('')
                 latelines.append(u'   %s to :class:`%s.%s`' % (type(field).__name__, to.__module__, to.__name__))
                 latelines.append('')
-        else:
-            lines.append(u':type %s: %s' % (field.attname, type(field).__name__))
+            else:
+                lines.append(u':type %s: %s' % (field.attname, type(field).__name__))
         lines.append('')
         lines += latelines
     # Return the extended docstring

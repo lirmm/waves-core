@@ -37,6 +37,7 @@ def duplicate_in_mass(modeladmin, request, queryset):
             new = obj.duplicate()
             messages.add_message(request, level=messages.SUCCESS, message="Object %s successfully duplicated" % obj)
             if queryset.count() == 1:
+                # noinspection PyProtectedMember,PyProtectedMember
                 return redirect(
                     reverse('admin:%s_%s_change' % (new._meta.app_label, new._meta.model_name), args=[new.id]))
         except StandardError as e:
@@ -100,6 +101,7 @@ class MarkPublicInMassMixin(admin.ModelAdmin):
 class WavesModelAdmin(ModelAdmin):
     """ Base models admin including global medias """
 
+    # noinspection PyClassHasNoInit
     class Media:
         js = (
             'waves/admin/js/admin.js',

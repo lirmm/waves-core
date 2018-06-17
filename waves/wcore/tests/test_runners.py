@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 
 import logging
 
@@ -23,4 +23,5 @@ class RunnerTestCase(BaseTestCase, TestJobWorkflowMixin):
             runner_params = runner.run_params
             logger.debug("Expected %s", expected_params)
             logger.debug("Defaults %s", runner_params)
+            logger.debug("Config %s", runner.adaptor._dump_config())
             self.assertEquals(sorted(expected_params), sorted(runner_params))

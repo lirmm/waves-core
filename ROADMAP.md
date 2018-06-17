@@ -13,6 +13,7 @@ Near-term (early 2018 - v1.1.7)
 
 - Integrate WAVES into a `SINGULARITY <http://singularity.lbl.gov/>`_ container
 - Reactivate Job Input dynamic validators
+- Add OpenApi Support
 - Adapter to run containers (SINGULARITY first)
 - Adapter / Service : Import / Export json serialized data
 - Introduce Form Component classes for Service inputs
