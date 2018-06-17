@@ -70,9 +70,9 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
     @detail_route(methods=['get'])
-    def jobs(self, request):
+    def jobs(self, request, service_app_name):
         """ Retrieves services Jobs """
-        service_tool = get_object_or_404(self.get_queryset(), api_name=self.kwargs.get('service_app_name'))
+        service_tool = get_object_or_404(self.get_queryset(), api_name=service_app_name)
         queryset_jobs = Job.objects.get_service_job(user=request.user, service=service_tool)
         serializer = JobSerializer(queryset_jobs, many=True, context={'request': request},
                                    hidden=['inputs', 'outputs', 'history'])
@@ -184,3 +184,10 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
             except JobException as e:
                 logger.fatal("Create Error %s", e.message)
                 return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+
+    @detail_route(methods=['get'], url_name='submission-list')
+    def submissions_list(self, request, service_app_name):
+        obj = self.get_object()
+        submission = obj.submissions_api.all()
+        serializer = ServiceSubmissionSerializer(many=True, instance=submission, context={'request': self.request})
+        return Response(serializer.data)

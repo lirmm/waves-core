@@ -94,6 +94,8 @@ class JobOutputSerializer(serializers.ModelSerializer):
         model = JobOutput
         fields = ('name', 'download_url', 'content')
 
+    content = serializers.FileField(read_only=True, source="file_content")
+
     def get_url(self, output):
         if isfile(output.file_path):
             return reverse(viewname='wapi:v2:waves-jobs-output-detail', request=self.context['request'],

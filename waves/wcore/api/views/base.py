@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.views import APIView, Response
 from rest_framework import renderers, schemas
 from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.views import APIView, Response
 
 
 class WavesAuthenticatedView(APIView):
@@ -16,8 +16,9 @@ class WavesAuthenticatedView(APIView):
             self.permission_classes = [AllowAny, ]
         return super(WavesAuthenticatedView, self).get_permissions()
 
-@api_view(['GET',])
+
+@api_view(['GET', ])
 @renderer_classes([renderers.CoreJSONRenderer])
 def schema_view(request):
-    generator = schemas.SchemaGenerator(title='CoreJson API')
+    generator = schemas.SchemaGenerator(title='WAVES API schema')
     return Response(generator.get_schema())

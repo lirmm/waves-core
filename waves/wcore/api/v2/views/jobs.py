@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 """ WAVES API jobs endpoints """
-from __future__ import unicode_literals
+
+from __future__ import unicode_literals, print_function
 
 import logging
 from os.path import getsize
@@ -10,7 +12,7 @@ from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route, permission_classes
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotFound
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -121,7 +123,7 @@ class JobViewSet(mixins.ListModelMixin,
         if instance:
             return JobFileView.response(instance[0])
         else:
-            return HttpResponseNotFound('Not found')
+            return NotFound('Not found')
 
     @detail_route(methods=['get'], url_path="outputs$")
     def outputs(self, request, unique_id):
@@ -146,4 +148,4 @@ class JobViewSet(mixins.ListModelMixin,
         if instance:
             return JobFileView.response(instance[0])
         else:
-            return HttpResponseNotFound('Not found')
+            return NotFound('Not found')
