@@ -33,7 +33,7 @@ class JobStatusSerializer(serializers.ModelSerializer):
 class JobUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('email', )
 
 
 class JobHistorySerializer(DynamicFieldsModelSerializer):
@@ -137,7 +137,7 @@ class JobSerializer(DynamicFieldsModelSerializer,
     service = serializers.SerializerMethodField(read_only=True)
     submission = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField(source='_status', read_only=True)
-    client = JobUserSerializer(many=False, read_only=True)
+    client = serializers.CharField(read_only=True, source="email_to")
     history = JobHistorySerializer(many=True, read_only=True, source="public_history")
     outputs = JobOutputSerializer(read_only=True, source='output_files')
     inputs = JobInputSerializer(source='job_inputs', read_only=True)

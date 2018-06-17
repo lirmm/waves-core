@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^waves/', include('waves.wcore.urls', namespace='wcore')),
     url(r'^api/', include('waves.wcore.api.urls', namespace='wapi')),
+    # Browsable API documentation
     url(r'^api-scheme', include_docs_urls(title='Waves API Documentation', public=False)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
