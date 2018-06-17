@@ -5,7 +5,7 @@ from django.conf import settings
 from waves.wcore.api.views.base import schema_view
 
 urlpatterns = [
-    url(r'^schema$', schema_view),
+    # url(r'^schema$', schema_view),
     url(r'^', include('waves.wcore.api.v2.urls', namespace='v2')),
     url(r'^v1/', include('waves.wcore.api.v1.urls', namespace='v1')),
 ]

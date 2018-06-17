@@ -143,14 +143,16 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.FileUploadParser',
+        'rest_framework.parsers.JSONParser',
+
     ],
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.CoreJSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+
     )
 }
 ALLOWED_TEMPLATE_PACKS = ['bootstrap3', 'bootstrap4']
@@ -203,6 +205,7 @@ EMAIL_FILE_PATH = '/tmp/app-messages'  # change this to a proper location
 MANAGERS = [('Vincent Lefort', 'vincent.lefort@lirmm.fr')]
 LOG_DIR = os.path.join(BASE_DIR, 'data/logs')
 APP_LOG_LEVEL = 'WARNING'
+TEST_DATA_ROOT = os.path.join(BASE_DIR, "tests", 'data')
 
 LOGGING = {
     'version': 1,
@@ -237,6 +240,11 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'rest_framework.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
     }
 }
