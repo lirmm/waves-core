@@ -4,8 +4,8 @@ import logging
 import os
 import unittest
 
+from django.conf import settings
 from waves.wcore.adaptors.const import JobStatus
-import waves.wcore.adaptors.test_settings
 from waves.wcore.adaptors.cluster import SshClusterAdaptor
 from waves.wcore.adaptors.exceptions import AdaptorException, AdaptorNotAvailableException
 from waves.wcore.adaptors.mocks import MockJobRunnerAdaptor
@@ -30,32 +30,41 @@ def skip_unless_sge():
 
 class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
     loader = AdaptorLoader
-    adaptors = [
-        LocalShellAdaptor(command='cp'),
-        SshShellAdaptor(protocol='ssh', command='cp', user_id=waves.wcore.adaptors.test_settings.WAVES_TEST_SSH_USER_ID,
-                        password=Encrypt.encrypt(waves.wcore.adaptors.test_settings.WAVES_TEST_SSH_USER_PASS),
-                        basedir=waves.wcore.adaptors.test_settings.WAVES_TEST_SSH_BASE_DIR,
-                        host=waves.wcore.adaptors.test_settings.WAVES_TEST_SSH_HOST),
-        SshClusterAdaptor(protocol='sge', command='cp',
-                          queue=waves.wcore.adaptors.test_settings.WAVES_SSH_TEST_SGE_CELL,
-                          user_id=waves.wcore.adaptors.test_settings.WAVES_TEST_SSH_USER_ID,
-                          password=Encrypt.encrypt(waves.wcore.adaptors.test_settings.WAVES_TEST_SSH_USER_PASS),
-                          basedir=waves.wcore.adaptors.test_settings.WAVES_SSH_TEST_SGE_BASE_DIR,
-                          host=waves.wcore.adaptors.test_settings.WAVES_TEST_SSH_HOST),
-        SshKeyShellAdaptor(command='cp', user_id=waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_USER_ID,
-                           password=Encrypt.encrypt(waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_PASSPHRASE),
-                           basedir=waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_BASE_DIR,
-                           host=waves.wcore.adaptors.test_settings.WAVES_SSH_KEY_HOST),
-        SshClusterAdaptor(protocol='slurm', command='cp',
-                          queue=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_QUEUE,
-                          user_id=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_USER_ID,
-                          password=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_USER_PASS,
-                          basedir=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_BASE_DIR,
-                          host=waves.wcore.adaptors.test_settings.WAVES_SLURM_TEST_SSH_HOST),
-    ]
+    adaptors = {"local": LocalShellAdaptor(command='cp')}
+
+    def setUp(self):
+        super(AdaptorTestCase, self).setUp()
+        if hasattr(settings, "WAVES_TEST_SSH_USER_ID"):
+            self.adaptors["sshShell"] = SshShellAdaptor(protocol='ssh', command='cp',
+                                                        user_id=settings.WAVES_TEST_SSH_USER_ID,
+                                                        password=Encrypt.encrypt(
+                                                            settings.WAVES_TEST_SSH_USER_PASS),
+                                                        basedir=settings.WAVES_TEST_SSH_BASE_DIR,
+                                                        host=settings.WAVES_TEST_SSH_HOST)
+
+        if hasattr(settings, "WAVES_SSH_TEST_SGE_CELL"):
+            self.adaptors['sshSge'] = SshClusterAdaptor(protocol='sge', command='cp',
+                                                        queue=settings.WAVES_SSH_TEST_SGE_CELL,
+                                                        user_id=settings.WAVES_TEST_SSH_USER_ID,
+                                                        password=Encrypt.encrypt(
+                                                            settings.WAVES_TEST_SSH_USER_PASS),
+                                                        basedir=settings.WAVES_SSH_TEST_SGE_BASE_DIR,
+                                                        host=settings.WAVES_TEST_SSH_HOST)
+        if hasattr(settings, "WAVES_SSH_KEY_USER_ID"):
+            self.adaptors["sshShell"] = SshKeyShellAdaptor(command='cp', user_id=settings.WAVES_SSH_KEY_USER_ID,
+                                                           password=Encrypt.encrypt(settings.WAVES_SSH_KEY_PASSPHRASE),
+                                                           basedir=settings.WAVES_SSH_KEY_BASE_DIR,
+                                                           host=settings.WAVES_SSH_KEY_HOST)
+        if hasattr(settings, "WAVES_SLURM_TEST_SSH_QUEUE"):
+            self.adaptors["sshSlurm"] = SshClusterAdaptor(protocol='slurm', command='cp',
+                                                          queue=settings.WAVES_SLURM_TEST_SSH_QUEUE,
+                                                          user_id=settings.WAVES_SLURM_TEST_SSH_USER_ID,
+                                                          password=settings.WAVES_SLURM_TEST_SSH_USER_PASS,
+                                                          basedir=settings.WAVES_SLURM_TEST_SSH_BASE_DIR,
+                                                          host=settings.WAVES_SLURM_TEST_SSH_HOST)
 
     def test_serialize(self):
-        for adaptor in self.adaptors:
+        for code, adaptor in self.adaptors.items():
             logger.info("Testing serialization for %s ", adaptor.name)
             try:
                 serialized = AdaptorLoader.serialize(adaptor)
@@ -68,7 +77,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
                 logger.info("Adaptor not available for testing protocol %s " % adaptor.name)
 
     def test_protocol(self):
-        for adaptor in self.adaptors:
+        for code, adaptor in self.adaptors.items():
             logger.info("Testing availability for %s ", adaptor.name)
             try:
                 if adaptor.available:
@@ -88,7 +97,8 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
 
     def test_init(self):
         for adaptor in waves_settings.ADAPTORS_CLASSES:
-            new_instance = self.loader.load(adaptor, host="localTestHost", protocol="httpTest", command="CommandTest")
+            new_instance = self.loader.load(adaptor, host="localTestHost", protocol="httpTest",
+                                            command="CommandTest")
             self.assertEqual(new_instance.host, "localTestHost")
             self.assertEqual(new_instance.command, "CommandTest")
             self.assertEqual(new_instance.protocol, "httpTest")
@@ -127,7 +137,7 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
         self.run_job_workflow(job)
 
     def test_all_cp_jobs(self):
-        for adaptor in self.adaptors[0:3]:
+        for adaptor in self.adaptors:
             try:
                 logger.debug('Connecting to %s', adaptor.name)
                 job = self.create_cp_job(source_file=self.get_sample(),

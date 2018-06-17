@@ -14,6 +14,14 @@ import os
 import logging.config
 from django.contrib import messages
 
+# python 3 compatibility
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
+
+from django.conf import settings
+from os.path import join, isfile
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -82,7 +90,7 @@ WSGI_APPLICATION = 'waves_core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  BASE_DIR + '/db.sqlite3',
+        'NAME': BASE_DIR + '/db.sqlite3',
     }
 }
 
@@ -165,13 +173,13 @@ CONTACT_EMAIL = DEFAULT_FROM_EMAIL
 
 # WAVES
 ADAPTORS_DEFAULT_CLASSES = (
-        'waves.wcore.adaptors.shell.SshShellAdaptor',
-        'waves.wcore.adaptors.cluster.LocalClusterAdaptor',
-        'waves.wcore.adaptors.shell.SshKeyShellAdaptor',
-        'waves.wcore.adaptors.shell.LocalShellAdaptor',
-        'waves.wcore.adaptors.cluster.SshClusterAdaptor',
-        'waves.wcore.adaptors.cluster.SshKeyClusterAdaptor',
-    )
+    'waves.wcore.adaptors.shell.SshShellAdaptor',
+    'waves.wcore.adaptors.cluster.LocalClusterAdaptor',
+    'waves.wcore.adaptors.shell.SshKeyShellAdaptor',
+    'waves.wcore.adaptors.shell.LocalShellAdaptor',
+    'waves.wcore.adaptors.cluster.SshClusterAdaptor',
+    'waves.wcore.adaptors.cluster.SshKeyClusterAdaptor',
+)
 WAVES_CORE = {
     'ACCOUNT_ACTIVATION_DAYS': 14,
     'ADMIN_EMAIL': 'admin@waves.atgc-montpellier.fr',
@@ -190,7 +198,7 @@ WAVES_CORE = {
 
 # CONF EMAIL
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '/tmp/app-messages' # change this to a proper location
+EMAIL_FILE_PATH = '/tmp/app-messages'  # change this to a proper location
 
 MANAGERS = [('Vincent Lefort', 'vincent.lefort@lirmm.fr')]
 LOG_DIR = os.path.join(BASE_DIR, 'data/logs')
@@ -215,7 +223,7 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'waves-app.log'),
             'formatter': 'verbose',
             'backupCount': 10,
-            'maxBytes': 1024*1024*5
+            'maxBytes': 1024 * 1024 * 5
         },
     },
 
@@ -232,3 +240,31 @@ LOGGING = {
         },
     }
 }
+
+configFile = join(settings.BASE_DIR, 'tests', 'settings.ini')
+try:
+    assert (isfile(configFile))
+    Config = ConfigParser.SafeConfigParser()
+    Config.read(configFile)
+    WAVES_TEST_SSH_HOST = Config.get('saga', 'WAVES_TEST_SSH_HOST')
+    WAVES_TEST_SSH_USER_ID = Config.get('saga', 'WAVES_TEST_SSH_USER_ID')
+    WAVES_TEST_SSH_USER_PASS = Config.get('saga', 'WAVES_TEST_SSH_USER_PASS')
+    WAVES_TEST_SSH_BASE_DIR = Config.get('saga', 'WAVES_TEST_SSH_BASE_DIR')
+
+    WAVES_LOCAL_TEST_SGE_CELL = Config.get('sge_cluster', 'WAVES_LOCAL_TEST_SGE_CELL')
+    WAVES_SSH_TEST_SGE_CELL = Config.get('sge_cluster', 'WAVES_SSH_TEST_SGE_CELL')
+    WAVES_SSH_TEST_SGE_BASE_DIR = Config.get('sge_cluster', 'WAVES_SSH_TEST_SGE_BASE_DIR')
+
+    WAVES_SSH_KEY_USER_ID = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_USER_ID')
+    WAVES_SSH_KEY_HOST = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_HOST')
+    WAVES_SSH_KEY_PASSPHRASE = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_PASSPHRASE')
+    WAVES_SSH_KEY_BASE_DIR = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_BASE_DIR')
+
+    WAVES_SLURM_TEST_SSH_HOST = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_HOST')
+    WAVES_SLURM_TEST_SSH_USER_ID = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_ID')
+    WAVES_SLURM_TEST_SSH_USER_PASS = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_PASS')
+    WAVES_SLURM_TEST_SSH_QUEUE = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_QUEUE')
+    WAVES_SLURM_TEST_SSH_BASE_DIR = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_BASE_DIR')
+except AssertionError:
+    # Don't load variables from ini files they are initialized elsewhere (i.e lab ci)
+    pass
