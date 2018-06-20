@@ -10,6 +10,7 @@ These examples use coreapi package functionalities
 Interact with services
 ----------------------
 
+You can interact with a waves-api instance by using coreapi. These examples to show how to print a list of services, get details of a service or a submission.
 .. code-block:: python
 
     from coreapi import Client, auth
