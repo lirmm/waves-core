@@ -5,6 +5,6 @@ API Dev user Guide
 ==================
 
 
-This documentation intends to help front edn developers to integrate WAVES-core form api service.
+This documentation intends to help front end developers to integrate WAVES-core form api service.
 
 ...
