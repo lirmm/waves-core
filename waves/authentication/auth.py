@@ -49,7 +49,7 @@ class ApiKeyAuthentication(authentication.BaseAuthentication):
 
         if not api_key.user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
-        return (api_key.user, api_key)
+        return api_key.user, api_key
 
 
 class TokenAuthentication(TokenAuthentication):

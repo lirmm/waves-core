@@ -136,6 +136,7 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
             if to_field:
                 attr = str(to_field)
             else:
+                # noinspection PyProtectedMember
                 attr = obj._meta.pk.attname
             value = obj.serializable_value(attr)
             popup_response_data = json.dumps({
@@ -154,6 +155,7 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
     def response_change(self, request, obj):
         if IS_POPUP_VAR in request.POST:
             to_field = request.POST.get(TO_FIELD_VAR)
+            # noinspection PyProtectedMember
             attr = str(to_field) if to_field else obj._meta.pk.attname
             # Retrieve the `object_id` from the resolved pattern arguments.
             value = request.resolver_match.args[0]
@@ -170,6 +172,7 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
         elif "_addanother" in request.POST:
             pass
         else:
+            # noinspection PyProtectedMember
             opts = self.model._meta
             msg_dict = {
                 'name': force_text(opts.verbose_name),
@@ -328,12 +331,12 @@ class AllParamModelAdmin(PolymorphicParentModelAdmin):
     base_model = AParam
     exclude = ('order',)
     child_models = (
-        TextParam, # TextParamAdmin),
-        FileInput, # FileInputAdmin),
-        BooleanParam, # BooleanParamAdmin),
-        DecimalParam, # DecimalParamAdmin),
-        IntegerParam, # IntegerParamAdmin),
-        ListParam, # ListParamAdmin),
+        TextParam,
+        FileInput,
+        BooleanParam,
+        DecimalParam,
+        IntegerParam,
+        ListParam,
     )
     list_filter = (PolymorphicChildModelFilter, 'submission', 'submission__service')
     list_display = ('get_class_label', 'label', 'name', 'submission')

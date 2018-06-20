@@ -208,7 +208,6 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     def duplicate(self):
         """ Duplicate  a Service / with inputs / outputs / exit_code / runner params """
         from waves.wcore.api.v2.serializers import ServiceSerializer
-        from django.contrib import messages
         serializer = ServiceSerializer()
         data = serializer.to_representation(self)
         srv = self.serializer(data=data)
@@ -216,7 +215,6 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
             srv.validated_data['name'] += ' (copy)'
             new_object = srv.save()
         else:
-            messages.warning(message='Object could not be duplicated')
             new_object = self
         return new_object
 

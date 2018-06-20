@@ -10,3 +10,7 @@ class ServiceAccessPermission(permissions.BasePermission):
         if request.method == 'POST':
             return obj.available_for_user(request.user) and request.user.is_authenticated
         return obj.available_for_user(request.user)
+
+    def has_permission(self, request, view):
+        return super(ServiceAccessPermission, self).has_permission(request, view)
+

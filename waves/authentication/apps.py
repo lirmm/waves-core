@@ -8,6 +8,7 @@ class ApiKeyConfig(AppConfig):
     name = 'waves.authentication'
     verbose_name = _("WAVES Api Authentication")
 
+    # noinspection PyUnresolvedReferences
     def ready(self):
         """
         Executed once when WAVES application startup !

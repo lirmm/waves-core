@@ -115,8 +115,19 @@ class HasAdaptorClazzMixin(WavesBaseModel):
 
     @property
     def run_params(self):
-        """ Get defined params values from db """
+        """ Get defined params values from db
+
+            .. WARNING::
+
+                This method will display raw password non encoded value
+
+        """
         return {init.name: init.get_value() for init in self.adaptor_params.all()}
+
+    def display_params(self):
+        """ return string representation for related params """
+        return ['%s:%s' % (name, value if name != 'password' else "*****") for name, value in
+                self.run_params.items()]
 
     @property
     def adaptor_defaults(self):

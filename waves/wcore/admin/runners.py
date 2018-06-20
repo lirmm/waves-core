@@ -110,6 +110,21 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     def nb_services(self, obj):
         return len(obj.runs)
 
+    def get_fieldsets(self, request, obj=None):
+        if obj is None or obj.adaptor is None:
+            return [
+                ('Main', {
+                    'fields': ['name', 'clazz', 'connexion_string', 'update_init_params']
+                })
+            ]
+        else:
+            return self.fieldsets
+
+    def get_inline_instances(self, request, obj=None):
+        if obj is None or obj.adaptor is None:
+            return ()
+        return super(RunnerAdmin, self).get_inline_instances(request, obj)
+
     def runner_clazz(self, obj):
         return obj.adaptor.name if obj.adaptor else "Implementation class not available !"
 

@@ -66,9 +66,7 @@ class JobManager(models.Manager):
             return self.none()
         if user.is_superuser:
             return self.all()
-        if user.is_staff:
-            return self.filter(Q(service__created_by=user) | Q(client=user) | Q(email_to=user.email))
-        return self.filter(client=user)
+        return self.filter(Q(client=user) | Q(email_to=user.email))
 
     def get_service_job(self, user, service):
         """
@@ -175,24 +173,19 @@ class JobManager(models.Manager):
         # First create inputs
         submission_inputs = submission.inputs.filter(api_name__in=submitted_inputs.keys()).exclude(required=None)
         for service_input in submission_inputs:
-            # Treat only non dependent inputs first
             incoming_input = submitted_inputs.get(service_input.api_name, None)
-            logger.debug("Current Service Input: %s, %s, %s", service_input, service_input.required, incoming_input)
             # test service input mandatory, without default and no value
             if service_input.required and not service_input.default and incoming_input is None:
                 raise JobMissingMandatoryParam(service_input.label, job)
-            if job.logger.isEnabledFor(logging.DEBUG):
-                job.logger.debug('Received data :')
-                for key in submitted_inputs:
-                    job.logger.debug('Param %s: %s', key, submitted_inputs[key])
+            logger.debug("Current Service Input: %s, %s, %s", service_input, service_input.required, incoming_input)
+            job.logger.debug('Param %s: %s', service_input.api_name, incoming_input)
+            logger.debug('Param %s: %s', service_input.api_name, incoming_input)
             job.save()
-
             if incoming_input:
                 logger.debug('Retrieved "%s" for service input "%s:%s"', incoming_input, service_input.label,
                              service_input.name)
                 # transform single incoming into list to keep process iso
-                if type(incoming_input) != list:
-                    incoming_input = [incoming_input]
+                incoming_input = [incoming_input] if type(incoming_input) != list else incoming_input
                 for in_input in incoming_input:
                     job.job_inputs.add(
                         JobInput.objects.create_from_submission(job, service_input, service_input.order, in_input))
@@ -668,19 +661,13 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         self.retrieve_run_details()
         self.logger.debug("Results %s %s %d", self.get_status_display(), self.exit_code,
                           os.stat(join(self.working_dir, self.stderr)).st_size)
-        if self.exit_code != 0:
-            if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
-                logger.error('Error found %s %s ', self.exit_code, smart_text(self.stderr_txt))
-            self.message = "Error detected in job.stderr"
-            self.status = JobStatus.JOB_ERROR
+        if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
+            logger.error('Error found %s %s ', self.exit_code, smart_text(self.stderr_txt))
+            self.job_history.create(message='job.stderr is not empty', status=JobStatus.JOB_WARNING)
+            self.status = JobStatus.JOB_WARNING
         else:
-            if os.stat(join(self.working_dir, self.stderr)).st_size > 0:
-                self.status = JobStatus.JOB_WARNING
-                logger.warning('Exit Code %s but found stderr %s ', self.exit_code,
-                               smart_text(self.stderr_txt))
-            else:
-                self.message = "Data retrieved"
-                self.status = JobStatus.JOB_TERMINATED
+            self.message = "Data retrieved"
+            self.status = JobStatus.JOB_TERMINATED
 
     def retrieve_run_details(self):
         """ Ask job adapter to get JobRunDetails information (started, finished, exit_code ...)"""
@@ -855,14 +842,11 @@ class JobInput(Ordered, Slugged, ApiModel, UrlMixin):
         if self.job.client and 'waves.authentication' in settings.INSTALLED_APPS:
             # changer les variables d'url des templates
             return "{}{}".format(self.job.client.waves_user.main_domain, self.get_absolute_url())
-        return super(JobOutput, self).link()
+        return super(JobInput, self).link()
 
     @property
     def required(self):
         return True
-
-    def natural_key(self):
-        return self.job.natural_key(), self.name
 
     def save(self, *args, **kwargs):
         super(JobInput, self).save(*args, **kwargs)
@@ -1063,9 +1047,6 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
         elif self.value == self.job.stderr:
             return "standard_error"
         return self.api_name
-
-    def natural_key(self):
-        return self.job.natural_key(), self._name
 
     def __str__(self):
         return '%s - %s' % (self.name, self.value)

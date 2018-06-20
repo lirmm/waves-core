@@ -57,7 +57,7 @@ class BaseRunDaemon(run.RunDaemon):
             LOG.info("Starting daemon")
             while True:
                 self.loop_callback()
-        except (SystemExit, KeyboardInterrupt) as exc:
+        except (SystemExit, KeyboardInterrupt):
             # Normal exit getting a signal from the parent process
             pass
         except Exception as exc:
@@ -93,7 +93,6 @@ class JobQueueRunDaemon(BaseRunDaemon):
     Dedicated command to summarize current WAVES specific settings
     """
     help = 'Managing WAVES job queue states'
-    SLEEP_TIME = 2
     pidfile = os.path.join(waves_settings.DATA_ROOT, 'waves_queue.pid')
     pidfile_timeout = 5
 
@@ -143,8 +142,7 @@ class JobQueueRunDaemon(BaseRunDaemon):
                 job.check_send_mail()
                 if runner is not None:
                     runner.disconnect()
-        logger.debug('Go to sleep for %i seconds' % self.SLEEP_TIME)
-        time.sleep(self.SLEEP_TIME)
+        time.sleep(5)
 
 
 class PurgeDaemon(BaseRunDaemon):
@@ -162,4 +160,4 @@ class PurgeDaemon(BaseRunDaemon):
             logger.info('Deleting job %s created on %s', job.slug, job.created)
             job.delete()
         logger.info("Purge job terminated at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
-        time.sleep(self.SLEEP_TIME)
+        time.sleep(waves_settings.PURGE_WAIT)

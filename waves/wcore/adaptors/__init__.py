@@ -43,8 +43,8 @@ class JobAdaptor(object):
         self.command = command
         self.protocol = protocol
         self.host = host
-        self.connector = kwargs.get('connector', None)
-        self.parser = kwargs.get('parser', None)
+        self.connector = kwargs.get(str('connector'), None)
+        self.parser = kwargs.get(str('parser'), None)
         self._connected = False
 
     def init_value_editable(self, init_param):
@@ -72,6 +72,7 @@ class JobAdaptor(object):
 
     @property
     def available(self):
+        # True by default
         return True
 
     def connect(self):
@@ -259,7 +260,7 @@ class JobAdaptor(object):
         """ Return string representation of concrete adapter configuration
 
         :return: a String representing configuration """
-        return str([(item, value) for (item, value) in vars(self).iteritems()])
+        return str([(item, value) for (item, value) in vars(self).items()])
 
     def test_connection(self):
         self.connect()

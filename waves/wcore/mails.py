@@ -45,13 +45,17 @@ class JobMailer(object):
         if self.mail_activated and job.notify:
             context = self.get_context_data()
             context['job'] = job
-            mail_subject = "[WAVES - %s] -- %s -- " % (job.title, job.get_status_display()) if subject is None else subject
+            mail_subject = "[WAVES - %s] -- %s -- " % (
+                job.title, job.get_status_display()) if subject is None else subject
             try:
                 message = get_template(template_name=template).render(context)
                 msg = EmailMessage(subject=mail_subject, body=message, to=[job.email_to],
                                    from_email=config.SERVICES_EMAIL)
                 msg.send(fail_silently=True)
+                job.job_history.create(message='Notification email sent', status=job.status, is_admin=True)
             except Exception as e:
+                job.job_history.create(message='Notification email not sent %s' % e.message, status=job.status,
+                                       is_admin=True)
                 logger.exception("Failed to send mail to %s from %s :%s", job.email_to, config.SERVICES_EMAIL, e)
         else:
             logger.info('Mail not sent to %s, mails are not activated', job.email_to)
@@ -134,15 +138,12 @@ class JobMailer(object):
                         nb_sent = self.send_job_cancel_email(job)
                     # Avoid resending emails when last status mail already sent
                     job.status_mail = job.status
-                    if nb_sent > 0:
-                        job.job_history.create(message='Sent notification email', status=job.status, is_admin=True)
-                    else:
-                        job.job_history.create(message='Mail not sent', status=job.status, is_admin=True)
-                    job.save()
                     return nb_sent
                 except Exception as e:
                     logger.error('Mail error: %s %s', e.__class__.__name__, e.message)
                     pass
+                finally:
+                    job.save()
             elif not job.email_to:
                 logger.warn('Job [%s] email not sent to %s', job.slug, job.email_to)
         else:

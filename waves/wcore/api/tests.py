@@ -1,10 +1,15 @@
 from __future__ import unicode_literals
 
 import logging
+import decimal
+
 import random
+from os.path import join
 import string
 
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -18,43 +23,31 @@ Service = get_service_model()
 logger = logging.getLogger(__name__)
 
 
-class BaseAPITestCase(APITestCase, BaseTestCase):
+class BaseAPITestCase(BaseTestCase, APITestCase, ):
     fixtures = ['waves/wcore/tests/fixtures/users.json', 'waves/wcore/tests/fixtures/services.json']
 
     def create_job_inputs_for_submission(self, submission_data):
         submission = submission_data or {}
         job_inputs_params = {}
-        i = 0
         for name in submission['inputs']:
-            logger.info('name %s ', name)
             submission_input = submission['inputs'][name]
-            if submission_input['type'] == ParamType.TYPE_FILE:
-                i += 1
-                job_input_data = self.create_test_file(name, i)
-                job_inputs_params[name] = job_input_data
-                logger.debug('file input %s', job_input_data)
-            elif submission_input['type'] == ParamType.TYPE_INT:
-                job_input_data = int(random.randint(0, 199))
-                job_inputs_params[name] = job_input_data
-                logger.debug('number input%s', job_input_data)
-            elif submission_input['type'] == ParamType.TYPE_DECIMAL:
-                job_input_data = int(random.randint(0, 199))
-                job_inputs_params[name] = job_input_data
-                logger.debug('number input%s', job_input_data)
-            elif submission_input['type'] == ParamType.TYPE_BOOLEAN:
+            type_input = submission_input['type']
+            if type_input == ParamType.TYPE_FILE:
+                job_input_data = open(join(settings.TEST_DATA_ROOT, "test.fasta"), 'rb')
+            elif type_input == ParamType.TYPE_INT:
+                job_input_data = int(random.randint(0, 1999))
+            elif type_input == ParamType.TYPE_DECIMAL:
+                job_input_data = decimal.Decimal(random.randrange(100, 389))/100
+            elif type_input == ParamType.TYPE_BOOLEAN:
                 job_input_data = random.randrange(100) < 50
-                job_inputs_params[name] = job_input_data
-            elif submission_input['type'] == ParamType.TYPE_TEXT:
+            elif type_input == ParamType.TYPE_TEXT:
                 job_input_data = ''.join(random.sample(string.letters, 15))
-                job_inputs_params[name] = job_input_data
-                logger.debug('text input %s', job_input_data)
-            elif submission_input['type'] == ParamType.TYPE_LIST:
+            elif type_input == ParamType.TYPE_LIST:
                 job_input_data = ''.join(random.sample(string.letters, 15))
-                job_inputs_params[name] = job_input_data
             else:
                 job_input_data = ''.join(random.sample(string.letters, 15))
-                logger.warn('default ???? %s %s', job_input_data, submission_input['type'])
-                job_inputs_params[name] = job_input_data
+            job_inputs_params[name] = job_input_data
+            logger.debug("Input %s: %s", type_input, job_input_data)
         logger.debug('Job inputs data %s', job_inputs_params)
         return job_inputs_params
 
@@ -110,7 +103,7 @@ class WavesAPIV1TestCase(BaseAPITestCase):
                 for job_input in submission['inputs']:
                     if job_input['type'] == ParamType.TYPE_FILE:
                         i += 1
-                        input_data = self.create_test_file(job_input['name'], i)
+                        input_data = self.get_test_file(job_input['name'], i)
                         logger.debug('file input %s', input_data)
                     elif job_input['type'] == ParamType.TYPE_INT:
                         input_data = int(random.randint(0, 199))
@@ -215,15 +208,13 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                 response = self.client.post(submission_data['jobs'],
                                             data=job_inputs_params,
                                             format='multipart')
-                logger.debug(response)
                 self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
                 self.login('api_user')
                 response = self.client.post(submission_data['jobs'],
                                             data=job_inputs_params,
                                             format='multipart')
-                logger.debug(response)
-                print response
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+                self.assertTrue("url" in response.data)
                 job = Job.objects.get(slug=response.data['slug'])
                 self.assertEqual(job.email_to, 'wavesapi@waves.wcore.fr')
                 logger.debug(job)
@@ -264,16 +255,28 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         self.login('api_user')
         test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_delete.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertRaises(ObjectDoesNotExist, Job.objects.get, pk=sample_job.pk)
 
     def test_missing_params(self):
         tool_list = self.client.get(reverse('wapi:v2:waves-services-list'), format="json")
         service_tool = tool_list.data[0]
         default_submission = self.client.get(service_tool['submissions'][0]['url'])
         job_params = self.create_job_inputs_for_submission(default_submission.data)
-        removed_params = job_params.pop('input_file')
+        job_params.pop('input_file')
         self.login("api_user")
         response = self.client.post(default_submission.data['jobs'],
                                     data=job_params,
                                     format='multipart')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertDictContainsSubset(response.data, {u'input_file': [u'File Input (:input_file:) is required field']})
+
+    def test_token_auth(self):
+
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.users['api_user'].waves_user.key)
+        response = self.client.get(reverse("wapi:v2:waves-jobs-list"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_api_key_auth(self):
+        response = self.client.get(
+            reverse("wapi:v2:waves-jobs-list") + "?api_key=" + self.users['api_user'].waves_user.key)
+        self.assertEqual(response.status_code, 200)

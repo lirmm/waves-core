@@ -6,7 +6,6 @@ from __future__ import unicode_literals
 import os
 import shutil
 
-from django.conf import settings
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
@@ -22,6 +21,7 @@ from waves.wcore.utils import get_all_subclasses
 
 Service = get_service_model()
 Submission = get_submission_model()
+
 
 @receiver(pre_save, sender=Job)
 def job_pre_save_handler(sender, instance, **kwargs):
@@ -115,6 +115,7 @@ def adaptor_mixin_post_save_handler(sender, instance, created, **kwargs):
 
 
 for subclass in get_all_subclasses(HasAdaptorClazzMixin):
+    # noinspection PyProtectedMember
     if not subclass._meta.abstract:
         post_save.connect(adaptor_mixin_post_save_handler, subclass)
 
@@ -129,6 +130,7 @@ def adaptor_param_pre_save_handler(sender, instance, **kwargs):
 
 
 for subclass in get_all_subclasses(AdaptorInitParam):
+    # noinspection PyProtectedMember
     if not subclass._meta.abstract:
         pre_save.connect(adaptor_param_pre_save_handler, subclass)
 
@@ -137,6 +139,7 @@ for subclass in get_all_subclasses(AdaptorInitParam):
 def api_able_pre_save_handler(sender, instance, **kwargs):
     """ Any ApiModel model object setup api_name if not already set in object data """
     if not instance.api_name or instance.api_name == '':
+        # noinspection PyProtectedMember
         instance.api_name = instance._create_api_name()
     if not kwargs.get('raw', False):
         exists = instance.duplicate_api_name(instance.api_name).count()

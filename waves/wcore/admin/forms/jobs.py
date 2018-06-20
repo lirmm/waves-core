@@ -2,11 +2,13 @@ from __future__ import unicode_literals
 from django import forms
 from django.forms import widgets
 from waves.wcore.models import JobInput, JobOutput, Job
+
 __all__ = ['JobInputForm', 'JobOutputForm', 'JobForm']
 
 
 class ReadOnlyForm(forms.ModelForm):
     """Base class for making a form readonly."""
+
     def __init__(self, *args, **kwargs):
         super(ReadOnlyForm, self).__init__(*args, **kwargs)
         for f in self.fields:
@@ -41,6 +43,7 @@ class JobOutputForm(ReadOnlyForm):
     def get_file_path(self, obj):
         return obj.file_path
 
+
 class JobForm(forms.ModelForm):
     class Meta:
         model = Job
@@ -49,4 +52,3 @@ class JobForm(forms.ModelForm):
             'service': widgets.Select(attrs={'disabled': 'disabled'}),
             'client': widgets.Select(attrs={'disabled': 'disabled'}),
         }
-

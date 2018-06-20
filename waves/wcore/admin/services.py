@@ -47,6 +47,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
                    DynamicInlinesAdmin):
     """ Service model objects Admin"""
 
+    # noinspection PyClassHasNoInit
     class Media:
         js = ('waves/admin/js/services.js',
               'waves/admin/js/connect.js')
@@ -132,7 +133,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         return self.inlines
 
     def display_run_params(self, obj):
-        return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
+        return obj.display_params()
 
     display_run_params.short_description = "Runner initial params"
 
@@ -157,7 +158,8 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         readonly_fields = super(ServiceAdmin, self).get_readonly_fields(request, obj)
         if not request.user.is_superuser:
             readonly_fields.append('created_by')
-        if obj and obj.status > Service.SRV_TEST and 'api_name' not in readonly_fields and not request.user.is_superuser:
+        if obj and obj.status > Service.SRV_TEST and 'api_name' not in readonly_fields \
+                and not request.user.is_superuser:
             readonly_fields.append('api_name')
         if obj is not None and obj.created_by != request.user:
             readonly_fields.append('clazz')

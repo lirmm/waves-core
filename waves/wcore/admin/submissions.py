@@ -143,8 +143,10 @@ class OrganizeInputInline(SortableInlineAdminMixin, admin.TabularInline):
             while init:
                 level += 1
                 init = init.parent
+            # noinspection PyProtectedMember
             return mark_safe("<span class='icon-arrow-right'></span>" * level +
                              "%s (%s)" % (obj._meta.verbose_name, obj.when_value))
+        # noinspection PyProtectedMember
         return obj._meta.verbose_name
 
     def get_queryset(self, request):
@@ -186,7 +188,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
 
     # Override admin class and set this list to add your inlines to service admin
     def get_run_params(self, obj):
-        return ['%s:%s' % (name, value) for name, value in obj.run_params.items()]
+        return obj.display_params()
 
     def api_url(self, obj):
         from rest_framework.reverse import reverse

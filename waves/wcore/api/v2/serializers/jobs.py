@@ -3,8 +3,8 @@
 from __future__ import unicode_literals
 
 from collections import OrderedDict
+from os.path import isfile
 
-from os.path import isfile, join
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.reverse import reverse
@@ -33,7 +33,7 @@ class JobStatusSerializer(serializers.ModelSerializer):
 class JobUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email')
+        fields = ('email', )
 
 
 class JobHistorySerializer(DynamicFieldsModelSerializer):
@@ -94,6 +94,8 @@ class JobOutputSerializer(serializers.ModelSerializer):
         model = JobOutput
         fields = ('name', 'download_url', 'content')
 
+    content = serializers.FileField(read_only=True, source="file_content")
+
     def get_url(self, output):
         if isfile(output.file_path):
             return reverse(viewname='wapi:v2:waves-jobs-output-detail', request=self.context['request'],
@@ -135,7 +137,7 @@ class JobSerializer(DynamicFieldsModelSerializer,
     service = serializers.SerializerMethodField(read_only=True)
     submission = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField(source='_status', read_only=True)
-    client = JobUserSerializer(many=False, read_only=True)
+    client = serializers.CharField(read_only=True, source="email_to")
     history = JobHistorySerializer(many=True, read_only=True, source="public_history")
     outputs = JobOutputSerializer(read_only=True, source='output_files')
     inputs = JobInputSerializer(source='job_inputs', read_only=True)

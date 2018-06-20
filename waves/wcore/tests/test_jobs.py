@@ -3,13 +3,11 @@ from __future__ import unicode_literals
 import logging
 import os
 
+from django.contrib.auth import get_user_model
 from django.core import mail
-from django.utils import timezone
 
 from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.models import get_service_model, get_submission_model
-from django.contrib.auth import get_user_model
-from waves.wcore.settings import waves_settings as config
 from waves.wcore.tests.base import BaseTestCase
 
 logger = logging.getLogger(__name__)

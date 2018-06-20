@@ -1,8 +1,21 @@
 from __future__ import unicode_literals
 
+
+import warnings
+
 from waves_core.settings import *
 
+try:
+    from django_crontab import *
+except ImportError:
+    warnings.warn("Please install django_crontab package")
+    exit(1)
+
 CLI_LOG_LEVEL = 'WARNING'
+
+INSTALLED_APPS += [
+    'django_crontab'
+]
 
 LOGGING = {
     'version': 1,
@@ -23,7 +36,7 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'waves-cli.log'),
             'formatter': 'verbose',
             'backupCount': 10,
-            'maxBytes': 1024*1024*5
+            'maxBytes': 1024 * 1024 * 5
         },
     },
 
@@ -56,3 +69,13 @@ LOGGING = {
 
     }
 }
+
+# CRONTAB JOBS
+CRONTAB_COMMAND_SUFFIX = '2>&1'
+CRONTAB_COMMAND_PREFIX = ''
+CRONTAB_DJANGO_SETTINGS_MODULE = 'waves_core.crontab'
+CRONTAB_LOCK_JOBS = True
+CRONJOBS = [
+    ('*/5 * * * *', 'django.core.management.call_command', ['wqueue', 'start']),
+    ('0 * * * *', 'django.core.management.call_command', ['wpurge', 'start']),
+]

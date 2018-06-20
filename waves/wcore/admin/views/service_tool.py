@@ -27,7 +27,7 @@ class ServiceParamImportView(RunnerImportToolView):
         try:
             self.object = Service.objects.get(id=self.kwargs.get('service_id'))
         except ObjectDoesNotExist as e:
-            messages.error(self.request, message='Unable to retrieve runner from request')
+            messages.error(self.request, message='Unable to retrieve runner from request %s' % e.message)
 
     def get_form_kwargs(self):
         kwargs = super(ServiceParamImportView, self).get_form_kwargs()
@@ -42,16 +42,16 @@ class ServiceParamImportView(RunnerImportToolView):
 
 
 class ServiceDuplicateView(View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         try:
-            service = get_object_or_404(Service, id=kwargs['service_id'])
+            service = get_object_or_404(Service, id=self.kwargs.get('service_id'))
             new_service = service.duplicate()
             messages.add_message(request, level=messages.SUCCESS, message="Service successfully copied, "
                                                                           "you may edit it now")
             return redirect(reverse('admin:wcore_service_change', args=[new_service.id]))
         except DatabaseError as e:
             messages.add_message(request, level=messages.WARNING, message="Error occurred during copy: %s " % e)
-            return redirect(reverse('admin:wcore_service_change', args=[kwargs['service_id']]))
+            return redirect(reverse('admin:wcore_service_change', args=[self.kwargs.get('service_id')]))
 
 
 class ServiceExportView(ModelExportView):
