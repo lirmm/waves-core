@@ -10,7 +10,9 @@ These examples use coreapi package functionalities
 Interact with services
 ----------------------
 
-You can interact with a waves-api instance by using coreapi. These examples to show how to print a list of services, get details of a service or a submission.
+You can interact with a waves-api instance by using coreapi.
+These examples show how to get a list of services or details of a service, a submission or inputs and outputs expected
+
 .. code-block:: python
 
     from coreapi import Client, auth
@@ -43,7 +45,7 @@ You can interact with a waves-api instance by using coreapi. These examples to s
 Authenticate with token:
 ------------------------
 
-Some WAVES API entries required to be authenticated (jobs list, job details, job submission)
+Some WAVES API entries required to be authenticated (jobs list, job details, job submission). Token are given by the waves administrators.
 
 .. code-block:: python
 
@@ -65,6 +67,9 @@ Some WAVES API entries required to be authenticated (jobs list, job details, job
 
 Create a job:
 -------------
+
+It's also possible to create a job directly from your client interface. Here we see how to create a job called "Job Name" which use a "default" submission of "sample_service" service.
+Inputs are defined by expected inputs of the "sample_service". Be aware, "validate=false" is required to submit a file
 
 .. code-block:: python
 

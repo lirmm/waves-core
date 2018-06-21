@@ -5,7 +5,7 @@ Job queue management
 Job List
 --------
 
-Jobs are listed in first screen when you click on **jobs** link in main backoffice view
+Jobs are listed in first screen when you click on **jobs** link in main backoffice view.
 
     .. figure:: backoffice/job-list.png
         :align: center
@@ -14,7 +14,7 @@ Jobs are listed in first screen when you click on **jobs** link in main backoffi
 
 Job Details
 -----------
-On this view you may want to see job online, see associated service, or Cancel the job (if possible)
+On this view you may want to see job online, see associated service, or cancel the job (if possible).
 
 
 General Information
@@ -36,7 +36,7 @@ General Information
         :figclass: thumbnail
 
 Job History
-    Retrieve here all logged events for this job, including Administration message (may describe errors)
+    Retrieve here all logged events for this job, including administration message (may describe errors).
 
     .. figure:: backoffice/job-history.png
         :align: center

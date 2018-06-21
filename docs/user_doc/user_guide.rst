@@ -5,14 +5,14 @@ Services are defined by administrators, then configured to allow users to gain a
 
 Everything is made simple with help of dedicated back office entries.
 There, administrators firstly describe services in term of name, description, authors, citation links, edams ontology topics and operations,
-Computing infrastructure configuration (see “Execution adaptor”).
+computing infrastructure configuration (see “Execution adaptor”).
 
 Once service main data are setup, administrators can configure precisely related submission to setup inputs, execution parameters, outputs, etc…
 
 Upon service publication, it is automatically available in two ways: standard web pages including html forms, and a REST API
 service entry point to be remotely accessed from a distant application.
 
-Some more configuration can be made to tune user’s access rights, execution parameters etc. those are further detailed in this document:
+Some more configuration can be made to tune user’s access rights, execution parameters etc. Those are further detailed in this document.
 
     .. figure:: waves-admin.png
         :width: 90%

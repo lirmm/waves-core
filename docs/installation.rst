@@ -5,31 +5,25 @@ Installation
 ============
 
     .. WARNING::
-        To run WAVES, it's strongly recommended that you setup a dedicated user, because WAVES run with
+        To run WAVES-core, it's strongly recommended that you setup a dedicated user, because WAVES-core run with
         saga-python, and this module need to create some directories you might not be able to create (.radical and .saga)
         with another user (such as www-data)
 
     .. warning::
-        WAVES was initially developed with Python 2.7 and Django 1.11
+        WAVES-core was initially developed with Python 2.7 and Django 1.11
         and is currently not tested on latest version (Python 3 and Django 2.0).
-
-    .. note::
-        In order to install WAVES you need:
-            - python 2.7.X (WAVES is not yet compatible with python3)
-            - pip package manager
 
 You can install WAVES-core either as a stand alone application, or inside any existing Django project
 
 0. Prerequisites
 ----------------
     .. note::
-        In order to install WAVES you will need:
-            - python 2.7.X (WAVES is not yet compatible with python 3.5)
+        In order to install WAVES-core you will need:
+            - python 2.7.X (WAVES-core is not yet compatible with python 3.5)
             - pip package manager
             - A web server: `Apache <https://httpd.apache.org/>`_ or `NGINX <https://nginx.org/>`_
-            - A database backend (Mysql or Postgres) but by default WAVES runs with sqlite
+            - A database backend (Mysql or Postgres) but by default WAVES-core runs with sqlite
 
-    In case you need to use MySQL with WAVES, you may install following dependencies:
 
 
 1. Install WAVES-core as stand alone application
@@ -64,7 +58,7 @@ You can install WAVES-core either as a stand alone application, or inside any ex
     .. code-block:: bash
 
         (.venv) user@host:~your_app$ ./manage.py check
-        (.venv) user@host:~your_app$ ./manage.py makemigrations wcore (may only display "No changes detected in app 'wcore'"
+        (.venv) user@host:~your_app$ ./manage.py makemigrations wcore (may only display "No changes detected in app 'wcore'")
         (.venv) user@host:~your_app$ ./manage.py migrate
         (.venv) user@host:~your_app$ ./manage.py createsuperuser (then follow instructions)
 
@@ -79,7 +73,7 @@ You can install WAVES-core either as a stand alone application, or inside any ex
         (.venv) user@host:~your_app$ ./manage.py runserver
 
     Go to http://127.0.0.1:8000:admin to setup your services
-    WAVES comes with default front pages visible at http://127.0.0.1:8000
+    WAVES-core comes with default front pages visible at http://127.0.0.1:8000
 
 
 2. Install WAVES-core inside existing Django project
@@ -89,7 +83,7 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
     .. seealso::
 
-        WAVES is a reusable app see: https://docs.djangoproject.com/en/1.11/intro/reusable-apps/#your-project-and-your-reusable-app
+        WAVES-core is a reusable app see: https://docs.djangoproject.com/en/1.11/intro/reusable-apps/#your-project-and-your-reusable-app
 
 
     2.0. Setup a virtualenv for your project:
@@ -99,7 +93,7 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
     2.1. Install waves package:
 
-        Use pip to install waves-core as thrid party package.
+        Use pip to install waves-core as third party package.
 
         ``pip install waves-core``
 
@@ -149,14 +143,12 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
     2.5. Extra configuration:
 
-    Depending on your needs, you might want to expose WAVES API to any registered user, if so have a look at:
-    - see `Corsheader <https://github.com/ottoyiu/django-cors-headers>`_ to allow cross-origin Resource Sharing
+    Depending on your needs, you might want to expose WAVES API to any registered user, if so have a look at: `Corsheader <https://github.com/ottoyiu/django-cors-headers>`_ to allow cross-origin Resource Sharing
 
-    Some WAVES-core API services requires authentication:
-    - see `DRF authentication <http://www.django-rest-framework.org/api-guide/authentication>`_ for authenticating methods API POST calls
+    Some WAVES-core API services requires authentication, see `DRF authentication <http://www.django-rest-framework.org/api-guide/authentication>`_ for authenticating methods API POST calls
 
     .. note::
-        WAVES-core allows simple "api_key" authentication with standard token Authentication processes, to use it simply add
+        WAVES-core allows simple "api_key" authentication with standard Token Authentication processes, to use it simply add
         'waves.authentication' in INSTALLED_APPS.
 
         This then allow to call WAVES API services with a api_key:
@@ -168,8 +160,8 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
         To use this service with apache in mod_wsgi: please mind to enable "WSGIPassAuthorization On" parameter in conf
 
-3. Use other than SqlLite default DB layer:
--------------------------------------------
+3. Use other than SqlLite default DB layer
+------------------------------------------
 
     You may need to install the Python and MySQL development headers and libraries like so:
 
