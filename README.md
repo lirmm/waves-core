@@ -36,9 +36,46 @@ Side projects
 Installation
 ------------
 
-- You can use waves-core as a stand alone application.
+- You can use WAVES-core as a stand alone application.
 - WAVES-core comply to standard reusable project layout for Django. So you may include it as a dependency in your own django project
 - Complete documentation available on `readthedocs <https://waves-core.readthedocs.io>`_
+
+
+Just have a try
+----------------
+
+A pre-installed WAVES-core with configured services is available in a `Singularity image <http://singularity.lbl.gov>`_.
+This is a good way to test a fully operating WAVES-core system with a very simple "Hello World" service and another one that run Phyml 3.1.
+Caution, this image is just for tests. All data will be loosed when singularity instance will be stopped
+
+Singularity installation : `on Linux <http://singularity.lbl.gov/install-linux>`_ or `Mac <http://singularity.lbl.gov/install-mac>`_.
+
+Download WAVES test Singularity image : `wavetest.simg <http://www.atgc-montpellier.fr/download/binaries/waves/wavestest.simg>`_
+
+Example for a Debian / Ubuntu 16.04 or after :
+
+Install Singularity :
+```angular2html
+sudo wget -O- http://neuro.debian.net/lists/xenial.us-ca.full | sudo tee /etc/apt/sources.list.d/neurodebian.sources.list
+sudo apt-key adv --recv-keys --keyserver hkp://pool.sks-keyservers.net:80 0xA5D32F012649A5A9
+sudo apt-get update
+sudo apt-get install -y singularity-container
+```
+
+Get and use wavestest.simg (caution, you need to be sudoer to start an instance)
+```angular2html
+cd ~/Documents
+wget http://www.atgc-montpellier.fr/download/binaries/waves/wavestest.simg
+sudo singularity instance.start wavestest.simg waves
+sudo singularity run instance://waves
+```
+
+Image is launched and WAVES-core is running. Open localhost:8000 on your favorite browser. Login with "admin" and "motdepasse".
+
+At the end of your tests
+```angular2html
+sudo singularity instance.stop waves
+```
 
 
 Support
