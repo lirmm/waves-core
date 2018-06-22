@@ -44,9 +44,9 @@ Installation
 Just have a try
 ----------------
 
-A pre-installed WAVES-core with configured services is available in a `Singularity image <http://singularity.lbl.gov>`_.
-This is a good way to test a fully operating WAVES-core system with a very simple "Hello World" service and another one that run Phyml 3.1.
-Caution, this image is just for tests. All data will be loosed when singularity instance will be stopped
+This is a `Singularity image <http://singularity.lbl.gov>`_ container with functional WAVES installation including two pre-configured services ('Hello world' and 'PhyML').
+It is a good way to test a fully operating WAVES-core instance.
+To be used with caution : all data will be lost when singularity instance is stopped.
 
 Singularity installation : `on Linux <http://singularity.lbl.gov/install-linux>`_ or `Mac <http://singularity.lbl.gov/install-mac>`_.
 
