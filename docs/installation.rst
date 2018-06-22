@@ -25,6 +25,9 @@ You can install WAVES-core either as a stand alone application, or inside any ex
             - A database backend (Mysql or Postgres) but by default WAVES-core runs with sqlite
 
 
+WAVES is developed with `Django <https://www.djangoproject.com/>`_. You may need to know a little about `it <https://docs.djangoproject.com/en/1.11/>`_.
+
+
 
 1. Install WAVES-core as stand alone application
 ------------------------------------------------
