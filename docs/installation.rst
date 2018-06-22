@@ -177,4 +177,4 @@ You can install WAVES-core either as a stand alone application, or inside any ex
 
     .. seealso::
 
-        https://docs.djangoproject.com/fr/1.11/ref/databases/
+        https://docs.djangoproject.com/en/1.11/ref/databases/

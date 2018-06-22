@@ -12,19 +12,19 @@ Job Workflow
         :align: center
         :figclass: thumbnail
 
-        Classic Job execution workflow in WAVES
+        Classic Job execution workflow in WAVES-core
 
 
 .. _extending-adaptor-label:
 
-Create a WAVES adaptor
-======================
+Create a WAVES-core adaptor
+===========================
 
-The base abstract class "JobAdaptor" defines methods to manage a simple job execution workflow:
+The base abstract class "JobAdaptor" defines methods to manage a simple job execution workflow.
 
 First of all, override class ``__init__(self, *args, **kwargs)`` method if you need more params to create your Adaptor instance.
 Then accordingly, override ``init_params(self)`` property function in order to return a dictionary for each entry expected in constructor.
-It allows WAVES-core administration module to automatically load these entries in Computing infrastructure :ref:`configuration parameters panel <environment-set-up>`.
+It allows WAVES-core administration module to automatically load these entries in computing infrastructure :ref:`configuration parameters panel <environment-set-up>`.
 
     .. seealso::
         Look at source to find what to override and how it's already made in WAVES-core adaptors :ref:`Sources <adaptor-base-class-label>`
@@ -51,13 +51,13 @@ It allows WAVES-core administration module to automatically load these entries i
     .. note::
         The job execution workflow is then relayed to computing infrastructure, WAVES does not intend to be a workflow manager, supervisor.
 
-    * ``job_status(self, job)``: Job current status check, map WAVES status map to computing infra. Return current Job.
+    * ``job_status(self, job)``: Job current status check, map WAVES-core status map to computing infra. Return current Job.
 
         - Override ``_job_status(self, job)`` to retrieve job status from your platform (should return an item mapped in _state_map
 
     * ``job_results(self, job)``: Once job is "remotely" finished, get (possibly download) the expected outputs from computing infra to job working dir.
 
-        - Override ``_job_results(self, job)`` to retrieve job outputs and get them back to WAVES platform
+        - Override ``_job_results(self, job)`` to retrieve job outputs and get them back to WAVES-core platform
 
     * ``job_run_details(self, job)``: Upon results retrieval, get job stats on computing infrastructure
 
@@ -68,10 +68,10 @@ It allows WAVES-core administration module to automatically load these entries i
         - Override ``_cancel_job(self, job)`` to perform job cancellation on your platform
 
 Each of the preceding method definition calls an inner method prefixed by '_' (_connect, _disconnect, etc. ) meant to be overridden in subclasses to actually process the action
-on computing infrastructure. FurtherMore, an adaptor need to declare a simple dictionary mapping computing infrastructure job states code to WAVES ones :
+on computing infrastructure. Furthermore, an adaptor need to declare a simple dictionary mapping computing infrastructure job states code to WAVES-core ones :
 _states_map = {}.
 
-WAVES uses constant for defining its jobs states as follows (available in waves.wcore.adaptors.const.py)
+WAVES-core uses constant for defining its jobs states as follows (available in waves.wcore.adaptors.const.py)
 
 Job states constants
 --------------------
@@ -138,7 +138,7 @@ in case these does not fit perfectly developers expectations:
 * Submission: waves.wcore.models.services.BaseSubmission
 
 
-To extends these models, simply declare your classes in your models, and then declare your classes as new “Service” and “Submission” models in your Django settings.py as follow:
+To extend these models, simply declare your classes in your models, and then declare your classes as new “Service” and “Submission” models in your Django settings.py as follow:
 
 WCORE_SERVICE_MODEL = 'yourapp.YourOverriddenServiceClass'
 WCORE_SUBMISSION_MODEL = ‘yourapp.YourOverriddenSubmissionClass’
@@ -152,8 +152,8 @@ Remember to always use shortcut methods "get_service_model" and "get_submission_
 Overriding WAVES templates
 ==========================
 
-Well, as WAVES-core complies to Django reusable app standard, it's pretty straigthforward to extends WAVES base templates following Django documentation
-Each submission configuration results in a dedicated form and a dedicated REST API entry.
+Well, as WAVES-core complies to Django reusable app standard, it's pretty straigthforward to extend WAVES-core base templates following Django documentation,
+each submission configuration results in a dedicated form and a dedicated REST API entry.
 Thanks to Django framework, rendering forms inside other pages is made easy with standard templatetags dedicated to WAVES-core generated forms.
 
 Related urls
@@ -188,7 +188,7 @@ Template path                           Description
 
 
 .. hint::
-    WAVES-core allow override for a single service / submission template, following naming convention for templates, simply create a new template
+    WAVES-core allows override for a single service / submission template, following naming convention for templates, simply create a new template
     in your templates subdir 'waves/override/' (service_app_name is the app_short_code defined in BO for the service):
 
     * For service: service_[service_app_name]_detail.html
@@ -225,11 +225,11 @@ Service endpoints
 METHOD  URI                                                                             Description
 ======  =============================================================================   ===================================================================================
 GET     /waves/api/services                                                             List all available services
-GET     /waves/api/services/{service_app_name}                                          Retrieve Service details
+GET     /waves/api/services/{service_app_name}                                          Retrieve service details
 GET     /waves/api/services/{service_app_name}/form                                     Retrieve service forms (for all submissions)
 GET     /waves/api/services/{service_app_name}/jobs                                     Retrieves services Jobs (only for logged in users)
 GET     /waves/api/services/{service_app_name}/submissions                              List all available submissions for this service
-GET     /waves/api/services/{service_app_name}/submissions/{submission_app_name}        Get Service submission detailed informations (inputs, parameters, expected outputs)
+GET     /waves/api/services/{service_app_name}/submissions/{submission_app_name}        Get Service submission detailed information (inputs, parameters, expected outputs)
 POST    /waves/api/services/{service_app_name}/submissions/{submission_app_name}/jobs   Create a new job from submitted inputs
 GET     /waves/api/services/{service_app_name}/submissions/{submission_app_name}/jobs   List all users jobs for this submission
 GET     /waves/api/services/{service_app_name}/submissions/{submission_app_name}/form   Service to load submission form as raw html
@@ -245,7 +245,7 @@ METHOD  URI                             Description
 GET     /waves/api/jobs                 List all available user’s jobs
 POST    /waves/api/jobs/{slug}/cancel   Try to cancel running job on remote calculation device if possible. Mark job as cancelled.
 DELETE  /waves/api/jobs/{slug}          Try to cancel job on remote calculation device if possible. Delete Job from DB
-GET     /waves/api/jobs/{slug}          Detailed job infos
+GET     /waves/api/jobs/{slug}          Detailed job information
 GET     /waves/api/jobs/{slug}/history  Job events  history
 GET     /waves/api/jobs/{slug}/status   Job current status
 GET     /waves/api/jobs/{slug}/inputs   List job submitted inputs

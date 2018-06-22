@@ -13,11 +13,11 @@ It is composed of computationally dedicated hardware and the software components
 
 Adaptor
 -------
-It is a Django module allowing WAVES to communicate with a specified computing infrastructure.  For each computing infrastructure, WAVES needs a dedicated adaptor.
+It is a Django module allowing WAVES-core to communicate with a specified computing infrastructure.  For each computing infrastructure, WAVES-core needs a dedicated adaptor.
 
 Service
 -------
-A service is a bioinformatic tool available online through the http protocol. It can be accessed from a web form or through  REST API calls.
+A service is a bioinformatic tool available online through the http protocol. It can be accessed from a web form or through REST API calls.
 
 Submission
 ----------
@@ -29,11 +29,11 @@ A job stands for a command with parameters. It is run on a dedicated computing i
 
 User
 ----
-A user is a client which accesses services. It can be a real person using  its web browser or a software using the REST API.
+A user is a client which accesses services. It can be a real person using a web browser or a software using the REST API.
 
 Administrator
 -------------
-An administrator is a privileged user with granted access to the WAVES back office. He manages services, submissions, adaptors and jobs.
+An administrator is a privileged user with granted access to the WAVES-core back-office. He manages configurations, services, submissions, adaptors and jobs.
 
 
 Documentation
