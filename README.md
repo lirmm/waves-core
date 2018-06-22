@@ -81,4 +81,4 @@ sudo singularity instance.stop waves
 Support
 -------
 
-If you are having issues, (or just want to say hello): we have a mailing list located at: waves-webapp@googlegroups.com
+If you are having issues, (or just want to say hello): we have a mailing list located at: waves@lirmm.fr
