@@ -30,7 +30,7 @@ Some more configuration can be made to tune user’s access rights, execution pa
        service/services
        service/submissions
        job/jobs
-       example/howto
+       howto/howto
 
 
 
