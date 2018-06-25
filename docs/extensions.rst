@@ -66,5 +66,6 @@ Just have a try
     Power off :
     
     .. code-block:: bash
+    
         sudo singularity instance.stop waves
 
