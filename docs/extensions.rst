@@ -34,7 +34,7 @@ Waves Galaxy
 Just have a try
 ----------------
 
-    This is a `Singularity image <http://singularity.lbl.gov>`_ container with functional WAVES installation including two pre-configured services ('Hello world' and 'PhyML').
+    This is a `Singularity <http://singularity.lbl.gov>`_ image containing a functional WAVES installation including two pre-configured services ('Hello world' and 'PhyML').
     It is a good way to test a fully operating WAVES-core instance.
     To be used with caution : all data will be lost when singularity instance is stopped.
 
@@ -56,6 +56,7 @@ Just have a try
     Get and use wavestest.simg (caution, you need to be sudoer to start an instance) :
 
     .. code-block:: bash
+    
         wget http://www.atgc-montpellier.fr/download/binaries/waves/wavestest.simg
         sudo singularity instance.start wavestest.simg waves
         sudo singularity run instance://waves
@@ -63,6 +64,7 @@ Just have a try
     When the instance is launched, WAVES-core is running. Open localhost:8000 on your favorite browser. Login with "admin" and "motdepasse".
 
     Power off :
+    
     .. code-block:: bash
         sudo singularity instance.stop waves
 
