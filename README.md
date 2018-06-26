@@ -20,11 +20,10 @@ Features
 - Follow and manage remote REST API access to your service platform
 - Manage user's access to your services
 
-
-> Note: \
-> WAVES main component is WAVES-core.\
-> The second component is WAVES-Galaxy. It is a WAVES adapter to interact with Galaxy instances.\
-> WAVES-demo is a custom version of WAVES-core for demo purpose only.
+.. note::
+    - WAVES main component is WAVES-core.
+    - WAVES-Galaxy is another component. It is a WAVES adapter to interact with Galaxy instances.
+    - WAVES-demo is a custom version of WAVES-core for demo purpose only.
 
 Side projects
 -------------
