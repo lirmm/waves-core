@@ -21,10 +21,10 @@ Features
 - Manage user's access to your services
 
 
-.. note::
-    - WAVES main component is WAVES-core.
-    - WAVES-Galaxy is another component. It is a WAVES adapter to interact with Galaxy instances.
-    - WAVES-demo is a custom version of WAVES-core for demo purpose only.
+> Note: \
+> WAVES main component is WAVES-core.\
+> The second component is WAVES-Galaxy. It is a WAVES adapter to interact with Galaxy instances.\
+> WAVES-demo is a custom version of WAVES-core for demo purpose only.
 
 Side projects
 -------------
