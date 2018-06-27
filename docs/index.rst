@@ -1,4 +1,4 @@
-Welcome to WAVES's CORE Documentation !
+Welcome to WAVES Documentation !
 =======================================
 
 .. toctree::
