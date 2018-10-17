@@ -75,7 +75,7 @@ WAVES is developed with `Django <https://www.djangoproject.com/>`_. You may need
         (.venv) user@host:~your_app$ ./manage.py wqueue start
         (.venv) user@host:~your_app$ ./manage.py runserver
 
-    Go to http://127.0.0.1:8000:admin to setup your services
+    Go to http://127.0.0.1:8000/admin to setup your services
     WAVES-core comes with default front pages visible at http://127.0.0.1:8000
 
 
