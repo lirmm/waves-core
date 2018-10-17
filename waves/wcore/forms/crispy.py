@@ -97,6 +97,10 @@ class FormHelper(CrispyFormHelper, WFormHelper):
             self.layout.append(
                 input_field
             )
+        if isinstance(service_input, FileInput) and not service_input.allow_copy_paste and service_input.input_samples.count()>0:
+            for sample in service_input.input_samples.all():
+                self.layout.append(Field('sp_' + service_input.api_name + '_' + str(sample.pk)))
+
 
     def init_layout(self, fields):
         l_fields = []
