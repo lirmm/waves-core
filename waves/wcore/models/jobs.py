@@ -269,7 +269,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         if self.client and 'waves.authentication' in settings.INSTALLED_APPS:
             # changer les variables d'url des templates
             return "{}{}".format(self.client.waves_user.main_domain, self.get_absolute_url())
-        return super(Job, self).link()
+        return super(Job, self).link
 
     @property
     def log_dir(self):
