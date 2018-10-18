@@ -164,7 +164,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                     logger.debug(param)
                 logger.debug('Request Data %s', request.data)
             passed_data = request.data
-            ass_email = passed_data.get('email_to', None)
+            ass_email = passed_data.get('email', None)
             try:
                 passed_data.get('api_key', None)
                 # bad hack to allow openapi calls
