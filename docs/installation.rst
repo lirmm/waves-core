@@ -20,7 +20,7 @@ You can install WAVES-core either as a stand alone application, or inside any ex
     .. note::
         In order to install WAVES-core you will need:
             - python 2.7.X (WAVES-core is not yet compatible with python 3.5)
-            - pip package manager
+            - pip package manager ($sudo apt install python-pip python-dev build-essential)
             - A web server: `Apache <https://httpd.apache.org/>`_ or `NGINX <https://nginx.org/>`_
             - A database backend (Mysql or Postgres) but by default WAVES-core runs with sqlite
 
