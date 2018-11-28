@@ -12,7 +12,7 @@ logger = logging.getLogger('waves.daemon')
 
 class Command(DaemonCommand):
     """
-    Dedicated command to summarize current WAVES specific settings
+    Dedicated command initialize daemon for old jobs purges
     """
     help = 'Managing WAVES job queue states'
     SLEEP_TIME = 2
