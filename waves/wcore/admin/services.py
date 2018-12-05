@@ -138,20 +138,11 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     display_run_params.short_description = "Runner initial params"
 
     def add_view(self, request, form_url='', extra_context=None):
-        """ Override default behavior when creating a new service:
-        Do not show "save and add another button"
-        """
         context = extra_context or {}
         context['show_save_as_new'] = False
         context['show_save_and_add_another'] = False
         context['show_save'] = False
         return super(ServiceAdmin, self).add_view(request, form_url, extra_context=context)
-
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        context = extra_context or {}
-        context['show_save_as_new'] = False
-        context['show_save_and_add_another'] = False
-        return super(ServiceAdmin, self).change_view(request, object_id, form_url, context)
 
     def submission_link(self, obj):
         """ Direct link to submission in list """
