@@ -1,15 +1,15 @@
 from __future__ import unicode_literals
 
-import logging
 from uuid import UUID
+import logging
 
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.urls import reverse
 from django.views import generic
+from django.core.exceptions import PermissionDenied
 
 from waves.wcore.exceptions.jobs import JobException
 from waves.wcore.forms.services import ServiceSubmissionForm
@@ -19,7 +19,6 @@ from waves.wcore.settings import waves_settings
 Submission = get_submission_model()
 Service = get_service_model()
 logger = logging.getLogger(__name__)
-
 
 class SubmissionFormView(generic.FormView, generic.DetailView):
     model = Service
@@ -70,7 +69,11 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
             return Submission.objects.get(slug=UUID(slug))
 
     def get_context_data(self, **kwargs):
-        form = kwargs.get('form', {'form': []})
+        if 'form' not in kwargs:
+            kwargs.update({'form': []})
+            form = None
+        else:
+            form = kwargs['form']
         # self.object = self.get_object()
         context = super(SubmissionFormView, self).get_context_data(**kwargs)
         context['submissions'] = []
