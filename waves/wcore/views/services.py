@@ -69,12 +69,11 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
             return Submission.objects.get(slug=UUID(slug))
 
     def get_context_data(self, **kwargs):
-		form = kwargs.get('form', {'form': []})
-        #if 'form' not in kwargs:
-        #    kwargs.update({'form': []})
-        #    form = None
-        #else:
-        #    form = kwargs['form']
+        if 'form' not in kwargs:
+            kwargs.update({'form': []})
+            form = None
+        else:
+            form = kwargs['form']
         # self.object = self.get_object()
         context = super(SubmissionFormView, self).get_context_data(**kwargs)
         context['submissions'] = []
