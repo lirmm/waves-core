@@ -5,8 +5,6 @@ language: python
     - sqlite3
   env:
     -DJANGO=1.11
-    -WAVES_SSH_TEST_SGE_CELL: $WAVES_SSH_TEST_SGE_CELL
-    -WAVES_TEST_SGE_BASE_DIR: $WAVES_TEST_SGE_BASE_DIR
   install:
     - pip install -r requirements.txt
     - pip install coverage==4.5.1
