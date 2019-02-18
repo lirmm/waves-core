@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lirmm/waves-core.svg?branch=master)](https://travis-ci.org/lirmm/waves-core)
+
 README
 ======
 
