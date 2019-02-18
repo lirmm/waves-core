@@ -4,7 +4,8 @@ Encryption for Service Adaptors init_params values
 from __future__ import unicode_literals
 
 from waves.wcore.settings import waves_settings
-from Crypto.Cipher import XOR
+from cryptography.fernet import Fernet
+
 import base64
 
 
@@ -19,10 +20,10 @@ class Encrypt(object):
         :param to_encode: value to encode
         :return: base64 based encoded string
         """
-        if len(waves_settings.SECRET_KEY) != 32:
+        if len(waves_settings.SECRET_KEY) < 32:
             raise RuntimeError('Encoded values must use a key at least a 32 chars length secret')
-        cipher = XOR.new(waves_settings.SECRET_KEY)
-        encoded = base64.b64encode(cipher.encrypt(to_encode))
+        encoder = Fernet(base64.urlsafe_b64encode(waves_settings.SECRET_KEY))
+        encoded = encoder.encrypt(bytes(to_encode))
         return encoded
 
     @staticmethod
@@ -31,7 +32,7 @@ class Encrypt(object):
         :param to_decode: value to decode
         :return: string initial value
         """
-        if len(waves_settings.SECRET_KEY) != 32:
+        if len(waves_settings.SECRET_KEY) < 32:
             raise RuntimeError('Encoded values must use a key at least a 32 chars length secret')
-        cipher = XOR.new(waves_settings.SECRET_KEY)
-        return cipher.decrypt(base64.b64decode(to_decode))
+        encoder = Fernet(base64.urlsafe_b64encode(waves_settings.SECRET_KEY))
+        return encoder.decrypt(bytes(to_decode))

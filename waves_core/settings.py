@@ -89,8 +89,11 @@ WSGI_APPLICATION = 'waves_core.wsgi.application'
 # DATABASE configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR + '/db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'waves',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
     }
 }
 
