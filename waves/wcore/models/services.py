@@ -479,21 +479,6 @@ class SubmissionOutput(TimeStamped, ApiModel):
             self.name = self.label
         super(SubmissionOutput, self).save(*args, **kwargs)
 
-    @property
-    def ext(self):
-        """ Return expected file output extension """
-        file_name = None
-        if '%s' in self.file_pattern and self.from_input and self.from_input.default:
-            file_name = self.name % self.from_input.default
-        elif self.from_input:
-            file_name = self.from_input.value or self.from_input.default
-        elif self.name and '%s' not in self.name and self.name:
-            file_name = self.name
-        if '.' in file_name:
-            return '.' + file_name.rsplit('.', 1)[1]
-        else:
-            return self.extension
-
     def duplicate_api_name(self, api_name):
         """ Check is another entity is set with same app_name """
         return SubmissionOutput.objects.filter(api_name=api_name, submission=self.submission).exclude(pk=self.pk)

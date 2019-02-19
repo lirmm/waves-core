@@ -18,12 +18,16 @@ class AParamSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source='help_text')
     edam_formats = CommaSeparatedListField()
     edam_datas = CommaSeparatedListField()
-    dependents_inputs = RecursiveField(many=True, read_only=True)
 
     def to_representation(self, instance):
         repr_initial = super(AParamSerializer, self).to_representation(instance)
         if instance.dependents_inputs.count() == 0:
             repr_initial.pop('dependents_inputs')
+        else:
+            repr_initial['dependents_inputs'] = {}
+            for dep_input in instance.dependents_inputs.all():
+                serializer = InputSerializer(dep_input)
+                repr_initial['dependents_inputs'].update({dep_input.api_name: serializer.to_representation(dep_input)})
         if instance.when_value is None:
             repr_initial.pop('when_value')
         return repr_initial
@@ -73,7 +77,7 @@ class FileSerializer(AParamSerializer):
         fields = AParamSerializer.Meta.fields + ['max_size', 'allowed_extensions']
 
 
-class ListSerialzer(AParamSerializer):
+class ListSerializer(AParamSerializer):
     class Meta(AParamSerializer.Meta):
         model = ListParam
         fields = AParamSerializer.Meta.fields + ['values_list']
@@ -100,7 +104,7 @@ class InputSerializer(DynamicFieldsModelSerializer):
         if isinstance(obj, FileInput):
             return FileSerializer(obj, context=self.context).to_representation(obj)
         elif isinstance(obj, ListParam):
-            return ListSerialzer(obj, context=self.context).to_representation(obj)
+            return ListSerializer(obj, context=self.context).to_representation(obj)
         elif isinstance(obj, BooleanParam):
             return BooleanSerializer(obj, context=self.context).to_representation(obj)
         elif isinstance(obj, IntegerParam):
