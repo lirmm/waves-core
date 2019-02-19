@@ -135,7 +135,7 @@ class SagaAdaptor(JobAdaptor):
     def _job_description(self, job):
         desc = dict(working_directory=job.working_dir,
                     executable=self.command,
-                    arguments=job.command_line,
+                    arguments=job.command_line_arguments,
                     output=job.stdout,
                     error=job.stderr)
         return desc

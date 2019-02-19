@@ -103,7 +103,7 @@ class WavesAPIV1TestCase(BaseAPITestCase):
                 for job_input in submission['inputs']:
                     if job_input['type'] == ParamType.TYPE_FILE:
                         i += 1
-                        input_data = self.get_test_file(job_input['name'], i)
+                        input_data = self.get_test_file()
                         logger.debug('file input %s', input_data)
                     elif job_input['type'] == ParamType.TYPE_INT:
                         input_data = int(random.randint(0, 199))
@@ -133,6 +133,9 @@ class WavesAPIV1TestCase(BaseAPITestCase):
                 self.assertEqual(response.status_code, status.HTTP_201_CREATED)
                 job = Job.objects.all().order_by('-created').first()
                 logger.debug(job)
+
+        self.assertEqual(expected_jobs, Job.objects.count())
+
         for job in Job.objects.all():
             logger.debug('Job %s ', job)
             self.assertEqual(job.status, JobStatus.JOB_CREATED)
@@ -140,7 +143,8 @@ class WavesAPIV1TestCase(BaseAPITestCase):
             self.assertIsNotNone(job.job_inputs)
             self.assertIsNotNone(job.outputs)
             self.assertGreaterEqual(job.outputs.count(), 2)
-        self.assertEqual(expected_jobs, Job.objects.count())
+            job.delete()
+
 
     def test_update_job(self):
         pass
@@ -218,6 +222,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
                 job = Job.objects.get(slug=response.data['slug'])
                 self.assertEqual(job.email_to, 'wavesapi@waves.wcore.fr')
                 logger.debug(job)
+        self.assertEqual(expected_jobs, Job.objects.count())
         for job in Job.objects.all():
             logger.debug('Job %s ', job)
             self.assertEqual(job.status, JobStatus.JOB_CREATED)
@@ -225,7 +230,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
             self.assertIsNotNone(job.job_inputs)
             self.assertIsNotNone(job.outputs)
             self.assertGreaterEqual(job.outputs.count(), 2)
-        self.assertEqual(expected_jobs, Job.objects.count())
+            job.delete()
 
     def test_cancel_job(self):
         """
@@ -244,6 +249,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         self.assertEqual(db_job.status, JobStatus.JOB_CANCELLED)
         test_cancel = self.client.put(reverse('wapi:v2:waves-jobs-cancel', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        db_job.delete()
 
     def test_delete_job(self):
         runner = Runner.objects.create(name="Mock Runner",

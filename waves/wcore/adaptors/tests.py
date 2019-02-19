@@ -8,7 +8,7 @@ from django.conf import settings
 
 from waves.wcore.adaptors.cluster import SshClusterAdaptor
 from waves.wcore.adaptors.const import JobStatus
-from waves.wcore.adaptors.exceptions import AdaptorException, AdaptorNotAvailableException
+from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.adaptors.mocks import MockJobRunnerAdaptor
 from waves.wcore.adaptors.shell import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.wcore.exceptions.jobs import JobInconsistentStateError
@@ -122,40 +122,6 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
             except AdaptorException as e:
                 logger.warning("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
 
-    def test_local_cp_job(self):
-        adaptor = self.adaptors['local']
-        logger.debug('Connecting to %s', adaptor.name)
-        job = self.create_cp_job(source_file=self.get_sample(),
-                                 submission=self.create_random_service().default_submission)
-        job.adaptor = adaptor
-        logger.info('job command line %s ', job.command_line)
-        self.run_job_workflow(job)
-
-    def test_slurm_cp_job(self):
-        if self.adaptors.has_key("sshSlurm"):
-            adaptor = self.adaptors["sshSlurm"]
-            logger.debug('Connecting to %s', adaptor.name)
-            job = self.create_cp_job(source_file=self.get_sample(),
-                                     submission=self.create_random_service().default_submission)
-            job.adaptor = adaptor
-            logger.info('job command line %s ', job.command_line)
-            self.run_job_workflow(job)
-        else:
-            self.skipTest("No Slurm configured")
-
-    def test_all_cp_jobs(self):
-        for name, adaptor in self.adaptors.items():
-            try:
-                logger.debug('Connecting to %s', adaptor.name)
-                job = self.create_cp_job(source_file=self.get_sample(),
-                                         submission=self.create_random_service().default_submission)
-                adaptor.command = 'cp'
-                job.adaptor = adaptor
-                self.run_job_workflow(job)
-            except AdaptorNotAvailableException as e:
-                logger.info('Adaptor %s is not locally available', adaptor)
-                logger.exception(e.message)
-
     def debug_job_state(self):
         logger.debug('Internal state %s, current %s', self.current_job._status, self.current_job.status)
 
@@ -193,3 +159,6 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
         self.current_job.status = JobStatus.JOB_RUNNING
         self.current_job.run_cancel()
         self.assertTrue(self.current_job.status == JobStatus.JOB_CANCELLED)
+        self.current_job.delete()
+
+

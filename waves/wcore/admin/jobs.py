@@ -113,7 +113,7 @@ class JobAdmin(WavesModelAdmin):
     list_per_page = 30
     search_fields = ('client__email', 'get_run_on')
     readonly_fields = ('title', 'slug', 'submission_service_name', 'email_to', '_status', 'created', 'updated',
-                       'get_run_on', 'command_line', 'remote_job_id', 'submission_name', 'nb_retry',
+                       'get_run_on', 'command_line_arguments', 'remote_job_id', 'submission_name', 'nb_retry',
                        'connexion_string', 'get_command_line', 'working_dir', 'exit_code', 'get_run_details')
 
     fieldsets = [
@@ -223,9 +223,9 @@ class JobAdmin(WavesModelAdmin):
         else:
             return "Unavailable"
 
-    def get_command_line(self, obj):
-        if obj.adaptor:
-            return "%s %s" % (obj.adaptor.command, obj.command_line)
+    def get_command_line(self, job):
+        if job.adaptor:
+            return "%s %s" % (job.adaptor.command, job.command_line_arguments)
         else:
             return "Unavailable"
 

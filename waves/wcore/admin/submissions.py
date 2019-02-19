@@ -249,7 +249,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     def get_command_line_pattern(self, obj):
         if not obj.adaptor:
             return "N/A"
-        return "%s %s" % (obj.adaptor.command, obj.service.command.create_command_line(inputs=obj.inputs.all()))
+        return "%s %s" % (obj.adaptor.command, obj.service.command_parser.create_command_line(inputs=obj.inputs.all()))
 
     def has_add_permission(self, request):
         return False

@@ -31,9 +31,11 @@ class JobsTestCase(BaseTestCase):
         job.status = JobStatus.JOB_PREPARED
         job.save()
         self.assertGreaterEqual(job.job_history.filter(message__contains=job.message).all(), 0)
+        work_dir = job.working_dir
         job.delete()
-        self.assertFalse(os.path.isdir(job.working_dir))
+        self.assertFalse(os.path.isdir(work_dir))
         logger.debug('Job directories has been deleted')
+
 
     def test_job_history(self):
         job = self.create_random_job()
@@ -47,6 +49,7 @@ class JobsTestCase(BaseTestCase):
             logger.debug('All history %s', job.job_history.all())
             logger.debug('Public history %s', job.public_history.all())
             raise
+        job.delete()
 
     def test_mail_job(self):
         user = User.objects.create(username='TestDomain', is_active=True)
@@ -95,3 +98,4 @@ class JobsTestCase(BaseTestCase):
         logger.debug('Mail subject: %s', sent_mail.subject)
         logger.debug('Mail from: %s', sent_mail.from_email)
         logger.debug('Mail content: \n%s', sent_mail.body)
+        job.delete()

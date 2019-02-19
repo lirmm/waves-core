@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import random
-import shutil
 import time
 from genericpath import isfile
 from os.path import join, dirname, basename
@@ -174,7 +173,7 @@ class BaseTestCase(TestCase):
             self.services.append(srv)
         return self.services
 
-    def get_test_file(self, path, index):
+    def get_test_file(self):
         from waves.wcore.settings import waves_settings
         return open(join(waves_settings.DATA_ROOT, "test.fasta"), 'rb')
 
@@ -192,16 +191,6 @@ class TestJobWorkflowMixin(TestCase):
     @staticmethod
     def create_base_job(title="Sample Empty Job -- Test", submission=None):
         job = Job.objects.create(title=title, submission=submission)
-        return job
-
-    def create_cp_job(self, source_file, submission):
-        job = self.create_base_job('Sample CP job', submission)
-        shutil.copy(source_file, job.working_dir)
-        job.inputs = [JobInput.objects.create(label="File To copy", name='source',
-                                              value=basename(source_file), param_type=ParamType.TYPE_FILE, job=job),
-                      JobInput.objects.create(label="Destination Dir", name="dest",
-                                              value='dest_copy.txt', param_type=ParamType.TYPE_TEXT, job=job)]
-        job.outputs = [JobOutput.objects.create(_name='Copied File', name='dest', value=job.inputs[1].value, job=job)]
         return job
 
     def run_job_workflow(self, job):
@@ -237,15 +226,17 @@ class TestJobWorkflowMixin(TestCase):
             for output_job in job.outputs.all():
                 # TODO reactivate job output verification as soon as possible
                 if not isfile(output_job.file_path):
-                    logger.warning("Job <<%s>> did not output expected %s (test_data/jobs/%s/) ",
-                                   job.title, output_job.value, job.slug)
+                    logger.warning("Job <<%s>> did not output expected %s (%s) ",
+                                   job.title, output_job.value, output_job.file_path)
                     self.fail('Expected output not present')
                 else:
                     logger.info("Expected output file found : %s ", output_job.file_path)
             self.assertTrue(job.status == JobStatus.JOB_TERMINATED)
+            self.assertEqual(job.exit_code, 0)
             job.delete()
         else:
             logger.warning('problem with job status %s', job.get_status_display())
+            self.fail("Job failed")
 
     def get_sample(self):
         from waves.wcore.settings import waves_settings
