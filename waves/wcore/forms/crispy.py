@@ -5,6 +5,8 @@ from crispy_forms.helper import FormHelper as CrispyFormHelper
 from crispy_forms.layout import Layout, Field, Div, HTML, Reset, Submit
 
 from waves.wcore.forms.helper import WFormHelper
+from waves.wcore.models.const import ParamType
+from decimal import Decimal
 from waves.wcore.models.inputs import FileInputSample, FileInput
 from waves.wcore.settings import waves_settings
 
@@ -56,13 +58,26 @@ class FormHelper(CrispyFormHelper, WFormHelper):
         )
         wrapper = dict()
         if service_input.parent is not None and not isinstance(service_input, FileInputSample):
-            field_id += '_' + service_input.parent.api_name + '_' + service_input.when_value
+            field_id += '_' + service_input.parent.api_name + '_' + service_input.api_name
             dependent_on = service_input.parent.api_name
             dependent_4_value = service_input.when_value
             field_dict.update(dict(dependent_on=service_input.parent.api_name,
-                                   dependent_4_value=service_input.when_value))
+                                   dependent_4_value=str(service_input.when_value)))
             when_value = self.form_obj.data.get(service_input.parent.api_name, service_input.parent.default)
-            if service_input.when_value != when_value:
+            if when_value is None:
+                when_value = False
+            hide_dep = service_input.when_value_python != when_value
+            if when_value is not None:
+                if type(service_input.when_value_python) is int:
+                    hide_dep = (service_input.when_value_python != int(when_value))
+                    print "hide dep", hide_dep, when_value, service_input.when_value_python
+                elif type(service_input.when_value_python) is Decimal:
+                    hide_dep = (service_input.when_value_python != Decimal(when_value.strip(' "')))
+                elif type(service_input.when_value_python) is bool:
+                    bool_value = str(when_value).lower() in ("yes", "true", "t", "1")
+                    hide_dep = (service_input.when_value_python != bool_value)
+
+            if hide_dep:
                 wrapper = dict(wrapper_class="hid_dep_parameter", disabled="disabled")
             else:
                 wrapper = dict(wrapper_class="dis_dep_parameter")
@@ -113,6 +128,7 @@ class FormHelper(CrispyFormHelper, WFormHelper):
             else:
                 self.layout.append(input_field)
         elif not isinstance(service_input, FileInputSample):
+            field_dict.update(wrapper)
             input_field = Field(service_input.api_name, **field_dict)
             self.layout.append(input_field)
 

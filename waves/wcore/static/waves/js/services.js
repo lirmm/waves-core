@@ -8,20 +8,23 @@
     function toggleDependents(elem) {
         let dependents = $("[dependent-on='" + elem.attr("name") + "']");
         let has_dep = elem.val();
-        console.log('Type obj:', elem, has_dep, elem.is(':visible'));
+        //console.log('Type obj:', elem, has_dep, elem.is(':visible'));
         if (elem.attr('type') === 'checkbox' || elem.attr('type') === 'radio') {
             if (elem.prop('checked') === true)
                 has_dep = 'True';
             else
                 has_dep = 'False';
+        } else {
+            if (elem.attr('type') === 'file') {
+                has_dep = elem.is(':visible') ? 'True' : 'False';
+            } else {
+                has_dep = elem.is(':visible') ? elem.val(): null;
+            }
         }
-        if (elem.attr('type') === 'file'){
-            has_dep = elem.is(':visible') ? 'True': 'False';
-        }
-        console.log('Event fired ! ' + has_dep);
+        //console.log('Event fired ! ' + has_dep);
         dependents.each(function () {
-            console.log('dependent:', $(this), $(this).attr('dependent-4-value'), has_dep);
-            if ($(this).attr('dependent-4-value') === has_dep) {
+            //console.log('dependent:', $(this), $(this).attr('dependent-4-value'), has_dep);
+            if ($(this).attr('dependent-4-value') == has_dep) {
                 $('#tab_pane_' + $(this).attr('name')).toggle(true);
                 $('#div_id_' + $(this).attr('name')).toggle(true)
                 $(this).trigger('show');
@@ -37,7 +40,7 @@
 
     $(document).ready(function () {
         $('.btn-file :file').on('fileselect', function (event, numFiles, label) {
-            var input = $(this).parents('.input-group').find(':text'),
+            let input = $(this).parents('.input-group').find(':text'),
                 log = numFiles > 1 ? numFiles + ' files selected' : label;
             if (input.length) {
                 input.val(log);
@@ -47,13 +50,13 @@
 
         });
         $(document).on('change', '.btn-file :file', function () {
-            var input = $(this),
+            let input = $(this),
                 numFiles = input.get(0).files ? input.get(0).files.length : 1,
                 label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
             input.trigger('fileselect', [numFiles, label]);
         });
-        $('.has_dependent').on('show hide change', function (e) {
-            console.log('Type event:', $(this), e);
+        $('.has_dependent').on('show hide change keyup', function (e) {
+            // console.log('Type event:', $(this), e);
             toggleDependents($(this))
         });
 

@@ -5,17 +5,17 @@ from decimal import Decimal
 from os.path import basename
 
 import swapper
+from django import forms
 from django.core.exceptions import ValidationError
 from django.db import models
-from django import forms
 from django.utils.safestring import mark_safe
-from polymorphic.models import PolymorphicModel, PolymorphicManager
+from polymorphic.models import PolymorphicModel
 
 from waves.wcore.models.base import WavesBaseModel, Ordered, ApiModel
+from waves.wcore.models.const import OptType, ParamType
 from waves.wcore.settings import waves_settings
 from waves.wcore.utils.storage import file_sample_directory, waves_storage
 from waves.wcore.utils.validators import validate_list_comma, validate_list_param
-from waves.wcore.models.const import OptType, ParamType
 
 __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam', 'NumberParam',
            'ListParam', 'IntegerParam', 'TextParam', 'FileInputSample', 'SampleDepParam']
@@ -109,6 +109,17 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
 
     def check_when_value(self, value):
         return True
+
+    @property
+    def when_value_python(self):
+        if self.parent and self.when_value:
+            if isinstance(self.parent, IntegerParam):
+                return int(self.when_value.strip(' "'))
+            elif isinstance(self.parent, BooleanParam):
+                return self.when_value.lower() in ("yes", "true", "t", "1")
+            elif isinstance(self.parent, DecimalParam):
+                return Decimal(self.when_value.strip(' "'))
+        return self.when_value
 
     @property
     def param_type(self):
