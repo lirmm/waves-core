@@ -292,8 +292,7 @@ class DecimalParam(NumberParam, AParam):
         return ParamType.TYPE_DECIMAL
 
     def form_widget(self, data=None):
-        widget = forms.DecimalField(**self.field_dict(data))
-        widget.attrs['step'] = self.step
+        widget = forms.DecimalField(widget=forms.NumberInput(attrs={'step': self.step}), **self.field_dict(data))
         return {self.api_name: widget}
 
 
@@ -316,8 +315,7 @@ class IntegerParam(NumberParam, AParam):
         return ParamType.TYPE_INT
 
     def form_widget(self, data=None):
-        widget = forms.IntegerField(**self.field_dict(data))
-        widget.attrs['step'] = self.step
+        widget = forms.IntegerField(widget=forms.NumberInput(attrs={'step': self.step}), **self.field_dict(data))
         return {self.api_name: widget}
 
 

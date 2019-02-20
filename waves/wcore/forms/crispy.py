@@ -114,7 +114,7 @@ class FormHelper(CrispyFormHelper, WFormHelper):
                 self.layout.append(input_field)
         elif not isinstance(service_input, FileInputSample):
             input_field = Field(service_input.api_name, **field_dict)
-            self.layout.append(input_field, **wrapper)
+            self.layout.append(input_field)
 
     def init_layout(self, fields):
         l_fields = []
