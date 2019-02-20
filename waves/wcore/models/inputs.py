@@ -293,7 +293,7 @@ class DecimalParam(NumberParam, AParam):
 
     def form_widget(self, data=None):
         widget = forms.DecimalField(**self.field_dict(data))
-        # widget.attrs['step'] = self.step
+        widget.attrs['step'] = self.step
         return {self.api_name: widget}
 
 
@@ -317,7 +317,7 @@ class IntegerParam(NumberParam, AParam):
 
     def form_widget(self, data=None):
         widget = forms.IntegerField(**self.field_dict(data))
-        # widget.attrs['step'] = self.step
+        widget.attrs['step'] = self.step
         return {self.api_name: widget}
 
 
