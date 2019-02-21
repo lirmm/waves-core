@@ -30,11 +30,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '0jmf=ngd^2**h3km5@#&w21%hlj9kos($2=igsqh8-38_9g1$1'
+SECRET_KEY = os.getenv('SECRET_KEY', '0jmf=ngd^2**h3km5@#&w21%hlj9kos($2=igsqh8-38_9g1$1')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-ALLOWED_HOSTS = []
+DEBUG = (os.getenv('DEBUG') == 'True')
+# You might update this value when configuring production params
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -89,8 +90,15 @@ WSGI_APPLICATION = 'waves_core.wsgi.application'
 # DATABASE configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR + '/db.sqlite3',
+        'ENGINE': os.getenv('SQL_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.getenv('SQL_DATABASE', os.path.join(BASE_DIR, 'db.sqlite3')),
+        'USER': os.getenv('SQL_USER', 'user'),
+        'PASSWORD': os.getenv('SQL_PASSWORD', 'password'),
+        'HOST': os.getenv('SQL_HOST', 'localhost'),
+        'PORT': os.getenv('SQL_PORT', '3306'),
+        'OPTIONS': {
+            'sql_mode': 'traditional',
+        }
     }
 }
 
@@ -207,6 +215,7 @@ LOG_DIR = os.path.join(BASE_DIR, 'data/logs')
 APP_LOG_LEVEL = 'WARNING'
 TEST_DATA_ROOT = os.path.join(BASE_DIR, "tests", 'data')
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -250,8 +259,7 @@ LOGGING = {
 }
 
 configFile = join(BASE_DIR, 'tests', 'settings.ini')
-try:
-    assert (isfile(configFile))
+if isfile(configFile):
     Config = ConfigParser.SafeConfigParser()
     Config.read(configFile)
     WAVES_TEST_SSH_HOST = Config.get('saga', 'WAVES_TEST_SSH_HOST')
@@ -273,6 +281,3 @@ try:
     WAVES_SLURM_TEST_SSH_USER_PASS = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_PASS')
     WAVES_SLURM_TEST_SSH_QUEUE = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_QUEUE')
     WAVES_SLURM_TEST_SSH_BASE_DIR = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_BASE_DIR')
-except AssertionError:
-    # Don't load variables from ini files they are initialized elsewhere (i.e lab ci)
-    pass

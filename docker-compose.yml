@@ -1,0 +1,46 @@
+version: '3'
+services:
+  web:
+    build: .
+    command: 'gunicorn waves_core.wsgi:application --bind 0.0.0.0:8000'
+    volumes:
+      - 'app:/usr/src/app'
+      - 'static_volume:/usr/src/app/waves/staticfiles'
+      - 'media_volume:/usr/src/app/waves/mediafiles'
+    expose:
+      - 8000
+    environment:
+      - 'SECRET_KEY=#8!sm8)81%xfwnqw%4s5!+fpey^)2a0+tf5f%8_-mke_9a_ddw'
+      - SQL_ENGINE=django.db.backends.mysql
+      - SQL_DATABASE=waves
+      - SQL_USER=waves
+      - SQL_PASSWORD=waves
+      - SQL_HOST=mysql
+      - SQL_PORT=3306
+      - DATABASE=mysql
+      - DEBUG=False
+    depends_on:
+      - mysql
+    ports:
+      - '8001:8000'
+  nginx:
+    build: ./nginx
+    volumes:
+      - 'static_volume:/usr/src/app/waves/staticfiles'
+    ports:
+      - '1337:80'
+    depends_on:
+      - web
+  mysql:
+    image: 'mysql:5.6'
+    environment:
+      - MYSQL_ROOT_PASSWORD=please_change_me
+      - MYSQL_USER=waves
+      - MYSQL_PASSWORD=waves
+      - MYSQL_DATABASE=waves
+    ports:
+      - '3306'
+volumes:
+  static_volume: null
+  media_volume: null
+  app: null
