@@ -1,16 +1,17 @@
 version: '3'
 services:
+
   web:
     build: .
     command: 'gunicorn waves_core.wsgi:application --bind 0.0.0.0:8000'
     volumes:
-      - 'app:/usr/src/app'
+      - 'app:/usr/src/app/'
       - 'static_volume:/usr/src/app/waves/staticfiles'
       - 'media_volume:/usr/src/app/waves/mediafiles'
     expose:
       - 8000
     environment:
-      - 'SECRET_KEY=#8!sm8)81%xfwnqw%4s5!+fpey^)2a0+tf5f%8_-mke_9a_ddw'
+      - SECRET_KEY=ThisIsASampleSecretKeyLongEnoughForRun
       - SQL_ENGINE=django.db.backends.mysql
       - SQL_DATABASE=waves
       - SQL_USER=waves
@@ -27,6 +28,7 @@ services:
     build: ./nginx
     volumes:
       - 'static_volume:/usr/src/app/waves/staticfiles'
+      - 'media_volume:/usr/src/app/waves/mediafiles'
     ports:
       - '1337:80'
     depends_on:

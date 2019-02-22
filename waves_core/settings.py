@@ -95,10 +95,7 @@ DATABASES = {
         'USER': os.getenv('SQL_USER', 'user'),
         'PASSWORD': os.getenv('SQL_PASSWORD', 'password'),
         'HOST': os.getenv('SQL_HOST', 'localhost'),
-        'PORT': os.getenv('SQL_PORT', '3306'),
-        'OPTIONS': {
-            'sql_mode': 'traditional',
-        }
+        'PORT': os.getenv('SQL_PORT', '3306')
     }
 }
 
