@@ -22,6 +22,8 @@ services:
       - DEBUG=False
     depends_on:
       - mysql
+    networks:
+      - mdr_network
     ports:
       - '8001:8000'
   nginx:
@@ -33,6 +35,8 @@ services:
       - '1337:80'
     depends_on:
       - web
+    networks:
+      - mdr_network
   mysql:
     image: 'mysql:5.6'
     environment:
@@ -42,7 +46,13 @@ services:
       - MYSQL_DATABASE=waves
     ports:
       - '3306'
+    networks:
+      - mdr_network
 volumes:
   static_volume: null
   media_volume: null
   app: null
+
+networks:
+    mdr_network:
+        driver: bridge
