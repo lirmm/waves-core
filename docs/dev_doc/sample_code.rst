@@ -48,6 +48,7 @@ Authenticate with token
 Some WAVES API entries require to be authenticated (jobs list, job details, job submission). Token are given by the administrator.
 
 .. code-block:: python
+
     client = Client(decoders=decoders,
                 auth=auth.TokenAuthentication(
                     token="6241961ef45e4bbe7bb01a05f938ed9f0f2a3926",
@@ -63,7 +64,6 @@ Some WAVES API entries require to be authenticated (jobs list, job details, job 
         print(job_details['created'])
         print(job_details['updated'])
 
-
 Integrate a WAVES service form
 ------------------------------
 
@@ -71,6 +71,7 @@ You've got a website and you want your visitors could submit jobs? The better wa
 Here, you're supposed to know there is a service named "sample_service" defined on demo WAVES instance (as you see in serviceList above).
 
 .. code-block:: python
+
     from coreapi import Client, auth
     from coreapi.codecs import CoreJSONCodec, JSONCodec, TextCodec
     decoders = [JSONCodec(), CoreJSONCodec(), TextCodec()]
@@ -84,6 +85,7 @@ Now, you just render this form into your template (ex. in a django tpl).
     Don't forget to add forms.css and services.js from your waves instance as in this sample.
 
 .. code-block:: django
+
     {% block head %}
        {% addtoblock "waves_forms_css" %} <link rel="stylesheet" href="http://waves.demo.atgc-montpellier.fr/static/waves/css/forms.css">{% endaddtoblock %}
     {% endblock %}
