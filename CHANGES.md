@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+Version 1.7.0 - 2019-02-28
+--------------------------
+
+- [Encryption] - MAJOR update on cryptography library in use within WAVES - https://github.com/pyca/cryptography see README
+
+
 Version 1.6.x - 2018-03-10
 ----------------------------
 

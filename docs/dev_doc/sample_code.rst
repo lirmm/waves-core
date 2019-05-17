@@ -64,6 +64,43 @@ Some WAVES API entries require to be authenticated (jobs list, job details, job 
         print(job_details['created'])
         print(job_details['updated'])
 
+Integrate a WAVES service form
+------------------------------
+
+You've got a website and you want your visitors could submit jobs? The better way for this is to add in your website using API.
+Here, you're supposed to know there is a service named "sample_service" defined on demo WAVES instance (as you see in serviceList above).
+
+.. code-block:: python
+
+    from coreapi import Client, auth
+    from coreapi.codecs import CoreJSONCodec, JSONCodec, TextCodec
+    decoders = [JSONCodec(), CoreJSONCodec(), TextCodec()]
+    client = Client(decoders=decoders)
+    document = client.get('http://waves.demo.atgc-montpellier.fr/waves/api/schema')
+    wavesform = client.action(document, ['services', 'form'], params={"service_app_name": 'sample_service'}, validate=False, encoding='multipart/form-data')
+
+Now, you just render this form into your template (ex. in a django tpl).
+
+.. warning::
+    Don't forget to add forms.css and services.js from your waves instance as in this sample.
+
+.. code-block:: django
+
+    {% block head %}
+       {% addtoblock "waves_forms_css" %} <link rel="stylesheet" href="http://waves.demo.atgc-montpellier.fr/static/waves/css/forms.css">{% endaddtoblock %}
+    {% endblock %}
+
+    {% block main %}
+    <!-- Import the web form as is -->
+    {{ wavesform|safe }}
+    {% endblock main %}
+
+    {% block footer %}
+        {% addtoblock "js" %}
+            <script src="http://waves.demo.atgc-montpellier.fr/static/waves/js/services.js"></script>
+        {% endaddtoblock %}
+    {% endblock footer %}
+
 
 Integrate a WAVES service form
 ------------------------------
@@ -128,5 +165,4 @@ Inputs are defined by expected inputs of the "sample_service". Be aware, "valida
                       }, validate=False, encoding='multipart/form-data')
     job_list = client.action(document, ['jobs', 'list'])
     print(job_list)
-
 

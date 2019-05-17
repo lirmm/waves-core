@@ -9,7 +9,7 @@ djangorestframework==3.8.2
 backports.ssl-match-hostname
 inflection==0.3.1
 psutil==5.4.5
-pycrypto==2.6.1
+cryptography==2.5
 python-magic==0.4.15
 saga-python==0.50.1
 setproctitle==1.1.10

@@ -138,9 +138,6 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     display_run_params.short_description = "Runner initial params"
 
     def add_view(self, request, form_url='', extra_context=None):
-        """ Override default behavior when creating a new service:
-        Do not show "save and add another button"
-        """
         context = extra_context or {}
         context['show_save_as_new'] = False
         context['show_save_and_add_another'] = False
