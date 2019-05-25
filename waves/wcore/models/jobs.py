@@ -177,13 +177,11 @@ class JobManager(models.Manager):
             # test service input mandatory, without default and no value
             if service_input.required and not service_input.default and incoming_input is None:
                 raise JobMissingMandatoryParam(service_input.label, job)
-            logger.debug("Current Service Input: %s, %s, %s", service_input, service_input.required, incoming_input)
-            job.logger.debug('Param %s: %s', service_input.api_name, incoming_input)
-            logger.debug('Param %s: %s', service_input.api_name, incoming_input)
+            logger.debug("Current Service Input: %s, %s", service_input, service_input.required)
+            job.logger.debug('Param %s', service_input.api_name)
+            logger.debug('Param %s', service_input.api_name)
             job.save()
             if incoming_input:
-                logger.debug('Retrieved "%s" for service input "%s:%s"', incoming_input, service_input.label,
-                             service_input.name)
                 # transform single incoming into list to keep process iso
                 incoming_input = [incoming_input] if type(incoming_input) != list else incoming_input
                 for in_input in incoming_input:
@@ -199,12 +197,12 @@ class JobManager(models.Manager):
             # LOG full command line
             logger.debug('Job %s command will be :', job.title)
             logger.debug('Job %s command will be :', job.title)
-            logger.debug('%s %s', job.adaptor.command, job.command_line)
+            logger.debug('%s %s', job.command, job.command_line_arguments)
             logger.debug('Expected outputs will be:')
             for j_output in job.outputs.all():
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
                 logger.debug('Output %s: %s', j_output.name, j_output.value)
-        job._command_line = job.command_line
+        job._command_line = "{} {}".format(job.command, job.command_line_arguments)
         if force_status is not None and force_status in JobStatus.STATUS_MAP.keys():
             job.status = force_status
         job.save()
@@ -441,32 +439,31 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         return '[{}][{}]'.format(self.slug, self.service)
 
     @property
-    def command(self):
+    def command_parser(self):
         """ Return current related service command effective class
-
-        :return: a BaseCommand object (or one of its child)
-        :rtype: `BaseCommand`
         """
-        from waves.wcore.commands.command import BaseCommand
-        return BaseCommand()
+        return self.submission.command_parser
 
     @property
-    def command_line(self):
+    def command_line_arguments(self):
         """ Job command line finally executed on computing platform
-
         :return: string representation of command line
         :rtype: unicode
         """
+        return "{}".format(
+            self.command_parser.create_command_line(inputs=self.job_inputs.all().order_by('order')))
+
+    @property
+    def command_line(self):
         if self._command_line is None:
-            self.command_line = "{}".format(
-                self.command.create_command_line(inputs=self.job_inputs.all().order_by('order')))
+            self._command_line = "{} {}".format(self.submission.run_params.get('command'),
+                                                self.command_line_arguments)
+            self.save(update_fields=["_command_line"])
         return self._command_line
 
-    @command_line.setter
-    def command_line(self, command_line):
-        """ Set command line """
-        self._command_line = command_line
-        self.save(update_fields=['_command_line'])
+    @property
+    def command(self):
+        return self.submission.run_params.get('command')
 
     @property
     def label_class(self):
@@ -968,7 +965,7 @@ class JobOutputManager(models.Manager):
     def create_from_submission(self, job, submission_output, submitted_inputs):
         """ Create job expected output from submission data """
         assert (isinstance(submission_output, SubmissionOutput))
-        output_dict = dict(job=job, _name=submission_output.label, extension=submission_output.ext,
+        output_dict = dict(job=job, _name=submission_output.label, extension=submission_output.extension,
                            api_name=submission_output.api_name)
         if hasattr(submission_output, 'from_input') and submission_output.from_input:
             # issued from a input value
@@ -1056,10 +1053,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     @property
     def file_name(self):
-        base = self.value + self.extension
-        if '.' not in base:
-            return '.'.join([self.value, self.extension])
-        return base
+        return self.value
 
     @property
     def file_path(self):

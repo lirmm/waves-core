@@ -25,6 +25,15 @@ class ServiceSubmissionForm(forms.ModelForm):
     title = forms.CharField(label="Name your analysis", required=True)
     email = forms.EmailField(label="Mail me results", required=False)
 
+    def process_dependent(self, dependent_input):
+        # conditional parameters must not be required to use classic django form validation process
+        dependent_input.required = False
+        logger.warn("current input %s %s ", dependent_input, dependent_input.label)
+        self.fields.update(dependent_input.form_widget(self.data.get(dependent_input.api_name, None)))
+        self.helper.set_layout(dependent_input)
+        for srv_input in dependent_input.dependents_inputs.exclude(required=None):
+            self.process_dependent(srv_input)
+
     def __init__(self, *args, **kwargs):
         self.parent = kwargs.pop('parent', None)
         self.user = kwargs.pop('user', None)
@@ -48,11 +57,7 @@ class ServiceSubmissionForm(forms.ModelForm):
             self.helper.set_layout(service_input)
 
             for dependent_input in service_input.dependents_inputs.exclude(required=None):
-                # conditional parameters must not be required to use classic django form validation process
-                dependent_input.required = False
-                logger.warn("current input %s %s ", dependent_input, dependent_input.label)
-                self.fields.update(dependent_input.form_widget(self.data.get(dependent_input.api_name, None)))
-                self.helper.set_layout(dependent_input)
+                self.process_dependent(dependent_input)
         self.list_inputs.extend(extra_fields)
         self.helper.end_layout()
         if self.form_action:

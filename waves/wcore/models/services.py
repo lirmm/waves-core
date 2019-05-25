@@ -198,8 +198,9 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
                                   _status__in=JobStatus.PENDING_STATUS)
 
     @property
-    def command(self):
+    def command_parser(self):
         """ Return command parser for current service
+        TODO: add related BaseCommand from waves_settings (same as Adaptor class loading)
         :return: BaseCommand """
         from waves.wcore.commands.command import BaseCommand
         return BaseCommand()
@@ -329,6 +330,13 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
             return self.service.run_params
         return super(BaseSubmission, self).run_params
 
+    @property
+    def command_parser(self):
+        """ Recipient for future dedicated command parser for specific submission
+        TODO: manage command_parser such as adaptors
+        """
+        return self.service.command_parser
+
     def __str__(self):
         return '{}'.format(self.name)
 
@@ -447,8 +455,8 @@ class SubmissionOutput(TimeStamped, ApiModel):
     #: Help text displayed on results
     help_text = models.TextField('Help Text', null=True, blank=True, )
     #: Expected file extension
-    extension = models.CharField('File extension', max_length=15, blank=True, default="",
-                                 help_text="Leave blank accept all, or set in file pattern")
+    extension = models.CharField('File extension (internal)', max_length=15, blank=True, default="",
+                                 help_text="Used on WEB for display/download ")
 
     def __str__(self):
         """ String representation, return label """
@@ -470,19 +478,6 @@ class SubmissionOutput(TimeStamped, ApiModel):
         if not self.name:
             self.name = self.label
         super(SubmissionOutput, self).save(*args, **kwargs)
-
-    @property
-    def ext(self):
-        """ Return expected file output extension """
-        file_name = None
-        if self.name and '%s' in self.name and self.from_input and self.from_input.default:
-            file_name = self.name % self.from_input.default
-        elif self.name and '%s' not in self.name and self.name:
-            file_name = self.name
-        if '.' in file_name:
-            return '.' + file_name.rsplit('.', 1)[1]
-        else:
-            return self.extension
 
     def duplicate_api_name(self, api_name):
         """ Check is another entity is set with same app_name """

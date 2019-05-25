@@ -102,6 +102,43 @@ Now, you just render this form into your template (ex. in a django tpl).
     {% endblock footer %}
 
 
+Integrate a WAVES service form
+------------------------------
+
+You've got a website and you want your visitors to be able to submit jobs?
+The best way to achieve this is to add in your website WAVES forms using the dedicated API entry points
+Here, you're supposed to know there is a service named "sample_service" defined on demo WAVES instance (as you see in serviceList above).
+
+.. code-block:: python
+    from coreapi import Client, auth
+    from coreapi.codecs import CoreJSONCodec, JSONCodec, TextCodec
+    decoders = [JSONCodec(), CoreJSONCodec(), TextCodec()]
+    client = Client(decoders=decoders)
+    document = client.get('http://waves.demo.atgc-montpellier.fr/waves/api/schema')
+    wavesform = client.action(document, ['services', 'form'], params={"service_app_name": 'sample_service'}, validate=False, encoding='multipart/form-data')
+
+Now, you just render this form into your template (ex. in a django tpl).
+
+.. warning::
+    Don't forget to add forms.css and services.js from your waves instance as in this sample.
+
+.. code-block:: django
+    {% block head %}
+       {% addtoblock "waves_forms_css" %} <link rel="stylesheet" href="http://waves.demo.atgc-montpellier.fr/static/waves/css/forms.css">{% endaddtoblock %}
+    {% endblock %}
+
+    {% block main %}
+    <!-- Import the web form as is -->
+    {{ wavesform|safe }}
+    {% endblock main %}
+
+    {% block footer %}
+        {% addtoblock "js" %}
+            <script src="http://waves.demo.atgc-montpellier.fr/static/waves/js/services.js"></script>
+        {% endaddtoblock %}
+    {% endblock footer %}
+
+
 Create a job
 ------------
 

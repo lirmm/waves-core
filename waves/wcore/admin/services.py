@@ -144,6 +144,13 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         context['show_save'] = False
         return super(ServiceAdmin, self).add_view(request, form_url, extra_context=context)
 
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        """ On the change view, disable 'Save as new' and 'Save and add another' Django  default buttons """
+        context = extra_context or {}
+        context['show_save_as_new'] = False
+        context['show_save_and_add_another'] = False
+        return super(ServiceAdmin, self).change_view(request, object_id, form_url, context)
+
     def submission_link(self, obj):
         """ Direct link to submission in list """
         links = []
