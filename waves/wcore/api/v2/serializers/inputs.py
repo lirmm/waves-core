@@ -18,6 +18,7 @@ class AParamSerializer(serializers.ModelSerializer):
     description = serializers.CharField(source='help_text')
     edam_formats = CommaSeparatedListField()
     edam_datas = CommaSeparatedListField()
+    dependents_inputs = RecursiveField(many=True, read_only=True)
 
     def to_representation(self, instance):
         repr_initial = super(AParamSerializer, self).to_representation(instance)

@@ -20,17 +20,15 @@ Service = get_service_model()
 __all__ = ['ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
 
 
-class ServiceInputSerializer(BaseSerializer, RelatedSerializerMixin):
+class ServiceInputSerializer(BaseSerializer, RelatedSerializerMixin, serializers.InputSerializer):
     """ Serialize a basic service input with its dependents parameters"""
 
     class Meta:
         model = AParam
-        fields = ('order', 'label', 'name', 'default', 'type', 'cmd_format', 'format',
-                  'mandatory', 'multiple', 'display', 'description', 'short_description')
-        # 'dependents_inputs')
+        fields = ('label', 'name', 'default', 'type', 'mandatory', 'help_text', 'multiple', )# 'dependents_inputs',)
 
     # TODO reactivate dependent inputs serialzation
-    # dependent_inputs = ServiceInputSerializer(many=True, required=False)
+    #dependent_inputs = ServiceInputSerializer(many=True, required=False)
 
     def create(self, validated_data):
         dependent_inputs = validated_data.pop('dependents_inputs')
@@ -48,8 +46,8 @@ class ServiceSubmissionSerializer(BaseSerializer, serializers.ServiceSubmissionS
         model = Submission
         fields = ('api_name', 'order', 'name', 'availability', 'submission_inputs', 'export_submission_inputs')
 
-    export_submission_inputs = ServiceInputSerializer(many=True, required=False)
-    submission_inputs = ServiceInputSerializer(many=True, required=False, write_only=True, source="all_inputs")
+    export_submission_inputs = ServiceInputSerializer(many=True, required=False, source="root_inputs", read_only=True)
+    submission_inputs = ServiceInputSerializer(many=True, required=False, write_only=True, source="inputs")
 
     def create(self, validated_data):
         submission_inputs = validated_data.pop('export_submission_inputs', [])

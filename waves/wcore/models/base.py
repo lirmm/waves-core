@@ -161,7 +161,7 @@ class ExportAbleMixin(object):
     """ Some models object may be 'exportable' in order to be imported elsewhere in another WAVES app.
     Based on Django serializer, because we don't want to select fields to export
     """
-
+    @property
     def serializer(self, context=None):
         """ Each sub class must implement this method to initialize its Serializer"""
         raise NotImplementedError('Sub classes must implements this method')
@@ -169,9 +169,12 @@ class ExportAbleMixin(object):
     def serialize(self):
         """ Import model object serializer, serialize and write data to disk """
         from os.path import join
+        from os import mkdir, listdir
         from waves.wcore.settings import waves_settings
         import json
-        file_path = join(waves_settings.DATA_ROOT, self.export_file_name)
+        if 'export' not in listdir(waves_settings.DATA_ROOT):
+            mkdir(join(waves_settings.DATA_ROOT, 'export'))
+        file_path = join(waves_settings.DATA_ROOT, 'export', self.export_file_name)
         with open(file_path, 'w') as fp:
             try:
                 serializer = self.serializer()
