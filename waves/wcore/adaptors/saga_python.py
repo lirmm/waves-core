@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-import saga
+import radical.saga as saga
 import logging
 
 from waves.wcore.adaptors import JobAdaptor

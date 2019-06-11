@@ -12,5 +12,5 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-# from .process_queue import process_job_queue
-# from .purge_jobs import purge_old_jobs
+from .process_queue import process_job_queue
+from .purge_jobs import purge_old_jobs

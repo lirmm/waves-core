@@ -22,7 +22,7 @@ from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.models import Job
 
-logger = logging.getLogger('cron')
+logger = logging.getLogger('waves.cron')
 
 
 def process_job_queue():
