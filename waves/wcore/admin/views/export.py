@@ -20,8 +20,6 @@ class ModelExportView(DownloadFileView):
     return_view = "admin:index"
 
     def get_context_data(self, **kwargs):
-        assert isinstance(self.object, ExportAbleMixin), 'Model object must be Export-able'
-        self.object.serialize()
         context = super(ModelExportView, self).get_context_data(**kwargs)
         return context
 
@@ -35,7 +33,7 @@ class ModelExportView(DownloadFileView):
 
     @property
     def file_path(self):
-        return join(config.DATA_ROOT, self.file_name)
+        return join(config.DATA_ROOT, 'export', self.file_name)
 
     @property
     def file_name(self):

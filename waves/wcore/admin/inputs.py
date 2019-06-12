@@ -196,9 +196,7 @@ class FileInputAdmin(AParamAdmin):
     show_in_index = False
     extra_fieldset_title = 'File params'
 
-    inlines = [FileInputSampleInline]
-    # FIX ME Sample dependent input are not managed so far.
-    # inlines = [FileInputSampleInline, SampleDependentInputInline]
+    inlines = [FileInputSampleInline, SampleDependentInputInline]
     fieldsets = [
         ('General', {
             'fields': required_base_fields + ['allow_copy_paste', 'max_size', 'allowed_extensions'],

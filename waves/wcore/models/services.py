@@ -348,6 +348,11 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         """ Retrieve only expected inputs to submit a job """
         return self.inputs.filter(parent__isnull=True, required__isnull=False).order_by('order', '-required')
 
+    @property
+    def root_inputs(self):
+        """ Retrieve only expected inputs to submit a job """
+        return self.inputs.filter(parent__isnull=True).order_by('order', '-required')
+
     def duplicate(self, service):
         """ Duplicate a submission with all its inputs """
         self.service = service

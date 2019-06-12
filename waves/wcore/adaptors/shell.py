@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import logging
 from os.path import join
 
-import saga
+import radical.saga as saga
 
 from waves.wcore.adaptors.exceptions import AdaptorJobException
 from waves.wcore.adaptors.saga_python import SagaAdaptor

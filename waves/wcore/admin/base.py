@@ -6,11 +6,12 @@ from django.contrib.admin import ModelAdmin
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms import Textarea, Select
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect
 from django.contrib.admin.templatetags.admin_modify import register
 from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
-
+from wsgiref.util import FileWrapper
+from django.utils.encoding import smart_str
 
 __all__ = ['DuplicateInMassMixin', 'ExportInMassMixin', 'MarkPublicInMassMixin', 'WavesModelAdmin',
            'DynamicInlinesAdmin']
@@ -47,14 +48,40 @@ def duplicate_in_mass(modeladmin, request, queryset):
 def export_in_mass(modeladmin, request, queryset):
     """ Allow multiple models objects (inheriting from ExportAbleMixin) to be exported
      at the same time """
+    all_files_path = []
     for obj in queryset.all():
         try:
             file_path = obj.serialize()
+            all_files_path.append(file_path)
             messages.add_message(request, level=messages.SUCCESS,
                                  message="Object exported successfully to %s " % file_path)
         except StandardError as e:
             messages.add_message(request, level=messages.ERROR, message="Object export %s error %s " % (obj, e.message))
+    from os.path import basename, getsize, join
+    from os import remove
+    from datetime import datetime
+    from waves.wcore.settings import waves_settings
+    import zipfile
 
+    # Create zip file
+    zip_name = "exports_%s.zip" % (datetime.now().strftime("%m-%d-%Y_%H:%M:%S"))
+    zip_path = join(waves_settings.DATA_ROOT, 'export', zip_name)
+    zipf = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
+    for file_path in all_files_path:
+        zipf.write(file_path, basename(file_path))
+    zipf.close()
+
+    # remove files out of the archive
+    for file_path in all_files_path:
+        remove(file_path)
+
+    # Trigger download of zip file
+    wrapper = FileWrapper(open(zip_path, 'r'))
+    response = HttpResponse(wrapper, content_type='application/force-download')
+    response['Content-Disposition'] = 'attachment; filename="' + zip_name + '"'
+    response['X-Sendfile'] = smart_str(zip_path)
+    response['Content-Length'] = getsize(zip_path)
+    return response
 
 def mark_public_in_mass(modeladmin, request, queryset):
     """ Allow status 'public' to be set in mass for objects implementing 'publish' method """
@@ -73,7 +100,7 @@ class ExportInMassMixin(admin.ModelAdmin):
         """ Add action 'export_in_mass' """
         actions = super(ExportInMassMixin, self).get_actions(request)
         # TODO reactivate export
-        # actions['export_in_mass'] = (export_in_mass, 'export_in_mass', "Export selected to disk")
+        actions['export_in_mass'] = (export_in_mass, 'export_in_mass', "Export selected to disk")
         return actions
 
 
