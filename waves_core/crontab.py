@@ -13,10 +13,6 @@ except ImportError:
 
 CLI_LOG_LEVEL = 'WARNING'
 
-INSTALLED_APPS += [
-    'django_crontab'
-]
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -33,7 +29,7 @@ LOGGING = {
         },
         'log_file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'waves-cli.log'),
+            'filename': os.path.join(LOG_DIR, 'waves-cron.log'),
             'formatter': 'verbose',
             'backupCount': 10,
             'maxBytes': 1024 * 1024 * 5
@@ -48,34 +44,19 @@ LOGGING = {
         },
         'waves': {
             'handlers': ['log_file'],
-            'level': CLI_LOG_LEVEL,
+            'level': 'WARNING',
             'propagate': True,
         },
         'django_crontab': {
             'handlers': ['log_file'],
             'propagate': True,
-            'level': CLI_LOG_LEVEL,
+            'level': 'WARNING',
         },
-        'waves.daemon': {
+        'waves.cron': {
             'handlers': ['log_file'],
             'propagate': False,
-            'level': 'INFO',
-        },
-        'daemons': {
-            'handlers': ['console'],
-            'propagate': False,
-            'level': 'INFO',
-        },
+            'level': 'WARNING',
+        }
 
     }
 }
-
-# CRONTAB JOBS
-CRONTAB_COMMAND_SUFFIX = '2>&1'
-CRONTAB_COMMAND_PREFIX = ''
-CRONTAB_DJANGO_SETTINGS_MODULE = 'waves_core.crontab'
-CRONTAB_LOCK_JOBS = True
-CRONJOBS = [
-    ('*/5 * * * *', 'django.core.management.call_command', ['wqueue', 'start']),
-    ('0 * * * *', 'django.core.management.call_command', ['wpurge', 'start']),
-]

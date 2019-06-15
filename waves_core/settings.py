@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 from __future__ import unicode_literals
-import os
+
 import logging.config
+import os
+
 from django.contrib import messages
 
 # python 3 compatibility
@@ -50,7 +52,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'rest_framework',
     'corsheaders',
-    'adminsortable2'
+    'adminsortable2',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -250,6 +253,7 @@ LOGGING = {
 }
 
 configFile = join(BASE_DIR, 'tests', 'settings.ini')
+
 try:
     assert (isfile(configFile))
     Config = ConfigParser.SafeConfigParser()
@@ -276,3 +280,13 @@ try:
 except AssertionError:
     # Don't load variables from ini files they are initialized elsewhere (i.e lab ci)
     pass
+
+# CRONTAB JOBS
+CRONTAB_COMMAND_SUFFIX = '2>&1'
+CRONTAB_COMMAND_PREFIX = ''
+CRONTAB_DJANGO_SETTINGS_MODULE = 'waves_core.crontab'
+CRONTAB_LOCK_JOBS = True
+CRONJOBS = [
+    ('* * * * *', 'waves.wcore.cron.process_job_queue'),
+    ('*/10 * * * *', 'waves.wcore.cron.purge_old_jobs')
+]

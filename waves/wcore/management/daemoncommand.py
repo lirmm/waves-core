@@ -57,6 +57,10 @@ class DaemonCommand(BaseCommand):
         :param options: list of possible django command options
         :return: Nothing
         """
+        # FIXME process queue unterminated processes
+        import warnings
+        warnings.warn("This method has a known bug: please use crontab setup see Docs")
+        exit(0)
         try:
             self.action = options.pop('action')
             if self._class is None:

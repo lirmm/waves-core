@@ -72,11 +72,18 @@ WAVES is developed with `Django <https://www.djangoproject.com/>`_. You may need
 
     .. code-block:: bash
 
-        (.venv) user@host:~your_app$ ./manage.py wqueue start
         (.venv) user@host:~your_app$ ./manage.py runserver
+        (.venv) user@host:~your_app$ ./manage.py crontab add
 
     Go to http://127.0.0.1:8000/admin to setup your services
     WAVES-core comes with default front pages visible at http://127.0.0.1:8000
+
+    .. seealso::
+        Django crontab for other crontab setup
+
+    .. note::
+        From previous release, a known bug occured while using wqueue command. This bug block you from using this daemon queue.
+        Please use "crontab" instead, and contact us if you experience issues.
 
 
 2. Install WAVES-core inside existing Django project
