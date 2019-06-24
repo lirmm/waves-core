@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'adminsortable2',
-    'django_crontab'
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [

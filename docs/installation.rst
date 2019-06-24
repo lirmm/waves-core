@@ -56,6 +56,12 @@ WAVES is developed with `Django <https://www.djangoproject.com/>`_. You may need
 
     You might need other dependencies if working with other DB layout than sqlite.
 
+    Moreover, we use celery and redis as an asynchronous job queue. So we need to install redis on the machine :
+
+    .. code-block:: bash
+
+        user@host:~your_app$ sudo apt-get install redis-server
+
     1.3. Install database:
 
     .. code-block:: bash
@@ -68,22 +74,34 @@ WAVES is developed with `Django <https://www.djangoproject.com/>`_. You may need
 
     1.4. If everything is ok:
 
-    You can start your test server and job queue like this:
+    You can start your test server like this:
 
     .. code-block:: bash
 
         (.venv) user@host:~your_app$ ./manage.py runserver
-        (.venv) user@host:~your_app$ ./manage.py crontab add
+
+    1.5. Configure recurrent job tasks
+    
+    Thanks to the django_celery_beat library, you can configure the recurrent tasks directly in the administrator area.
+    You add some intervals and than you can add some periodic tasks. In the periodic tasks pannel, the available tasks are job_queue
+    and job_queue, two functions present in the tasks.py file of wcore application. Configure each of them with the desired intervals and saved.
+    
+    1.6. Launch job queue
+
+    .. code-block:: bash
+
+        (.venv) user@host:~your_app$ celery -A waves_core worker -l INFO
+        (.venv) user@host:~your_app$ celery -A waves_core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
 
     Go to http://127.0.0.1:8000/admin to setup your services
     WAVES-core comes with default front pages visible at http://127.0.0.1:8000
 
     .. seealso::
-        Django crontab for other crontab setup
+        Django celery for other celery setup
 
     .. note::
         From previous release, a known bug occured while using wqueue command. This bug block you from using this daemon queue.
-        Please use "crontab" instead, and contact us if you experience issues.
+        Please use "celery" instead, and contact us if you experience issues.
 
 
 2. Install WAVES-core inside existing Django project
