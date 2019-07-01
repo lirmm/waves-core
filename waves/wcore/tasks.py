@@ -8,7 +8,6 @@ import waves.wcore.exceptions
 from waves.wcore.adaptors.const import JobStatus
 from waves.wcore.adaptors.exceptions import AdaptorException
 from waves.wcore.models import Job
-from celery.utils.log import get_task_logger
 
 
 @app.task(name="job_queue")
