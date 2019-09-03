@@ -69,8 +69,8 @@ Display the list of services
 .. code-block:: php
 
     $urlwaves = "http://waves.demo.atgc-montpellier.fr/waves";
-	$base_api = $urlwaves."/api/";
-	$api_key = "6241961ef45e4bbe7bb01a05f938ed9f0f2a3926";
+    $base_api = $urlwaves."/api/";
+    $api_key = "6241961ef45e4bbe7bb01a05f938ed9f0f2a3926";
 
     $url_api = $base_api.'services';
 
