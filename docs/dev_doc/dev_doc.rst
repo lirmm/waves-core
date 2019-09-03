@@ -45,5 +45,6 @@ Documentation
 
     waves_dev_doc
     sample_code
+    sample_code_php
 ..    api_user_doc
 
