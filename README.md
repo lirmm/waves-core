@@ -48,14 +48,14 @@ Support
 If you are having issues, (or just want to say hello): we have a mailing list located at: waves@lirmm.fr
 
 
--- UPDATE to 1.7.xx from 1.6.xxx --
+-- UPDATE from <=1.6.4 --
 -----------------------------------
 
-If migrating from a version 1.6.x to any 1.7.x, you must patch you database encrypted password to a more reliable
+If migrating from a version 1.6.4 or earlier to a most recent, you must patch you database encrypted password to a more reliable
 encrypted technology (https://github.com/pyca/cryptography). This script must be run once and only once !
 To migrate your data please do the following:
-- retrieve the latest version 1.7.x
+- retrieve the latest version
 - stop any running service  
 - save your database first
-- once the new version is installed, run `manage.py migrate_keys`
+- once the new version is installed, run `manage.py update_keys`
 - if you don't have any error message: your keys are now more secured ! 
