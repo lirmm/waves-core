@@ -147,18 +147,18 @@ WAVES is developed with `Django <https://www.djangoproject.com/>`_. You may need
 
         1.5.5. Add periodic tasks to the database
 
-            Apply Django database migrations so that the necessary tables are created. Then, add some entries in
-            the database with default configuration.
+        Apply Django database migrations so that the necessary tables are created. Then, add some entries in
+        the database with default configuration.
 
-            .. code-block:: bash
+        .. code-block:: bash
 
-                (.venv) user@host:~your_app$ ./manage.py migrate
-                (.venv) user@host:~your_app$ ./manage.py loaddata fixtures_celery_beat.json
+            (.venv) user@host:~your_app$ ./manage.py migrate
+            (.venv) user@host:~your_app$ ./manage.py loaddata fixtures_celery_beat.json
 
-            Visit the Django-Admin interface to set up some periodic tasks.
+        Visit the Django-Admin interface to set up some periodic tasks.
 
-            In the periodic tasks pannel, the available tasks are job_queue
-            and purge_jobs, two functions present in the tasks.py file of wcore application. Configure each of them with the desired intervals and saved.
+        In the periodic tasks pannel, the available tasks are job_queue
+        and purge_jobs, two functions present in the tasks.py file of wcore application. Configure each of them with the desired intervals and saved.
 
 
 
