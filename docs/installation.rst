@@ -113,11 +113,12 @@ WAVES is developed with `Django <https://www.djangoproject.com/>`_. You may need
             (.venv) user@host:~your_app$ celery -A waves_core worker -l INFO
             (.venv) user@host:~your_app$ celery -A waves_core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
 
-        .. note::
-            If the command crontab add was launched before, it is necessary to remove the crontab task:
+        
+        If the command crontab add was launched before, it is necessary to remove the crontab task:
 
-            .. code-block:: bash
-                (.venv) user@host:~your_app$ ./manage.py crontab remove
+        .. code-block:: bash
+        
+            (.venv) user@host:~your_app$ ./manage.py crontab remove
 
         1.5.4. Add "django celery beat" to the project
 
