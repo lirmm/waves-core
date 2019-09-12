@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+Version 1.6.6 - 2019-09-12
+--------------------------
+
+- [Commands] - Fix Error in command to migrate to new encryption lib
+- [Queue] - Added Celry/Redis option to process job queue 
+
 Version 1.6.5 - 2019-06-15
 --------------------------
 
