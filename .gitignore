@@ -49,6 +49,9 @@ docs/_build/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# vscode ide
+.vscode
+
 # pyenv
 .python-version
 

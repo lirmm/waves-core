@@ -65,7 +65,6 @@ WAVES is developed with `Django <https://www.djangoproject.com/>`_. You may need
         (.venv) user@host:~your_app$ ./manage.py migrate
         (.venv) user@host:~your_app$ ./manage.py createsuperuser (then follow instructions)
 
-
     1.4. If everything is ok:
 
     You can start your test server and job queue like this:
@@ -84,6 +83,84 @@ WAVES is developed with `Django <https://www.djangoproject.com/>`_. You may need
     .. note::
         From previous release, a known bug occured while using wqueue command. This bug block you from using this daemon queue.
         Please use "crontab" instead, and contact us if you experience issues.
+
+    1.5.(optional) Use celery and redis as job queue
+    
+    Using the combination of waves job queue and crontab can have some limitations. For example, with this configuration,
+    the minimum refresh interval is one minute. If you need smaller refresh interval you can use the combination of
+    celery and redis as an asynchronous job queue.
+
+        1.5.1. Install the redis server
+
+        Redis is an in-memory database that allows to store the tasks.
+
+        .. code-block:: bash
+
+            user@host:~your_app$ sudo apt-get install redis-server
+
+        1.5.2. Install dependencies
+
+        .. code-block:: bash
+
+            (.venv) user@host:~your_app$ pip install django-celery-beat==1.5.0
+            (.venv) user@host:~your_app$ pip install celery==4.3.0
+            (.venv) user@host:~your_app$ pip install redis==3.2.1
+
+        1.5.3. Launch job queue
+
+        .. code-block:: bash
+
+            (.venv) user@host:~your_app$ celery -A waves_core worker -l INFO
+            (.venv) user@host:~your_app$ celery -A waves_core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+        
+        If the command crontab add was launched before, it is necessary to remove the crontab task:
+
+        .. code-block:: bash
+        
+            (.venv) user@host:~your_app$ ./manage.py crontab remove
+
+        1.5.4. Add "django celery beat" to the project
+
+        Thanks to "django celery beat" library, you can configure the recurrent tasks directly in the administrator area. According to add this application
+        to the project, you need to add the application in the configuration file (~your_app/waves_core/settings.py).
+
+
+        .. code-block:: python
+
+            INSTALLED_APPS = [
+                'polymorphic',
+                'django.contrib.admin',
+                'django.contrib.auth',
+                'django.contrib.contenttypes',
+                'django.contrib.sessions',
+                'django.contrib.messages',
+                'django.contrib.staticfiles',
+                'waves.wcore',
+                'waves.authentication',
+                'crispy_forms',
+                'rest_framework',
+                'corsheaders',
+                'adminsortable2',
+                'django_crontab',
+                'django_celery_beat',
+            ]
+
+        1.5.5. Add periodic tasks to the database
+
+        Apply Django database migrations so that the necessary tables are created. Then, add some entries in
+        the database with default configuration.
+
+        .. code-block:: bash
+
+            (.venv) user@host:~your_app$ ./manage.py migrate
+            (.venv) user@host:~your_app$ ./manage.py loaddata fixtures_celery_beat.json
+
+        Visit the Django-Admin interface to set up some periodic tasks.
+
+        In the periodic tasks pannel, the available tasks are job_queue
+        and purge_jobs, two functions present in the tasks.py file of wcore application. Configure each of them with the desired intervals and saved.
+
 
 
 2. Install WAVES-core inside existing Django project

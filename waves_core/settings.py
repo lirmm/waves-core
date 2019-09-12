@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'adminsortable2',
-    'django_crontab'
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -290,3 +290,7 @@ CRONJOBS = [
     ('* * * * *', 'waves.wcore.cron.process_job_queue'),
     ('*/10 * * * *', 'waves.wcore.cron.purge_old_jobs')
 ]
+
+
+# Broker configuration for celery
+URL_BROKER = "redis://localhost:6379"
