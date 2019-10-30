@@ -6,7 +6,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import get_template
 
 from waves.wcore.adaptors.const import JobStatus
-from waves.wcore.settings import waves_settings as config
+from waves.wcore.settings import waves_settings as config, waves_settings
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +111,9 @@ class JobMailer(object):
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
+        job.notify = True
+        self.mail_activated = True
+        job.email_to = waves_settings.ADMIN_EMAIL
         return self._send_job_mail(job, "waves/emails/job_admin_error.tpl")
 
     def check_send_mail(self, job):
