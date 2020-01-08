@@ -1,6 +1,51 @@
 {% extends "waves/services/service_details.html" %}
 {% load staticfiles crispy_forms_tags waves_tags %}
 
+
+{% block extrahead %}
+    <script type="application/ld+json">
+        {
+            "@context": {
+              "edam": "http://edamontology.org/",
+              "schema": "http://schema.org/"
+            },
+            "@graph": {
+              "@type":"schema:SoftwareApplication",
+              "schema:name":"{{ service.name }}",
+              "schema:softwareVersion": "{{ service.version }}",
+              "schema:applicationCategory": "Science",
+              "schema:applicationSubCategory": [
+              {% for topic in service.topics %}
+                {% if forloop.last %}
+                  "edam:{{ topic }}"
+                {% else %}
+                  "edam:{{ topic }}",
+                {% endif %}
+              {% endfor %}
+              ],
+              "schema:featureList": [
+              {% for operation in service.operations %}
+                {% if forloop.last %}
+                  "edam:{{ operation }}"
+                {% else %}
+                  "edam:{{ operation }}",
+                {% endif %}
+              {% endfor %}
+              ],
+              "schema:operatingSystem": "Linux",
+              "schema:author": {
+                "@type": "schema:Person",
+                "schema:name": "{{ service.created_by }}"
+              },
+              "schema:citation": "{{ service.citations }}",
+              "schema:dateModified": "{{ service.updated }}",
+              "schema:dateCreated": "{{ service.created }}",
+              "schema:description": "{{ service.description|safe }}"
+            }
+        }
+    </script>
+{% endblock %}
+
 {% block styles %}
     {{ block.super }}
     {% service_inc 'css' %}
