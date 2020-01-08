@@ -6,7 +6,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import get_template
 
 from waves.wcore.adaptors.const import JobStatus
-from waves.wcore.settings import waves_settings as config, waves_settings
+from waves.wcore.settings import waves_settings as config
 
 logger = logging.getLogger(__name__)
 
@@ -36,13 +36,13 @@ class JobMailer(object):
         """
         return config.NOTIFY_RESULTS
 
-    def _send_job_mail(self, job, template, subject=None):
+    def _send_job_mail(self, job, template, subject=None, force=False):
         """ Check if send mail is needed, in such case, create a template email and... send it to specified client
 
         :return: the number of mail sent, should be 0 or 1
         :rtype: int
         """
-        if self.mail_activated and job.notify:
+        if (self.mail_activated and job.notify) or force:
             context = self.get_context_data()
             context['job'] = job
             mail_subject = "[WAVES - %s] -- %s -- " % (
@@ -112,9 +112,8 @@ class JobMailer(object):
         :rtype: int
         """
         job.notify = True
-        self.mail_activated = True
-        job.email_to = waves_settings.ADMIN_EMAIL
-        return self._send_job_mail(job, "waves/emails/job_admin_error.tpl")
+        job.email_to = config.ADMIN_EMAIL
+        return self._send_job_mail(job, "waves/emails/job_admin_error.tpl", subject="Waves Error", force=True)
 
     def check_send_mail(self, job):
         """According to job status, check needs for sending notification emails
