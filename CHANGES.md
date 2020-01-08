@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+Version 1.6.7 - 2020-01-08
+--------------------------
+
+- [Mails] - Ignore settings for admin email - force sending
+- [Services Templates] - Integrate JSON-LD into services displayed pages. 
+
+
 Version 1.6.6 - 2019-09-12
 --------------------------
 
