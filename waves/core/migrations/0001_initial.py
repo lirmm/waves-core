@@ -215,7 +215,7 @@ class Migration(migrations.Migration):
                                              to=swapper.get_model_name('auth', 'User'))),
                 ('submission',
                  models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='service_jobs',
-                                   to=swapper.get_model_name('core', 'Submission'))),
+                                   to=swapper.get_model_name('waves', 'Submission'))),
             ],
             options={
                 'ordering': ['-updated', '-created'],
@@ -309,7 +309,7 @@ class Migration(migrations.Migration):
                 ('default', models.IntegerField(default=0, verbose_name='Default repeat')),
                 ('submission', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
                                                  related_name='submission_groups',
-                                                 to=swapper.get_model_name('core', 'Submission'))),
+                                                 to=swapper.get_model_name('waves', 'Submission'))),
             ],
             options={
                 'ordering': ['order'],
@@ -377,7 +377,7 @@ class Migration(migrations.Migration):
                 ('is_error', models.BooleanField(default=False, verbose_name='Is an Error')),
                 ('submission',
                  models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='exit_codes',
-                                   to=swapper.get_model_name('core', 'Submission'))),
+                                   to=swapper.get_model_name('waves', 'Submission'))),
             ],
             options={
                 'verbose_name': 'Exit Code',
@@ -545,7 +545,7 @@ class Migration(migrations.Migration):
             model_name='submissionoutput',
             name='submission',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='outputs',
-                                    to=swapper.get_model_name('core', 'Submission')),
+                                    to=swapper.get_model_name('waves', 'Submission')),
         ),
         migrations.AddField(
             model_name='sampledepparam',
@@ -565,7 +565,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True,
                                     help_text="If set, 'Execution parameter' param line:'command' will be ignored",
                                     null=True, on_delete=django.db.models.deletion.SET_NULL,
-                                    to='core.ServiceBinaryFile'),
+                                    to='waves.ServiceBinaryFile'),
         ),
         migrations.AddField(
             model_name='fileinputsample',
@@ -595,7 +595,7 @@ class Migration(migrations.Migration):
             model_name='aparam',
             name='submission',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='inputs',
-                                    to=swapper.get_model_name('core', 'Submission')),
+                                    to=swapper.get_model_name('waves', 'Submission')),
         ),
         migrations.AddField(
             model_name='submission',
@@ -603,7 +603,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True,
                                     help_text="If set, 'Execution parameter' param line:'command' will be ignored",
                                     null=True, on_delete=django.db.models.deletion.SET_NULL,
-                                    to='core.ServiceBinaryFile'),
+                                    to='waves.ServiceBinaryFile'),
         ),
         migrations.AddField(
             model_name='submission',
@@ -616,7 +616,7 @@ class Migration(migrations.Migration):
             model_name='submission',
             name='service',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='submissions',
-                                    to=swapper.get_model_name('core', 'Service')),
+                                    to=swapper.get_model_name('waves', 'Service')),
         ),
         migrations.AddField(
             model_name='service',
@@ -624,7 +624,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True,
                                     help_text="If set, 'Execution parameter' param line:'command' will be ignored",
                                     null=True, on_delete=django.db.models.deletion.SET_NULL,
-                                    to='core.ServiceBinaryFile'),
+                                    to='waves.ServiceBinaryFile'),
         ),
         migrations.AddField(
             model_name='service',

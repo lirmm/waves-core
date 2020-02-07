@@ -2,7 +2,6 @@
 WAVES Automated models signals handlers
 """
 
-
 import os
 import shutil
 

@@ -11,9 +11,9 @@ from waves.core.adaptors.shell import LocalShellAdaptor, SshShellAdaptor, SshKey
 from waves.core.exceptions.jobs import JobInconsistentStateError
 from waves.core.settings import waves_settings
 from waves.core.tests.base import BaseTestCase, TestJobWorkflowMixin
-from waves.core.tests.mocks import MockJobRunnerAdaptor
+from core.tests.adaptors.mocks import MockJobRunnerAdaptor
 from waves.core.utils.encrypt import Encrypt
-from .loader import AdaptorLoader
+from core.adaptors.loader import AdaptorLoader
 
 logger = logging.getLogger(__name__)
 

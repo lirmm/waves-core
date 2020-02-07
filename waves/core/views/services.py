@@ -1,5 +1,3 @@
-
-
 import logging
 from uuid import UUID
 
@@ -20,12 +18,12 @@ Submission = get_submission_model()
 Service = get_service_model()
 logger = logging.getLogger(__name__)
 
+
 class SubmissionFormView(generic.FormView, generic.DetailView):
     model = Service
     context_object_name = 'service'
     queryset = Service.objects.all().prefetch_related('submissions')
     object = None
-    # template_name = 'waves/services/bootstrap/submission_form.html'
     form_class = ServiceSubmissionForm
     view_mode = ''
     job = None

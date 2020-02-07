@@ -54,7 +54,7 @@ logger = logging.getLogger(__name__)
                 'waves.core.adaptors.shell.LocalShellAdaptor',
                 'waves.core.adaptors.cluster.SshClusterAdaptor',
                 'waves.core.adaptors.cluster.SshKeyClusterAdaptor',
-                'waves.core.adaptors.mocks.MockJobRunnerAdaptor'
+                'waves.core.tests.adaptors.mocks.MockJobRunnerAdaptor'
         ),
         'TEMPLATES_PACKS': ['bootstrap3', 'bootstrap2'],
         'MAILER_CLASS': 'waves.core.mails.JobMailer',
@@ -67,8 +67,6 @@ class BaseTestCase(TestCase):
     runners = []
 
     def setUp(self):
-        from waves.core.settings import waves_settings
-        waves_settings.defaults
         super(BaseTestCase, self).setUp()
 
         super_user = User.objects.create(email='superadmin@waves.core.fr', username="superadmin", is_superuser=True)
@@ -113,7 +111,7 @@ class BaseTestCase(TestCase):
         try:
             self.service = Service.objects.get(api_name=api_name)
         except ObjectDoesNotExist as e:
-            logger.error(e.message)
+            logger.error(e)
             # self.skipTest("No physic_ist service available")
             if self.service is None:
                 self.service = Service.objects.create(name=api_name, api_name=api_name)
@@ -145,11 +143,6 @@ class BaseTestCase(TestCase):
 
     def logout(self):
         return self.client.logout()
-
-    def test_overridden_config(self):
-        from waves.core.settings import waves_settings
-        self.assertEqual(waves_settings.JOB_BASE_DIR, join(settings.BASE_DIR, 'tests', 'data', 'jobs'))
-        self.assertEqual(waves_settings.ADMIN_EMAIL, 'admin@test-waves.com')
 
     def bootstrap_runners(self):
         """ Create base models from all Current implementation parameters """
@@ -252,7 +245,7 @@ class TestJobWorkflowMixin(TestCase):
             Runner model instance
             :param adaptor:
         """
-        from waves.core.tests.mocks import MockJobRunnerAdaptor
+        from core.tests.adaptors.mocks import MockJobRunnerAdaptor
         impl = adaptor or MockJobRunnerAdaptor()
         runner_model = Runner.objects.create(name=impl.__class__.__name__,
                                              description='SubmissionSample Runner %s' % impl.__class__.__name__,

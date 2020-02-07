@@ -1,6 +1,6 @@
 [
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 1,
     "fields": {
       "name": "protocol",
@@ -15,7 +15,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 2,
     "fields": {
       "name": "host",
@@ -30,7 +30,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 3,
     "fields": {
       "name": "command",
@@ -45,7 +45,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 14,
     "fields": {
       "name": "protocol",
@@ -60,7 +60,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 15,
     "fields": {
       "name": "host",
@@ -75,7 +75,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 16,
     "fields": {
       "name": "command",
@@ -90,7 +90,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 19,
     "fields": {
       "name": "queue",
@@ -105,7 +105,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 20,
     "fields": {
       "name": "protocol",
@@ -120,7 +120,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 21,
     "fields": {
       "name": "host",
@@ -135,7 +135,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 22,
     "fields": {
       "name": "command",
@@ -150,7 +150,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 77,
     "fields": {
       "name": "command",
@@ -165,7 +165,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 78,
     "fields": {
       "name": "host",
@@ -180,7 +180,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 116,
     "fields": {
       "name": "command",
@@ -195,7 +195,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 117,
     "fields": {
       "name": "host",
@@ -210,43 +210,43 @@
     }
   },
   {
-    "model": "wcore.runner",
+    "model": "waves.runner",
     "pk": 1,
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.wcore.adaptors.shell.LocalShellAdaptor",
+      "clazz": "waves.waves.adaptors.shell.LocalShellAdaptor",
       "binary_file": null,
       "name": "Local Shell Runner",
       "enabled": true
     }
   },
   {
-    "model": "wcore.runner",
+    "model": "waves.runner",
     "pk": 2,
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.wcore.adaptors.shell.LocalShellAdaptor",
+      "clazz": "waves.waves.adaptors.shell.LocalShellAdaptor",
       "binary_file": null,
       "name": "Second One",
       "enabled": true
     }
   },
   {
-    "model": "wcore.runner",
+    "model": "waves.runner",
     "pk": 3,
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.wcore.adaptors.cluster.LocalClusterAdaptor",
+      "clazz": "waves.waves.adaptors.cluster.LocalClusterAdaptor",
       "binary_file": null,
       "name": "LocalClusterAdaptor",
       "enabled": true
     }
   },
   {
-    "model": "wcore.service",
+    "model": "waves.service",
     "pk": 1,
     "fields": {
       "created": "2017-09-19T08:29:25.229Z",
@@ -271,7 +271,7 @@
     }
   },
   {
-    "model": "wcore.submission",
+    "model": "waves.submission",
     "pk": 1,
     "fields": {
       "created": "2017-09-19T08:29:25.239Z",
@@ -287,7 +287,7 @@
     }
   },
   {
-    "model": "wcore.submissionoutput",
+    "model": "waves.submissionoutput",
     "pk": 1,
     "fields": {
       "created": "2017-09-19T10:22:57.595Z",
@@ -305,7 +305,7 @@
     }
   },
   {
-    "model": "wcore.submissionexitcode",
+    "model": "waves.submissionexitcode",
     "pk": 1,
     "fields": {
       "exit_code": 0,
@@ -315,7 +315,7 @@
     }
   },
   {
-    "model": "wcore.submissionexitcode",
+    "model": "waves.submissionexitcode",
     "pk": 2,
     "fields": {
       "exit_code": 1,
@@ -325,7 +325,7 @@
     }
   },
   {
-    "model": "wcore.aparam",
+    "model": "waves.aparam",
     "pk": 1,
     "fields": {
       "polymorphic_ctype": [
@@ -351,7 +351,7 @@
     }
   },
   {
-    "model": "wcore.aparam",
+    "model": "waves.aparam",
     "pk": 5,
     "fields": {
       "polymorphic_ctype": [
@@ -377,7 +377,7 @@
     }
   },
   {
-    "model": "wcore.aparam",
+    "model": "waves.aparam",
     "pk": 6,
     "fields": {
       "polymorphic_ctype": [
@@ -403,7 +403,7 @@
     }
   },
   {
-    "model": "wcore.aparam",
+    "model": "waves.aparam",
     "pk": 7,
     "fields": {
       "polymorphic_ctype": [
@@ -429,14 +429,14 @@
     }
   },
   {
-    "model": "wcore.textparam",
+    "model": "waves.textparam",
     "pk": 5,
     "fields": {
       "max_length": "255"
     }
   },
   {
-    "model": "wcore.booleanparam",
+    "model": "waves.booleanparam",
     "pk": 1,
     "fields": {
       "true_value": "True",
@@ -444,7 +444,7 @@
     }
   },
   {
-    "model": "wcore.integerparam",
+    "model": "waves.integerparam",
     "pk": 7,
     "fields": {
       "min_val": 0,
@@ -453,7 +453,7 @@
     }
   },
   {
-    "model": "wcore.fileinput",
+    "model": "waves.fileinput",
     "pk": 6,
     "fields": {
       "max_size": 20480,
@@ -461,7 +461,7 @@
     }
   },
   {
-    "model": "wcore.fileinputsample",
+    "model": "waves.fileinputsample",
     "pk": 1,
     "fields": {
       "label": "the label",

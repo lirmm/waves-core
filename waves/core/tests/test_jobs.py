@@ -1,8 +1,8 @@
-
-
 import logging
 import os
+from os.path import join
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
 
@@ -14,6 +14,13 @@ logger = logging.getLogger(__name__)
 Service = get_service_model()
 Submission = get_submission_model()
 User = get_user_model()
+
+
+class BasicTestCase(BaseTestCase):
+    def test_overridden_config(self):
+        from waves.core.settings import waves_settings
+        self.assertEqual(waves_settings.JOB_BASE_DIR, join(settings.BASE_DIR, 'tests', 'data', 'jobs'))
+        self.assertEqual(waves_settings.ADMIN_EMAIL, 'admin@test-waves.com')
 
 
 class JobsTestCase(BaseTestCase):
@@ -30,12 +37,11 @@ class JobsTestCase(BaseTestCase):
         job.message = "Test job Message"
         job.status = JobStatus.JOB_PREPARED
         job.save()
-        self.assertGreaterEqual(job.job_history.filter(message__contains=job.message).all(), 0)
+        self.assertGreaterEqual(job.job_history.filter(message__contains=job.message).count(), 0)
         work_dir = job.working_dir
         job.delete()
         self.assertFalse(os.path.isdir(work_dir))
         logger.debug('Job directories has been deleted')
-
 
     def test_job_history(self):
         job = self.create_random_job()

@@ -3,7 +3,7 @@ from os.path import basename, join
 
 from django.conf import settings
 
-from waves.core.adaptors.tests import logger
+from core.tests.adaptors.tests import logger
 from waves.core.models import JobInput, JobOutput, Job
 from waves.core.models import get_service_model
 from waves.core.models.const import ParamType

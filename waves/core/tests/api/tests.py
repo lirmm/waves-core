@@ -156,6 +156,9 @@ class WavesAPIV1TestCase(BaseAPITestCase):
 
 
 class WavesAPIV2TestCase(BaseAPITestCase):
+    runner = Runner.objects.create(name="Mock Runner",
+                                   clazz='waves.core.tests.adaptors.mocks.MockJobRunnerAdaptor')
+
     def test_api_root(self):
         api_root = self.client.get(reverse('wapi:v2:api-root'))
         self.assertEqual(api_root.status_code, status.HTTP_200_OK)
@@ -232,10 +235,8 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         """
         Test job cancel service
         """
-        runner = Runner.objects.create(name="Mock Runner",
-                                       clazz='waves.core.adaptors.mocks.MockJobRunnerAdaptor')
 
-        sample_job = self.create_random_job(runner=runner, user=self.users['api_user'])
+        sample_job = self.create_random_job(runner=self.runner, user=self.users['api_user'])
         test_cancel = self.client.post(reverse('wapi:v2:waves-jobs-cancel', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_cancel.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login("api_user")
@@ -248,10 +249,7 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         db_job.delete()
 
     def test_delete_job(self):
-        runner = Runner.objects.create(name="Mock Runner",
-                                       clazz='waves.core.adaptors.mocks.MockJobRunnerAdaptor')
-
-        sample_job = self.create_random_job(service=self.create_random_service(runner), user=self.users['api_user'])
+        sample_job = self.create_random_job(service=self.create_random_service(self.runner), user=self.users['api_user'])
         test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_delete.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login('api_user')

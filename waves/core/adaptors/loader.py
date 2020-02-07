@@ -11,7 +11,8 @@ class AdaptorLoader(object):
     @classmethod
     def get_adaptors(cls):
         from waves.core.settings import waves_settings
-        return sorted([adaptor_class() for adaptor_class in waves_settings.ADAPTORS_CLASSES])
+        return sorted([adaptor_class() for adaptor_class in waves_settings.ADAPTORS_CLASSES],
+                      key=lambda clazz: clazz.__class__.__name__)
 
     @classmethod
     def load(cls, clazz, **params):

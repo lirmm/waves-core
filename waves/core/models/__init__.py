@@ -9,15 +9,15 @@ from waves.core.models.history import JobHistory
 from waves.core.models.inputs import AParam, TextParam, BooleanParam, IntegerParam, DecimalParam, ListParam
 from waves.core.models.jobs import JobOutput, JobInput, Job
 from waves.core.models.runners import Runner
-from waves.core.models.services import Submission, SubmissionOutput, SubmissionExitCode, Service
+from waves.core.models.services import Submission, SubmissionOutput, SubmissionExitCode, BaseService, BaseSubmission
 
 
-def get_service_model() -> Service:
-    return swapper.load_model('core', 'Service')
+def get_service_model() -> BaseService:
+    return swapper.load_model('waves', 'Service')
 
 
-def get_submission_model():
-    return swapper.load_model('core', 'Submission')
+def get_submission_model() -> BaseSubmission:
+    return swapper.load_model('waves', 'Submission')
 
 
 """

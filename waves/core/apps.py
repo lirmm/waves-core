@@ -17,7 +17,7 @@ class WavesConfig(AppConfig):
     """
     WAVES main application AppConfig, add signals for waves_webapp
     """
-    name = "waves.core"
+    name = "waves"
     verbose_name = 'WAVES CORE'
 
     def ready(self):

@@ -1,6 +1,6 @@
 [
   {
-    "model": "wcore.service",
+    "model": "waves.service",
     "pk": 1,
     "fields": {
       "created": "2019-02-19T20:39:22.712Z",
@@ -25,7 +25,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 100,
     "fields": {
       "name": "command",
@@ -40,7 +40,7 @@
     }
   },
   {
-    "model": "wcore.submission",
+    "model": "waves.submission",
     "pk": 1,
     "fields": {
       "created": "2019-02-19T20:39:22.716Z",
@@ -56,7 +56,7 @@
     }
   },
   {
-    "model": "wcore.submissionoutput",
+    "model": "waves.submissionoutput",
     "pk": 1,
     "fields": {
       "created": "2019-02-19T20:41:33.616Z",
@@ -74,7 +74,7 @@
     }
   },
   {
-    "model": "wcore.submissionexitcode",
+    "model": "waves.submissionexitcode",
     "pk": 1,
     "fields": {
       "exit_code": 0,
@@ -84,7 +84,7 @@
     }
   },
   {
-    "model": "wcore.submissionexitcode",
+    "model": "waves.submissionexitcode",
     "pk": 2,
     "fields": {
       "exit_code": 1,
@@ -94,7 +94,7 @@
     }
   },
   {
-    "model": "wcore.aparam",
+    "model": "waves.aparam",
     "pk": 1,
     "fields": {
       "polymorphic_ctype": ["wcore", "fileinput"],
@@ -117,7 +117,7 @@
     }
   },
   {
-    "model": "wcore.aparam",
+    "model": "waves.aparam",
     "pk": 2,
     "fields": {
       "polymorphic_ctype": ["wcore", "textparam"],
@@ -140,14 +140,14 @@
     }
   },
   {
-    "model": "wcore.textparam",
+    "model": "waves.textparam",
     "pk": 2,
     "fields": {
       "max_length": "255"
     }
   },
   {
-    "model": "wcore.fileinput",
+    "model": "waves.fileinput",
     "pk": 1,
     "fields": {
       "max_size": 20480,

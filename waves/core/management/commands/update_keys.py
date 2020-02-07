@@ -30,7 +30,7 @@ class ObsoleteEncrypt(object):
 
 class TmpAdaptorInitParam(AdaptorInitParam):
     class Meta:
-        app_label = "waves.core"
+
         proxy = True
 
     @classmethod

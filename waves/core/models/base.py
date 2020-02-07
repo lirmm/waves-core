@@ -17,7 +17,7 @@ __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 
 class WavesBaseModel(models.Model):
     class Meta:
         abstract = True
-        app_label = "waves.core"
+        app_label = "waves"
 
 
 class TimeStamped(WavesBaseModel):

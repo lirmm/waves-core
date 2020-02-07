@@ -1,18 +1,18 @@
 [
   {
-    "model": "wcore.runner",
+    "model": "waves.runner",
     "pk": 1,
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.wcore.adaptors.shell.LocalShellAdaptor",
+      "clazz": "waves.waves.adaptors.shell.LocalShellAdaptor",
       "binary_file": null,
       "name": "Local shell runner #1",
       "enabled": true
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 1,
     "fields": {
       "name": "protocol",
@@ -27,7 +27,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 2,
     "fields": {
       "name": "host",
@@ -42,7 +42,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 3,
     "fields": {
       "name": "command",
@@ -57,19 +57,19 @@
     }
   },
   {
-    "model": "wcore.runner",
+    "model": "waves.runner",
     "pk": 2,
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.wcore.adaptors.shell.LocalShellAdaptor",
+      "clazz": "waves.waves.adaptors.shell.LocalShellAdaptor",
       "binary_file": null,
       "name": "Local shell runner #2",
       "enabled": true
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 14,
     "fields": {
       "name": "protocol",
@@ -84,7 +84,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 15,
     "fields": {
       "name": "host",
@@ -100,7 +100,7 @@
   },
 
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 16,
     "fields": {
       "name": "command",
@@ -115,19 +115,19 @@
     }
   },
   {
-    "model": "wcore.runner",
+    "model": "waves.runner",
     "pk": 3,
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.wcore.adaptors.cluster.LocalClusterAdaptor",
+      "clazz": "waves.waves.adaptors.cluster.LocalClusterAdaptor",
       "binary_file": null,
       "name": "LocalClusterAdaptor",
       "enabled": true
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 19,
     "fields": {
       "name": "queue",
@@ -142,7 +142,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 20,
     "fields": {
       "name": "protocol",
@@ -157,7 +157,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 21,
     "fields": {
       "name": "host",
@@ -172,7 +172,7 @@
     }
   },
   {
-    "model": "wcore.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 22,
     "fields": {
       "name": "command",

@@ -1,6 +1,5 @@
 """ Job Runners related models """
 
-
 from itertools import chain
 
 from django.contrib.contenttypes.models import ContentType
@@ -14,14 +13,6 @@ from waves.core.models.base import Described, ExportAbleMixin
 __all__ = ['Runner', 'HasRunnerParamsMixin']
 
 
-class RunnerManager(models.Manager):
-    def create_default(self, **kwargs):
-        return super(RunnerManager, self).create(**kwargs)
-
-    def create(self, *args, **kwargs):
-        return super(RunnerManager, self).create(*args, **kwargs)
-
-
 class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     """ Represents a generic job adapter meta information (resolved at runtime via clazz attribute) """
 
@@ -29,8 +20,8 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
         ordering = ['name']
         verbose_name = 'Computing infrastructure'
         verbose_name_plural = "Computing infrastructures"
+        app_label = "waves"
 
-    objects = RunnerManager()
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
     enabled = models.BooleanField('Enabled', default=True, null=False, blank=True,
                                   help_text="Runner is enable for job runs")
