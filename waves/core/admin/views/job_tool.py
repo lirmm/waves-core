@@ -1,15 +1,14 @@
-
 """ Job tool WAVES admin dedicated views """
-from __future__ import unicode_literals
 
-from django.views.generic import View
+from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
-from django.core.urlresolvers import reverse
-from django.contrib import messages
+from django.urls import reverse
+from django.views.generic import View
+
+from waves.core.adaptors.const import JobStatus
 from waves.core.exceptions import WavesException
 from waves.core.models import Job
-from waves.core.adaptors.const import JobStatus
 
 
 class JobCancelView(View):

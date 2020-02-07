@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import logging
 import sys
 
@@ -14,10 +12,12 @@ logger = logging.getLogger(__name__)
 
 class WavesException(Exception):
     """
-    Waves base exception class, exception log
+    Waves base exception class, simply log exception in standard web logs
+    TODO: This class may be obsolete depending of running / logging configuration
     """
-    def __init__(self, *args, **kwargs):
-        super(WavesException, self).__init__(*args, **kwargs)
+
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
         logger.exception('[%s] - %s', self.__class__.__name__, self.message)
 
 

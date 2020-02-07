@@ -1,7 +1,6 @@
-from __future__ import unicode_literals
+
 
 from django.db import models, IntegrityError
-
 
 from waves.core.adaptors.const import JobStatus
 from waves.core.models.base import WavesBaseModel

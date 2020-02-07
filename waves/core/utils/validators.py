@@ -1,11 +1,12 @@
-from __future__ import unicode_literals
 
-import os
+
 import logging
+import os
 
 from django.core.exceptions import ValidationError
 
 from waves.core.models.const import ParamType
+
 logger = logging.getLogger(__name__)
 
 # TODO activate dedicated validators for job Input [https://docs.djangoproject.com/en/1.9/ref/validators/]

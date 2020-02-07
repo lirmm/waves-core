@@ -1,18 +1,16 @@
 """WAVES models export module for Services """
-from __future__ import unicode_literals
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from rest_framework import serializers as rest_serializer
 
-from waves.core.api import serializers
+from waves.api import serializers
 from waves.core.import_export import BaseSerializer, RelatedSerializerMixin
 from waves.core.import_export.runners import RunnerSerializer, RunnerParamSerializer
-
+from waves.core.models import get_submission_model, get_service_model
 from waves.core.models.inputs import AParam
 from waves.core.models.runners import Runner
 from waves.core.models.services import SubmissionExitCode, SubmissionOutput, SubmissionRunParam
-from waves.core.models import get_submission_model, get_service_model
 
 Submission = get_submission_model()
 Service = get_service_model()
@@ -25,10 +23,10 @@ class ServiceInputSerializer(BaseSerializer, RelatedSerializerMixin, serializers
 
     class Meta:
         model = AParam
-        fields = ('label', 'name', 'default', 'type', 'mandatory', 'help_text', 'multiple', )# 'dependents_inputs',)
+        fields = ('label', 'name', 'default', 'type', 'mandatory', 'help_text', 'multiple',)  # 'dependents_inputs',)
 
     # TODO reactivate dependent inputs serialzation
-    #dependent_inputs = ServiceInputSerializer(many=True, required=False)
+    # dependent_inputs = ServiceInputSerializer(many=True, required=False)
 
     def create(self, validated_data):
         dependent_inputs = validated_data.pop('dependents_inputs')

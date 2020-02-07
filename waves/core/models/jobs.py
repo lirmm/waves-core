@@ -1,5 +1,5 @@
 """ WAVES job related models class objects """
-from __future__ import unicode_literals
+
 
 import json
 import logging
@@ -22,13 +22,13 @@ import waves.core.adaptors.exceptions
 from waves.core.adaptors.const import JobStatus, JobRunDetails
 from waves.core.exceptions import WavesException
 from waves.core.exceptions.jobs import JobInconsistentStateError, JobMissingMandatoryParam
-from waves.core.utils.logged import LoggerClass
-from waves.core.models.const import OptType, ParamType
 from waves.core.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
+from waves.core.models.const import OptType, ParamType
 from waves.core.models.inputs import FileInputSample
 from waves.core.models.services import SubmissionOutput
 from waves.core.settings import waves_settings
 from waves.core.utils import random_analysis_name
+from waves.core.utils.logged import LoggerClass
 from waves.core.utils.storage import allow_display_online
 
 logger = logging.getLogger(__name__)
@@ -495,7 +495,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
 
         :return: the absolute uri of this job (without host)
         """
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         return reverse('core:job_details', kwargs={'unique_id': self.slug})
 
     @property
@@ -802,7 +802,7 @@ class JobInputManager(models.Manager):
                 with open(filename, 'wb+') as uploaded_file:
                     uploaded_file.write(submitted_input)
             else:
-                logger.warn("Unable to determine usable type for input %s:%s " % (service_input.name, submitted_input))
+                logger.warning("Unable to determine usable type for input %s:%s " % (service_input.name, submitted_input))
         new_input = self.create(**input_dict)
         return new_input
 
@@ -938,7 +938,7 @@ class JobInput(Ordered, Slugged, ApiModel, UrlMixin):
 
         :return: the absolute uri of this job (without host)
         """
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         return reverse('core:job_input', kwargs={'slug': self.slug})
 
     def duplicate_api_name(self, api_name):
@@ -1071,7 +1071,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
         return None
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
+        from django.urls import reverse
         return "%s?export=1" % reverse('core:job_output', kwargs={'slug': self.slug})
 
     @property

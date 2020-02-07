@@ -1,11 +1,10 @@
 """WAVES models export module for Services """
-from __future__ import unicode_literals
 
 from django.db import transaction
 from rest_framework import serializers
 
-from waves.core.models import Runner, AdaptorInitParam
 from waves.core.import_export import RelatedSerializerMixin
+from waves.core.models import Runner, AdaptorInitParam
 
 
 class RunnerParamSerializer(serializers.ModelSerializer):

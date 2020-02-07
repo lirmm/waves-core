@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 import os
 from wsgiref.util import FileWrapper
@@ -8,6 +8,7 @@ from django.http import Http404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.utils.encoding import smart_str
 from django.views import generic
+
 from waves.core.models.base import ExportAbleMixin
 
 

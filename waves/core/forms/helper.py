@@ -1,6 +1,3 @@
-from __future__ import unicode_literals
-
-
 class WFormHelper:
 
     def __init__(self, *args, **kwargs):

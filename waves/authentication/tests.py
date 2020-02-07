@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.conf.urls import url
 from django.contrib.auth import get_user_model
 from django.test import override_settings
@@ -8,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.test import APITestCase
 from rest_framework.views import Response
 
-from waves.wcore.api.views.base import WavesAuthenticatedView
+from waves.api.views.base import WavesAuthenticatedView
 
 User = get_user_model()
 
@@ -69,4 +67,3 @@ class TestApiAuth(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         response = self.client.get('/test-key-auth', **{'REMOTE_ADDR': "127.0.0.1"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-

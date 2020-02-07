@@ -1,11 +1,10 @@
-from __future__ import unicode_literals
-
-import radical.saga as saga
 import logging
 
+import radical.saga as saga
+
+from waves.core.adaptors import exceptions
 from waves.core.adaptors.adaptor import JobAdaptor
 from waves.core.adaptors.const import JobStatus, JobRunDetails
-from waves.core.adaptors import exceptions
 
 logger = logging.getLogger(__name__)
 

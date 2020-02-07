@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 import logging
 
@@ -147,6 +147,6 @@ class JobMailer(object):
                 finally:
                     job.save()
             elif not job.email_to:
-                logger.warn('Job [%s] email not sent to %s', job.slug, job.email_to)
+                logger.warning('Job [%s] email not sent to %s', job.slug, job.email_to)
         else:
             logger.debug('Jobs notification are not activated')

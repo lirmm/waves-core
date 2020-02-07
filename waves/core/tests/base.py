@@ -13,9 +13,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.test import override_settings, TestCase
 from django.utils.timezone import localtime
 
-from waves.core.adaptors import JobStatus
+from waves.core.adaptors.const import JobStatus
 from waves.core.adaptors.loader import AdaptorLoader
-from waves.core.models import get_service_model, get_submission_model, TextParam, BooleanParam, Job, JobInput, JobOutput, \
+from waves.core.models import get_service_model, get_submission_model, TextParam, BooleanParam, Job, JobInput, \
+    JobOutput, \
     Runner, AdaptorInitParam
 from waves.core.models.inputs import FileInput
 from waves.core.models.services import ServiceRunParam

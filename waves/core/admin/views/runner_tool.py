@@ -1,21 +1,20 @@
 """ WAVES runner backoffice tools"""
-from __future__ import unicode_literals
 
 from django.conf import settings
 from django.contrib import messages
-from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import JsonResponse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, FormView
 
-from json_view import JSONDetailView
 from waves.core.adaptors.exceptions import AdaptorConnectException
 from waves.core.admin.forms.services import ImportForm
 from waves.core.admin.views.export import ModelExportView
 from waves.core.exceptions import RunnerException
 from waves.core.models import Runner
 from waves.core.models import get_service_model
+from .json_view import JSONDetailView
 
 Service = get_service_model()
 

@@ -1,9 +1,10 @@
+from abc import ABC
 from optparse import IndentedHelpFormatter
 
 from django.core.management import BaseCommand
 
 
-class SubcommandDispatcher(BaseCommand):
+class SubcommandDispatcher(BaseCommand, ABC):
     """
     A template for a Django management command that dispatches to subcommands
     based on its first non-option argument

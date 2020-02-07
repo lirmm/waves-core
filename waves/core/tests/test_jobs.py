@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 import logging
 import os
@@ -24,7 +24,7 @@ class JobsTestCase(BaseTestCase):
         self.assertEqual(job.outputs.count(), 4)
         self.assertTrue(os.path.isdir(job.working_dir))
         job.logger.debug("Test Log message")
-        logger.warn('Job directories has been created %s ', job.working_dir)
+        logger.warning('Job directories has been created %s ', job.working_dir)
         self.assertEqual(job.status, JobStatus.JOB_CREATED)
         self.assertEqual(job.job_history.count(), 1)
         job.message = "Test job Message"

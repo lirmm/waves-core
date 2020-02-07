@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from os.path import isfile
 
 from django.contrib.admin import register
@@ -26,4 +24,3 @@ class ServiceBinaryFileAdmin(WavesModelAdmin):
     def get_model_perms(self, request):
         # Disable direct entry to BinaryFiles
         return {}
-

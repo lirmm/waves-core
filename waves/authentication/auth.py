@@ -1,9 +1,9 @@
 """ Authentication base on a get parameter 'api_key'"""
-from __future__ import unicode_literals
 
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import authentication, exceptions
 from rest_framework.authentication import TokenAuthentication
+
 from waves.authentication.models import WavesApiUser
 
 

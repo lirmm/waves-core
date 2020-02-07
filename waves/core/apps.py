@@ -2,7 +2,7 @@
 WAVES app Django application descriptor
 
 """
-from __future__ import unicode_literals
+
 
 import os
 from os import access

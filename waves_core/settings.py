@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/1.11/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
-from __future__ import unicode_literals
 
 import logging.config
 import os
@@ -47,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'waves.wcore',
+    'waves.core',
     'waves.authentication',
     'crispy_forms',
     'rest_framework',
@@ -127,7 +126,7 @@ MEDIA_URL = "/media/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "waves", "wcore", "static"),
+    os.path.join(BASE_DIR, "waves", "core", "static"),
     os.path.join(BASE_DIR, "static")
 ]
 
@@ -165,7 +164,10 @@ MESSAGE_TAGS = {
 }
 
 # SECURITY
-CORS_ORIGIN_WHITELIST = 'localhost'
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost',
+    'http://127.0.0.1'
+)
 CORS_ORIGIN_REGEX_WHITELIST = ['localhost:*']
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -178,12 +180,12 @@ CONTACT_EMAIL = DEFAULT_FROM_EMAIL
 
 # WAVES
 ADAPTORS_DEFAULT_CLASSES = (
-    'waves.wcore.adaptors.shell.SshShellAdaptor',
-    'waves.wcore.adaptors.cluster.LocalClusterAdaptor',
-    'waves.wcore.adaptors.shell.SshKeyShellAdaptor',
-    'waves.wcore.adaptors.shell.LocalShellAdaptor',
-    'waves.wcore.adaptors.cluster.SshClusterAdaptor',
-    'waves.wcore.adaptors.cluster.SshKeyClusterAdaptor',
+    'waves.core.adaptors.shell.SshShellAdaptor',
+    'waves.core.adaptors.cluster.LocalClusterAdaptor',
+    'waves.core.adaptors.shell.SshKeyShellAdaptor',
+    'waves.core.adaptors.shell.LocalShellAdaptor',
+    'waves.core.adaptors.cluster.SshClusterAdaptor',
+    'waves.core.adaptors.cluster.SshKeyClusterAdaptor',
 )
 WAVES_CORE = {
     'ACCOUNT_ACTIVATION_DAYS': 14,
@@ -287,10 +289,9 @@ CRONTAB_COMMAND_PREFIX = ''
 CRONTAB_DJANGO_SETTINGS_MODULE = 'waves_core.crontab'
 CRONTAB_LOCK_JOBS = True
 CRONJOBS = [
-    ('* * * * *', 'waves.wcore.cron.process_job_queue'),
-    ('*/10 * * * *', 'waves.wcore.cron.purge_old_jobs')
+    ('* * * * *', 'waves.core.cron.process_job_queue'),
+    ('*/10 * * * *', 'waves.core.cron.purge_old_jobs')
 ]
-
 
 # Broker configuration for celery
 URL_BROKER = "redis://localhost:6379"

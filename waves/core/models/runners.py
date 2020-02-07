@@ -1,10 +1,11 @@
 """ Job Runners related models """
-from __future__ import unicode_literals
+
 
 from itertools import chain
-from django.core.urlresolvers import reverse
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.urls import reverse
 
 from waves.core.models import AdaptorInitParam
 from waves.core.models.adaptors import HasAdaptorClazzMixin

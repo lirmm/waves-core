@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 import logging
 import os
@@ -32,11 +32,9 @@ class LoggerClass(object):
                 self._logger.propagate = False
                 self._logger.addHandler(hdlr)
                 self._logger.setLevel(self.LOG_LEVEL)
-            except OSError as e:
-                logger_file.exception("OSError in %s: %s [file:%s]", self.__class__.__name__, e.message, e.filename)
             except IOError as err:
                 self._logger = logging.getLogger("waves.errors")
-                self._logger.warn('This object %s is not able to log where it should %s', self.pk, self.log_file)
+                self._logger.warning('This object %s is not able to log where it should %s', self.pk, self.log_file)
                 logger_file.exception("IO Error in %s: %s", self.__class__.__name__, err.message)
         return self._logger
 

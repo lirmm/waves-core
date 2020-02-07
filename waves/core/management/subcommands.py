@@ -1,7 +1,5 @@
 """ WAVES specific ADMIN commands """
 
-from __future__ import unicode_literals, print_function
-
 import json
 import logging
 import os
@@ -9,8 +7,7 @@ import uuid
 from shutil import rmtree
 
 # noinspection PyProtectedMember,PyProtectedMember
-from django.conf.urls import RegexURLPattern, RegexURLResolver
-from django.core import urlresolvers
+# from django.conf.urls import RegexURLPattern, RegexURLResolver
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management import BaseCommand
 from django.core.management import CommandError
@@ -19,9 +16,9 @@ from django.db import (
 )
 from rest_framework.exceptions import ValidationError
 
+from waves.core.import_export.services import ServiceSerializer
 from waves.core.management.utils import choice_input
 from waves.core.models import Job
-from waves.core.import_export.services import ServiceSerializer
 from waves.core.settings import waves_settings as config
 
 __all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand', 'ShowUrlsCommand']
@@ -160,37 +157,3 @@ class DumpConfigCommand(BaseCommand):
         for key, val in settings.WAVES_CORE.items():
             self.stdout.write('%s: %s' % (key, val))
         self.stdout.write("************************************************")
-
-
-class ShowUrlsCommand(BaseCommand):
-    def add_arguments(self, parser):
-
-        pass
-
-    def handle(self, *args, **kwargs):
-
-        urls = urlresolvers.get_resolver()
-        all_urls = list()
-
-        def func_for_sorting(i):
-            if i.name is None:
-                i.name = ''
-            return i.name
-
-        def show_urls(the_urls):
-            for the_url in the_urls.url_patterns:
-                if isinstance(the_url, RegexURLResolver):
-                    show_urls(the_url)
-                elif isinstance(the_url, RegexURLPattern):
-                    all_urls.append(the_url)
-
-        show_urls(urls)
-
-        all_urls.sort(key=func_for_sorting, reverse=False)
-
-        print('-' * 100)
-        for url in all_urls:
-            if 'waves.core.api' in url.lookup_str:
-                # print('| {0.regex.pattern:20} | {0.name:20} | {0.lookup_str:20} | {0.default_args} |'.format(url))
-                print(url)
-        print('-' * 100)

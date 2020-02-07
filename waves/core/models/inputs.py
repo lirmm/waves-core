@@ -1,5 +1,5 @@
 """ All Input related models """
-from __future__ import unicode_literals
+
 
 from decimal import Decimal
 from os.path import basename

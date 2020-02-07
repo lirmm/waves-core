@@ -1,16 +1,16 @@
 """ Base class for WAVES models.Admin """
-from __future__ import unicode_literals
+
+from wsgiref.util import FileWrapper
 
 from django.contrib import admin, messages
 from django.contrib.admin import ModelAdmin
-from django.core.urlresolvers import reverse
+from django.contrib.admin.templatetags.admin_modify import register
+from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
 from django.db import models
 from django.forms import Textarea, Select
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect
-from django.contrib.admin.templatetags.admin_modify import register
-from django.contrib.admin.templatetags.admin_modify import submit_row as original_submit_row
-from wsgiref.util import FileWrapper
+from django.urls import reverse
 from django.utils.encoding import smart_str
 
 __all__ = ['DuplicateInMassMixin', 'ExportInMassMixin', 'MarkPublicInMassMixin', 'WavesModelAdmin',
@@ -82,6 +82,7 @@ def export_in_mass(modeladmin, request, queryset):
     response['X-Sendfile'] = smart_str(zip_path)
     response['Content-Length'] = getsize(zip_path)
     return response
+
 
 def mark_public_in_mass(modeladmin, request, queryset):
     """ Allow status 'public' to be set in mass for objects implementing 'publish' method """

@@ -2,7 +2,7 @@
 WAVES settings management
 These settings may be overridden in your Django main configuration file
 """
-from __future__ import unicode_literals
+
 
 import logging
 import socket

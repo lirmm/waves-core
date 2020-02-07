@@ -1,5 +1,4 @@
 """ Submission Polymorphic Inputs models Admin """
-from __future__ import unicode_literals
 
 import json
 
@@ -8,10 +7,10 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib import messages
 from django.contrib.admin.options import IS_POPUP_VAR, TO_FIELD_VAR
-from django.core.urlresolvers import reverse
 from django.db import models, DatabaseError
 from django.http import HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
+from django.urls import reverse
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.html import format_html
@@ -20,9 +19,9 @@ from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModel
 
 from waves.core.admin.base import WavesModelAdmin
 from waves.core.admin.submissions import FileInputSampleInline, SampleDependentInputInline
+from waves.core.models import get_submission_model
 from waves.core.models.inputs import AParam, FileInput, BooleanParam, ListParam, IntegerParam, DecimalParam, \
     RepeatedGroup, TextParam
-from waves.core.models import get_submission_model
 
 Submission = get_submission_model()
 

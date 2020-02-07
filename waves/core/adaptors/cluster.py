@@ -1,7 +1,5 @@
-from __future__ import unicode_literals
-
-from waves.core.adaptors.shell import SshKeyShellAdaptor, SshShellAdaptor
 from waves.core.adaptors.saga_python import SagaAdaptor
+from waves.core.adaptors.shell import SshKeyShellAdaptor, SshShellAdaptor
 
 
 class LocalClusterAdaptor(SagaAdaptor):

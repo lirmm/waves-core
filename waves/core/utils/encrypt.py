@@ -1,12 +1,13 @@
 """
 Encryption for Service Adaptors init_params values
 """
-from __future__ import unicode_literals
 
-from waves.core.settings import waves_settings
-from cryptography.fernet import Fernet
 
 import base64
+
+from cryptography.fernet import Fernet
+
+from waves.core.settings import waves_settings
 
 
 class Encrypt(object):

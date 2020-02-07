@@ -1,7 +1,7 @@
-from __future__ import unicode_literals
 
 
-class AdaptorException(Exception):
+
+class AdaptorException(BaseException):
     """ Base adapter exception class, should be raise upon specific adapter class exception catch
     this exception class is supposed to be catched
     """
@@ -49,30 +49,30 @@ class ImporterException(AdaptorException):
     pass
 
 
-class UnmanagedException(ImporterException):
+class UnhandledException(ImporterException):
     base_msg = ''
 
-    def __init__(self, *args, **kwargs):
-        super(UnmanagedException, self).__init__(*args, **kwargs)
+    def __init__(self, *args: object) -> None:
+        super().__init__(*args)
         self.message = self.base_msg + self.message
 
 
-class UnManagedAttributeException(UnmanagedException):
+class UnhandledAttributeException(UnhandledException):
     base_msg = "Unmanaged Attribute: "
 
     def __init__(self, *args, **kwargs):
-        super(UnManagedAttributeException, self).__init__(*args, **kwargs)
+        super(UnhandledAttributeException, self).__init__(*args, **kwargs)
 
 
-class UnManagedAttributeTypeException(UnmanagedException):
+class UnhandledAttributeTypeException(UnhandledException):
     base_msg = "Unmanaged Type: "
 
     def __init__(self, *args, **kwargs):
-        super(UnManagedAttributeTypeException, self).__init__(*args, **kwargs)
+        super(UnhandledAttributeTypeException, self).__init__(*args, **kwargs)
 
 
-class UnmanagedInputTypeException(UnmanagedException):
+class UnhandledInputTypeException(UnhandledException):
     base_msg = "Unmanaged Input: "
 
     def __init__(self, *args, **kwargs):
-        super(UnmanagedInputTypeException, self).__init__(*args, **kwargs)
+        super(UnhandledInputTypeException, self).__init__(*args, **kwargs)

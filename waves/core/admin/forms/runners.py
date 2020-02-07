@@ -1,9 +1,9 @@
 """
 Runner configuration BackOffice Forms
 """
-from __future__ import unicode_literals
 
 from django.forms import ModelForm, BooleanField, ChoiceField, HiddenInput
+
 from waves.core.models import Runner
 
 __all__ = ['RunnerForm']
@@ -28,6 +28,7 @@ def get_runners_list():
 class RunnerForm(ModelForm):
     """ Form to edit a runner
     """
+
     class Meta:
         """ Metas """
         model = Runner

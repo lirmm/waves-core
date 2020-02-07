@@ -1,11 +1,11 @@
 """ Base Utils classes """
-from __future__ import unicode_literals
+
 
 import logging
 import random
 import string
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ def url_to_edit_object(obj):
         # noinspection PyProtectedMember
         return mark_safe('<a class="" href="{}" title="Edit {}">{}</a>'.format(url, obj._meta.model_name, str(obj)))
     else:
-        logger.warn('Trying to view a NoneType object link %s ', obj.__class__.__name__)
+        logger.warning('Trying to view a NoneType object link %s ', obj.__class__.__name__)
         return "#"
 
 

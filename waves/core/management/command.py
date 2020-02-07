@@ -1,13 +1,12 @@
 """ Daemonized WAVES system commands """
-from __future__ import unicode_literals
 
 import logging
 import os
 import tempfile
 
-from .daemoncommand import DaemonCommand
 from waves.core.management.runner import JobQueueRunDaemon, PurgeDaemon
 from waves.core.settings import waves_settings
+from .daemoncommand import DaemonCommand
 
 logger = logging.getLogger('waves.daemon')
 
@@ -24,7 +23,7 @@ class JobQueueCommand(DaemonCommand):
 
     def handle(self, **options):
         import warnings
-        warnings.warn("This method is deprecated: please use ./manage.py wqueue start instead")
+        warnings.warning("This method is deprecated: please use ./manage.py wqueue start instead")
         exit(0)
 
 
@@ -36,5 +35,5 @@ class PurgeDaemonCommand(DaemonCommand):
 
     def handle(self, **options):
         import warnings
-        warnings.warn("This method is deprecated: please use ./manage.py wpurge start instead")
+        warnings.warning("This method is deprecated: please use ./manage.py wpurge start instead")
         exit(0)

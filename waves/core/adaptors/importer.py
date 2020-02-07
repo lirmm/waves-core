@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import logging
 import re
 import warnings
@@ -128,11 +126,11 @@ class AdaptorImporter(LoggerClass):
             self.logger.debug('----------- //IMPORT PARAMS ------------')
             self.logger.info('------------- IMPORT REPORT ----------')
             if self.warnings:
-                self.logger.warn('*** // WARNINGS // ***')
+                self.logger.warning('*** // WARNINGS // ***')
                 for warn in self.warnings:
-                    self.logger.warn('=> %s', warn.message)
+                    self.logger.warning('=> %s', warn.message)
             if self.errors:
-                self.logger.warn('*** // ERRORS // ***')
+                self.logger.warning('*** // ERRORS // ***')
                 for error in self.errors:
                     self.logger.error('=> %s', error.message)
             self.logger.info('------------')
@@ -140,7 +138,7 @@ class AdaptorImporter(LoggerClass):
             self.logger.info('------------')
             for service_input in self.submission.inputs.all():
                 self.logger.info("Name:%s;default:%s;required:%s", service_input, service_input.type,
-                                  service_input.get_required_display())
+                                 service_input.get_required_display())
                 self.logger.debug("Full input:")
                 [self.logger.debug('%s: %s', item, value) for (item, value) in vars(service_input).items()]
             self.logger.info('-------------')
@@ -241,5 +239,5 @@ class InputFormat(object):
                     else:
                         list_choice.append((param, param))
             except ValueError as e:
-                warnings.warn('Error Parsing list values %s - value:%s - param:%s', e.message, value, param)
+                warnings.warning('Error Parsing list values %s - value:%s - param:%s', e.message, value, param)
         return list_choice

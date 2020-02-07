@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from django.conf.urls import url
 from django.contrib import admin, messages
 from django.contrib.admin import TabularInline

@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+from abc import ABC
 
 from waves.core.adaptors.adaptor import JobAdaptor
 
@@ -41,7 +41,7 @@ class PublicApiAdaptor(JobAdaptor):
         return self.complete_url
 
 
-class ApiKeyAdaptor(PublicApiAdaptor):
+class ApiKeyAdaptor(PublicApiAdaptor, ABC):
     """
     Authenticated api calls
     """

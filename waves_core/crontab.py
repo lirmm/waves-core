@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+
 
 
 import warnings
@@ -8,7 +8,7 @@ from waves_core.settings import *
 try:
     from django_crontab import *
 except ImportError:
-    warnings.warn("Please install django_crontab package")
+    warnings.warning("Please install django_crontab package")
     exit(1)
 
 CLI_LOG_LEVEL = 'WARNING'

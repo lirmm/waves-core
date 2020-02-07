@@ -1,13 +1,12 @@
 """ Service Submission administration classes """
-from __future__ import unicode_literals
 
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin, messages
 from django.http import HttpResponseRedirect
-from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 from django.utils.http import urlquote
+from django.utils.safestring import mark_safe
 
 from waves.core.admin.adaptors import SubmissionRunnerParamInLine
 from waves.core.admin.base import WavesModelAdmin, DynamicInlinesAdmin

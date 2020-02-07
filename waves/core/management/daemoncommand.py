@@ -59,7 +59,7 @@ class DaemonCommand(BaseCommand):
         """
         # FIXME process queue unterminated processes
         import warnings
-        warnings.warn("This method has a known bug: please use crontab setup see Docs")
+        warnings.warning("This method has a known bug: please use crontab setup see Docs")
         exit(0)
         try:
             self.action = options.pop('action')

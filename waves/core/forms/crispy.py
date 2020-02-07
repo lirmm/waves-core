@@ -1,12 +1,10 @@
-from __future__ import unicode_literals
+from decimal import Decimal
 
 from crispy_forms import bootstrap
 from crispy_forms.helper import FormHelper as CrispyFormHelper
 from crispy_forms.layout import Layout, Field, Div, HTML, Reset, Submit
 
 from waves.core.forms.helper import WFormHelper
-from waves.core.models.const import ParamType
-from decimal import Decimal
 from waves.core.models.inputs import FileInputSample, FileInput
 from waves.core.settings import waves_settings
 
@@ -70,7 +68,8 @@ class FormHelper(CrispyFormHelper, WFormHelper):
             if when_value is not None:
                 if type(service_input.when_value_python) is int:
                     hide_dep = (service_input.when_value_python != int(when_value))
-                    print "hide dep", hide_dep, when_value, service_input.when_value_python
+                    print
+                    "hide dep", hide_dep, when_value, service_input.when_value_python
                 elif type(service_input.when_value_python) is Decimal:
                     hide_dep = (service_input.when_value_python != Decimal(when_value.strip(' "')))
                 elif type(service_input.when_value_python) is bool:
@@ -131,7 +130,8 @@ class FormHelper(CrispyFormHelper, WFormHelper):
             field_dict.update(wrapper)
             input_field = Field(service_input.api_name, **field_dict)
             self.layout.append(input_field)
-        if isinstance(service_input, FileInput) and not service_input.allow_copy_paste and service_input.input_samples.count()>0:
+        if isinstance(service_input,
+                      FileInput) and not service_input.allow_copy_paste and service_input.input_samples.count() > 0:
             for sample in service_input.input_samples.all():
                 self.layout.append(Field('sp_' + service_input.api_name + '_' + str(sample.pk)))
 

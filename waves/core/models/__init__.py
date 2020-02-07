@@ -1,5 +1,4 @@
 """ All WAVES related models imports """
-from __future__ import unicode_literals
 
 # Automate sub module import
 import swapper

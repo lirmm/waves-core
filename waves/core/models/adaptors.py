@@ -1,5 +1,4 @@
 """ Adaptors models classes """
-from __future__ import unicode_literals
 
 import logging
 

@@ -1,15 +1,13 @@
-
-from __future__ import unicode_literals
-
-from django.core.management.base import BaseCommand
 import base64
+
 from Crypto.Cipher import XOR
+from cryptography.fernet import InvalidToken
+from django.core.management.base import BaseCommand
 
 from ...models import AdaptorInitParam
 from ...models.base import WavesBaseModel
 from ...settings import waves_settings
 from ...utils.encrypt import Encrypt
-from cryptography.fernet import InvalidToken
 
 
 class ObsoleteEncrypt(object):
@@ -31,7 +29,6 @@ class ObsoleteEncrypt(object):
 
 
 class TmpAdaptorInitParam(AdaptorInitParam):
-
     class Meta:
         app_label = "waves.core"
         proxy = True
@@ -60,7 +57,8 @@ class Command(BaseCommand):
                     old_decrypted = ObsoleteEncrypt.decrypt(encrypted.value)
                 except StandardError as e:
                     self.stderr.write("An error occured decrypting value with previous cryptography system ")
-                    self.stderr.write("Related info [id:%s] [related object:%s] [related id:%s]" % (encrypted.id, encrypted.content_object, encrypted.content_object.id))
+                    self.stderr.write("Related info [id:%s] [related object:%s] [related id:%s]" % (
+                    encrypted.id, encrypted.content_object, encrypted.content_object.id))
                     error = True
                 if not error:
                     new_value = Encrypt.encrypt(old_decrypted)

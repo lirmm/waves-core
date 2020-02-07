@@ -1,15 +1,15 @@
-from __future__ import unicode_literals
 
-from uuid import UUID
+
 import logging
+from uuid import UUID
 
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.template.exceptions import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.urls import reverse
 from django.views import generic
-from django.core.exceptions import PermissionDenied
 
 from waves.core.exceptions.jobs import JobException
 from waves.core.forms.services import ServiceSubmissionForm

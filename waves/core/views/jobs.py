@@ -1,5 +1,5 @@
 """ WAVES jobs related web views """
-from __future__ import unicode_literals
+
 
 from uuid import UUID
 

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from waves.core.models.const import OptType
 
 

@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import copy
 import logging
 
@@ -28,7 +26,7 @@ class ServiceSubmissionForm(forms.ModelForm):
     def process_dependent(self, dependent_input):
         # conditional parameters must not be required to use classic django form validation process
         dependent_input.required = False
-        logger.warn("current input %s %s ", dependent_input, dependent_input.label)
+        logger.warning("current input %s %s ", dependent_input, dependent_input.label)
         self.fields.update(dependent_input.form_widget(self.data.get(dependent_input.api_name, None)))
         self.helper.set_layout(dependent_input)
         for srv_input in dependent_input.dependents_inputs.exclude(required=None):

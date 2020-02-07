@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import json
 
 from waves.core.adaptors.exceptions import AdaptorNotAvailableException

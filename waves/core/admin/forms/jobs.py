@@ -1,6 +1,6 @@
-from __future__ import unicode_literals
 from django import forms
 from django.forms import widgets
+
 from waves.core.models import JobInput, JobOutput, Job
 
 __all__ = ['JobInputForm', 'JobOutputForm', 'JobForm']

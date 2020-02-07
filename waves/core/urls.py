@@ -1,11 +1,11 @@
-from __future__ import unicode_literals
+
 
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
 from waves.core.views.jobs import JobInputView, JobOutputView, JobSubmissionView, JobView, JobListView
 from waves.core.views.services import ServiceListView, ServiceDetailView
-
+app_name = "waves.core"
 
 urlpatterns = [
     url(r'^services/$', ServiceListView.as_view(), name='services_list'),

@@ -1,7 +1,5 @@
-from __future__ import unicode_literals
-
-from django.forms import ModelForm, ChoiceField, PasswordInput
 from django.core.exceptions import ValidationError
+from django.forms import ModelForm, ChoiceField, PasswordInput
 
 from waves.core.adaptors.adaptor import JobAdaptor
 from waves.core.models import AdaptorInitParam, get_submission_model, get_service_model

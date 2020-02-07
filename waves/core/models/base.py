@@ -1,12 +1,12 @@
 """ Django models bases classes """
-from __future__ import unicode_literals
 
 import re
 import uuid
 
 import inflection
-from django.db import models
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
+from django.db import models
+
 from waves.core.compat import RichTextField
 from waves.core.settings import waves_settings
 
@@ -100,7 +100,7 @@ class ApiModel(WavesBaseModel):
     def base_api_name(self):
         last_pos = self.api_name.rfind('_')
         if last_pos != -1 and self.api_name[last_pos + 1:].isdigit():
-            return self.api_name[:last_pos+1]
+            return self.api_name[:last_pos + 1]
         else:
             return self.api_name
 
@@ -161,6 +161,7 @@ class ExportAbleMixin(object):
     """ Some models object may be 'exportable' in order to be imported elsewhere in another WAVES app.
     Based on Django serializer, because we don't want to select fields to export
     """
+
     @property
     def serializer(self, context=None):
         """ Each sub class must implement this method to initialize its Serializer"""

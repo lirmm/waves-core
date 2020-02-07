@@ -1,19 +1,17 @@
 """
 Admin pages for Runner and RunnerParam models objects
 """
-from __future__ import unicode_literals
 
 from django.conf.urls import url
 from django.contrib import messages
 from django.contrib.admin import register, TabularInline
 from django.contrib.admin.options import IS_POPUP_VAR
 
-from base import ExportInMassMixin
-from waves.core.admin.adaptors import RunnerParamInline
-from waves.core.admin.base import WavesModelAdmin
 from waves.core.admin.forms.runners import RunnerForm
 from waves.core.admin.views import RunnerExportView, RunnerImportToolView, RunnerTestConnectionView
 from waves.core.models import Runner, get_service_model, get_submission_model
+from .adaptors import RunnerParamInline
+from .base import ExportInMassMixin, WavesModelAdmin
 
 Service = get_service_model()
 Submission = get_submission_model()

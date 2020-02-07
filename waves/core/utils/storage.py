@@ -1,10 +1,11 @@
 """ WAVES Files storage engine parameters """
-from __future__ import unicode_literals
+
 
 import os
 
-from waves.core.settings import waves_settings
 from django.core.files.storage import FileSystemStorage
+
+from waves.core.settings import waves_settings
 
 
 class WavesStorage(FileSystemStorage):

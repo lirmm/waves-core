@@ -1,5 +1,4 @@
-
-from __future__ import unicode_literals
+from abc import ABC
 
 from ..base import SubcommandDispatcher
 from ..command import JobQueueCommand, PurgeDaemonCommand
@@ -14,7 +13,7 @@ PURGE = 'purge'
 SHOWURLS = 'show_urls'
 
 
-class Command(SubcommandDispatcher):
+class Command(SubcommandDispatcher, ABC):
     """ WAVES dedicated administration Django subcommand line interface (./manage.py) """
     help = 'WAVES Administration dedicated commands: type manage.py waves <sub_command> --help for sub-commands help'
     command_list = (CLEAN, CONFIG, LOAD, SHOWURLS)

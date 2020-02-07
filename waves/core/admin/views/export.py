@@ -1,12 +1,11 @@
 """ Base class for exporting objects """
-from __future__ import unicode_literals
 
 from os.path import join
 
 from django.contrib import messages
 from django.shortcuts import redirect
+
 from waves.core.settings import waves_settings as config
-from waves.core.models.base import ExportAbleMixin
 from waves.core.views.files import DownloadFileView
 
 
@@ -42,4 +41,3 @@ class ModelExportView(DownloadFileView):
     @property
     def file_description(self):
         return "Export file for %s " % self.model.__class__.__name__
-

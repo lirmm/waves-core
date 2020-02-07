@@ -1,24 +1,24 @@
 """
 WAVES Services related models objects
 """
-from __future__ import unicode_literals
 
+import collections
 import logging
 import os
-import collections
+
 import swapper
-from django.conf import settings
 from django import forms
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.db import transaction
 from django.db.models import Q
+from django.urls import reverse
 
 from waves.core.adaptors.const import JobStatus
 from waves.core.models.adaptors import AdaptorInitParam
-from waves.core.models.runners import HasRunnerParamsMixin
 from waves.core.models.base import TimeStamped, Described, ExportAbleMixin, Ordered, Slugged, ApiModel, WavesBaseModel
+from waves.core.models.runners import HasRunnerParamsMixin
 from waves.core.settings import waves_settings
 
 __all__ = ['ServiceRunParam', 'ServiceManager', "SubmissionExitCode",
@@ -208,7 +208,7 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
     @transaction.atomic
     def duplicate(self):
         """ Duplicate  a Service / with inputs / outputs / exit_code / runner params """
-        from waves.core.api.v2.serializers import ServiceSerializer
+        from waves.api.v2 import ServiceSerializer
         serializer = ServiceSerializer()
         data = serializer.to_representation(self)
         srv = self.serializer(data=data)
@@ -447,7 +447,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
                                    on_delete=models.CASCADE)
     #: Associated Submission Input if needed
     from_input = models.ForeignKey('AParam', null=True, blank=True, default=None, related_name='to_outputs',
-                                   help_text='Is valuated from an input')
+                                   help_text='Is valuated from an input', on_delete=models.SET_NULL)
     #: Pattern to apply to associated input
     file_pattern = models.CharField('File name or name pattern', max_length=100, blank=False,
                                     help_text="Pattern is used to match input value (%s to retrieve value from input)")

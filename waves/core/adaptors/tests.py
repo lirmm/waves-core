@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import logging
 import os
 import unittest
@@ -9,11 +7,11 @@ from django.conf import settings
 from waves.core.adaptors.cluster import SshClusterAdaptor
 from waves.core.adaptors.const import JobStatus
 from waves.core.adaptors.exceptions import AdaptorException
-from waves.core.tests.mocks import MockJobRunnerAdaptor
 from waves.core.adaptors.shell import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.core.exceptions.jobs import JobInconsistentStateError
 from waves.core.settings import waves_settings
 from waves.core.tests.base import BaseTestCase, TestJobWorkflowMixin
+from waves.core.tests.mocks import MockJobRunnerAdaptor
 from waves.core.utils.encrypt import Encrypt
 from .loader import AdaptorLoader
 
@@ -160,5 +158,3 @@ class AdaptorTestCase(BaseTestCase, TestJobWorkflowMixin):
         self.current_job.run_cancel()
         self.assertTrue(self.current_job.status == JobStatus.JOB_CANCELLED)
         self.current_job.delete()
-
-
