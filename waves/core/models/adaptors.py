@@ -24,7 +24,7 @@ class AdaptorInitParam(WavesBaseModel):
         ordering = ['name']
         verbose_name = "Initial param"
         verbose_name_plural = "Init params"
-        app_label = "waves"
+        app_label = "wcore"
 
     _value = None
     _override = None

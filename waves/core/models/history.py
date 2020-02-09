@@ -42,7 +42,7 @@ class JobHistory(WavesBaseModel):
     class Meta:
         ordering = ['-timestamp', '-status']
         unique_together = ('job', 'timestamp', 'status', 'is_admin')
-        app_label = "waves"
+        app_label = "wcore"
 
     objects = JobHistoryManager()
     #: Related :class:`waves.core.models.jobs.Job`
@@ -76,6 +76,6 @@ class JobAdminHistory(JobHistory):
 
     class Meta:
         proxy = True
-        app_label = "waves"
+        app_label = "wcore"
 
     objects = JobAdminHistoryManager()

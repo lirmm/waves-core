@@ -19,11 +19,11 @@ from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModel
 
 from waves.core.admin.base import WavesModelAdmin
 from waves.core.admin.submissions import FileInputSampleInline, SampleDependentInputInline
-from waves.core.models import get_submission_model
+from waves.core.models import Submission
 from waves.core.models.inputs import AParam, FileInput, BooleanParam, ListParam, IntegerParam, DecimalParam, \
     RepeatedGroup, TextParam
 
-Submission = get_submission_model()
+
 
 __all__ = ['AllParamModelAdmin']
 

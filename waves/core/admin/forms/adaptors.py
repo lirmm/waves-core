@@ -2,10 +2,10 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, ChoiceField, PasswordInput
 
 from waves.core.adaptors.adaptor import JobAdaptor
-from waves.core.models import AdaptorInitParam, get_submission_model, get_service_model
+from waves.core.models import AdaptorInitParam, Submission, Service
 
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 
 
 class AdaptorInitParamForm(ModelForm):

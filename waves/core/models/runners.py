@@ -20,7 +20,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
         ordering = ['name']
         verbose_name = 'Computing infrastructure'
         verbose_name_plural = "Computing infrastructures"
-        app_label = "waves"
+        app_label = "wcore"
 
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
     enabled = models.BooleanField('Enabled', default=True, null=False, blank=True,
@@ -61,13 +61,13 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
     @property
     def running_services(self):
-        from waves.core.models import get_service_model
-        return get_service_model().objects.filter(runner=self)
+        from waves.core.models import Service
+        return Service().objects.filter(runner=self)
 
     @property
     def running_submissions(self):
-        from waves.core.models import get_submission_model
-        return get_submission_model().objects.filter(runner=self)
+        from waves.core.models import Submission
+        return Submission().objects.filter(runner=self)
 
     def get_admin_url(self):
         return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])

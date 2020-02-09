@@ -5,11 +5,11 @@ from django.conf import settings
 
 from core.tests.adaptors.tests import logger
 from waves.core.models import JobInput, JobOutput, Job
-from waves.core.models import get_service_model
+from waves.core.models import Service
 from waves.core.models.const import ParamType
 from waves.core.tests.base import BaseTestCase, TestJobWorkflowMixin
 
-Service = get_service_model()
+
 
 
 class CopyServiceTestCase(BaseTestCase, TestJobWorkflowMixin):

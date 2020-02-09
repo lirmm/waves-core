@@ -5,15 +5,15 @@ WAVES Service models forms
 from django import forms
 from django.conf import settings
 
-from waves.core.models import get_service_model, get_submission_model
+from waves.core.models import Service, Submission
 from waves.core.models.inputs import ListParam, AParam, BooleanParam, FileInput, \
     FileInputSample
 from waves.core.models.runners import Runner
 from waves.core.models.services import SubmissionOutput, SubmissionExitCode
 from waves.core.settings import waves_settings as config
 
-Submission = get_submission_model()
-Service = get_service_model()
+
+
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm', 'InputInlineForm', 'SubmissionExitCodeForm',
            'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'SampleDepForm2',

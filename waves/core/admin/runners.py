@@ -9,12 +9,12 @@ from django.contrib.admin.options import IS_POPUP_VAR
 
 from waves.core.admin.forms.runners import RunnerForm
 from waves.core.admin.views import RunnerExportView, RunnerImportToolView, RunnerTestConnectionView
-from waves.core.models import Runner, get_service_model, get_submission_model
+from waves.core.models import Runner, Service, Submission
 from .adaptors import RunnerParamInline
 from .base import ExportInMassMixin, WavesModelAdmin
 
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 
 __all__ = ['RunnerAdmin', 'RunnerTestConnectionView', 'RunnerImportToolView', 'RunnerExportView']
 

@@ -13,13 +13,13 @@ from waves.core.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.core.admin.forms.services import SubmissionOutputForm, InputSampleForm, SampleDepForm2, InputInlineForm, \
     ServiceSubmissionForm, SampleDepForm
 from waves.core.admin.views import ServicePreviewForm
-from waves.core.compat import CompactInline, SortableInlineAdminMixin
-from waves.core.models import get_submission_model
+from waves.compat import CompactInline, SortableInlineAdminMixin
+from waves.core.models import Submission
 from waves.core.models.inputs import AParam, FileInputSample, FileInput, RepeatedGroup, SampleDepParam
 from waves.core.models.services import SubmissionOutput, SubmissionExitCode
 from waves.core.utils import url_to_edit_object
 
-Submission = get_submission_model()
+
 
 __all__ = ['SubmissionOutputInline', 'SampleDependentInputInline', 'ExitCodeInline', 'FileInputSampleInline',
            'RepeatGroupAdmin', 'OrgRepeatGroupInline', 'ServiceSubmissionAdmin']

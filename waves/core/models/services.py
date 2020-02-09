@@ -22,7 +22,7 @@ from waves.core.models.runners import HasRunnerParamsMixin
 from waves.core.settings import waves_settings
 
 __all__ = ['ServiceRunParam', 'ServiceManager', "SubmissionExitCode",
-           'SubmissionOutput', 'SubmissionRunParam', 'BaseSubmission', 'BaseService']
+           'SubmissionOutput', 'SubmissionRunParam', 'Submission', 'Service']
 
 logger = logging.getLogger(__name__)
 
@@ -74,17 +74,16 @@ class ServiceRunParam(AdaptorInitParam):
 
     class Meta:
         proxy = True
-        app_label = "waves"
+        app_label = "wcore"
 
 
-class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
+class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
     class Meta:
-        abstract = True
-        app_label = "waves"
+        app_label = "wcore"
         ordering = ['name']
-        verbose_name = 'Online Service'
-        verbose_name_plural = "Online Services"
-        unique_together = (('api_name', 'version', 'status'),)
+        verbose_name = 'Waves Service'
+        verbose_name_plural = "Waves Services"
+        unique_together = (('api_name', 'version', 'status'), ('api_name', 'version'))
 
     #: Service DRAFT status: online access granted only to creator
     SRV_DRAFT = 0
@@ -287,20 +286,12 @@ class BaseService(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerPa
         return reverse('admin:{}_{}_changelist'.format(self._meta.app_label, self._meta.model_name))
 
 
-class Service(BaseService):
-    """
-    Represents a default swappable service on the platform
-    """
-
+class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     class Meta:
-        app_label = "waves"
-        swappable = swapper.swappable_setting('waves', 'Service')
-
-
-class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
-    class Meta:
-        app_label = "waves"
-        abstract = True
+        app_label = "wcore"
+        verbose_name = 'Submission method'
+        verbose_name_plural = 'Submission methods'
+        ordering = ('order',)
         unique_together = ('service', 'api_name')
 
     NOT_AVAILABLE = 0
@@ -312,7 +303,7 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
     )
 
     #: Related service model
-    service = models.ForeignKey(swapper.get_model_name('waves', 'Service'), on_delete=models.CASCADE, null=False,
+    service = models.ForeignKey('wcore.Service', on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
     #: Set whether this submission is available on REST API
     availability = models.IntegerField('Availability', default=AVAILABLE_API, choices=AVAILABILITY_CHOICES)
@@ -423,13 +414,6 @@ class BaseSubmission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMix
         return self.service.available_for_user(user)
 
 
-class Submission(BaseSubmission):
-    class Meta:
-        app_label = "waves"
-        verbose_name = 'Submission method'
-        verbose_name_plural = 'Submission methods'
-        ordering = ('order',)
-        swappable = swapper.swappable_setting('waves', 'Submission')
 
 
 class SubmissionOutput(TimeStamped, ApiModel):
@@ -437,7 +421,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     """
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         verbose_name = 'Expected output'
         verbose_name_plural = 'Expected outputs'
         ordering = ['-created']
@@ -449,7 +433,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     #: Output Name (internal)
     name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Output name")
     #: Related Submission
-    submission = models.ForeignKey(swapper.get_model_name('waves', 'Submission'), related_name='outputs',
+    submission = models.ForeignKey('wcore.Submission', related_name='outputs',
                                    on_delete=models.CASCADE)
     #: Associated Submission Input if needed
     from_input = models.ForeignKey('AParam', null=True, blank=True, default=None, related_name='to_outputs',
@@ -499,13 +483,13 @@ class SubmissionExitCode(WavesBaseModel):
     """ Services Extended exit code, when non 0/1 usual ones """
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         verbose_name = 'Exit Code'
         unique_together = ('exit_code', 'submission')
 
     exit_code = models.IntegerField('Exit code value', default=0)
     message = models.CharField('Exit code message', max_length=255)
-    submission = models.ForeignKey(swapper.get_model_name('waves', 'Submission'),
+    submission = models.ForeignKey('wcore.Submission',
                                    related_name='exit_codes',
                                    null=True,
                                    on_delete=models.CASCADE)
@@ -522,5 +506,5 @@ class SubmissionRunParam(AdaptorInitParam):
     """ Defined runner param for Service model objects """
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         proxy = True

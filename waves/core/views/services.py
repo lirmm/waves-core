@@ -11,11 +11,11 @@ from django.views import generic
 
 from waves.core.exceptions.jobs import JobException
 from waves.core.forms.services import ServiceSubmissionForm
-from waves.core.models import Job, get_submission_model, get_service_model
+from waves.core.models import Job, Submission, Service
 from waves.core.settings import waves_settings
 
-Submission = get_submission_model()
-Service = get_service_model()
+
+
 logger = logging.getLogger(__name__)
 
 

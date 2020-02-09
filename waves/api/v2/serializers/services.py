@@ -6,11 +6,11 @@ from rest_framework.reverse import reverse
 from rest_framework import serializers
 from waves.api.share import DynamicFieldsModelSerializer
 from waves.api.v2.serializers.inputs import InputSerializer as BaseInputSerializer
-from waves.core.models import get_service_model, get_submission_model
+from waves.core.models import Service, Submission
 from waves.core.models.services import SubmissionOutput
 
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 
 __all__ = ['OutputSerializer', 'ServiceSerializer', 'ServiceSubmissionSerializer']
 

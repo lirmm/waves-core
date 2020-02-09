@@ -17,7 +17,7 @@ class WavesConfig(AppConfig):
     """
     WAVES main application AppConfig, add signals for waves_webapp
     """
-    name = "waves"
+    name = "waves.core"
     verbose_name = 'WAVES CORE'
 
     def ready(self):
@@ -30,7 +30,7 @@ class WavesConfig(AppConfig):
 
 
 @register()
-def check_waves_config(app_configs=('waves.core',), **kwargs):
+def check_waves_config(app_configs=('waves',), **kwargs):
     """
     WAVES configuration check up, added to classic ``manage.py check`` Django command
 

@@ -15,15 +15,15 @@ from django.utils.timezone import localtime
 
 from waves.core.adaptors.const import JobStatus
 from waves.core.adaptors.loader import AdaptorLoader
-from waves.core.models import get_service_model, get_submission_model, TextParam, BooleanParam, Job, JobInput, \
+from waves.core.models import Service, Submission, TextParam, BooleanParam, Job, JobInput, \
     JobOutput, \
     Runner, AdaptorInitParam
 from waves.core.models.inputs import FileInput
 from waves.core.models.services import ServiceRunParam
 from waves.core.settings import waves_settings
 
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 User = get_user_model()
 logger = logging.getLogger(__name__)
 

@@ -7,7 +7,7 @@ import django.db.models.manager
 import swapper
 from django.db import migrations, models
 
-import waves.core.compat
+import compat
 import waves.core.models.base
 import waves.core.utils.logged
 import waves.core.utils.storage
@@ -20,8 +20,6 @@ class Migration(migrations.Migration):
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
         swapper.dependency('auth', 'User'),
-        swapper.dependency('core', 'Service'),
-        swapper.dependency('core', 'Submission')
     ]
 
     operations = [
@@ -33,8 +31,8 @@ class Migration(migrations.Migration):
                  models.DateTimeField(auto_now_add=True, help_text='Creation timestamp', verbose_name='Created on')),
                 ('updated',
                  models.DateTimeField(auto_now=True, help_text='Last update timestamp', verbose_name='Last Update')),
-                ('description', waves.core.compat.RichTextField(blank=True, help_text='Description (HTML)', null=True,
-                                                                verbose_name='Description')),
+                ('description', compat.RichTextField(blank=True, help_text='Description (HTML)', null=True,
+                                                     verbose_name='Description')),
                 ('short_description', models.TextField(blank=True, help_text='Short description (Text)', null=True,
                                                        verbose_name='Short Description')),
                 ('api_name',
@@ -66,10 +64,6 @@ class Migration(migrations.Migration):
                  models.TextField(blank=True, help_text='Comma separated list of Edam ontology operations', null=True,
                                   verbose_name='Edam operations')),
             ],
-            options={
-                # 'swappable': 'WCORE_SERVICE_MODEL',
-                'swappable': swapper.swappable_setting('core', 'Service'),
-            },
             bases=(waves.core.models.base.ExportAbleMixin, models.Model),
         ),
         migrations.CreateModel(
@@ -91,8 +85,6 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ('order',),
-                # 'swappable': 'WCORE_SUBMISSION_MODEL',
-                'swappable': swapper.swappable_setting('core', 'Submission'),
                 'verbose_name': 'Submission method',
                 'verbose_name_plural': 'Submission methods',
             },
@@ -215,7 +207,7 @@ class Migration(migrations.Migration):
                                              to=swapper.get_model_name('auth', 'User'))),
                 ('submission',
                  models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='service_jobs',
-                                   to=swapper.get_model_name('waves', 'Submission'))),
+                                   to=waves.core.models.Service)),
             ],
             options={
                 'ordering': ['-updated', '-created'],
@@ -309,7 +301,7 @@ class Migration(migrations.Migration):
                 ('default', models.IntegerField(default=0, verbose_name='Default repeat')),
                 ('submission', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
                                                  related_name='submission_groups',
-                                                 to=swapper.get_model_name('waves', 'Submission'))),
+                                                 to=waves.core.models.Submission)),
             ],
             options={
                 'ordering': ['order'],
@@ -320,8 +312,8 @@ class Migration(migrations.Migration):
             name='Runner',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', waves.core.compat.RichTextField(blank=True, help_text='Description (HTML)', null=True,
-                                                                verbose_name='Description')),
+                ('description', compat.RichTextField(blank=True, help_text='Description (HTML)', null=True,
+                                                     verbose_name='Description')),
                 ('short_description', models.TextField(blank=True, help_text='Short description (Text)', null=True,
                                                        verbose_name='Short Description')),
                 ('clazz',
@@ -377,7 +369,7 @@ class Migration(migrations.Migration):
                 ('is_error', models.BooleanField(default=False, verbose_name='Is an Error')),
                 ('submission',
                  models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='exit_codes',
-                                   to=swapper.get_model_name('waves', 'Submission'))),
+                                   to=waves.core.models.Submission)),
             ],
             options={
                 'verbose_name': 'Exit Code',
@@ -545,7 +537,7 @@ class Migration(migrations.Migration):
             model_name='submissionoutput',
             name='submission',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='outputs',
-                                    to=swapper.get_model_name('waves', 'Submission')),
+                                    to=waves.core.models.Submission),
         ),
         migrations.AddField(
             model_name='sampledepparam',
@@ -565,7 +557,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True,
                                     help_text="If set, 'Execution parameter' param line:'command' will be ignored",
                                     null=True, on_delete=django.db.models.deletion.SET_NULL,
-                                    to='waves.ServiceBinaryFile'),
+                                    to='wcore.ServiceBinaryFile'),
         ),
         migrations.AddField(
             model_name='fileinputsample',
@@ -595,7 +587,7 @@ class Migration(migrations.Migration):
             model_name='aparam',
             name='submission',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='inputs',
-                                    to=swapper.get_model_name('waves', 'Submission')),
+                                    to=waves.core.models.Submission),
         ),
         migrations.AddField(
             model_name='submission',
@@ -603,7 +595,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True,
                                     help_text="If set, 'Execution parameter' param line:'command' will be ignored",
                                     null=True, on_delete=django.db.models.deletion.SET_NULL,
-                                    to='waves.ServiceBinaryFile'),
+                                    to='wcore.ServiceBinaryFile'),
         ),
         migrations.AddField(
             model_name='submission',
@@ -616,7 +608,7 @@ class Migration(migrations.Migration):
             model_name='submission',
             name='service',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='submissions',
-                                    to=swapper.get_model_name('waves', 'Service')),
+                                    to=waves.core.models.Service),
         ),
         migrations.AddField(
             model_name='service',
@@ -624,7 +616,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(blank=True,
                                     help_text="If set, 'Execution parameter' param line:'command' will be ignored",
                                     null=True, on_delete=django.db.models.deletion.SET_NULL,
-                                    to='waves.ServiceBinaryFile'),
+                                    to=waves.core.models.ServiceBinaryFile),
         ),
         migrations.AddField(
             model_name='service',

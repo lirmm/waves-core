@@ -11,11 +11,11 @@ from django.views.generic import View
 
 from waves.core.admin.views.export import ModelExportView
 from waves.core.admin.views.runner_tool import RunnerImportToolView, RunnerTestConnectionView
-from waves.core.models import get_service_model
+from waves.core.models import Service
 from waves.core.settings import waves_settings
 from waves.core.views.services import SubmissionFormView
 
-Service = get_service_model()
+
 
 
 class ServiceParamImportView(RunnerImportToolView):

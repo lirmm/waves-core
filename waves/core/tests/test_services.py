@@ -4,12 +4,12 @@ import logging
 
 from django.urls import reverse
 
-from waves.core.models import get_service_model, get_submission_model
+from waves.core.models import Service, Submission
 from waves.core.tests.base import BaseTestCase
 
 logger = logging.getLogger(__name__)
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 
 
 class ServicesTestCase(BaseTestCase):

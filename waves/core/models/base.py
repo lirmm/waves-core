@@ -7,7 +7,7 @@ import inflection
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, MultipleObjectsReturned
 from django.db import models
 
-from waves.core.compat import RichTextField
+from waves.compat import RichTextField
 from waves.core.settings import waves_settings
 
 __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 'ApiModel',
@@ -17,7 +17,7 @@ __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 
 class WavesBaseModel(models.Model):
     class Meta:
         abstract = True
-        app_label = "waves"
+        app_label = "wcore"
 
 
 class TimeStamped(WavesBaseModel):

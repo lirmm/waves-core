@@ -224,13 +224,13 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         verbose_name = 'Job'
         verbose_name_plural = "Jobs"
         ordering = ['-updated', '-created']
-        app_label = "waves"
+        app_label = "wcore"
 
     objects = JobManager()
     #: Job Title, automatic or set by user upon submission
     title = models.CharField('Job title', max_length=255, null=True, blank=True)
     #: Job related Service
-    submission = models.ForeignKey(swapper.get_model_name('waves', 'Submission'), related_name='service_jobs',
+    submission = models.ForeignKey('wcore.Submission', related_name='service_jobs',
                                    null=True, on_delete=models.SET_NULL)
     #: Job status issued from last retrieve on DB
     _status = models.IntegerField('Job status', choices=JobStatus.STATUS_LIST,
@@ -815,7 +815,7 @@ class JobInput(Ordered, Slugged, ApiModel, UrlMixin):
 
     class Meta:
         unique_together = ('name', 'value', 'job')
-        app_label = "waves"
+        app_label = "wcore"
 
     objects = JobInputManager()
     #: Reference to related :class:`waves.core.models.jobs.Job`
@@ -999,7 +999,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     class Meta:
         unique_together = ('api_name', 'job')
-        app_label = "waves"
+        app_label = "wcore"
 
     objects = JobOutputManager()
     field_api_name = "_name"

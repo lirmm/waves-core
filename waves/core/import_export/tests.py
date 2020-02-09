@@ -2,12 +2,12 @@ import json
 import logging
 
 from waves.core.import_export.services import ServiceSerializer
-from waves.core.models import get_service_model, get_submission_model
+from waves.core.models import Service, Submission
 from waves.core.tests.base import BaseTestCase
 
 logger = logging.getLogger(__name__)
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 
 
 class SerializationTestCase(BaseTestCase):

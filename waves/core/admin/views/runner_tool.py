@@ -13,10 +13,10 @@ from waves.core.admin.forms.services import ImportForm
 from waves.core.admin.views.export import ModelExportView
 from waves.core.exceptions import RunnerException
 from waves.core.models import Runner
-from waves.core.models import get_service_model
+from waves.core.models import Service
 from .json_view import JSONDetailView
 
-Service = get_service_model()
+
 
 
 class RunnerImportToolView(DetailView, FormView):

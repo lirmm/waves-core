@@ -9,13 +9,13 @@ from waves.core.admin.base import WavesModelAdmin, ExportInMassMixin, DuplicateI
 from waves.core.admin.forms.services import SubmissionInlineForm, ServiceForm
 from waves.core.admin.views import ServiceParamImportView, ServiceDuplicateView, ServiceExportView, \
     ServiceModalPreview, ServiceTestConnectionView
-from waves.core.compat import SortableInlineAdminMixin
-from waves.core.models import get_service_model, get_submission_model
+from waves.compat import SortableInlineAdminMixin
+from waves.core.models import Service, Submission
 from waves.core.models.binaries import ServiceBinaryFile
 from waves.core.utils import url_to_edit_object
 
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 User = get_user_model()
 
 __all__ = ['ServiceAdmin', 'ServiceSubmissionInline']

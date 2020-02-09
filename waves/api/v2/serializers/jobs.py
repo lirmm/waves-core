@@ -8,10 +8,10 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from waves.api.share import DynamicFieldsModelSerializer
-from waves.core.models import JobInput, Job, JobOutput, JobHistory, get_service_model
+from waves.core.models import JobInput, Job, JobOutput, JobHistory, Service
 from waves.core.models.const import ParamType
 
-Service = get_service_model()
+
 User = get_user_model()
 
 

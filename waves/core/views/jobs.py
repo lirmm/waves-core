@@ -9,12 +9,12 @@ from django.urls import reverse
 from django.views import generic
 
 from waves.core.forms.services import ServiceSubmissionForm
-from waves.core.models import JobOutput, JobInput, Job, get_submission_model, get_service_model
+from waves.core.models import JobOutput, JobInput, Job, Submission, Service
 from waves.core.views.files import DownloadFileView
 from waves.core.views.services import SubmissionFormView, ServiceDetailView
 
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 
 
 class JobFileView(DownloadFileView):

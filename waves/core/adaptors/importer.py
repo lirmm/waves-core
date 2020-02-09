@@ -5,12 +5,12 @@ import warnings
 import inflection
 
 from waves.core.adaptors.exceptions import ImporterException
-from waves.core.models import get_service_model, get_submission_model
+from waves.core.models import Service, Submission
 from waves.core.settings import waves_settings
 from waves.core.utils.logged import LoggerClass
 
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 
 logger = logging.getLogger(__name__)
 

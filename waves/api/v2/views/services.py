@@ -19,11 +19,11 @@ from rest_framework.reverse import reverse
 from waves.api.permissions import ServiceAccessPermission
 from waves.api.v2 import serializers
 from waves.core.exceptions.jobs import JobException
-from waves.core.models import Job, get_service_model, get_submission_model
+from waves.core.models import Job, Service, Submission
 from waves.core.views.services import ServiceSubmissionForm
 
-Submission = get_submission_model()
-Service = get_service_model()
+
+
 
 logger = logging.getLogger(__name__)
 

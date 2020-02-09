@@ -4,7 +4,6 @@
 from decimal import Decimal
 from os.path import basename
 
-import swapper
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -24,9 +23,9 @@ __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam
 class RepeatedGroup(Ordered):
     """ Some input may be grouped, and group could be repeated"""
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
 
-    submission = models.ForeignKey(swapper.get_model_name('waves', 'Submission'),
+    submission = models.ForeignKey('wcore.Submission',
                                    related_name='submission_groups', null=True,
                                    on_delete=models.CASCADE)
     name = models.CharField('Group name', max_length=50, null=False, blank=False)
@@ -47,7 +46,7 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
         verbose_name_plural = "Inputs"
         verbose_name = "Input"
         ordering = ('order',)
-        app_label = "waves"
+        app_label = "wcore"
 
     # objects = PolymorphicManager()
     # order = models.PositiveIntegerField('Ordering in forms', default=0)
@@ -58,7 +57,7 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
                             help_text='Input runner\'s job param command line name')
     multiple = models.BooleanField('Multiple', default=False, help_text="Can hold multiple values")
     help_text = models.TextField('Help Text', null=True, blank=True)
-    submission = models.ForeignKey(swapper.get_model_name('waves', 'Submission'), on_delete=models.CASCADE, null=False,
+    submission = models.ForeignKey('wcore.Submission', on_delete=models.CASCADE, null=False,
                                    related_name='inputs')
     required = models.NullBooleanField('Required', choices={(False, "Optional"), (True, "Required"),
                                                             (None, "Not submitted by user")},
@@ -175,7 +174,7 @@ class TextParam(AParam):
     class Meta:
         verbose_name = "Text Input"
         verbose_name_plural = "Text Input"
-        app_label = "waves"
+        app_label = "wcore"
 
     max_length = models.CharField('Max length (<255)', max_length=255, default=255)
 
@@ -195,7 +194,7 @@ class BooleanParam(AParam):
     class Meta:
         verbose_name = "Boolean choice"
         verbose_name_plural = "Boolean choices"
-        app_label = "waves"
+        app_label = "wcore"
 
     class_label = "Boolean"
     true_value = models.CharField('True value', default='True', max_length=50)
@@ -237,7 +236,7 @@ class NumberParam(AParam):
     max_val = None
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         proxy = True
         abstract = True
 
@@ -293,7 +292,7 @@ class DecimalParam(NumberParam, AParam):
     """ Number param (decimal or float) """
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         verbose_name = "Decimal"
         verbose_name_plural = "Decimal"
 
@@ -317,7 +316,7 @@ class IntegerParam(NumberParam, AParam):
     """ Integer param """
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         verbose_name = "Integer"
         verbose_name_plural = "Integer"
 
@@ -341,7 +340,7 @@ class ListParam(AParam):
     """ Param to be issued from a list of values (select / radio / check) """
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         verbose_name = "List"
         verbose_name_plural = "Lists"
 
@@ -425,7 +424,7 @@ class FileInput(AParam):
     """ Submission file inputs """
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         ordering = ['order', ]
         verbose_name = "File input"
         verbose_name_plural = "Files inputs"
@@ -463,7 +462,7 @@ class FileInputSample(WavesBaseModel):
     """ Any file input can provide samples """
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         verbose_name_plural = "Input samples"
         verbose_name = "Input sample"
 
@@ -517,7 +516,7 @@ class SampleDepParam(WavesBaseModel):
     """
 
     class Meta:
-        app_label = "waves"
+        app_label = "wcore"
         verbose_name_plural = "Sample dependencies"
         verbose_name = "Sample dependency"
 

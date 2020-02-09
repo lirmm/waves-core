@@ -1,6 +1,21 @@
 CHANGELOG
 =========
 
+Version 2.0.0 - 2020-02-25
+--------------------------
+
+- [Major] - Some major updates / breaking changes alongside moving to 
+    - Python 3 
+    - Django 2.XXX
+    - Radical saga 1.0.1
+- [Major] - Remove swappable for Service/Submission (obsolete use case and work around described [here])
+- [Major] - Following packages out of waves.core namespace:
+    - api
+    - compat
+    - ..
+- [Major] - removed code for WAVES api v1
+
+
 Version 1.6.7 - 2020-01-08
 --------------------------
 

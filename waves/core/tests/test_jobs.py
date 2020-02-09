@@ -7,12 +7,12 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 
 from waves.core.adaptors.const import JobStatus
-from waves.core.models import get_service_model, get_submission_model
+from waves.core.models import Service, Submission
 from waves.core.tests.base import BaseTestCase
 
 logger = logging.getLogger(__name__)
-Service = get_service_model()
-Submission = get_submission_model()
+
+
 User = get_user_model()
 
 

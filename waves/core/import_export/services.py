@@ -7,13 +7,13 @@ from rest_framework import serializers as rest_serializer
 from waves.api import serializers
 from waves.core.import_export import BaseSerializer, RelatedSerializerMixin
 from waves.core.import_export.runners import RunnerSerializer, RunnerParamSerializer
-from waves.core.models import get_submission_model, get_service_model
+from waves.core.models import Submission, Service
 from waves.core.models.inputs import AParam
 from waves.core.models.runners import Runner
 from waves.core.models.services import SubmissionExitCode, SubmissionOutput, SubmissionRunParam
 
-Submission = get_submission_model()
-Service = get_service_model()
+
+
 
 __all__ = ['ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
 

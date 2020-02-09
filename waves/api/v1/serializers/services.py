@@ -1,20 +1,16 @@
 """ WAVES API services related serializers"""
 
-
 import logging
 
 from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework import serializers
 from rest_framework.reverse import reverse as reverse
 
-from waves.api.v1.serializers.inputs import InputSerializer
 from waves.api.share import DynamicFieldsModelSerializer
-from waves.core.models import get_service_model, get_submission_model
+from waves.api.v1.serializers.inputs import InputSerializer
+from waves.core.models import Service, Submission
 from waves.core.models.services import SubmissionOutput as ServiceOutput
 from waves.core.settings import waves_settings
-
-Service = get_service_model()
-ServiceSubmission = get_submission_model()
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +32,11 @@ class OutputSerializer(DynamicFieldsModelSerializer):
         fields = ('name', 'ext', 'may_be_empty', 'file_pattern')
 
 
-class ServiceSubmissionSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedRelatedField):
+class SubmissionSerializer(DynamicFieldsModelSerializer, serializers.HyperlinkedRelatedField):
     """ Serialize a Service submission """
 
     class Meta:
-        model = ServiceSubmission
+        model = Submission
         fields = ('label', 'service', 'submission_uri', 'inputs')
         extra_kwargs = {
             'api_name': {'view_name': 'wapi:v1:waves-submission-detail',
@@ -66,7 +62,7 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer, serializers.Hype
 
     def get_queryset(self):
         """ Filter api enabled submissions """
-        return ServiceSubmission.objects.filter(availability=1)
+        return Submission.objects.filter(availability=1)
 
 
 class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsModelSerializer):
@@ -82,7 +78,7 @@ class ServiceSerializer(serializers.HyperlinkedModelSerializer, DynamicFieldsMod
         }
 
     jobs = serializers.SerializerMethodField()
-    submissions = ServiceSubmissionSerializer(many=True, read_only=True, hidden=('service',))
+    submissions = SubmissionSerializer(many=True, read_only=True, hidden=('service',))
     default_submission_uri = serializers.SerializerMethodField()
 
     def get_default_submission_uri(self, obj):
@@ -105,7 +101,7 @@ class ServiceFormSerializer(serializers.ModelSerializer):
     """ Service form serializer """
 
     class Meta:
-        model = ServiceSubmission
+        model = Submission
         fields = ('label', 'service', 'js', 'css', 'template_pack', 'post_uri', 'form')
 
     js = serializers.SerializerMethodField()

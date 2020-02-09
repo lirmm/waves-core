@@ -11,14 +11,10 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from waves.api.v1.serializers import ServiceSerializer, JobSerializer, ServiceFormSerializer, \
-    ServiceSubmissionSerializer
+from waves.api.v1.serializers import ServiceSerializer, JobSerializer, ServiceFormSerializer, SubmissionSerializer
 from waves.api.views.base import WavesAuthenticatedView
 from waves.core.exceptions.jobs import JobException
-from waves.core.models import Job, get_service_model, get_submission_model
-
-Service = get_service_model()
-ServiceSubmission = get_submission_model()
+from waves.core.models import Job, Service, Submission
 
 logger = logging.getLogger(__name__)
 
@@ -82,13 +78,13 @@ class MultipleFieldLookupMixin(object):
 class ServiceJobSubmissionView(MultipleFieldLookupMixin, generics.CreateAPIView,
                                WavesAuthenticatedView):
     """ Service job Submission view """
-    queryset = ServiceSubmission.objects.all()
-    serializer_class = ServiceSubmissionSerializer
+    queryset = Submission.objects.all()
+    serializer_class = SubmissionSerializer
     lookup_fields = ('service', 'api_name')
 
     def get_queryset(self):
         """ Retrieve for service, current submissions available for API """
-        return ServiceSubmission.objects.filter(api_name=self.kwargs.get('api_name'),
+        return Submission.objects.filter(api_name=self.kwargs.get('api_name'),
                                                 service__api_name=self.kwargs.get('service'),
                                                 availability=1)
 
