@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 from rest_framework import routers
 
 from waves.api.v1.views import jobs, services
-from waves.core.views.jobs import JobOutputView, JobInputView
+from waves.views import JobOutputView, JobInputView
 
 app_name = "waves.api.v1"
 # API router setup

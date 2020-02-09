@@ -7,7 +7,7 @@ import base64
 
 from cryptography.fernet import Fernet
 
-from waves.core.settings import waves_settings
+from waves.settings import waves_settings
 
 
 class Encrypt(object):

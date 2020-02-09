@@ -14,9 +14,9 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from waves.api.v2 import serializers
+from waves.api import serializers
 from waves.core.exceptions.jobs import JobInconsistentStateError
-from waves.core.models import Job
+from waves.models import Job
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ class JobViewSet(mixins.ListModelMixin,
         try:
             job.run_cancel()
         except JobInconsistentStateError as e:
-            perm = PermissionDenied(detail=e.message)
+            perm = PermissionDenied(detail=e)
             perm.status_code = status.HTTP_405_METHOD_NOT_ALLOWED
             raise perm
         return Response({'success': 'Job marked as cancelled'}, status=status.HTTP_202_ACCEPTED)

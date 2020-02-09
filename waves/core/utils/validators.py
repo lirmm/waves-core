@@ -1,13 +1,12 @@
-
-
 import logging
 import os
 
 from django.core.exceptions import ValidationError
 
-from waves.core.models.const import ParamType
+from waves.models.const import ParamType
 
 logger = logging.getLogger(__name__)
+
 
 # TODO activate dedicated validators for job Input [https://docs.djangoproject.com/en/1.9/ref/validators/]
 class ServiceInputValidator(object):
@@ -34,7 +33,6 @@ class ServiceInputValidator(object):
         except AssertionError as e:
             form.add_error(the_input.name, 'Wrong input "%s": %s' % (the_input, e.message))
         except AttributeError as e:
-            logger.exception("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
             form.add_error(the_input.name,
                            'Unknown param_type for input: %s - param_type: %s' % (the_input, the_input.type))
 

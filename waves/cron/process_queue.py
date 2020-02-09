@@ -20,7 +20,7 @@ import logging
 import waves.core.exceptions
 from waves.core.adaptors.const import JobStatus
 from waves.core.adaptors.exceptions import AdaptorException
-from waves.core.models import Job
+from waves.models import Job
 
 logger = logging.getLogger('waves.cron')
 

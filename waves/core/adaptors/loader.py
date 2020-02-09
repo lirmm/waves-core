@@ -1,7 +1,7 @@
 import json
 
 from waves.core.adaptors.exceptions import AdaptorNotAvailableException
-from waves.core.settings import import_from_string
+from waves.settings import import_from_string
 
 __all__ = ['AdaptorLoader']
 
@@ -10,13 +10,13 @@ class AdaptorLoader(object):
 
     @classmethod
     def get_adaptors(cls):
-        from waves.core.settings import waves_settings
+        from waves.settings import waves_settings
         return sorted([adaptor_class() for adaptor_class in waves_settings.ADAPTORS_CLASSES],
                       key=lambda clazz: clazz.__class__.__name__)
 
     @classmethod
     def load(cls, clazz, **params):
-        from waves.core.settings import waves_settings
+        from waves.settings import waves_settings
 
         if params is None:
             params = {}
@@ -37,5 +37,5 @@ class AdaptorLoader(object):
 
     @classmethod
     def get_class_names(cls):
-        from waves.core.settings import waves_settings
+        from waves.settings import waves_settings
         return ['{}.{}'.format(clazz.__module__, clazz.__name__) for clazz in waves_settings.ADAPTORS_CLASSES]

@@ -5,8 +5,8 @@ import warnings
 import inflection
 
 from waves.core.adaptors.exceptions import ImporterException
-from waves.core.models import Service, Submission
-from waves.core.settings import waves_settings
+from waves.models import Submission
+from waves.settings import waves_settings
 from waves.core.utils.logged import LoggerClass
 
 
@@ -152,7 +152,7 @@ class AdaptorImporter(LoggerClass):
             self.submission.save()
             return self.service, self.submission
         except ImporterException as e:
-            logger.exception("Import service error %s", e.message)
+            logger.exception("Import service error %s", e)
             return None, None
 
     def list_services(self):
@@ -239,5 +239,5 @@ class InputFormat(object):
                     else:
                         list_choice.append((param, param))
             except ValueError as e:
-                warnings.warning('Error Parsing list values %s - value:%s - param:%s', e.message, value, param)
+                warnings.warn('Error Parsing list values %s - value:%s - param:%s', e, value, param)
         return list_choice

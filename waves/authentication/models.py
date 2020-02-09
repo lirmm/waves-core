@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
-from waves.core.settings import waves_settings
+from waves.settings import waves_settings
 
 
 @python_2_unicode_compatible

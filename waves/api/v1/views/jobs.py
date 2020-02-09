@@ -12,7 +12,7 @@ from waves.api.v1.serializers.jobs import JobSerializer, JobHistoryDetailSeriali
     JobOutputDetailSerializer
 from waves.api.views.base import WavesAuthenticatedView
 from waves.core.exceptions import WavesException
-from waves.core.models import Job
+from waves.models import Job
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,4 @@
-
 """ Jobs API serializers """
-
 
 import logging
 from os import stat
@@ -11,8 +9,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from waves.api.share import DynamicFieldsModelSerializer
-from waves.core.models import JobHistory, JobInput, Job, JobOutput, Service
-
+from waves.models import JobHistory, JobInput, Job, JobOutput
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -105,7 +102,7 @@ class JobOutputSerializer(serializers.ModelSerializer):
         if getsize(file_path) < 500:
             with open(file_path) as fp:
                 file_content = fp.read()
-            return file_content.decode()
+            return file_content
         return None
 
     def to_representation(self, instance):

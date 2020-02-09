@@ -5,7 +5,7 @@ import os
 
 from django.core.files.storage import FileSystemStorage
 
-from waves.core.settings import waves_settings
+from waves.settings import waves_settings
 
 
 class WavesStorage(FileSystemStorage):

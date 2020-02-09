@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'waves',
-    #'waves.authentication',
+    'waves.authentication',
     'crispy_forms',
     'rest_framework',
     'corsheaders',
@@ -126,7 +126,7 @@ MEDIA_URL = "/media/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "waves", "core", "static"),
+    os.path.join(BASE_DIR, "waves", "core", "../waves/static"),
     os.path.join(BASE_DIR, "static")
 ]
 

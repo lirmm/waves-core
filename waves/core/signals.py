@@ -8,18 +8,15 @@ import shutil
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
-from waves.core.models import Service, Submission
-from waves.core.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
-from waves.core.models.base import ApiModel
-from waves.core.models.binaries import ServiceBinaryFile
-from waves.core.models.inputs import FileInputSample, FileInput
-from waves.core.models.jobs import Job, JobOutput
-from waves.core.models.runners import Runner
-from waves.core.models.services import SubmissionExitCode
+from waves.models.binaries import ServiceBinaryFile
 from waves.core.utils import get_all_subclasses
-
-
-
+from waves.models import Service, Submission
+from waves.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
+from waves.models.base import ApiModel
+from waves.models.inputs import FileInputSample, FileInput
+from waves.models.jobs import Job, JobOutput
+from waves.models.runners import Runner
+from waves.models.services import SubmissionExitCode
 
 
 @receiver(pre_save, sender=Job)

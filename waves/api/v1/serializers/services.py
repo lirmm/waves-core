@@ -8,9 +8,9 @@ from rest_framework.reverse import reverse as reverse
 
 from waves.api.share import DynamicFieldsModelSerializer
 from waves.api.v1.serializers.inputs import InputSerializer
-from waves.core.models import Service, Submission
-from waves.core.models.services import SubmissionOutput as ServiceOutput
-from waves.core.settings import waves_settings
+from waves.models import Service, Submission
+from waves.models.services import SubmissionOutput as ServiceOutput
+from waves.settings import waves_settings
 
 logger = logging.getLogger(__name__)
 

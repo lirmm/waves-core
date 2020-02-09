@@ -15,7 +15,7 @@ admin.site.site_title = 'WAVES Administration'
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='base.html')),
     url(r'^admin/', admin.site.urls),
-    url(r'^waves/', include('waves.core.urls', namespace='core')),
+    url(r'^waves/', include('waves.urls', namespace='core')),
     url(r'^api/', include('waves.api.urls', namespace='wapi')),
     # Browsable API documentation
     url(r'^api-scheme', include_docs_urls(title='Waves API Documentation', public=False)),

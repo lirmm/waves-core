@@ -18,13 +18,13 @@ import datetime
 import logging
 from itertools import chain
 
-from waves.core.models import Job
+from waves.models import Job
 
 logger = logging.getLogger('waves.cron')
 
 
 def purge_old_jobs():
-    from waves.core.settings import waves_settings
+    from waves.settings import waves_settings
 
     logger.info("Purge job launched at: %s", datetime.datetime.now().strftime('%A, %d %B %Y %H:%M:%I'))
     date_anonymous = datetime.date.today() - datetime.timedelta(waves_settings.KEEP_ANONYMOUS_JOBS)
