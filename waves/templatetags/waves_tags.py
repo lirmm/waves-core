@@ -2,7 +2,7 @@
 
 from django import template
 
-from waves.settings import waves_settings
+from waves.core.settings import waves_settings
 
 register = template.Library()
 
@@ -20,7 +20,7 @@ def online_exec_button(context, service, label=None):
 
 @register.simple_tag
 def get_app_version():
-    from waves import __version_detail__, __version__
+    from waves.core import __version_detail__, __version__
     return "%s (%s)" % (__version__, __version_detail__)
 
 

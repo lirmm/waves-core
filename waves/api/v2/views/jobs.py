@@ -14,9 +14,9 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from waves.api import serializers
-from waves.core.exceptions.jobs import JobInconsistentStateError
-from waves.models import Job
+from waves.core.exceptions import JobInconsistentStateError
+from waves.api.v2 import serializers
+from waves.core.models import Job
 
 logger = logging.getLogger(__name__)
 

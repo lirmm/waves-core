@@ -7,7 +7,7 @@ from itertools import chain
 import waves.core.exceptions
 from waves.core.adaptors.const import JobStatus
 from waves.core.adaptors.exceptions import AdaptorException
-from waves.models import Job
+from waves.core.models import Job
 
 
 @app.task(name="job_queue")
@@ -61,7 +61,7 @@ def process_job_queue():
 
 @app.task(name="purge_jobs")
 def purge_old_jobs():
-    from waves.settings import waves_settings
+    from waves.core.settings import waves_settings
 
     logger = logging.getLogger()
 

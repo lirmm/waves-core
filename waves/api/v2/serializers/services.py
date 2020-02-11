@@ -6,9 +6,9 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from waves.api.share import DynamicFieldsModelSerializer
-from waves.api.v2.serializers.inputs import InputSerializer as BaseInputSerializer
-from waves.models import Service, Submission
-from waves.models.services import SubmissionOutput
+from waves.api.v2.serializers import InputSerializer as BaseInputSerializer
+from waves.core.models import Service, Submission
+from waves.core.models import SubmissionOutput
 
 __all__ = ['OutputSerializer', 'ServiceSerializer', 'ServiceSubmissionSerializer']
 
@@ -89,7 +89,7 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
         return Submission.objects.filter(availability=1)
 
 
-from waves.models import JobInput
+from waves.core.models import JobInput
 
 
 class SubmittedInputsSerializer(serializers.ModelSerializer):

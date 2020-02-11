@@ -8,11 +8,11 @@ from rest_framework.decorators import action
 from rest_framework.parsers import MultiPartParser, JSONParser
 from rest_framework.response import Response
 
-from waves.api.v1.serializers.jobs import JobSerializer, JobHistoryDetailSerializer, JobInputDetailSerializer, \
+from waves.api.v1.serializers import JobSerializer, JobHistoryDetailSerializer, JobInputDetailSerializer, \
     JobOutputDetailSerializer
 from waves.api.views.base import WavesAuthenticatedView
 from waves.core.exceptions import WavesException
-from waves.models import Job
+from waves.core.models import Job
 
 logger = logging.getLogger(__name__)
 

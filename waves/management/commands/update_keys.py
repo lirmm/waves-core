@@ -4,10 +4,10 @@ from Crypto.Cipher import XOR
 from cryptography.fernet import InvalidToken
 from django.core.management.base import BaseCommand
 
-from ...models import AdaptorInitParam
-from ...models.base import WavesBaseModel
-from waves.settings import waves_settings
-from core.utils.encrypt import Encrypt
+from waves.core.models import AdaptorInitParam
+from waves.core.models.base import WavesBaseModel
+from waves.core.settings import waves_settings
+from waves.core.utils.encrypt import Encrypt
 
 
 class ObsoleteEncrypt(object):

@@ -2,7 +2,7 @@ import logging
 
 import radical.saga as saga
 
-from waves.core.adaptors import exceptions
+from waves.core import exceptions
 from waves.core.adaptors.adaptor import JobAdaptor
 from waves.core.adaptors.const import JobStatus, JobRunDetails
 

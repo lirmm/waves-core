@@ -9,7 +9,7 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 
 from waves.api.share import DynamicFieldsModelSerializer
-from waves.models import JobHistory, JobInput, Job, JobOutput
+from waves.core.models import JobHistory, JobInput, Job, JobOutput
 
 User = get_user_model()
 logger = logging.getLogger(__name__)

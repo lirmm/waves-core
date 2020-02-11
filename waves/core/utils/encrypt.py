@@ -2,16 +2,16 @@
 Encryption for Service Adaptors init_params values
 """
 
-
 import base64
 
 from cryptography.fernet import Fernet
 
-from waves.settings import waves_settings
+from waves.core.settings import waves_settings
 
 
 class Encrypt(object):
     """ Encrypt values based on Django settings secret key substring """
+
     def __init__(self):
         raise RuntimeError('This class is intended to be used statically')
 

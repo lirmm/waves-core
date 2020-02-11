@@ -1,4 +1,3 @@
-
 """
 .. See the NOTICE file distributed with this work for additional information
    regarding copyright ownership.
@@ -13,14 +12,13 @@
    limitations under the License.
 """
 
-
 import datetime
 import logging
 
 import waves.core.exceptions
-from waves.core.adaptors.const import JobStatus
 from waves.core.adaptors.exceptions import AdaptorException
-from waves.models import Job
+from waves.core.adaptors.const import JobStatus
+from waves.core.models import Job
 
 logger = logging.getLogger('waves.cron')
 

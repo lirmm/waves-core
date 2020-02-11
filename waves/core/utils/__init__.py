@@ -1,6 +1,5 @@
 """ Base Utils classes """
 
-
 import logging
 import random
 import string
@@ -44,3 +43,5 @@ def random_analysis_name():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
 
 
+def random_job_title(job):
+    return "Job [{}]".format(random_analysis_name())

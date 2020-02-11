@@ -1,6 +1,6 @@
 from django.contrib.staticfiles.storage import staticfiles_storage
 
-from waves.views import SubmissionFormView
+from waves.core.views import SubmissionFormView
 
 
 class JobSubmissionView(SubmissionFormView):

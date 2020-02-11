@@ -4,16 +4,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from rest_framework import serializers as rest_serializer
 
-from waves.api import serializers
 from waves.import_export import BaseSerializer, RelatedSerializerMixin
-from waves.import_export.runners import RunnerSerializer, RunnerParamSerializer
-from waves.models import Submission, Service
-from waves.models.inputs import AParam
-from waves.models.runners import Runner
-from waves.models.services import SubmissionExitCode, SubmissionOutput, SubmissionRunParam
-
-
-
+from waves.api import serializers as api_serializers
+from waves.import_export import serializers
+from waves.core.models import Submission, Service
+from waves.core.models import SubmissionExitCode, SubmissionOutput, SubmissionRunParam
+from waves.core.models.inputs import AParam
+from waves.core.models.runners import Runner
 
 __all__ = ['ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
 
@@ -104,7 +101,7 @@ class ServiceRunnerParamSerializer(BaseSerializer):
         model = SubmissionRunParam
         fields = ('param', '_value', 'service')
 
-    param = RunnerParamSerializer(many=False, required=False)
+    param = api_serializers.RunnerParamSerializer(many=False, required=False)
     service = ServiceTmpSerializer(required=False)
 
     def create(self, validated_data):
@@ -117,7 +114,7 @@ class ServiceRunnerParamSerializer(BaseSerializer):
         return obj
 
 
-class ServiceSerializer(BaseSerializer, serializers.ServiceSerializer, RelatedSerializerMixin):
+class ServiceSerializer(BaseSerializer, api_serializers.ServiceSerializer, RelatedSerializerMixin):
     """ Service export / import """
 
     class Meta:
@@ -129,7 +126,7 @@ class ServiceSerializer(BaseSerializer, serializers.ServiceSerializer, RelatedSe
     submissions = ServiceSubmissionSerializer(many=True, required=False)
     exit_codes = ExitCodeSerializer(many=True, required=False)
     service_outputs = ServiceOutputSerializer(many=True, required=False)
-    runner = RunnerSerializer(many=False, required=False)
+    runner = api_serializers.RunnerSerializer(many=False, required=False)
     srv_run_params = ServiceRunnerParamSerializer(many=True, required=False)
 
     def __init__(self, *args, **kwargs):
@@ -148,7 +145,7 @@ class ServiceSerializer(BaseSerializer, serializers.ServiceSerializer, RelatedSe
             try:
                 run_on = Runner.objects.filter(clazz=runner['clazz']).first()
             except ObjectDoesNotExist:
-                srv = RunnerSerializer(data=runner)
+                srv = api_serializers.RunnerSerializer(data=runner)
                 if srv.is_valid():
                     run_on = srv.save()
                 else:
@@ -171,5 +168,5 @@ class ServiceSerializer(BaseSerializer, serializers.ServiceSerializer, RelatedSe
         return srv_object
 
     def get_db_version(self, obj):
-        from waves.settings import waves_settings
+        from waves.core.settings import waves_settings
         return waves_settings.DB_VERSION

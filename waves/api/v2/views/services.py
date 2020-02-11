@@ -16,14 +16,11 @@ from rest_framework.renderers import StaticHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
+from waves.core.exceptions import JobException
 from waves.api.permissions import ServiceAccessPermission
 from waves.api.v2 import serializers
-from waves.core.exceptions.jobs import JobException
-from waves.models import Job, Service
-from waves.views import ServiceSubmissionForm
-
-
-
+from waves.core.models import Job, Service
+from waves.core.views import ServiceSubmissionForm
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +70,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         service_tool = get_object_or_404(self.get_queryset(), api_name=service_app_name)
         queryset_jobs = Job.objects.get_service_job(user=request.user, service=service_tool)
         serializer = serializers.JobSerializer(queryset_jobs, many=True, context={'request': request},
-                                   hidden=['inputs', 'outputs', 'history'])
+                                               hidden=['inputs', 'outputs', 'history'])
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'])
@@ -82,7 +79,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         """ Retrieve service form """
         from django.shortcuts import render
         from django.http import HttpResponse
-        from waves.core.forms.services import ServiceSubmissionForm
+        from waves.core.forms import ServiceSubmissionForm
         api_name = self.kwargs.get('service_app_name')
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
         form = [{'submission': service_submission,
@@ -105,15 +102,17 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                          content_type='')
         return HttpResponse(content=content, content_type="text/html; charset=utf8")
 
-    @action(detail=True, methods=['get'], url_name='submission-detail', url_path="submissions/(?P<submission_app_name>[\w-]+)")
+    @action(detail=True, methods=['get'], url_name='submission-detail',
+            url_path="submissions/(?P<submission_app_name>[\w-]+)")
     def submission(self, request, service_app_name, submission_app_name):
         obj = self.get_object()
         submission = obj.submissions_api.filter(api_name=submission_app_name)
-        serializer = serializers.ServiceSubmissionSerializer(many=False, instance=submission[0], context={'request': self.request})
+        serializer = serializers.ServiceSubmissionSerializer(many=False, instance=submission[0],
+                                                             context={'request': self.request})
         return Response(serializer.data)
 
     @action(detail=True, methods=['get'], url_name="submission-form",
-                  url_path="submissions/(?P<submission_app_name>[\w-]+)/form")
+            url_path="submissions/(?P<submission_app_name>[\w-]+)/form")
     @renderer_classes((StaticHTMLRenderer,))
     def submission_form(self, request, service_app_name, submission_app_name):
         """
@@ -144,14 +143,14 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         return HttpResponse(content=content, content_type="text/html; charset=utf8")
 
     @action(detail=True, methods=['get', 'post'], url_name='submission-jobs',
-                  url_path="submissions/(?P<submission_app_name>[\w-]+)/jobs")
+            url_path="submissions/(?P<submission_app_name>[\w-]+)/jobs")
     def submission_jobs(self, request, service_app_name, submission_app_name, *args, **kwargs):
         service = self.get_object()
         obj = service.submissions_api.filter(api_name=submission_app_name)[0]
         if self.request.method == 'GET':
             queryset_jobs = Job.objects.get_submission_job(user=request.user, submission=obj)
             serializer = serializers.JobSerializer(queryset_jobs, many=True, context={'request': request},
-                                       hidden=['inputs', 'outputs', 'history'])
+                                                   hidden=['inputs', 'outputs', 'history'])
             return Response(serializer.data)
         elif self.request.method == 'POST':
             # CREATE a new job for this submission
@@ -173,7 +172,8 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                                                  user=self.request.user)
                 # Now job is created (or raise an exception),
                 serializer = serializers.JobSerializer(created_job, many=False, context={'request': request},
-                                           fields=('slug', 'url', 'created', 'status', 'service', 'submission'))
+                                                       fields=(
+                                                       'slug', 'url', 'created', 'status', 'service', 'submission'))
                 logger.debug('Job successfully created %s ' % created_job.slug)
                 return Response(serializer.data, status=201)
             except ValidationError as e:
@@ -187,5 +187,6 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     def submissions_list(self, request, service_app_name):
         obj = self.get_object()
         submission = obj.submissions_api.all()
-        serializer = serializers.ServiceSubmissionSerializer(many=True, instance=submission, context={'request': self.request})
+        serializer = serializers.ServiceSubmissionSerializer(many=True, instance=submission,
+                                                             context={'request': self.request})
         return Response(serializer.data)

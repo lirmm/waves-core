@@ -1,8 +1,8 @@
 from abc import ABC
 
-from ..base import SubcommandDispatcher
-from ..command import JobQueueCommand, PurgeDaemonCommand
-from ..subcommands import CleanUpCommand, ImportCommand, DumpConfigCommand
+from waves.management.base import SubcommandDispatcher
+from waves.management.command import JobQueueCommand, PurgeDaemonCommand
+from waves.management.subcommands import CleanUpCommand, ImportCommand, DumpConfigCommand
 
 CLEAN = 'clean'
 CONFIG = 'config'
@@ -29,8 +29,6 @@ class Command(SubcommandDispatcher, ABC):
             return DumpConfigCommand()
         elif name == PURGE:
             return PurgeDaemonCommand()
-        elif name == SHOWURLS:
-            return ShowUrlsCommand()
         else:
             return None
 

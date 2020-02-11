@@ -1,0 +1,158 @@
+[
+  {
+    "model": "wcore.service",
+    "pk": 1,
+    "fields": {
+      "created": "2019-02-19T20:39:22.712Z",
+      "updated": "2019-02-19T20:46:18.188Z",
+      "description": "",
+      "short_description": "",
+      "api_name": "copy",
+      "binary_file": null,
+      "runner": 1,
+      "name": "Simple local copy service",
+      "authors": null,
+      "citations": null,
+      "version": "1.0",
+      "status": 3,
+      "email_on": true,
+      "partial": false,
+      "created_by": 1,
+      "remote_service_id": null,
+      "edam_topics": "",
+      "edam_operations": "",
+      "restricted_client": []
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 100,
+    "fields": {
+      "name": "command",
+      "value": "cp",
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": [
+        "wcore",
+        "service"
+      ],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "wcore.submission",
+    "pk": 1,
+    "fields": {
+      "created": "2019-02-19T20:39:22.716Z",
+      "updated": "2019-02-19T20:41:41.349Z",
+      "order": 0,
+      "slug": "4cecc150-3db5-4f30-9f69-26e1fbbaee47",
+      "api_name": "default",
+      "binary_file": null,
+      "runner": null,
+      "service": 1,
+      "availability": 1,
+      "name": "default"
+    }
+  },
+  {
+    "model": "wcore.submissionoutput",
+    "pk": 1,
+    "fields": {
+      "created": "2019-02-19T20:41:33.616Z",
+      "updated": "2019-02-19T20:41:33.617Z",
+      "api_name": "copied_file",
+      "label": "Copied file",
+      "name": "Copied file",
+      "submission": 1,
+      "from_input": 2,
+      "file_pattern": "%s",
+      "edam_format": null,
+      "edam_data": null,
+      "help_text": "",
+      "extension": "txt"
+    }
+  },
+  {
+    "model": "wcore.submissionexitcode",
+    "pk": 1,
+    "fields": {
+      "exit_code": 0,
+      "message": "Process exit normally",
+      "submission": 1,
+      "is_error": false
+    }
+  },
+  {
+    "model": "wcore.submissionexitcode",
+    "pk": 2,
+    "fields": {
+      "exit_code": 1,
+      "message": "Process exit error",
+      "submission": 1,
+      "is_error": true
+    }
+  },
+  {
+    "model": "waves.aparam",
+    "pk": 1,
+    "fields": {
+      "polymorphic_ctype": ["wcore", "fileinput"],
+      "order": 1,
+      "api_name": "src",
+      "label": "File to copy",
+      "name": "src",
+      "multiple": false,
+      "help_text": "",
+      "submission": 1,
+      "required": true,
+      "default": null,
+      "cmd_format": 4,
+      "edam_formats": null,
+      "edam_datas": null,
+      "repeat_group": null,
+      "when_value": null,
+      "parent": null,
+      "regexp": null
+    }
+  },
+  {
+    "model": "waves.aparam",
+    "pk": 2,
+    "fields": {
+      "polymorphic_ctype": ["wcore", "textparam"],
+      "order": 2,
+      "api_name": "dest",
+      "label": "Destination file name",
+      "name": "dest",
+      "multiple": false,
+      "help_text": "",
+      "submission": 1,
+      "required": true,
+      "default": null,
+      "cmd_format": 4,
+      "edam_formats": null,
+      "edam_datas": null,
+      "repeat_group": null,
+      "when_value": null,
+      "parent": null,
+      "regexp": null
+    }
+  },
+  {
+    "model": "waves.textparam",
+    "pk": 2,
+    "fields": {
+      "max_length": "255"
+    }
+  },
+  {
+    "model": "waves.fileinput",
+    "pk": 1,
+    "fields": {
+      "max_size": 20480,
+      "allowed_extensions": "*",
+      "allow_copy_paste": false
+    }
+  }
+]

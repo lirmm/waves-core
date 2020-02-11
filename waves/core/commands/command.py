@@ -1,4 +1,4 @@
-from waves.models.const import OptType
+from waves.core.models.const import OptType
 
 
 def command_line_element(elem):

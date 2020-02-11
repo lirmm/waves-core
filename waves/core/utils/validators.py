@@ -3,7 +3,7 @@ import os
 
 from django.core.exceptions import ValidationError
 
-from waves.models.const import ParamType
+from waves.core.models.const import ParamType
 
 logger = logging.getLogger(__name__)
 

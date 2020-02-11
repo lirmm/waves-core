@@ -15,8 +15,8 @@ These examples show how to get a list of services or a service details, a submis
 
 .. code-block:: python
 
-    from coreapi import Client, auth
-    from coreapi.codecs import CoreJSONCodec, JSONCodec
+    from waves.coreapi import Client, auth
+    from waves.coreapi.codecs import CoreJSONCodec, JSONCodec
 
     decoders = [JSONCodec(), CoreJSONCodec()]
     # Create a client client codecs
@@ -72,8 +72,8 @@ Here, you're supposed to know there is a service named "sample_service" defined 
 
 .. code-block:: python
 
-    from coreapi import Client, auth
-    from coreapi.codecs import CoreJSONCodec, JSONCodec, TextCodec
+    from waves.coreapi import Client, auth
+    from waves.coreapi.codecs import CoreJSONCodec, JSONCodec, TextCodec
     decoders = [JSONCodec(), CoreJSONCodec(), TextCodec()]
     client = Client(decoders=decoders)
     document = client.get('http://waves.demo.atgc-montpellier.fr/waves/api/schema')
@@ -110,7 +110,7 @@ Inputs are defined by expected inputs of the "sample_service". Be aware, "valida
 .. code-block:: python
 
     # submit a job
-    from coreapi.utils import File
+    from waves.coreapi.utils import File
     from os.path import join, dirname
 
     with open(join(dirname(__file__), "test.fasta"), 'r') as f:

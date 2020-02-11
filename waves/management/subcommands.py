@@ -18,8 +18,8 @@ from rest_framework.exceptions import ValidationError
 
 from waves.import_export.services import ServiceSerializer
 from waves.management.utils import choice_input
-from waves.models import Job
-from waves.settings import waves_settings as config
+from waves.core.models import Job
+from waves.core.settings import waves_settings as config
 
 __all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand']
 

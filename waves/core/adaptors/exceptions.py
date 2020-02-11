@@ -1,6 +1,3 @@
-
-
-
 class AdaptorException(BaseException):
     """ Base adapter exception class, should be raise upon specific adapter class exception catch
     this exception class is supposed to be catched

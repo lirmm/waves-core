@@ -11,14 +11,14 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from waves.core.adaptors.const import JobStatus
-from waves.models import Job, Service, Runner
-from waves.models.const import ParamType
-from tests.base import BaseTestCase
+from waves.core.models import Job, Service, Runner
+from waves.core.models.const import ParamType
+from waves.core.tests.base import WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)
 
 
-class BaseAPITestCase(BaseTestCase, APITestCase, ):
+class APIWavesTestCaseMixin(WavesTestCaseMixin, APITestCase, ):
     fixtures = ['waves/core/tests/fixtures/users.json', 'waves/core/tests/fixtures/services.json']
 
     def create_job_inputs_for_submission(self, submission_data):
@@ -47,7 +47,7 @@ class BaseAPITestCase(BaseTestCase, APITestCase, ):
         return job_inputs_params
 
 
-class WavesAPIV1TestCase(BaseAPITestCase):
+class WavesAPIV1TestCase(APIWavesTestCaseMixin):
     def test_api_root(self):
         api_root = self.client.get(reverse('wapi:v1:api-root'))
         self.assertEqual(api_root.status_code, status.HTTP_200_OK)
@@ -153,9 +153,9 @@ class WavesAPIV1TestCase(BaseAPITestCase):
         pass
 
 
-class WavesAPIV2TestCase(BaseAPITestCase):
+class WavesAPIV2TestCase(APIWavesTestCaseMixin):
     runner = Runner.objects.create(name="Mock Runner",
-                                   clazz='waves.core.tests.adaptors.mocks.MockJobRunnerAdaptor')
+                                   clazz='waves.tests.mocks.mocks.MockJobRunnerAdaptor')
 
     def test_api_root(self):
         api_root = self.client.get(reverse('wapi:v2:api-root'))
@@ -247,7 +247,8 @@ class WavesAPIV2TestCase(BaseAPITestCase):
         db_job.delete()
 
     def test_delete_job(self):
-        sample_job = self.create_random_job(service=self.create_random_service(self.runner), user=self.users['api_user'])
+        sample_job = self.create_random_job(service=self.create_random_service(self.runner),
+                                            user=self.users['api_user'])
         test_delete = self.client.delete(reverse('wapi:v2:waves-jobs-detail', kwargs={'unique_id': sample_job.slug}))
         self.assertEqual(test_delete.status_code, status.HTTP_401_UNAUTHORIZED)
         self.login('api_user')

@@ -5,8 +5,8 @@ from crispy_forms.helper import FormHelper as CrispyFormHelper
 from crispy_forms.layout import Layout, Field, Div, HTML, Reset, Submit
 
 from waves.core.forms.helper import WFormHelper
-from waves.models.inputs import FileInputSample, FileInput
-from waves.settings import waves_settings
+from waves.core.models.inputs import FileInputSample, FileInput
+from waves.core.settings import waves_settings
 
 __all__ = ['FormHelper']
 

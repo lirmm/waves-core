@@ -1,5 +1,5 @@
 from waves.core.adaptors.exceptions import AdaptorJobException
-from waves.core.exceptions import WavesException
+from waves.core.exceptions.base import WavesException
 
 __all__ = ['JobException', 'JobRunException', 'JobSubmissionException', 'JobCreateException',
            'JobMissingMandatoryParam', 'JobInconsistentStateError', 'JobPrepareException']

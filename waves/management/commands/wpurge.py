@@ -1,9 +1,9 @@
 import logging
 import os
 
-from waves.management.command import DaemonCommand
+from waves.management.daemoncommand import DaemonCommand
 from waves.management.runner import PurgeDaemon
-from waves.settings import waves_settings
+from waves.core.settings import waves_settings
 
 logger = logging.getLogger('waves.daemon')
 

@@ -3,7 +3,7 @@ import json
 from waves.core.adaptors.utils import check_ready
 from waves.core.adaptors.const import JobStatus
 from waves.core.adaptors.exceptions import AdaptorException
-from waves.core.exceptions.jobs import JobInconsistentStateError
+from waves.core.exceptions import JobInconsistentStateError
 
 
 class JobAdaptor(object):
@@ -69,7 +69,7 @@ class JobAdaptor(object):
         """
         Connect to remote platform adapter
 
-        :raise: :class:`waves.core.adaptors.exceptions.adaptors.AdaptorConnectException`
+        :raise: :class:`waves.core.mocks.exceptions.mocks.AdaptorConnectException`
         :return: connector reference or raise an
         """
         if not self.connected:
@@ -79,7 +79,7 @@ class JobAdaptor(object):
     def disconnect(self):
         """ Shut down connection to adapter. Called after job adapter execution to disconnect from remote
 
-        :raise: :class:`waves.core.adaptors.exceptions.adaptors.AdaptorConnectException`
+        :raise: :class:`waves.core.mocks.exceptions.mocks.AdaptorConnectException`
         :return: Nothing
         """
         if self.connected:
@@ -92,9 +92,9 @@ class JobAdaptor(object):
         """ Job execution preparation process, may store prepared data in a pickled object
 
         :param job: The job to prepare execution for
-        :raise: :class:`waves.core.adaptors.exceptions.RunnerNotReady` if adaptor is not initialized before call
-        :raise: :class:`waves.core.adaptors.exceptions.JobPrepareException` if error during preparation process
-        :raise: :class:`waves.core.adaptors.exceptions.JobInconsistentStateError` if job status is not 'created'
+        :raise: :class:`waves.core.mocks.exceptions.RunnerNotReady` if adaptor is not initialized before call
+        :raise: :class:`waves.core.mocks.exceptions.JobPrepareException` if error during preparation process
+        :raise: :class:`waves.core.mocks.exceptions.JobInconsistentStateError` if job status is not 'created'
         """
         if job.status > JobStatus.JOB_CREATED:
             raise JobInconsistentStateError(job=job, expected=[JobStatus.STATUS_LIST[1]])
@@ -108,9 +108,9 @@ class JobAdaptor(object):
         """ Launch a previously 'prepared' job on the remote adapter class
 
         :param job: The job to launch execution
-        :raise: :class:`waves.core.adaptors.exceptions.RunnerNotReady` if adapter is not initialized
-        :raise: :class:`waves.core.adaptors.exceptions.JobRunException` if error during launch
-        :raise: :class:`waves.core.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
+        :raise: :class:`waves.core.mocks.exceptions.RunnerNotReady` if adapter is not initialized
+        :raise: :class:`waves.core.mocks.exceptions.JobRunException` if error during launch
+        :raise: :class:`waves.core.mocks.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
         if job.status != JobStatus.JOB_PREPARED:
             raise JobInconsistentStateError(job=job, expected=[JobStatus.STATUS_LIST[2]])
@@ -126,8 +126,8 @@ class JobAdaptor(object):
         :param job: The job to cancel
         :return: The new job status
         :rtype: int
-        :raise: :class:`waves.core.adaptors.exceptions.JobRunException` if error during launch
-        :raise: :class:`waves.core.adaptors.exceptions.JobInconsistentStateError` if job status is not 'prepared'
+        :raise: :class:`waves.core.mocks.exceptions.JobRunException` if error during launch
+        :raise: :class:`waves.core.mocks.exceptions.JobInconsistentStateError` if job status is not 'prepared'
         """
         if job.status >= JobStatus.JOB_COMPLETED:
             raise JobInconsistentStateError(job=job, expected=JobStatus.STATUS_LIST[0:5],
@@ -150,7 +150,7 @@ class JobAdaptor(object):
         """ Return current WAVES Job status
 
         :param job: current job
-        :return: one of `waves.core.adaptors.STATUS_MAP`
+        :return: one of `waves.core.mocks.STATUS_MAP`
         """
         self.connect()
         job.status = self._states_map[self._job_status(job)]
@@ -194,14 +194,14 @@ class JobAdaptor(object):
     def _connect(self):
         """ Actually do connect to concrete remote job runner platform,
 
-         :raise: `waves.core.adaptors.exception.AdaptorConnectException` if error
+         :raise: `waves.core.mocks.exception.AdaptorConnectException` if error
          :return: an instance of concrete connector implementation """
         raise NotImplementedError()
 
     def _disconnect(self):
         """ Actually disconnect from remote job runner platform
 
-        :raise: `waves.core.adaptors.exception.AdaptorConnectException` if error """
+        :raise: `waves.core.mocks.exception.AdaptorConnectException` if error """
         raise NotImplementedError()
 
     def _prepare_job(self, job):
@@ -210,32 +210,32 @@ class JobAdaptor(object):
             - prepare and upload input files to remote host
             - set up parameters according to concrete adapter needs
 
-        :raise: `waves.core.adaptors.exception.AdaptorException` if error """
+        :raise: `waves.core.mocks.exception.AdaptorException` if error """
         raise NotImplementedError()
 
     def _run_job(self, job):
         """ Actually launch job on concrete adapter
 
-        :raise: `waves.core.adaptors.exception.AdaptorException` if error """
+        :raise: `waves.core.mocks.exception.AdaptorException` if error """
         raise NotImplementedError()
 
     def _cancel_job(self, job):
         """ Try to cancel job on concrete adapter
 
-        :raise: `waves.core.adaptors.exception.AdaptorException` if error """
+        :raise: `waves.core.mocks.exception.AdaptorException` if error """
         raise NotImplementedError()
 
     def _job_status(self, job):
         """ Actually retrieve job states on concrete adapter, return raw value to be mapped with defined in _states_map
 
-        :raise: `waves.core.adaptors.exception.AdaptorException` if error """
+        :raise: `waves.core.mocks.exception.AdaptorException` if error """
         raise NotImplementedError()
 
     def _job_results(self, job):
         """ Retrieve job results from concrete adapter, may include some file download from remote hosts
         Set attribute result_available for job if success
 
-        :raise: `waves.core.adaptors.exception.AdaptorException` if error
+        :raise: `waves.core.mocks.exception.AdaptorException` if error
         :return: Boolean True if results are retrieved from remote host, False either
         """
         raise NotImplementedError()
@@ -243,7 +243,7 @@ class JobAdaptor(object):
     def _job_run_details(self, job):
         """ Retrieve job run details if possible from concrete adapter
 
-        :raise: `waves.core.adaptors.exception.AdaptorException` if error """
+        :raise: `waves.core.mocks.exception.AdaptorException` if error """
         return job.default_run_details()
 
     def _dump_config(self):
@@ -268,3 +268,8 @@ class JobAdaptor(object):
             "clazz": ".".join([self.__module__, self.__class__.__name__]),
             "params": self.init_params
         })
+
+    @property
+    def class_name(self):
+        return "{}.{}".format(self.__module__, self.__class__.__name__)
+

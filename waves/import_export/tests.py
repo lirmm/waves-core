@@ -1,16 +1,14 @@
 import json
 import logging
 
-from waves.import_export import ServiceSerializer
-from waves.models import Service
-from tests.base import BaseTestCase
+from waves.import_export.services import ServiceSerializer
+from waves.core.models import Service
+from waves.core.tests.base import WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)
 
 
-
-
-class SerializationTestCase(BaseTestCase):
+class SerializationTestCase(WavesTestCaseMixin):
 
     # @skip("Serialize / Unserialize needs code refactoring")
     def test_serialize_service(self):

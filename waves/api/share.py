@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from waves.models.inputs import AParam
+from waves.core.models.inputs import AParam
 
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):

@@ -8,9 +8,8 @@ from rest_framework.reverse import reverse as reverse
 
 from waves.api.share import DynamicFieldsModelSerializer
 from waves.api.v1.serializers.inputs import InputSerializer
-from waves.models import Service, Submission
-from waves.models.services import SubmissionOutput as ServiceOutput
-from waves.settings import waves_settings
+from waves.core.models import Service, Submission, SubmissionOutput as ServiceOutput
+from waves.core.settings import waves_settings
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +124,7 @@ class ServiceFormSerializer(serializers.ModelSerializer):
 
     def get_form(self, obj):
         """ Create the form and return its content"""
-        from waves.core.forms.services import ServiceSubmissionForm
+        from waves.core.forms import ServiceSubmissionForm
         from django.template import RequestContext
         import re
         form = ServiceSubmissionForm(instance=self.instance, parent=self.instance.service)

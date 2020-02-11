@@ -8,15 +8,16 @@ import shutil
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
-from waves.models.binaries import ServiceBinaryFile
+from waves.core.models import AdaptorInitParam, HasAdaptorClazzMixin
+from waves.core.models import Service, Submission
+from waves.core.models import SubmissionExitCode
+from waves.core.models.base import ApiModel
+from waves.core.models.binaries import ServiceBinaryFile
+from waves.core.models.inputs import FileInputSample, FileInput
+from waves.core.models.jobs import Job, JobOutput
+from waves.core.models.runners import Runner
 from waves.core.utils import get_all_subclasses
-from waves.models import Service, Submission
-from waves.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
-from waves.models.base import ApiModel
-from waves.models.inputs import FileInputSample, FileInput
-from waves.models.jobs import Job, JobOutput
-from waves.models.runners import Runner
-from waves.models.services import SubmissionExitCode
+from waves.core.utils import random_job_title
 
 
 @receiver(pre_save, sender=Job)
@@ -28,21 +29,21 @@ def job_pre_save_handler(sender, instance, **kwargs):
         if not instance.notify:
             instance.notify = instance.submission.service.email_on
     if not instance.title:
-        instance.title = instance.random_title
+        instance.title = random_job_title()
     if not instance.message:
+        # TODO CHECK usage
         instance.message = instance.get_status_display()
 
 
 @receiver(post_save, sender=Job)
 def job_post_save_handler(sender, instance, created, **kwargs):
     """ job post save handler """
-    if not kwargs.get('raw', False):
-        if created:
-            # create job working dirs locally
-            instance.make_job_dirs()
-            instance.create_non_editable_inputs()
-            instance.create_default_outputs()
-            instance.job_history.create(message="Job defaults created", status=instance.status)
+    if not kwargs.get('raw', False) and created:
+        # create job working dirs locally
+        instance.make_job_dirs()
+        instance.create_non_editable_inputs()
+        instance.create_default_outputs()
+        instance.job_history.create(message="Job defaults created", status=instance.status)
 
 
 @receiver(post_delete, sender=Job)

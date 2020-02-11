@@ -13,8 +13,8 @@ from rest_framework.response import Response
 
 from waves.api.v1.serializers import ServiceSerializer, JobSerializer, ServiceFormSerializer, SubmissionSerializer
 from waves.api.views.base import WavesAuthenticatedView
-from waves.core.exceptions.jobs import JobException
-from waves.models import Job, Service, Submission
+from waves.core.exceptions import JobException
+from waves.core.models import Job, Service, Submission
 
 logger = logging.getLogger(__name__)
 
