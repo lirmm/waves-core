@@ -1,6 +1,6 @@
 """ Models admin packages """
 
-from waves.core.admin.runners import RunnerAdmin, RunnerTestConnectionView, RunnerImportToolView, RunnerExportView
+import waves.core.admin.runners
 from waves.core.admin.services import ServiceAdmin
 from waves.core.admin.submissions import ServiceSubmissionAdmin
 from waves.core.admin.inputs import AllParamModelAdmin

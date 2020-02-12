@@ -6,13 +6,11 @@ from django.contrib import messages
 from django.contrib.admin import register, TabularInline
 from django.contrib.admin.options import IS_POPUP_VAR
 
+from waves.core.admin.adaptors import RunnerParamInline
+from waves.core.admin.base import ExportInMassMixin, WavesModelAdmin
+from waves.core.forms.admin.runners import RunnerForm
 from waves.core.models import Runner, Service, Submission
-from .adaptors import RunnerParamInline
-from .base import ExportInMassMixin, WavesModelAdmin
-from .forms import RunnerForm
-from .views import RunnerExportView, RunnerImportToolView, RunnerTestConnectionView
-
-__all__ = ['RunnerAdmin', 'RunnerTestConnectionView', 'RunnerImportToolView', 'RunnerExportView']
+from waves.core.views.admin.runner_tool import RunnerExportView, RunnerImportToolView, RunnerTestConnectionView
 
 
 class ServiceRunInline(TabularInline):

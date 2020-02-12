@@ -142,6 +142,7 @@ class WavesModelAdmin(ModelAdmin):
 
     list_per_page = 15
 
+    """
     @staticmethod
     def _has_group_permission(request):
         return request.user.groups.filter(name="WAVES-ADMIN").exists() or request.user.is_superuser
@@ -154,7 +155,7 @@ class WavesModelAdmin(ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return self._has_group_permission(request) and super(WavesModelAdmin, self).has_delete_permission(request, obj)
-
+    """
     formfield_overrides = {
         models.TextField: {'widget': Textarea(attrs={'rows': 3, 'cols': 50})},
         models.ForeignKey: {'widget': Select(attrs={'style': 'min-width:428px'})}

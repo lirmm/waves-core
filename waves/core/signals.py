@@ -8,9 +8,8 @@ import shutil
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
-from waves.core.models import AdaptorInitParam, HasAdaptorClazzMixin
-from waves.core.models import Service, Submission
-from waves.core.models import SubmissionExitCode
+from waves.core.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
+from waves.core.models.services import Service, Submission, SubmissionExitCode
 from waves.core.models.base import ApiModel
 from waves.core.models.binaries import ServiceBinaryFile
 from waves.core.models.inputs import FileInputSample, FileInput

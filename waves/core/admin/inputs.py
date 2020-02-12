@@ -2,6 +2,7 @@
 
 import json
 
+import six
 from django import forms
 from django.conf import settings
 from django.contrib import admin
@@ -11,13 +12,12 @@ from django.db import models, DatabaseError
 from django.http import HttpResponseRedirect
 from django.template.response import SimpleTemplateResponse
 from django.urls import reverse
-from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.http import urlquote
 from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
-from waves.core.admin import WavesModelAdmin
+from waves.core.admin.base import WavesModelAdmin
 from waves.core.admin.submissions import FileInputSampleInline, SampleDependentInputInline
 from waves.core.models import Submission
 from waves.core.models.inputs import AParam, FileInput, BooleanParam, ListParam, IntegerParam, DecimalParam, \

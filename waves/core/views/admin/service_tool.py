@@ -11,8 +11,8 @@ from django.views.generic import View
 
 from waves.core.settings import waves_settings
 from waves.core.views import SubmissionFormView
-from waves.core.admin.views.export import ModelExportView
-from waves.core.admin.views import RunnerImportToolView, RunnerTestConnectionView
+from waves.core.views.admin.export import ModelExportView
+from waves.core.views.admin.runner_tool import RunnerImportToolView, RunnerTestConnectionView
 from waves.core.models import Service
 
 __all__ = ['ServiceParamImportView', 'ServiceExportView', 'ServiceModalPreview', 'ServicePreviewForm',

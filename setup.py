@@ -6,7 +6,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
 
 
 def import_version():
-    from core import __version_detail__
+    from waves.core import __version_detail__
     return __version_detail__
 
 

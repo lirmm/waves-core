@@ -4,7 +4,7 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 
-from waves.core.forms.crispy import FormHelper
+from core.forms.frontend.crispy import FormHelper
 from waves.core.models import Submission
 from waves.core.models.inputs import AParam, FileInput
 from waves.core.utils import random_analysis_name

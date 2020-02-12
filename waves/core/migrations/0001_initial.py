@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import uuid
-import waves.compat
+import waves.core.compat
 import waves.core.models.base
 import waves.core.utils.logged
 import waves.core.utils.storage
@@ -97,7 +97,7 @@ class Migration(migrations.Migration):
             name='Runner',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', waves.compat.RichTextField(blank=True, help_text='Description (HTML)', null=True, verbose_name='Description')),
+                ('description', waves.core.compat.RichTextField(blank=True, help_text='Description (HTML)', null=True, verbose_name='Description')),
                 ('short_description', models.TextField(blank=True, help_text='Short description (Text)', null=True, verbose_name='Short Description')),
                 ('clazz', models.CharField(help_text='This is the concrete class used to perform job execution', max_length=100, verbose_name='adapter object')),
                 ('name', models.CharField(help_text='Displayed name', max_length=50, verbose_name='Label')),
@@ -117,7 +117,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(auto_now_add=True, help_text='Creation timestamp', verbose_name='Created on')),
                 ('updated', models.DateTimeField(auto_now=True, help_text='Last update timestamp', verbose_name='Last Update')),
-                ('description', waves.compat.RichTextField(blank=True, help_text='Description (HTML)', null=True, verbose_name='Description')),
+                ('description', waves.core.compat.RichTextField(blank=True, help_text='Description (HTML)', null=True, verbose_name='Description')),
                 ('short_description', models.TextField(blank=True, help_text='Short description (Text)', null=True, verbose_name='Short Description')),
                 ('api_name', models.CharField(blank=True, help_text='App short code, used in url, leave blank for automatic setup', max_length=100, null=True, verbose_name='App short code')),
                 ('name', models.CharField(help_text='Service displayed name', max_length=255, verbose_name='Service name')),

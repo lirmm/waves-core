@@ -3,6 +3,7 @@ WAVES app Django application descriptor
 
 """
 
+
 import os
 from os import access
 
@@ -25,6 +26,7 @@ class WavesConfig(AppConfig):
         Just import waves signals
         :return: None
         """
+        super().ready()
         import waves.core.signals
 
 

@@ -8,9 +8,9 @@ import socket
 from importlib import import_module
 from os.path import join
 
+import six
 from django.conf import settings
 from django.test.signals import setting_changed
-from django.utils import six
 
 from waves.core import __version__, __db_version__
 

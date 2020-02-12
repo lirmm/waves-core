@@ -3,8 +3,8 @@ from django.contrib import admin, messages
 from django.contrib.admin import TabularInline
 from django.utils.safestring import mark_safe
 
-from waves.core.admin.views import JobCancelView, JobRerunView
-from waves.core.admin.forms import JobInputForm, JobOutputForm, JobForm
+from waves.core.views.admin.job_tool import JobCancelView, JobRerunView
+from waves.core.forms.admin.jobs import JobInputForm, JobOutputForm, JobForm
 from waves.core.admin.base import WavesModelAdmin
 from waves.core.adaptors.const import JobStatus
 from waves.core.utils import url_to_edit_object

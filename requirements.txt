@@ -14,5 +14,5 @@ cryptography==2.8
 python-magic==0.4.15
 radical.saga==0.90.0
 setproctitle==1.1.10
-six==1.13.0
 celery==4.3.0
+six==1.14.0

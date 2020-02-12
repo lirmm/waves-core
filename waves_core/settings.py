@@ -53,18 +53,17 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'adminsortable2',
-    'django_crontab',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
 
 ROOT_URLCONF = 'waves_core.urls'
@@ -179,39 +178,14 @@ FILE_UPLOAD_PERMISSIONS = 0o775
 DEFAULT_FROM_EMAIL = 'WAVES <waves-demo@atgc-montpellier.fr>'
 CONTACT_EMAIL = DEFAULT_FROM_EMAIL
 
-# WAVES
-ADAPTORS_DEFAULT_CLASSES = (
-    'waves.core.adaptors.shell.SshShellAdaptor',
-    'waves.core.adaptors.cluster.LocalClusterAdaptor',
-    'waves.core.adaptors.shell.SshKeyShellAdaptor',
-    'waves.core.adaptors.shell.LocalShellAdaptor',
-    'waves.core.adaptors.cluster.SshClusterAdaptor',
-    'waves.core.adaptors.cluster.SshKeyClusterAdaptor',
-)
-WAVES_CORE = {
-    'ACCOUNT_ACTIVATION_DAYS': 14,
-    'ADMIN_EMAIL': 'admin@waves.atgc-montpellier.fr',
-    'DATA_ROOT': os.path.join(BASE_DIR, 'data'),
-    'JOB_LOG_LEVEL': logging.DEBUG,
-    'JOB_BASE_DIR': os.path.join(BASE_DIR, 'data', 'jobs'),
-    'BINARIES_DIR': os.path.join(BASE_DIR, 'data', 'bin'),
-    'SAMPLE_DIR': os.path.join(BASE_DIR, 'data', 'sample'),
-    'KEEP_ANONYMOUS_JOBS': 2,
-    'KEEP_REGISTERED_JOBS': 30,
-    'ALLOW_JOB_SUBMISSION': True,
-    'APP_NAME': 'WAVES CORE',
-    'SERVICES_EMAIL': 'contact@waves.atgc-montpellier.fr',
-    'ADAPTORS_CLASSES': ADAPTORS_DEFAULT_CLASSES,
-}
-
 # CONF EMAIL
+# FIXME mode to SMTP or env value
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = '/tmp/app-messages'  # change this to a proper location
 
 MANAGERS = [('Vincent Lefort', 'vincent.lefort@lirmm.fr')]
 LOG_DIR = os.path.join(BASE_DIR, 'data/logs')
 APP_LOG_LEVEL = 'WARNING'
-TEST_DATA_ROOT = os.path.join(BASE_DIR, "tests", 'data')
 
 LOGGING = {
     'version': 1,
@@ -254,45 +228,6 @@ LOGGING = {
         },
     }
 }
-
-configFile = join(BASE_DIR, 'tests', 'settings.ini')
-
-try:
-    assert (isfile(configFile))
-    Config = ConfigParser.SafeConfigParser()
-    Config.read(configFile)
-    WAVES_TEST_SSH_HOST = Config.get('saga', 'WAVES_TEST_SSH_HOST')
-    WAVES_TEST_SSH_USER_ID = Config.get('saga', 'WAVES_TEST_SSH_USER_ID')
-    WAVES_TEST_SSH_USER_PASS = Config.get('saga', 'WAVES_TEST_SSH_USER_PASS')
-    WAVES_TEST_SSH_BASE_DIR = Config.get('saga', 'WAVES_TEST_SSH_BASE_DIR')
-
-    WAVES_LOCAL_TEST_SGE_CELL = Config.get('sge_cluster', 'WAVES_LOCAL_TEST_SGE_CELL')
-    WAVES_SSH_TEST_SGE_CELL = Config.get('sge_cluster', 'WAVES_SSH_TEST_SGE_CELL')
-    WAVES_SSH_TEST_SGE_BASE_DIR = Config.get('sge_cluster', 'WAVES_SSH_TEST_SGE_BASE_DIR')
-
-    WAVES_SSH_KEY_USER_ID = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_USER_ID')
-    WAVES_SSH_KEY_HOST = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_HOST')
-    WAVES_SSH_KEY_PASSPHRASE = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_PASSPHRASE')
-    WAVES_SSH_KEY_BASE_DIR = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_BASE_DIR')
-
-    WAVES_SLURM_TEST_SSH_HOST = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_HOST')
-    WAVES_SLURM_TEST_SSH_USER_ID = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_ID')
-    WAVES_SLURM_TEST_SSH_USER_PASS = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_PASS')
-    WAVES_SLURM_TEST_SSH_QUEUE = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_QUEUE')
-    WAVES_SLURM_TEST_SSH_BASE_DIR = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_BASE_DIR')
-except AssertionError:
-    # Don't load variables from ini files they are initialized elsewhere (i.e lab ci)
-    pass
-
-# CRONTAB JOBS
-CRONTAB_COMMAND_SUFFIX = '2>&1'
-CRONTAB_COMMAND_PREFIX = ''
-CRONTAB_DJANGO_SETTINGS_MODULE = 'waves_core.crontab'
-CRONTAB_LOCK_JOBS = True
-CRONJOBS = [
-    ('* * * * *', 'waves.core.cron.process_job_queue'),
-    ('*/10 * * * *', 'waves.core.cron.purge_old_jobs')
-]
 
 # Broker configuration for celery
 URL_BROKER = "redis://localhost:6379"

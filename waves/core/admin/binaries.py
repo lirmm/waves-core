@@ -1,12 +1,12 @@
 from os.path import isfile
 
-from django.contrib.admin import register
+from django.contrib import admin
 
 from waves.core.admin.base import WavesModelAdmin
 from waves.core.models.binaries import ServiceBinaryFile
 
 
-@register(ServiceBinaryFile)
+@admin.register(ServiceBinaryFile)
 class ServiceBinaryFileAdmin(WavesModelAdmin):
     model = ServiceBinaryFile
     list_display = ('label', 'created', 'updated', 'file_size', 'file_path')

@@ -1,11 +1,11 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
 
-from waves.core.admin import forms
+from waves.core.forms.admin import adaptors
 from waves.core.models import AdaptorInitParam
 
 
 class AdaptorInitParamInline(GenericTabularInline):
-    form = forms.AdaptorInitParamForm
+    form = adaptors.AdaptorInitParamForm
     model = AdaptorInitParam
     extra = 0
     max_num = 0

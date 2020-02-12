@@ -7,7 +7,7 @@ from django.template.loader import get_template
 from django.urls import reverse
 from django.views import generic
 
-from waves.core.forms import ServiceSubmissionForm
+from waves.core.forms.admin.services import ServiceSubmissionForm
 from waves.core.models import JobOutput, JobInput, Job, Submission, Service
 from waves.core.views.files import DownloadFileView
 from waves.core.views.services import SubmissionFormView, ServiceDetailView

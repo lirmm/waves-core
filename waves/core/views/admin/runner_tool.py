@@ -10,8 +10,8 @@ from django.views.generic import DetailView, FormView
 
 from waves.core.adaptors.exceptions import AdaptorConnectException
 from waves.core.exceptions import RunnerException
-from waves.core.admin.forms import ImportForm
-from waves.core.admin.views import ModelExportView
+from waves.core.forms.admin.services import ImportForm
+from waves.core.views.admin.export import ModelExportView
 from waves.core.models import Runner, Service
 from .json_view import JSONDetailView
 

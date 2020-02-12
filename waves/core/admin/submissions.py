@@ -8,15 +8,15 @@ from django.utils.html import format_html
 from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
 
+from waves.core.admin.adaptors import SubmissionRunnerParamInLine
+from waves.core.admin.base import WavesModelAdmin, DynamicInlinesAdmin
 from waves.core.compat import CompactInline, SortableInlineAdminMixin
-from waves.core.utils import url_to_edit_object
+from waves.core.forms.admin.services import SubmissionOutputForm, InputSampleForm, SampleDepForm2, InputInlineForm, \
+    ServiceSubmissionForm, SampleDepForm
 from waves.core.models import Submission, AParam, FileInputSample, FileInput, RepeatedGroup, SampleDepParam, \
     SubmissionOutput, SubmissionExitCode
-from .adaptors import SubmissionRunnerParamInLine
-from .base import WavesModelAdmin, DynamicInlinesAdmin
-from .forms import SubmissionOutputForm, InputSampleForm, SampleDepForm2, InputInlineForm, \
-    ServiceSubmissionForm, SampleDepForm
-from .views import ServicePreviewForm
+from waves.core.utils import url_to_edit_object
+from waves.core.views.admin.service_tool import ServicePreviewForm
 
 __all__ = ['SubmissionOutputInline', 'SampleDependentInputInline', 'ExitCodeInline', 'FileInputSampleInline',
            'RepeatGroupAdmin', 'OrgRepeatGroupInline', 'ServiceSubmissionAdmin']
