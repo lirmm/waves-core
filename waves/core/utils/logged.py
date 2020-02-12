@@ -7,7 +7,7 @@ from django.conf import settings
 logger_file = logging.getLogger(__name__)
 
 
-class LoggerClass(object):
+class LoggerClass:
     LOG_LEVEL = logging.DEBUG
     log_dir = os.path.dirname(settings.BASE_DIR)
     _logger = None

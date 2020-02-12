@@ -3,7 +3,6 @@ WAVES app Django application descriptor
 
 """
 
-
 import os
 from os import access
 
@@ -17,7 +16,7 @@ class WavesConfig(AppConfig):
     """
     WAVES main application AppConfig, add signals for waves_webapp
     """
-    name = "waves"
+    name = 'waves.core'
     verbose_name = 'WAVES CORE'
 
     def ready(self):

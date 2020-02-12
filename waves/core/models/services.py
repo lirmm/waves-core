@@ -11,61 +11,19 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.db import transaction
-from django.db.models import Q
 from django.urls import reverse
 
+from waves.core.models.managers import ServiceManager
 from waves.core.adaptors.const import JobStatus
 from waves.core.models.adaptors import AdaptorInitParam
-from waves.core.models.base import TimeStamped, Described, ExportAbleMixin, Ordered, Slugged, ApiModel, WavesBaseModel
+from waves.core.models.base import TimeStamped, Described, ExportAbleMixin, Ordered, Slugged, ApiModel
 from waves.core.models.runners import HasRunnerParamsMixin
 from waves.core.settings import waves_settings
 
-__all__ = ['ServiceRunParam', 'ServiceManager', "SubmissionExitCode",
+__all__ = ['ServiceRunParam', "SubmissionExitCode",
            'SubmissionOutput', 'SubmissionRunParam', 'Submission', 'Service']
 
 logger = logging.getLogger(__name__)
-
-
-class ServiceManager(models.Manager):
-    """
-    Service Model 'objects' Manager
-
-    """
-
-    def get_services(self, user=None):
-        """
-        Return services allowed for this specific user
-
-        :param user: current User
-        :return: services allowed for this user
-        :rtype: Django queryset
-        """
-        if user is None:
-            return self.none()
-
-        if not user.is_anonymous():
-            if user.is_superuser:
-                queryset = self.all()
-            elif user.is_staff:
-                # Staff user have access their own Services and to all 'Test / Restricted / Public' made by others
-                queryset = self.filter(
-                    Q(status=self.model.SRV_DRAFT, created_by=user) |
-                    Q(status__in=(self.model.SRV_TEST, self.model.SRV_RESTRICTED, self.model.SRV_REGISTERED,
-                                  self.model.SRV_PUBLIC))
-                )
-            else:
-                # Simply registered user have access only to "Public" and configured restricted access
-                queryset = self.filter(
-                    Q(status=self.model.SRV_RESTRICTED, restricted_client__in=(user,)) |
-                    Q(status__in=(self.model.SRV_REGISTERED, self.model.SRV_PUBLIC))
-                )
-        # Non logged in user have only access to public services
-        else:
-            queryset = self.filter(status=self.model.SRV_PUBLIC)
-        return queryset
-
-    def get_by_natural_key(self, api_name, version, status):
-        return self.get(api_name=api_name, version=version, status=status)
 
 
 class ServiceRunParam(AdaptorInitParam):
@@ -73,12 +31,11 @@ class ServiceRunParam(AdaptorInitParam):
 
     class Meta:
         proxy = True
-        app_label = "wcore"
 
 
 class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_service'
         ordering = ['name']
         verbose_name = 'Waves Service'
         verbose_name_plural = "Waves Services"
@@ -208,7 +165,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
     @transaction.atomic
     def duplicate(self):
         """ Duplicate  a Service / with inputs / outputs / exit_code / runner params """
-        from waves.api import serializers
+        from waves.api.current import serializers
         serializer = serializers.ServiceSerializer()
         data = serializer.to_representation(self)
         srv = self.serializer(data=data)
@@ -260,7 +217,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
 
     @property
     def serializer(self, context=None):
-        from waves.core import ServiceSerializer
+        from waves.import_export.services import ServiceSerializer
         return ServiceSerializer
 
     @property
@@ -287,7 +244,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
 
 class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_submission'
         verbose_name = 'Submission method'
         verbose_name_plural = 'Submission methods'
         ordering = ('order',)
@@ -302,7 +259,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     )
 
     #: Related service model
-    service = models.ForeignKey('wcore.Service', on_delete=models.CASCADE, null=False,
+    service = models.ForeignKey('Service', on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
     #: Set whether this submission is available on REST API
     availability = models.IntegerField('Availability', default=AVAILABLE_API, choices=AVAILABILITY_CHOICES)
@@ -418,7 +375,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     """
 
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_submissionoutput'
         verbose_name = 'Expected output'
         verbose_name_plural = 'Expected outputs'
         ordering = ['-created']
@@ -430,7 +387,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     #: Output Name (internal)
     name = models.CharField('Name', max_length=255, null=True, blank=True, help_text="Output name")
     #: Related Submission
-    submission = models.ForeignKey('wcore.Submission', related_name='outputs',
+    submission = models.ForeignKey('Submission', related_name='outputs',
                                    on_delete=models.CASCADE)
     #: Associated Submission Input if needed
     from_input = models.ForeignKey('AParam', null=True, blank=True, default=None, related_name='to_outputs',
@@ -476,17 +433,17 @@ class SubmissionOutput(TimeStamped, ApiModel):
         return SubmissionOutput.objects.filter(api_name=api_name, submission=self.submission).exclude(pk=self.pk)
 
 
-class SubmissionExitCode(WavesBaseModel):
+class SubmissionExitCode(models.Model):
     """ Services Extended exit code, when non 0/1 usual ones """
 
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_submissionexitcode'
         verbose_name = 'Exit Code'
         unique_together = ('exit_code', 'submission')
 
     exit_code = models.IntegerField('Exit code value', default=0)
     message = models.CharField('Exit code message', max_length=255)
-    submission = models.ForeignKey('wcore.Submission',
+    submission = models.ForeignKey('Submission',
                                    related_name='exit_codes',
                                    null=True,
                                    on_delete=models.CASCADE)
@@ -503,5 +460,4 @@ class SubmissionRunParam(AdaptorInitParam):
     """ Defined runner param for Service model objects """
 
     class Meta:
-        app_label = "wcore"
         proxy = True

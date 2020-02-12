@@ -3,18 +3,16 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
 
+from waves.compat import SortableInlineAdminMixin
+from waves.core.models import Service, Submission
+from waves.core.models.binaries import ServiceBinaryFile
+from waves.core.utils import url_to_edit_object
 from .adaptors import ServiceRunnerParamInLine
 from .base import WavesModelAdmin, ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, \
     DynamicInlinesAdmin
 from .forms import SubmissionInlineForm, ServiceForm
 from .views import ServiceParamImportView, ServiceDuplicateView, ServiceExportView, \
     ServiceModalPreview, ServiceTestConnectionView
-from waves.compat import SortableInlineAdminMixin
-from waves.core.models import Service, Submission
-from waves.core.models.binaries import ServiceBinaryFile
-from waves.core.utils import url_to_edit_object
-
-
 
 User = get_user_model()
 

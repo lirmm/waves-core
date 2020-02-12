@@ -4,7 +4,7 @@ import logging
 import os
 import tempfile
 
-from waves.management.runner import JobQueueRunDaemon, PurgeDaemon
+from core.management.runner import JobQueueRunDaemon, PurgeDaemon
 from waves.core.settings import waves_settings
 from .daemoncommand import DaemonCommand
 

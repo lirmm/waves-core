@@ -27,7 +27,7 @@
             console.log('Launch an import ' + $(this).attr('href'));
             e.preventDefault();
             $('#popup_modal').modal({backdrop: 'static', keyboard: false, show: true});
-            $("#popup_modal_content > div.modal-body").html('<img src="/static/waves/img/progress-bar.gif">');
+            $("#popup_modal_content > div.modal-body").html('<img src="/core/static/waves/img/progress-bar.gif">');
             $('#popup_modal_content').load($(this).attr('href'), function () {
                 console.log('loaded')
             });

@@ -11,16 +11,10 @@ from waves.compat import RichTextField
 from waves.core.settings import waves_settings
 
 __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 'ApiModel',
-           'UrlMixin', 'WavesBaseModel', 'ExportError']
+           'UrlMixin', 'ExportError']
 
 
-class WavesBaseModel(models.Model):
-    class Meta:
-        abstract = True
-        app_label = "wcore"
-
-
-class TimeStamped(WavesBaseModel):
+class TimeStamped(models.Model):
     """
     Time stamped 'able' models objects, add fields to inherited objects
 
@@ -39,7 +33,7 @@ class TimeStamped(WavesBaseModel):
     updated = models.DateTimeField('Last Update', auto_now=True, editable=False, help_text='Last update timestamp')
 
 
-class Ordered(WavesBaseModel):
+class Ordered(models.Model):
     """ Order-able models objects,
 
     .. note::
@@ -54,7 +48,7 @@ class Ordered(WavesBaseModel):
     order = models.PositiveIntegerField(default=0, blank=False, null=False)
 
 
-class Described(WavesBaseModel):
+class Described(models.Model):
     """
     A model object which inherit from this class add two description fields to model objects
 
@@ -70,7 +64,7 @@ class Described(WavesBaseModel):
                                          help_text='Short description (Text)')
 
 
-class Slugged(WavesBaseModel):
+class Slugged(models.Model):
     """ Add a 'slug' field to models Objects, based on uuid.uuid4 field generator, this field is mainly used for models
     objects urls
     """
@@ -82,7 +76,7 @@ class Slugged(WavesBaseModel):
     slug = models.UUIDField(default=uuid.uuid4, blank=True, unique=True, editable=False)
 
 
-class ApiModel(WavesBaseModel):
+class ApiModel(models.Model):
     """
     An API-able model object need a 'api_name', in order to setup dedicated url for this model object
     """

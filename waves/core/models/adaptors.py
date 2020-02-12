@@ -10,21 +10,20 @@ from django.utils.module_loading import import_string
 
 from waves.core.adaptors.loader import AdaptorLoader
 from waves.core.utils.encrypt import Encrypt
-from waves.core.models.base import WavesBaseModel
 from waves.core.models.binaries import ServiceBinaryFile
 
 logger = logging.getLogger(__name__)
 __all__ = ['AdaptorInitParam', 'HasAdaptorClazzMixin']
 
 
-class AdaptorInitParam(WavesBaseModel):
+class AdaptorInitParam(models.Model):
     """ Base Class For adapter initialization params """
 
     class Meta:
         ordering = ['name']
         verbose_name = "Initial param"
         verbose_name_plural = "Init params"
-        app_label = "wcore"
+        db_table = 'wcore_adaptorinitparam'
 
     _value = None
     _override = None
@@ -75,7 +74,7 @@ class AdaptorInitParam(WavesBaseModel):
         return self._value != self.value or self._override != self.prevent_override
 
 
-class HasAdaptorClazzMixin(WavesBaseModel):
+class HasAdaptorClazzMixin(models.Model):
     """
     AdaptorClazzMixin models class has a associated concrete adapter class element,
     where setup params wan be set in AdaptorInitParams models instance.

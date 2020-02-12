@@ -1,7 +1,6 @@
 """
 Admin pages for Runner and RunnerParam models objects
 """
-
 from django.conf.urls import url
 from django.contrib import messages
 from django.contrib.admin import register, TabularInline

@@ -1,4 +1,3 @@
-
 __doc__ = "WAVES core components library"
 __version_detail__ = '1.6.7'
 __version__ = '1.6'

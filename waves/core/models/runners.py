@@ -19,7 +19,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
         ordering = ['name']
         verbose_name = 'Computing infrastructure'
         verbose_name_plural = "Computing infrastructures"
-        app_label = "wcore"
+        db_table = 'wcore_runner'
 
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
     enabled = models.BooleanField('Enabled', default=True, null=False, blank=True,

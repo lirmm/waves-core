@@ -17,7 +17,7 @@ from django.db import (
 from rest_framework.exceptions import ValidationError
 
 from waves.import_export.services import ServiceSerializer
-from waves.management.utils import choice_input
+from core.management.utils import choice_input
 from waves.core.models import Job
 from waves.core.settings import waves_settings as config
 

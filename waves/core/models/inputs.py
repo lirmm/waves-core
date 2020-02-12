@@ -9,9 +9,10 @@ from django.db import models
 from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel
 
+from waves.core.models.managers import FileInputSampleManager
 from waves.core.utils.storage import file_sample_directory, waves_storage
 from waves.core.utils.validators import validate_list_comma, validate_list_param
-from waves.core.models.base import WavesBaseModel, Ordered, ApiModel
+from waves.core.models.base import Ordered, ApiModel
 from waves.core.models.const import OptType, ParamType
 from waves.core.settings import waves_settings
 
@@ -23,9 +24,11 @@ class RepeatedGroup(Ordered):
     """ Some input may be grouped, and group could be repeated"""
 
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_repeatedgroup'
+        verbose_name = "Repeated input"
+        verbose_name_plural = "Repeated inputs"
 
-    submission = models.ForeignKey('wcore.Submission',
+    submission = models.ForeignKey('Submission',
                                    related_name='submission_groups', null=True,
                                    on_delete=models.CASCADE)
     name = models.CharField('Group name', max_length=50, null=False, blank=False)
@@ -46,10 +49,9 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
         verbose_name_plural = "Inputs"
         verbose_name = "Input"
         ordering = ('order',)
-        app_label = "wcore"
+        db_table = 'wcore_aparam'
 
     # objects = PolymorphicManager()
-    # order = models.PositiveIntegerField('Ordering in forms', default=0)
     #: Input Label
     label = models.CharField('Label', max_length=100, blank=False, null=False, help_text='Input displayed label')
     #: Input submission name
@@ -57,7 +59,7 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
                             help_text='Input runner\'s job param command line name')
     multiple = models.BooleanField('Multiple', default=False, help_text="Can hold multiple values")
     help_text = models.TextField('Help Text', null=True, blank=True)
-    submission = models.ForeignKey('wcore.Submission', on_delete=models.CASCADE, null=False,
+    submission = models.ForeignKey('Submission', on_delete=models.CASCADE, null=False,
                                    related_name='inputs')
     required = models.NullBooleanField('Required', choices={(False, "Optional"), (True, "Required"),
                                                             (None, "Not submitted by user")},
@@ -174,7 +176,7 @@ class TextParam(AParam):
     class Meta:
         verbose_name = "Text Input"
         verbose_name_plural = "Text Input"
-        app_label = "wcore"
+        db_table = 'wcore_textparam'
 
     max_length = models.CharField('Max length (<255)', max_length=255, default=255)
 
@@ -194,7 +196,7 @@ class BooleanParam(AParam):
     class Meta:
         verbose_name = "Boolean choice"
         verbose_name_plural = "Boolean choices"
-        app_label = "wcore"
+        db_table = 'wcore_booleanparam'
 
     class_label = "Boolean"
     true_value = models.CharField('True value', default='True', max_length=50)
@@ -236,7 +238,6 @@ class NumberParam(AParam):
     max_val = None
 
     class Meta:
-        app_label = "wcore"
         proxy = True
         abstract = True
 
@@ -292,7 +293,7 @@ class DecimalParam(NumberParam, AParam):
     """ Number param (decimal or float) """
 
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_decimalparam'
         verbose_name = "Decimal"
         verbose_name_plural = "Decimal"
 
@@ -316,7 +317,7 @@ class IntegerParam(NumberParam, AParam):
     """ Integer param """
 
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_integerparam'
         verbose_name = "Integer"
         verbose_name_plural = "Integer"
 
@@ -340,7 +341,7 @@ class ListParam(AParam):
     """ Param to be issued from a list of values (select / radio / check) """
 
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_listparam'
         verbose_name = "List"
         verbose_name_plural = "Lists"
 
@@ -424,7 +425,7 @@ class FileInput(AParam):
     """ Submission file inputs """
 
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_fileinput'
         ordering = ['order', ]
         verbose_name = "File input"
         verbose_name_plural = "Files inputs"
@@ -458,14 +459,15 @@ class FileInput(AParam):
         return initial
 
 
-class FileInputSample(WavesBaseModel):
+class FileInputSample(models.Model):
     """ Any file input can provide samples """
 
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_fileinputsample'
         verbose_name_plural = "Input samples"
         verbose_name = "Input sample"
 
+    objects = FileInputSampleManager()
     class_label = "File Input Sample"
     label = models.CharField('Input Label', blank=False, null=True, max_length=255)
     help_text = models.CharField('Help text', blank=True, null=True, max_length=255)
@@ -509,14 +511,14 @@ class FileInputSample(WavesBaseModel):
         return form_field
 
 
-class SampleDepParam(WavesBaseModel):
+class SampleDepParam(models.Model):
     """
     When a file sample is selected, some params may be set accordingly.
     This class represent this behaviour
     """
 
     class Meta:
-        app_label = "wcore"
+        db_table = 'wcore_sampledepparam'
         verbose_name_plural = "Sample dependencies"
         verbose_name = "Sample dependency"
 

@@ -1,46 +1,17 @@
 from django.db import models, IntegrityError
 
+from waves.core.models.managers import JobHistoryManager, JobAdminHistoryManager
 from waves.core.adaptors.const import JobStatus
-from waves.core.models.base import WavesBaseModel
 
 
-class JobHistoryManager(models.Manager):
-    def create(self, **kwargs):
-        """ Force 'is_admin' flag for JobAdminHistory models objects
-
-        :return: a JobAdminHistory object
-        """
-        if 'message' not in kwargs:
-            kwargs['message'] = kwargs.get('job').message
-        return super(JobHistoryManager, self).create(**kwargs)
-
-
-class JobAdminHistoryManager(JobHistoryManager):
-    def get_queryset(self):
-        """
-        Specific query set to filter only :class:`waves.core.models.jobs.JobAdminHistory` objects
-
-        :return: QuerySet
-        """
-        return super(JobAdminHistoryManager, self).get_queryset().filter(is_admin=True)
-
-    def create(self, **kwargs):
-        """ Force 'is_admin' flag for JobAdminHistory models objects
-
-        :return: a JobAdminHistory object
-        """
-        kwargs.update({'is_admin': True})
-        return super(JobAdminHistoryManager, self).create(**kwargs)
-
-
-class JobHistory(WavesBaseModel):
+class JobHistory(models.Model):
     """ Represents a job status history event
     """
 
     class Meta:
         ordering = ['-timestamp', '-status']
         unique_together = ('job', 'timestamp', 'status', 'is_admin')
-        app_label = "wcore"
+        db_table = 'wcore_jobhistory'
 
     objects = JobHistoryManager()
     #: Related :class:`waves.core.models.jobs.Job`
@@ -74,6 +45,5 @@ class JobAdminHistory(JobHistory):
 
     class Meta:
         proxy = True
-        app_label = "wcore"
 
     objects = JobAdminHistoryManager()
