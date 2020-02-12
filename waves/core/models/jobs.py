@@ -231,7 +231,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         :rtype: `waves.core.mocks.runner.JobRunnerAdaptor`
         """
         if self._adaptor:
-            from waves.core import AdaptorLoader
+            from core import AdaptorLoader
             try:
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
                 return adaptor

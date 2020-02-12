@@ -2,7 +2,7 @@ import logging
 
 import radical.saga as saga
 
-from waves.core import exceptions
+from waves.core.adaptors import exceptions
 from waves.core.adaptors.adaptor import JobAdaptor
 from waves.core.adaptors.const import JobStatus, JobRunDetails
 
@@ -63,12 +63,8 @@ class SagaAdaptor(JobAdaptor):
         try:
             service = self._init_service()
             self.connect()
-        except saga.SagaException as e:
-            raise exceptions.AdaptorNotAvailableException(e.message)
-        except AssertionError as e:
-            raise exceptions.AdaptorNotAvailableException(e.message)
-        except BaseException as e:
-            raise exceptions.AdaptorNotAvailableException(e.message)
+        except (saga.SagaException, AssertionError, BaseException) as e:
+            raise exceptions.AdaptorNotAvailableException(e)
         return service.valid
 
     def connexion_string(self):

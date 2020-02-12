@@ -7,4 +7,5 @@ __copyright__ = "Copyright(C) 2015-2018, LIRMM - UM - CNRS"
 __db_version__ = "1.3"
 __name__ = "Waves Core package"
 
+name = 'core'
 default_app_config = 'waves.core.apps.WavesConfig'

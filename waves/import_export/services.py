@@ -4,9 +4,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from rest_framework import serializers as rest_serializer
 
-from waves.import_export import BaseSerializer, RelatedSerializerMixin
+from import_export import BaseSerializer, RelatedSerializerMixin
 from waves.api import serializers as api_serializers
-from waves.import_export import serializers
+from import_export import serializers
 from waves.core.models import Submission, Service
 from waves.core.models import SubmissionExitCode, SubmissionOutput, SubmissionRunParam
 from waves.core.models.inputs import AParam

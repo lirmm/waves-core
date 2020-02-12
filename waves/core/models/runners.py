@@ -48,7 +48,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     @property
     def serializer(self, context=None):
         """ Retrieve a serializer for json export """
-        from waves.import_export.runners import RunnerSerializer
+        from import_export.runners import RunnerSerializer
         return RunnerSerializer
 
     @property

@@ -29,7 +29,7 @@ class WavesConfig(AppConfig):
 
 
 @register()
-def check_waves_config(app_configs=('waves',), **kwargs):
+def check_waves_config(app_configs=('waves.core',), **kwargs):
     """
     WAVES configuration check up, added to classic ``manage.py check`` Django command
 

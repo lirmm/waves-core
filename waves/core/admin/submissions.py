@@ -8,7 +8,7 @@ from django.utils.html import format_html
 from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
 
-from waves.compat import CompactInline, SortableInlineAdminMixin
+from waves.core.compat import CompactInline, SortableInlineAdminMixin
 from waves.core.utils import url_to_edit_object
 from waves.core.models import Submission, AParam, FileInputSample, FileInput, RepeatedGroup, SampleDepParam, \
     SubmissionOutput, SubmissionExitCode

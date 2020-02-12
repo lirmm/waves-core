@@ -3,7 +3,7 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from waves.import_export import RelatedSerializerMixin
+from import_export import RelatedSerializerMixin
 from waves.core.models import Runner, AdaptorInitParam
 
 

@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
 
-from waves.compat import SortableInlineAdminMixin
+from waves.core.compat import SortableInlineAdminMixin
 from waves.core.models import Service, Submission
 from waves.core.models.binaries import ServiceBinaryFile
 from waves.core.utils import url_to_edit_object

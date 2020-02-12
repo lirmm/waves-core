@@ -1,0 +1,41 @@
+{
+  "name": "Service Local cluster Runner", 
+  "db_version": "1.3", 
+  "description": null, 
+  "short_description": null, 
+  "runner": {
+    "name": "Local cluster Runner", 
+    "clazz": "waves.wcore.adaptors.cluster.LocalClusterAdaptor", 
+    "runner_params": [
+      {
+        "name": "command", 
+        "value": null, 
+        "prevent_override": false
+      }, 
+      {
+        "name": "host", 
+        "value": "localhost", 
+        "prevent_override": false
+      }, 
+      {
+        "name": "protocol", 
+        "value": "sge", 
+        "prevent_override": false
+      }, 
+      {
+        "name": "queue", 
+        "value": "", 
+        "prevent_override": false
+      }
+    ]
+  }, 
+  "submissions": [
+    {
+      "api_name": "default", 
+      "order": 0, 
+      "name": "default", 
+      "availability": 1, 
+      "export_submission_inputs": []
+    }
+  ]
+}

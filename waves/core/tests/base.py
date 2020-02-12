@@ -197,7 +197,7 @@ class TestJobWorkflowMixin(object):
             Runner model instance
             :param adaptor:
         """
-        from waves.core import MockJobRunnerAdaptor
+        from core import MockJobRunnerAdaptor
         impl = adaptor or MockJobRunnerAdaptor()
         runner_model = Runner.objects.create(name=impl.__class__.__name__,
                                              description='SubmissionSample Runner %s' % impl.__class__.__name__,

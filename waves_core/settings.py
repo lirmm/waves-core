@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'waves.core',
-    'waves.api',
-    'waves.authentication',
+    #'waves.api',
+    #'waves.authentication',
     'crispy_forms',
     'rest_framework',
     'corsheaders',
@@ -140,8 +140,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'waves.authentication.auth.TokenAuthentication',
-        'waves.authentication.auth.ApiKeyAuthentication',
+     #   'waves.authentication.auth.TokenAuthentication',
+     #   'waves.authentication.auth.ApiKeyAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],

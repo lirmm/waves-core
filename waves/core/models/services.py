@@ -217,7 +217,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
 
     @property
     def serializer(self, context=None):
-        from waves.import_export.services import ServiceSerializer
+        from import_export.services import ServiceSerializer
         return ServiceSerializer
 
     @property

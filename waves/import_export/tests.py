@@ -1,7 +1,7 @@
 import json
 import logging
 
-from waves.import_export.services import ServiceSerializer
+from import_export.services import ServiceSerializer
 from waves.core.models import Service
 from waves.core.tests.base import WavesTestCaseMixin
 

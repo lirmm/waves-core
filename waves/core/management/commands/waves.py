@@ -1,8 +1,8 @@
 from abc import ABC
 
-from core.management import SubcommandDispatcher
-from core.management import JobQueueCommand, PurgeDaemonCommand
-from core.management import CleanUpCommand, ImportCommand, DumpConfigCommand
+from waves.core.management import SubcommandDispatcher
+from waves.core.management import JobQueueCommand, PurgeDaemonCommand
+from waves.core.management import CleanUpCommand, ImportCommand, DumpConfigCommand
 
 CLEAN = 'clean'
 CONFIG = 'config'

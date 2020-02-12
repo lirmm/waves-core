@@ -28,7 +28,7 @@ class JobInputInline(TabularInline):
     classes = ['collapse', ]
 
     def has_add_permission(self, request):
-        """ Never add any job input from waves.admin """
+        """ Never add any job input from admin """
         return False
 
 
@@ -45,7 +45,7 @@ class JobOutputInline(TabularInline):
     fields = ('name', 'api_name', 'value', 'file_path')
 
     def has_add_permission(self, request):
-        """ Never add any job output from waves.admin """
+        """ Never add any job output from admin """
         return False
 
 
@@ -61,7 +61,7 @@ class JobHistoryInline(TabularInline):
     extra = 0
 
     def has_add_permission(self, request):
-        """ Never add any job output from waves.admin """
+        """ Never add any job output from admin """
         return False
 
     def get_message(self, obj):

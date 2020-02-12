@@ -2,8 +2,8 @@ import logging
 import os
 import tempfile
 
-from core.management import DaemonCommand
-from core.management.runner import JobQueueRunDaemon
+from waves.core.management import DaemonCommand
+from waves.core.management.runner import JobQueueRunDaemon
 
 logger = logging.getLogger('waves.daemon')
 
