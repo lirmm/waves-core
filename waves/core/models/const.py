@@ -1,4 +1,4 @@
-__all__ = ['OptType', 'ParamType']
+__all__ = []
 
 
 class OptType(object):

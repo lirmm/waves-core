@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.module_loading import import_string
 
-from waves.adaptors.loader import AdaptorLoader
+from waves.core.adaptors.loader import AdaptorLoader
 from waves.utils.encrypt import Encrypt
 from waves.core.models.binaries import ServiceBinaryFile
 

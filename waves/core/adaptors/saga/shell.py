@@ -3,8 +3,8 @@ from os.path import join
 
 import radical.saga as rs
 
-from waves.adaptors.exceptions import AdaptorJobException
-from waves.adaptors.saga.base import SagaAdaptor
+from waves.core.adaptors.exceptions import AdaptorJobException
+from waves.core.adaptors.saga.base import SagaAdaptor
 
 logger = logging.getLogger(__name__)
 

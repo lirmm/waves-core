@@ -9,19 +9,21 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import localtime
 
-from waves.adaptors.const import JobStatus
+from waves.core.adaptors.const import JobStatus
+from waves.core.adaptors.loader import AdaptorLoader
+from waves.core.models import Runner
 from waves.core.models import Service, Submission, TextParam, BooleanParam, Job, JobInput, \
     JobOutput, Runner, AdaptorInitParam
 from waves.core.models.inputs import FileInput
 from waves.core.models import ServiceRunParam
 from waves.core.settings import waves_settings
-from waves.adaptors.tests.mocks import MockJobRunnerAdaptor
+from waves.core.tests.mocks.services import MockJobRunnerAdaptor
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
-class WavesTestCaseMixin(object):
+class WavesTestCaseMixin:
     service = None
     services = []
     runner = MockJobRunnerAdaptor
@@ -197,7 +199,7 @@ class TestJobWorkflowMixin(object):
             Runner model instance
             :param adaptor:
         """
-        from waves.adaptors.tests.mocks import MockJobRunnerAdaptor
+        from waves.core.adaptors.tests import MockJobRunnerAdaptor
         impl = adaptor or MockJobRunnerAdaptor()
         runner_model = Runner.objects.create(name=impl.__class__.__name__,
                                              description='SubmissionSample Runner %s' % impl.__class__.__name__,
@@ -234,3 +236,13 @@ class TestJobWorkflowMixin(object):
         service.submissions.add(sub)
 
         return service
+
+
+def bootstrap_adaptors():
+    """ Create base models from all Current implementation parameters """
+    loader = AdaptorLoader
+    runners = []
+    for adaptor in loader.get_adaptors():
+        runner = Runner.objects.create(name="%s Runner" % adaptor.name, clazz='.'.join([adaptor.__module__, adaptor.__class__.__name__]))
+        runners.append(runner)
+    return runners

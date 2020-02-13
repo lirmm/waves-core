@@ -1,5 +1,5 @@
-from waves.adaptors.saga.shell import SshKeyShellAdaptor, SshShellAdaptor
-from waves.adaptors.saga.base import SagaAdaptor
+from waves.core.adaptors.saga.shell import SshKeyShellAdaptor, SshShellAdaptor
+from waves.core.adaptors.saga.base import SagaAdaptor
 
 
 class LocalClusterAdaptor(SagaAdaptor):

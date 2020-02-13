@@ -3,17 +3,18 @@ import os
 import unittest
 
 from django.conf import settings
+from psutil.tests import TestCase
 
-from waves.adaptors import SshClusterAdaptor
-from waves.adaptors.const import JobStatus
-from waves.adaptors import AdaptorException
-from waves.adaptors import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
+from waves.core.adaptors.saga.cluster import SshClusterAdaptor
+from waves.core.adaptors.const import JobStatus
+from waves.core.adaptors.exceptions import AdaptorException
+from waves.core.adaptors.saga.shell import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.core.exceptions import JobInconsistentStateError
 from waves.core.settings import waves_settings
 from waves.core.tests.base import WavesTestCaseMixin, TestJobWorkflowMixin
-from waves.core.tests.mocks import MockJobRunnerAdaptor
+from core.tests.mocks.services import MockJobRunnerAdaptor
 from waves.utils.encrypt import Encrypt
-from waves.adaptors import AdaptorLoader
+from waves.core.adaptors.loader import AdaptorLoader
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ def skip_unless_sge():
     return lambda f: f
 
 
-class AdaptorTestCase(WavesTestCaseMixin, TestJobWorkflowMixin):
+class AdaptorTestCase(TestCase, WavesTestCaseMixin, TestJobWorkflowMixin):
     loader = AdaptorLoader
     adaptors = {"local": LocalShellAdaptor(command='cp')}
 

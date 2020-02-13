@@ -10,7 +10,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from waves.adaptors.const import JobStatus
+from waves.core.adaptors.const import JobStatus
 from waves.core.models import Job, Service, Runner
 from waves.core.models.const import ParamType
 from waves.core.tests.base import WavesTestCaseMixin

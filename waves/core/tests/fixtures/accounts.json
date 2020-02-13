@@ -1,0 +1,56 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$180000$ei5VKwDXPxHK$CysY0o4NLqQofjHgLa5G6UbxRgRvlxq3CjJfSjMV8B4=",
+      "last_login": null,
+      "is_superuser": true,
+      "username": "superadmin",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2020-02-13T22:18:28Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$180000$PYFHpZco9LAc$gT2BHMwIhlDBvMp7GSCQ6TWgPzV/1F6ndzAK/5P/vrU=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "admin",
+      "first_name": "Admin User",
+      "last_name": "",
+      "email": "admin@waves.core.fr",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2020-02-13T22:18:58Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+      "password": "pbkdf2_sha256$180000$5AXyrkwLmxTS$dpYtxkFNlL2AOwnV8J/CusMHe5tUP8iGdr4D3Hg/oOU=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "wavesapi",
+      "first_name": "Waves API",
+      "last_name": "",
+      "email": "wavesapi@waves.core.fr",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2020-02-13T22:19:27Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]

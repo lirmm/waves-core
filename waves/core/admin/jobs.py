@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from waves.core.views.admin.job_tool import JobCancelView, JobRerunView
 from waves.core.forms.admin.jobs import JobInputForm, JobOutputForm, JobForm
 from waves.core.admin.base import WavesModelAdmin
-from waves.adaptors.const import JobStatus
+from waves.core.adaptors.const import JobStatus
 from waves.utils import url_to_edit_object
 from waves.core.models import JobHistory
 from waves.core.models.jobs import JobInput, Job, JobOutput

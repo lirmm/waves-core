@@ -1,6 +1,6 @@
 from abc import ABC
 
-from waves.adaptors.base import JobAdaptor
+from waves.core.adaptors.base import JobAdaptor
 
 
 # noinspection PyAbstractClass

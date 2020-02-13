@@ -11,8 +11,8 @@ from itertools import chain
 from daemons.prefab import run
 
 import waves.core.exceptions
-from waves.adaptors.const import JobStatus
-from waves.adaptors.exceptions import AdaptorException
+from waves.core.adaptors.const import JobStatus
+from waves.core.adaptors.exceptions import AdaptorException
 from waves.core.models import Job
 from waves.core.settings import waves_settings
 

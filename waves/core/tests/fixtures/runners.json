@@ -5,7 +5,7 @@
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.waves.adaptors.shell.LocalShellAdaptor",
+      "clazz": "waves.waves.core.adaptors.shell.LocalShellAdaptor",
       "binary_file": null,
       "name": "Local shell runner #1",
       "enabled": true
@@ -62,7 +62,7 @@
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.waves.adaptors.shell.LocalShellAdaptor",
+      "clazz": "waves.waves.core.adaptors.shell.LocalShellAdaptor",
       "binary_file": null,
       "name": "Local shell runner #2",
       "enabled": true
@@ -120,7 +120,7 @@
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.waves.adaptors.cluster.LocalClusterAdaptor",
+      "clazz": "waves.waves.core.adaptors.cluster.LocalClusterAdaptor",
       "binary_file": null,
       "name": "LocalClusterAdaptor",
       "enabled": true

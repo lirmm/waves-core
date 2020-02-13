@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase
 
-from waves.adaptors.const import JobStatus
+from waves.core.adaptors.const import JobStatus
 from waves.core.tests.base import WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)

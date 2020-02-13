@@ -4,10 +4,10 @@ import warnings
 
 import inflection
 
-from waves.adaptors.exceptions import ImporterException
+from waves.core.adaptors.exceptions import ImporterException
 from waves.core.models import Submission
 from waves.core.settings import waves_settings
-from waves.utils import LoggerClass
+from waves.utils.logged import LoggerClass
 
 logger = logging.getLogger(__name__)
 

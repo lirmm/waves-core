@@ -4,7 +4,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import get_template
 
 from waves.core.settings import waves_settings as config
-from waves.adaptors.const import JobStatus
+from waves.core.adaptors.const import JobStatus
 
 logger = logging.getLogger(__name__)
 

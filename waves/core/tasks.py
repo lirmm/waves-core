@@ -1,13 +1,12 @@
-from waves_core.celery import app
-
-import logging
 import datetime
+import logging
 from itertools import chain
 
 import waves.core.exceptions
-from waves.adaptors.const import JobStatus
-from waves.adaptors.exceptions import AdaptorException
+from waves.core.adaptors.const import JobStatus
+from waves.core.adaptors.exceptions import AdaptorException
 from waves.core.models import Job
+from waves_core.celery import app
 
 
 @app.task(name="job_queue")
@@ -21,8 +20,8 @@ def process_job_queue():
     :return: None
     """
     logger = logging.getLogger()
-    jobs = Job.objects.prefetch_related('job_inputs'). \
-        prefetch_related('outputs').filter(_status__lt=JobStatus.JOB_FINISHED)
+    jobs = Job.objects.prefetch_related('job_inputs').prefetch_related('outputs').filter(
+        _status__lt=JobStatus.JOB_FINISHED)
     if jobs.count() > 0:
         logger.info("Starting queue process with %i(s) unfinished jobs", jobs.count())
     for job in jobs:
@@ -58,6 +57,7 @@ def process_job_queue():
             job.check_send_mail()
             if runner is not None:
                 runner.disconnect()
+
 
 @app.task(name="purge_jobs")
 def purge_old_jobs():

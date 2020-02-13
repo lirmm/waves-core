@@ -1,12 +1,12 @@
 import json
 
-from waves.adaptors.utils import check_ready
-from waves.adaptors.const import JobStatus
-from waves.adaptors.exceptions import AdaptorException
+from waves.core.adaptors.utils import check_ready
+from waves.core.adaptors.const import JobStatus
+from waves.core.adaptors.exceptions import AdaptorException
 from waves.core.exceptions import JobInconsistentStateError
 
 
-class JobAdaptor(object):
+class JobAdaptor:
     """
     Abstract Jobadapter class, declare expected behaviour from any WAVES's Jobadapter dependent ?
     """

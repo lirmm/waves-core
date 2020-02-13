@@ -1,11 +1,13 @@
 import logging
 from os.path import isdir, join
-from django.test import TestCase, override_settings
 
 from django.conf import settings
+from django.test import TestCase, override_settings
+
+from waves.core.models import JobStatus
 from waves.core.tests.base import WavesTestCaseMixin
 from waves.core.tests.mocks import SampleService
-from waves.core.models import JobStatus
+
 logger = logging.getLogger(__name__)
 
 
@@ -19,10 +21,8 @@ logger = logging.getLogger(__name__)
 )
 class SignalTestCase(TestCase, WavesTestCaseMixin):
 
-
     def testRunnerSignals(self):
         runner = None
-
 
     def testJobsSignals(self):
         service = SampleService()

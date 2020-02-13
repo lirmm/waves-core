@@ -6,9 +6,8 @@ from django.core.files import File
 from django.db import models, transaction
 from django.db.models import Q
 from psutil import long
-from psutil._compat import unicode
 
-from waves.adaptors.const import JobStatus
+from waves.core.adaptors.const import JobStatus
 from waves.core.exceptions import JobMissingMandatoryParam
 from waves.core.models.const import ParamType
 
@@ -266,7 +265,7 @@ class JobInputManager(models.Manager):
                 with open(filename, 'wb+') as uploaded_file:
                     for chunk in input_sample.file.chunks():
                         uploaded_file.write(chunk)
-            elif isinstance(submitted_input, (str, unicode)):
+            elif isinstance(submitted_input, str):
                 # copy / paste content
                 if service_input.default:
                     filename = path.join(job.working_dir, service_input.default)
@@ -275,7 +274,8 @@ class JobInputManager(models.Manager):
                     filename = path.join(job.working_dir, service_input.name + '.txt')
                     input_dict.update(dict(value=service_input.name + '.txt'))
                 with open(filename, 'wb+') as uploaded_file:
-                    uploaded_file.write(submitted_input)
+                    # TODO test this
+                    uploaded_file.write(submitted_input.encode())
             else:
                 logger.warning(
                     "Unable to determine usable type for input %s:%s " % (service_input.name, submitted_input))

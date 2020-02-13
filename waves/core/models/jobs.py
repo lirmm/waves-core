@@ -13,9 +13,10 @@ from django.db import models
 from django.utils.encoding import smart_text
 from django.utils.html import format_html
 
+from waves.core.adaptors.exceptions import AdaptorException
 from waves.core.models.managers import JobManager, JobInputManager, JobOutputManager
 from waves.core.exceptions import JobInconsistentStateError
-from waves.adaptors.const import JobStatus, JobRunDetails
+from waves.core.adaptors.const import JobStatus, JobRunDetails
 from waves.utils.logged import LoggerClass
 from waves.core.exceptions.base import WavesException
 from waves.utils.storage import allow_display_online
@@ -230,7 +231,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         :rtype: `waves.core.mocks.runner.JobRunnerAdaptor`
         """
         if self._adaptor:
-            from waves.adaptors.loader import AdaptorLoader
+            from waves.core.adaptors.loader import AdaptorLoader
             try:
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
                 return adaptor
@@ -418,7 +419,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
                 returned = getattr(self.adaptor, action)(self)
                 self.nb_retry = 0
                 return returned
-        except adaptors.exceptions.AdaptorException as exc:
+        except AdaptorException as exc:
             self.retry(exc)
             # raise
         except JobInconsistentStateError:
@@ -487,7 +488,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
             file_run_details = join(self.working_dir, 'job_run_details.json')
             try:
                 remote_details = self._run_action('job_run_details')
-            except adaptors.exceptions.AdaptorException:
+            except AdaptorException:
                 remote_details = self.default_run_details()
             with open(file_run_details, 'w') as fp:
                 json.dump(obj=remote_details, fp=fp, ensure_ascii=False)
