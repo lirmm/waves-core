@@ -1,6 +1,5 @@
 import inspect
 from django.utils.html import strip_tags
-from django.utils.encoding import force_unicode
 
 
 def process_docstring(app, what, name, obj, options, lines):
@@ -22,14 +21,14 @@ def process_docstring(app, what, name, obj, options, lines):
                 field.attname = field.name
                 # Decode and strip any html out of the field's help text
             try:
-                help_text = strip_tags(force_unicode(field.help_text))
-            except StandardError:
+                help_text = strip_tags(field.help_text)
+            except BaseException:
                 help_text = ''
 
             # Decode and capitalize the verbose name, for use if there isn't
             # any help text
             try:
-                verbose_name = force_unicode(field.verbose_name).capitalize()
+                verbose_name = field.verbose_name.capitalize()
             except UnicodeError:
                 verbose_name = ''
             except AttributeError:

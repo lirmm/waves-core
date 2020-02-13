@@ -1,6 +1,6 @@
 import json
 
-from waves.core.adaptors.exceptions import AdaptorNotAvailableException
+from waves.adaptors.exceptions import AdaptorNotAvailableException
 from waves.core.settings import import_from_string
 
 __all__ = ['AdaptorLoader']

@@ -1,5 +1,5 @@
 from waves.core.models import *
-from waves.core.tests.mocks import MockJobRunnerAdaptor
+from waves.adaptors.tests.mocks import MockJobRunnerAdaptor
 
 
 class SampleService(object):

@@ -1,12 +1,12 @@
-from waves.core.adaptors.saga_python import SagaAdaptor
-from waves.core.adaptors.shell import SshKeyShellAdaptor, SshShellAdaptor
+from waves.adaptors.saga.shell import SshKeyShellAdaptor, SshShellAdaptor
+from waves.adaptors.saga.base import SagaAdaptor
 
 
 class LocalClusterAdaptor(SagaAdaptor):
     """
-    Encapsulate some of Saga-python adapters for common cluster calculation devices onto WAVES adapter logic
+    Encapsulate some of radical-saga adapters for common cluster calculation devices onto WAVES adapter logic
     """
-    NOT_AVAILABLE_MESSAGE = "A valid local %s cluster is needed to run this tests"
+    NOT_AVAILABLE_MESSAGE = "A valid local %s cluster is needed to use this adaptor"
 
     name = 'Local cluster'
     protocol_choices = (

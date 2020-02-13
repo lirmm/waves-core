@@ -61,12 +61,12 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     @property
     def running_services(self):
         from waves.core.models import Service
-        return Service().objects.filter(runner=self)
+        return Service.objects.filter(runner=self)
 
     @property
     def running_submissions(self):
         from waves.core.models import Submission
-        return Submission().objects.filter(runner=self)
+        return Submission.objects.filter(runner=self)
 
     def get_admin_url(self):
         return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])

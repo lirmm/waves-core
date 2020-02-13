@@ -24,11 +24,7 @@ class AdaptorInitParamInline(GenericTabularInline):
         """
         return False
 
-    def has_add_permission(self, request):
-        """ No add permission for runners params
-
-        :return: False
-        """
+    def has_add_permission(self, request, obj):
         return False
 
     def default_value(self, obj):
@@ -63,7 +59,7 @@ class ServiceRunnerParamInLine(AdaptorInitParamInline):
         queryset = queryset.filter(prevent_override=False)
         return queryset
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj):
         return False
 
 

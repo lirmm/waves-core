@@ -8,8 +8,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.module_loading import import_string
 
-from waves.core.adaptors.loader import AdaptorLoader
-from waves.core.utils.encrypt import Encrypt
+from waves.adaptors.loader import AdaptorLoader
+from waves.utils.encrypt import Encrypt
 from waves.core.models.binaries import ServiceBinaryFile
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ class AdaptorInitParam(models.Model):
         if self.name == "command" and self.content_object is not None:
             if self.content_object.binary_file is not None:
                 return self.content_object.binary_file.binary.path
-        if self.name == "password":
+        if self.name == "password" and self.value:
             return "x" * len(self.value)
         return self.value
 

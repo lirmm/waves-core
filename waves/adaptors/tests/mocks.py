@@ -7,8 +7,8 @@ import random
 import string
 import time
 
-from waves.core.adaptors.adaptor import JobAdaptor
-from waves.core.adaptors.const import JobStatus
+from waves.adaptors.base import JobAdaptor
+from waves.adaptors.const import JobStatus
 
 
 class MockConnector(object):
@@ -24,7 +24,7 @@ class MockJobRunnerAdaptor(JobAdaptor):
         JobStatus.JOB_SUSPENDED: JobStatus.JOB_SUSPENDED,
         JobStatus.JOB_CANCELLED: JobStatus.JOB_CANCELLED,
         JobStatus.JOB_COMPLETED: JobStatus.JOB_COMPLETED,
-        JobStatus.JOB_TERMINATED: JobStatus.JOB_TERMINATED,
+        JobStatus.JOB_FINISHED: JobStatus.JOB_FINISHED,
         JobStatus.JOB_ERROR: JobStatus.JOB_ERROR,
     }
 
@@ -40,7 +40,7 @@ class MockJobRunnerAdaptor(JobAdaptor):
 
     def _run_job(self, job):
         time.sleep(2)
-        job.remote_job_id = '%s-%s' % (job.id, ''.join(random.sample(string.letters, 15)))
+        job.remote_job_id = '%s-%s' % (job.id, ''.join(random.sample(string.ascii_letters, 15)))
         job.started = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%I')
 
     def _disconnect(self):

@@ -9,13 +9,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import localtime
 
-from waves.core.adaptors.const import JobStatus
+from waves.adaptors.const import JobStatus
 from waves.core.models import Service, Submission, TextParam, BooleanParam, Job, JobInput, \
     JobOutput, Runner, AdaptorInitParam
 from waves.core.models.inputs import FileInput
 from waves.core.models import ServiceRunParam
 from waves.core.settings import waves_settings
-from waves.core.tests.mocks import MockJobRunnerAdaptor
+from waves.adaptors.tests.mocks import MockJobRunnerAdaptor
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
@@ -161,7 +161,7 @@ class TestJobWorkflowMixin(object):
                 logger.info('Job state ended to %s ', job.get_status_display())
                 break
             time.sleep(3)
-        if job.status in (JobStatus.JOB_COMPLETED, JobStatus.JOB_TERMINATED):
+        if job.status in (JobStatus.JOB_COMPLETED, JobStatus.JOB_FINISHED):
             # Get job run details
             job.retrieve_run_details()
             time.sleep(3)
@@ -176,7 +176,7 @@ class TestJobWorkflowMixin(object):
                     self.fail('Expected output not present')
                 else:
                     logger.info("Expected output file found : %s ", output_job.file_path)
-            self.assertTrue(job.status == JobStatus.JOB_TERMINATED)
+            self.assertTrue(job.status == JobStatus.JOB_FINISHED)
             self.assertEqual(job.exit_code, 0)
             job.delete()
         else:
@@ -197,7 +197,7 @@ class TestJobWorkflowMixin(object):
             Runner model instance
             :param adaptor:
         """
-        from core import MockJobRunnerAdaptor
+        from waves.adaptors.tests.mocks import MockJobRunnerAdaptor
         impl = adaptor or MockJobRunnerAdaptor()
         runner_model = Runner.objects.create(name=impl.__class__.__name__,
                                              description='SubmissionSample Runner %s' % impl.__class__.__name__,

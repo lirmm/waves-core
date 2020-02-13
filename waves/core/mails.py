@@ -4,7 +4,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import get_template
 
 from waves.core.settings import waves_settings as config
-from waves.core.adaptors.const import JobStatus
+from waves.adaptors.const import JobStatus
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +128,7 @@ class JobMailer(object):
                     nb_sent = 0
                     if job.status == JobStatus.JOB_CREATED:
                         nb_sent = self.send_job_submission_mail(job)
-                    elif job.status == JobStatus.JOB_TERMINATED:
+                    elif job.status == JobStatus.JOB_FINISHED:
                         nb_sent = self.send_job_completed_mail(job)
                     elif job.status == JobStatus.JOB_ERROR:
                         nb_sent = self.send_job_error_email(job)

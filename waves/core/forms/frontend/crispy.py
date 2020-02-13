@@ -4,7 +4,7 @@ from crispy_forms import bootstrap
 from crispy_forms.helper import FormHelper as CrispyFormHelper
 from crispy_forms.layout import Layout, Field, Div, HTML, Reset, Submit
 
-from core.forms.frontend.helper import WFormHelper
+from waves.core.forms.frontend.helper import WFormHelper
 from waves.core.models.inputs import FileInputSample, FileInput
 from waves.core.settings import waves_settings
 
@@ -68,8 +68,6 @@ class FormHelper(CrispyFormHelper, WFormHelper):
             if when_value is not None:
                 if type(service_input.when_value_python) is int:
                     hide_dep = (service_input.when_value_python != int(when_value))
-                    print
-                    "hide dep", hide_dep, when_value, service_input.when_value_python
                 elif type(service_input.when_value_python) is Decimal:
                     hide_dep = (service_input.when_value_python != Decimal(when_value.strip(' "')))
                 elif type(service_input.when_value_python) is bool:

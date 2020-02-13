@@ -73,3 +73,8 @@ class UnhandledInputTypeException(UnhandledException):
 
     def __init__(self, *args, **kwargs):
         super(UnhandledInputTypeException, self).__init__(*args, **kwargs)
+
+
+class JobPrepareException(AdaptorJobException):
+    """Preparation process errors """
+    pass

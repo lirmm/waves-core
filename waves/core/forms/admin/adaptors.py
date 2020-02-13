@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, ChoiceField, PasswordInput
 
-from waves.core.adaptors.adaptor import JobAdaptor
 from waves.core.models import AdaptorInitParam, Submission, Service
 
 __all__ = ['AdaptorInitParamForm']
@@ -26,7 +25,6 @@ class AdaptorInitParamForm(ModelForm):
                 from ast import literal_eval
                 concrete = instance.content_object.adaptor
                 if concrete is not None:
-                    assert isinstance(concrete, JobAdaptor)
                     default_value = None
                     initial = instance.value if instance.value else default_value
                     choices = getattr(concrete, instance.name + '_choices', None)

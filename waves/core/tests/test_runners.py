@@ -1,22 +1,21 @@
-
-
 import logging
 
 from django.utils.module_loading import import_string
 
+from waves.adaptors.base import JobAdaptor
 from waves.core.models import Runner
-from waves.core.adaptors.adaptor import JobAdaptor
 from waves.core.tests.base import WavesTestCaseMixin, TestJobWorkflowMixin
 
 logger = logging.getLogger(__name__)
 
-#TODO add override config with list of expected runners instead of bootstrap_runners calls
+
+# TODO add override config with list of expected runners instead of bootstrap_runners calls
 class RunnerTestCase(WavesTestCaseMixin, TestJobWorkflowMixin):
 
     def bootstrap_runners(self):
         """ Create base models from all Current implementation parameters """
         self.runner = []
-        from waves.core.adaptors.loader import AdaptorLoader
+        from waves.adaptors.loader import AdaptorLoader
         loader = AdaptorLoader
         for adaptor in loader.get_adaptors():
             runner = Runner.objects.create(name="%s Runner" % adaptor.name,

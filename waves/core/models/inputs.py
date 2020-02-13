@@ -10,8 +10,8 @@ from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel
 
 from waves.core.models.managers import FileInputSampleManager
-from waves.core.utils.storage import file_sample_directory, waves_storage
-from waves.core.utils.validators import validate_list_comma, validate_list_param
+from waves.utils.storage import file_sample_directory, waves_storage
+from waves.utils.validators import validate_list_comma, validate_list_param
 from waves.core.models.base import Ordered, ApiModel
 from waves.core.models.const import OptType, ParamType
 from waves.core.settings import waves_settings

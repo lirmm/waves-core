@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase
 
-from waves.core.adaptors.const import JobStatus
+from waves.adaptors.const import JobStatus
 from waves.core.tests.base import WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ class JobsTestCase(TestCase, WavesTestCaseMixin):
         # no more mails
         self.assertEqual(len(mail.outbox), 1)
 
-        job.status = JobStatus.JOB_TERMINATED
+        job.status = JobStatus.JOB_FINISHED
         # job.save()
         job.check_send_mail()
         self.assertEqual(len(mail.outbox), 2)

@@ -4,10 +4,10 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 
-from core.forms.frontend.crispy import FormHelper
+from waves.core.forms.frontend.crispy import FormHelper
 from waves.core.models import Submission
 from waves.core.models.inputs import AParam, FileInput
-from waves.core.utils import random_analysis_name
+from waves.utils import random_analysis_name
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +31,7 @@ class ServiceSubmissionForm(forms.ModelForm):
             self.process_dependent(srv_input)
 
     def __init__(self, *args, **kwargs):
+        print('ihehehe')
         self.parent = kwargs.pop('parent', None)
         self.user = kwargs.pop('user', None)
         self.form_action = kwargs.pop('form_action', None)

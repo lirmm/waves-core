@@ -4,16 +4,16 @@ import unittest
 
 from django.conf import settings
 
-from waves.core.adaptors.cluster import SshClusterAdaptor
-from waves.core.adaptors.const import JobStatus
-from waves.core.adaptors.exceptions import AdaptorException
-from waves.core.adaptors.shell import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
+from waves.adaptors import SshClusterAdaptor
+from waves.adaptors.const import JobStatus
+from waves.adaptors import AdaptorException
+from waves.adaptors import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.core.exceptions import JobInconsistentStateError
 from waves.core.settings import waves_settings
 from waves.core.tests.base import WavesTestCaseMixin, TestJobWorkflowMixin
 from waves.core.tests.mocks import MockJobRunnerAdaptor
-from waves.core.utils.encrypt import Encrypt
-from waves.core.adaptors.loader import AdaptorLoader
+from waves.utils.encrypt import Encrypt
+from waves.adaptors import AdaptorLoader
 
 logger = logging.getLogger(__name__)
 

@@ -79,7 +79,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         """ Retrieve service form """
         from django.shortcuts import render
         from django.http import HttpResponse
-        from waves.core.forms import ServiceSubmissionForm
+        from waves.core.forms.frontend.services import ServiceSubmissionForm
         api_name = self.kwargs.get('service_app_name')
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
         form = [{'submission': service_submission,
@@ -180,8 +180,8 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                 logger.warning("Validation error %s", e)
                 raise DRFValidationError(e.message_dict)
             except JobException as e:
-                logger.fatal("Create Error %s", e.message)
-                return Response({'error': e.message}, status=status.HTTP_400_BAD_REQUEST)
+                logger.fatal("Create Error %s", e)
+                return Response({'error': e}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['get'], url_name='submission-list')
     def submissions_list(self, request, service_app_name):

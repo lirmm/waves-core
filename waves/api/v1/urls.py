@@ -10,11 +10,11 @@ router = routers.DefaultRouter()
 # Services URIs configuration
 router.register(prefix=r'services',
                 viewset=services.ServiceViewSet,
-                base_name='waves-services')
+                basename='waves-services')
 # Jobs URIs configuration
 router.register(prefix=r'jobs',
                 viewset=jobs.JobViewSet,
-                base_name='waves-jobs')
+                basename='waves-jobs')
 
 urlpatterns = [
     url(r'^', include(router.urls)),

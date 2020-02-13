@@ -48,7 +48,7 @@ class JobViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Destro
         """ Try to remotely cancel job, then delete it from WAVES DB """
         service_job = get_object_or_404(self.get_queryset(), slug=slug)
         try:
-            service_job.run_cancel()
+            service_job.adaptor.run_cancel()
         except WavesException as e:
             logger.warning('Job could not be remotely cancelled %s ' % e)
         self.perform_destroy(service_job)

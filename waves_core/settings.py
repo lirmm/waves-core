@@ -33,7 +33,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '0jmf=ngd^2**h3km5@#&w21%hlj9kos($2=igsqh8-38_9g1$1'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 ALLOWED_HOSTS = []
 
@@ -47,8 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'waves.core',
-    #'waves.api',
-    #'waves.authentication',
+    'waves.api',
+    'waves.authentication',
     'crispy_forms',
     'rest_framework',
     'corsheaders',

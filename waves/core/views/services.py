@@ -9,10 +9,10 @@ from django.template.loader import get_template
 from django.urls import reverse
 from django.views import generic
 
-from waves.core.settings import waves_settings
 from waves.core.exceptions import JobException
-from waves.core.forms.admin.services import ServiceSubmissionForm
+from waves.core.forms.frontend import services
 from waves.core.models import Job, Submission, Service
+from waves.core.settings import waves_settings
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
     context_object_name = 'service'
     queryset = Service.objects.all().prefetch_related('submissions')
     object = None
-    form_class = ServiceSubmissionForm
+    form_class = services.ServiceSubmissionForm
     view_mode = ''
     job = None
 
@@ -81,8 +81,9 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
                 context['submissions'].append({'submission': submission, 'form': form})
             else:
                 context['submissions'].append(
-                    {'submission': submission, 'form': self.form_class(instance=submission, parent=self.object,
-                                                                       user=self.request.user)})
+                    {'submission': submission,
+                     'form': services.ServiceSubmissionForm(instance=submission, parent=self.object,
+                                                            user=self.request.user)})
         return context
 
     def get_form_kwargs(self):
@@ -95,10 +96,10 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         return extra_kwargs
 
     def post(self, request, *args, **kwargs):
-        form = ServiceSubmissionForm(parent=self.get_object(),
-                                     instance=self._get_selected_submission(),
-                                     data=self.request.POST,
-                                     files=self.request.FILES)
+        form = services.ServiceSubmissionForm(parent=self.get_object(),
+                                              instance=self._get_selected_submission(),
+                                              data=self.request.POST,
+                                              files=self.request.FILES)
         if form.is_valid():
             return self.form_valid(form)
         else:
@@ -108,9 +109,9 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
     def form_valid(self, form):
         # create job in database
         ass_email = form.cleaned_data.pop('email')
-        if not ass_email and self.request.user.is_authenticated():
+        if not ass_email and self.request.user.is_authenticated:
             ass_email = self.request.user.email
-        user = self.request.user if self.request.user.is_authenticated() else None
+        user = self.request.user if self.request.user.is_authenticated else None
         try:
             self.job = Job.objects.create_from_submission(submission=self._get_selected_submission(),
                                                           email_to=ass_email,
@@ -121,7 +122,7 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
                 "Job successfully submitted %s" % self.job.slug
             )
         except JobException as e:
-            logger.exception("JobException %s: %s", self.job.id, e.message)
+            logger.exception("JobException %s: %s", self.job.id, e)
             messages.error(
                 self.request,
                 "An unexpected error occurred, sorry for the inconvenience, our team has been noticed"

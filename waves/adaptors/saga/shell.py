@@ -1,10 +1,10 @@
 import logging
 from os.path import join
 
-import radical.saga as saga
+import radical.saga as rs
 
-from waves.core.adaptors.exceptions import AdaptorJobException
-from waves.core.adaptors.saga_python import SagaAdaptor
+from waves.adaptors.exceptions import AdaptorJobException
+from waves.adaptors.saga.base import SagaAdaptor
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class SshShellAdaptor(LocalShellAdaptor):
         self._session = None
 
     def _init_service(self):
-        return saga.job.Service(self.saga_host, self.session)
+        return rs.job.Service(self.saga_host, self.session)
 
     @property
     def saga_host(self):
@@ -87,16 +87,16 @@ class SshShellAdaptor(LocalShellAdaptor):
     def context(self):
         """ Configure SSH saga context properties """
         if self._context is None:
-            self._context = saga.Context('UserPass')
+            self._context = rs.Context('UserPass')
             self._context.user_id = self.user_id
             self._context.user_pass = self.password
             self._context.remote_port = self.port
             self._context.life_time = 0
         return self._context
 
-    def job_work_dir(self, job, mode=saga.filesystem.READ):
+    def job_work_dir(self, job, mode=rs.filesystem.READ):
         """ Setup remote host working dir """
-        return saga.filesystem.Directory(saga.Url('%s/%s' % (self.remote_dir, str(job.slug))), mode,
+        return rs.filesystem.Directory(rs.Url('%s/%s' % (self.remote_dir, str(job.slug))), mode,
                                          session=self.session)
 
     def _prepare_job(self, job):
@@ -107,14 +107,14 @@ class SshShellAdaptor(LocalShellAdaptor):
         """
         job.logger.debug('Prepared job in ShellAdapter')
         try:
-            work_dir = self.job_work_dir(job, saga.filesystem.CREATE_PARENTS)
+            work_dir = self.job_work_dir(job, rs.filesystem.CREATE_PARENTS)
             for input_file in job.input_files:
-                wrapper = saga.filesystem.File(
-                    saga.Url('file://localhost/%s' % join(job.working_dir, input_file.value)))
+                wrapper = rs.filesystem.File(
+                    rs.Url('file://localhost/%s' % join(job.working_dir, input_file.value)))
                 wrapper.copy(work_dir.get_url())
                 job.logger.debug("Uploaded file %s to %s", join(job.working_dir, input_file.value), work_dir.get_url())
             return job
-        except saga.SagaException as exc:
+        except rs.SagaException as exc:
             raise AdaptorJobException(exc.message)
 
     def _job_results(self, job):
@@ -130,7 +130,7 @@ class SshShellAdaptor(LocalShellAdaptor):
                 work_dir.copy(remote_file, 'file://localhost/%s/' % job.working_dir)
                 job.logger.debug("Retrieved file from %s to %s", remote_file, job.working_dir)
             return super(SshShellAdaptor, self)._job_results(job)
-        except saga.SagaException as exc:
+        except rs.SagaException as exc:
             raise AdaptorJobException(exc.message)
 
 

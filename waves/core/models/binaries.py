@@ -1,6 +1,6 @@
 from django.db import models
 
-from waves.core.utils.storage import binary_storage, binary_directory
+from waves.utils.storage import binary_storage, binary_directory
 from waves.core.models.base import Slugged, TimeStamped
 
 

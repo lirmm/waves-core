@@ -15,8 +15,8 @@ from waves.core.models.binaries import ServiceBinaryFile
 from waves.core.models.inputs import FileInputSample, FileInput
 from waves.core.models.jobs import Job, JobOutput
 from waves.core.models.runners import Runner
-from waves.core.utils import get_all_subclasses
-from waves.core.utils import random_job_title
+from waves.utils import get_all_subclasses
+from waves.utils import random_job_title
 
 
 @receiver(pre_save, sender=Job)
@@ -120,7 +120,7 @@ for subclass in get_all_subclasses(HasAdaptorClazzMixin):
 def adaptor_param_pre_save_handler(sender, instance, **kwargs):
     """ Runner param pre save handler """
     if instance.config_changed and instance.name == "password" and instance.value:
-        from waves.core.utils.encrypt import Encrypt
+        from waves.utils.encrypt import Encrypt
         instance.crypt = True
         instance.value = Encrypt.encrypt(instance.value)
 

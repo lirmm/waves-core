@@ -6,7 +6,6 @@ import os
 import shutil
 from os.path import join
 
-import waves.core.adaptors.exceptions
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError
@@ -16,10 +15,10 @@ from django.utils.html import format_html
 
 from waves.core.models.managers import JobManager, JobInputManager, JobOutputManager
 from waves.core.exceptions import JobInconsistentStateError
-from waves.core.adaptors.const import JobStatus, JobRunDetails
-from waves.core.utils.logged import LoggerClass
+from waves.adaptors.const import JobStatus, JobRunDetails
+from waves.utils.logged import LoggerClass
 from waves.core.exceptions.base import WavesException
-from waves.core.utils.storage import allow_display_online
+from waves.utils.storage import allow_display_online
 from waves.core.models.base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
 from waves.core.models.const import OptType, ParamType
 from waves.core.settings import waves_settings
@@ -231,7 +230,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         :rtype: `waves.core.mocks.runner.JobRunnerAdaptor`
         """
         if self._adaptor:
-            from core import AdaptorLoader
+            from waves.adaptors.loader import AdaptorLoader
             try:
                 adaptor = AdaptorLoader.unserialize(self._adaptor)
                 return adaptor
@@ -419,7 +418,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
                 returned = getattr(self.adaptor, action)(self)
                 self.nb_retry = 0
                 return returned
-        except waves.core.adaptors.exceptions.AdaptorException as exc:
+        except adaptors.exceptions.AdaptorException as exc:
             self.retry(exc)
             # raise
         except JobInconsistentStateError:
@@ -480,7 +479,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
             self.status = JobStatus.JOB_WARNING
         else:
             self.message = "Data retrieved"
-            self.status = JobStatus.JOB_TERMINATED
+            self.status = JobStatus.JOB_FINISHED
 
     def retrieve_run_details(self):
         """ Ask job adapter to get JobRunDetails information (started, finished, exit_code ...)"""
@@ -488,7 +487,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
             file_run_details = join(self.working_dir, 'job_run_details.json')
             try:
                 remote_details = self._run_action('job_run_details')
-            except waves.core.adaptors.exceptions.AdaptorException:
+            except adaptors.exceptions.AdaptorException:
                 remote_details = self.default_run_details()
             with open(file_run_details, 'w') as fp:
                 json.dump(obj=remote_details, fp=fp, ensure_ascii=False)

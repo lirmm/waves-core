@@ -5,7 +5,7 @@ from django.db import transaction
 from rest_framework import serializers as rest_serializer
 
 from import_export import BaseSerializer, RelatedSerializerMixin
-from waves.api import serializers as api_serializers
+from waves.api.current import serializers as api_serializers
 from import_export import serializers
 from waves.core.models import Submission, Service
 from waves.core.models import SubmissionExitCode, SubmissionOutput, SubmissionRunParam

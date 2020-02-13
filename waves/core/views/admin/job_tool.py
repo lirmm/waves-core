@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import View
 
-from waves.core.adaptors.const import JobStatus
+from waves.adaptors.const import JobStatus
 from waves.core.exceptions import WavesException
 from waves.core.models import Job
 

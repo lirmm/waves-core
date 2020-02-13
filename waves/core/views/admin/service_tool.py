@@ -26,7 +26,7 @@ class ServiceParamImportView(RunnerImportToolView):
         try:
             self.object = Service.objects.get(id=self.kwargs.get('service_id'))
         except ObjectDoesNotExist as e:
-            messages.error(self.request, message='Unable to retrieve runner from request %s' % e.message)
+            messages.error(self.request, message='Unable to retrieve runner from request %s' % e)
 
     def get_form_kwargs(self):
         kwargs = super(ServiceParamImportView, self).get_form_kwargs()

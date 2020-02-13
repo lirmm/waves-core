@@ -1,7 +1,7 @@
 from django.db import models, IntegrityError
 
 from waves.core.models.managers import JobHistoryManager, JobAdminHistoryManager
-from waves.core.adaptors.const import JobStatus
+from waves.adaptors.const import JobStatus
 
 
 class JobHistory(models.Model):

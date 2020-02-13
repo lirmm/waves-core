@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, FormView
 
-from waves.core.adaptors.exceptions import AdaptorConnectException
+from waves.adaptors.exceptions import AdaptorConnectException
 from waves.core.exceptions import RunnerException
 from waves.core.forms.admin.services import ImportForm
 from waves.core.views.admin.export import ModelExportView

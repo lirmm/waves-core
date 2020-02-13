@@ -14,7 +14,7 @@ def get_runners_list():
     Retrieve enabled waves.core.adapters list from waves settings env file
     :return: a list of Tuple 'value'/'label'
     """
-    from waves.core.adaptors.loader import AdaptorLoader
+    from waves.adaptors.loader import AdaptorLoader
     adaptors = AdaptorLoader.get_adaptors()
     grp_impls = {'': 'Select a environment...'}
     for adaptor in adaptors:

@@ -1,10 +1,10 @@
 import logging
 
-import radical.saga as saga
+import radical.saga as rs
 
-from waves.core.adaptors import exceptions
-from waves.core.adaptors.adaptor import JobAdaptor
-from waves.core.adaptors.const import JobStatus, JobRunDetails
+from waves.adaptors import exceptions
+from waves.adaptors.base import JobAdaptor
+from waves.adaptors.const import JobStatus, JobRunDetails
 
 logger = logging.getLogger(__name__)
 
@@ -16,14 +16,14 @@ class SagaAdaptor(JobAdaptor):
     """
     _session = None
     _states_map = {
-        saga.job.UNKNOWN: JobStatus.JOB_UNDEFINED,
-        saga.job.NEW: JobStatus.JOB_QUEUED,
-        saga.job.PENDING: JobStatus.JOB_QUEUED,
-        saga.job.RUNNING: JobStatus.JOB_RUNNING,
-        saga.job.SUSPENDED: JobStatus.JOB_SUSPENDED,
-        saga.job.CANCELED: JobStatus.JOB_CANCELLED,
-        saga.job.DONE: JobStatus.JOB_COMPLETED,
-        saga.job.FAILED: JobStatus.JOB_ERROR,
+        rs.job.UNKNOWN: JobStatus.JOB_UNDEFINED,
+        rs.job.NEW: JobStatus.JOB_QUEUED,
+        rs.job.PENDING: JobStatus.JOB_QUEUED,
+        rs.job.RUNNING: JobStatus.JOB_RUNNING,
+        rs.job.SUSPENDED: JobStatus.JOB_SUSPENDED,
+        rs.job.CANCELED: JobStatus.JOB_CANCELLED,
+        rs.job.DONE: JobStatus.JOB_COMPLETED,
+        rs.job.FAILED: JobStatus.JOB_ERROR,
     }
 
     def __init__(self, command='', protocol='', host="localhost", **kwargs):
@@ -38,7 +38,7 @@ class SagaAdaptor(JobAdaptor):
     @property
     def session(self):
         if not self._session:
-            session = saga.Session()
+            session = rs.Session()
             session.add_context(self.context)
             logger.info("New session [--%s--]" % session)
             self._session = session
@@ -50,12 +50,12 @@ class SagaAdaptor(JobAdaptor):
             self.connector = self._init_service()
             self._connected = self.connector is not None and self.connector.valid and self.connector.session is not None
             logger.debug('Connected to %s', self.saga_host)
-        except saga.SagaException as exc:
+        except rs.SagaException as exc:
             self._connected = False
             # logger.exception(exc.message)
             raise exceptions.AdaptorConnectException(exc.message)
 
-    def job_work_dir(self, job, mode=saga.filesystem.READ):
+    def job_work_dir(self, job, mode=rs.filesystem.READ):
         return job.working_dir
 
     @property
@@ -63,7 +63,7 @@ class SagaAdaptor(JobAdaptor):
         try:
             service = self._init_service()
             self.connect()
-        except (saga.SagaException, AssertionError, BaseException) as e:
+        except (rs.SagaException, AssertionError, BaseException) as e:
             raise exceptions.AdaptorNotAvailableException(e)
         return service.valid
 
@@ -76,7 +76,7 @@ class SagaAdaptor(JobAdaptor):
         return '%s://%s' % (self.protocol, self.host)
 
     def _init_service(self):
-        return saga.job.Service(self.saga_host)
+        return rs.job.Service(self.saga_host)
 
     def _disconnect(self):
         logger.debug('Disconnect')
@@ -97,7 +97,7 @@ class SagaAdaptor(JobAdaptor):
         try:
             job.logger.debug('Creating job descriptor')
             jd_dict = self._job_description(job)
-            jd = saga.job.Description()
+            jd = rs.job.Description()
             for key in jd_dict.keys():
                 setattr(jd, key, jd_dict[key])
             new_job = self.connector.create_job(jd)
@@ -106,7 +106,7 @@ class SagaAdaptor(JobAdaptor):
             job.remote_job_id = new_job.get_id()
             job.logger.debug('New saga job %s [id:%s]', new_job, new_job.get_id())
             return job
-        except saga.SagaException as exc:
+        except rs.SagaException as exc:
             raise exceptions.AdaptorJobException(exc.message)
 
     def _cancel_job(self, job):
@@ -117,14 +117,14 @@ class SagaAdaptor(JobAdaptor):
             the_job = self.connector.get_job(str(job.remote_job_id))
             the_job.cancel()
             return job
-        except saga.SagaException as exc:
+        except rs.SagaException as exc:
             raise exceptions.AdaptorJobException(exc.message)
 
     def _job_status(self, job):
         try:
             the_job = self.connector.get_job(str(job.remote_job_id))
             return the_job.state
-        except saga.SagaException as exc:
+        except rs.SagaException as exc:
             raise exceptions.AdaptorJobException(exc.message)
 
     def _job_description(self, job):
@@ -141,7 +141,7 @@ class SagaAdaptor(JobAdaptor):
             job.results_available = True
             job.exit_code = saga_job.exit_code
             return job
-        except saga.SagaException as exc:
+        except rs.SagaException as exc:
             raise exceptions.AdaptorJobException(exc.message)
 
     def _job_run_details(self, job):

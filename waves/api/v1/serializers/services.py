@@ -124,7 +124,7 @@ class ServiceFormSerializer(serializers.ModelSerializer):
 
     def get_form(self, obj):
         """ Create the form and return its content"""
-        from waves.core.forms import ServiceSubmissionForm
+        from waves.core.forms.frontend.services import ServiceSubmissionForm
         from django.template import RequestContext
         import re
         form = ServiceSubmissionForm(instance=self.instance, parent=self.instance.service)

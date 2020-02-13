@@ -11,8 +11,8 @@ from itertools import chain
 from daemons.prefab import run
 
 import waves.core.exceptions
-from waves.core.adaptors.const import JobStatus
-from waves.core.adaptors.exceptions import AdaptorException
+from waves.adaptors.const import JobStatus
+from waves.adaptors.exceptions import AdaptorException
 from waves.core.models import Job
 from waves.core.settings import waves_settings
 
@@ -106,7 +106,7 @@ class JobQueueRunDaemon(BaseRunDaemon):
         :return: None
         """
         jobs = Job.objects.prefetch_related('job_inputs'). \
-            prefetch_related('outputs').filter(_status__lt=JobStatus.JOB_TERMINATED)
+            prefetch_related('outputs').filter(_status__lt=JobStatus.JOB_FINISHED)
         if jobs.count() > 0:
             logger.info("Starting queue process with %i(s) unfinished jobs", jobs.count())
         for job in jobs:

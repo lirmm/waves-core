@@ -1,5 +1,4 @@
 import logging
-import typing
 from os import path as path
 
 from django.core.exceptions import ValidationError
@@ -9,7 +8,7 @@ from django.db.models import Q
 from psutil import long
 from psutil._compat import unicode
 
-from waves.core.adaptors.const import JobStatus
+from waves.adaptors.const import JobStatus
 from waves.core.exceptions import JobMissingMandatoryParam
 from waves.core.models.const import ParamType
 
@@ -153,9 +152,9 @@ class JobManager(models.Manager):
         :return: a newly create Job instance
         :rtype: :class:`waves.wcore.models.jobs.Job`
         """
-        default_email = user.email if user and not user.is_anonymous() else None
+        default_email = user.email if user and not user.is_anonymous else None
         follow_email = email_to or default_email
-        client = user if user and not user.is_anonymous() else None
+        client = user if user and not user.is_anonymous else None
         mandatory_params = submission.expected_inputs.filter(required=True)
         missing = {m.name: '%s (:%s:) is required field' % (m.label, m.api_name) for m in mandatory_params if
                    m.api_name not in submitted_inputs.keys()}
@@ -192,7 +191,7 @@ class JobManager(models.Manager):
             job.save()
             if incoming_input:
                 # transform single incoming into list to keep process iso
-                incoming_input = [incoming_input] if type(incoming_input) != list else incoming_input
+                incoming_input = [incoming_input] if type(incoming_input) is not list else incoming_input
                 for in_input in incoming_input:
                     job.job_inputs.add(
                         JobInputManager.create_from_submission(job, service_input, service_input.order, in_input))
@@ -342,7 +341,7 @@ class ServiceManager(models.Manager):
         if user is None:
             return self.none()
 
-        if not user.is_anonymous():
+        if not user.is_anonymous:
             if user.is_superuser:
                 queryset = self.all()
             elif user.is_staff:

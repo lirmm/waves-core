@@ -10,7 +10,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from waves.core.adaptors.const import JobStatus
+from waves.adaptors.const import JobStatus
 from waves.core.models import Job, Service, Runner
 from waves.core.models.const import ParamType
 from waves.core.tests.base import WavesTestCaseMixin
@@ -36,11 +36,11 @@ class APIWavesTestCaseMixin(WavesTestCaseMixin, APITestCase, ):
             elif type_input == ParamType.TYPE_BOOLEAN:
                 job_input_data = random.randrange(100) < 50
             elif type_input == ParamType.TYPE_TEXT:
-                job_input_data = ''.join(random.sample(string.letters, 15))
+                job_input_data = ''.join(random.sample(string.ascii_letters, 15))
             elif type_input == ParamType.TYPE_LIST:
-                job_input_data = ''.join(random.sample(string.letters, 15))
+                job_input_data = ''.join(random.sample(string.ascii_letters, 15))
             else:
-                job_input_data = ''.join(random.sample(string.letters, 15))
+                job_input_data = ''.join(random.sample(string.ascii_letters, 15))
             job_inputs_params[name] = job_input_data
             logger.debug("Input %s: %s", type_input, job_input_data)
         logger.debug('Job inputs data %s', job_inputs_params)

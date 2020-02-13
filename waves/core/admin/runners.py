@@ -29,11 +29,7 @@ class ServiceRunInline(TabularInline):
         """
         return False
 
-    def has_add_permission(self, request):
-        """ No add permission for runners params
-
-        :return: False
-        """
+    def has_add_permission(self, request, obj):
         return False
 
 
@@ -53,11 +49,7 @@ class SubmissionRunInline(TabularInline):
         """
         return False
 
-    def has_add_permission(self, request):
-        """ No add permission for runners params
-
-        :return: False
-        """
+    def has_add_permission(self, request, obj):
         return False
 
 
@@ -112,10 +104,10 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
         else:
             return self.fieldsets
 
-    def get_inline_instances(self, request, obj=None):
+    def get_inlines(self, request, obj):
         if obj is None or obj.adaptor is None:
             return ()
-        return super(RunnerAdmin, self).get_inline_instances(request, obj)
+        return super(RunnerAdmin, self).get_inlines(request, obj)
 
     def runner_clazz(self, obj):
         return obj.adaptor.name if obj.adaptor else "Implementation class not available !"

@@ -1,4 +1,4 @@
-from waves.core.adaptors.exceptions import AdaptorNotReady
+from waves.adaptors.exceptions import AdaptorNotReady
 
 
 def check_ready(func):

@@ -1,7 +1,7 @@
 from django.conf.urls import url, include
 
 # TODO restore schema_view
-# from core import schema_view
+# from waves.core import schema_view
 
 app_name = "waves.api"
 

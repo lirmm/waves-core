@@ -14,7 +14,7 @@ from django.db import transaction
 from django.urls import reverse
 
 from waves.core.models.managers import ServiceManager
-from waves.core.adaptors.const import JobStatus
+from waves.adaptors.const import JobStatus
 from waves.core.models.adaptors import AdaptorInitParam
 from waves.core.models.base import TimeStamped, Described, ExportAbleMixin, Ordered, Slugged, ApiModel
 from waves.core.models.runners import HasRunnerParamsMixin

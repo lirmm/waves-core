@@ -1,8 +1,8 @@
 import json
 
-from waves.core.adaptors.utils import check_ready
-from waves.core.adaptors.const import JobStatus
-from waves.core.adaptors.exceptions import AdaptorException
+from waves.adaptors.utils import check_ready
+from waves.adaptors.const import JobStatus
+from waves.adaptors.exceptions import AdaptorException
 from waves.core.exceptions import JobInconsistentStateError
 
 
@@ -140,7 +140,7 @@ class JobAdaptor(object):
             job.job_history.create(
                 message="Job for %s '%s' could not be remotely cancelled: %s " % (self.__class__.__name__,
                                                                                   job.remote_job_id,
-                                                                                  exc.message),
+                                                                                  exc),
                 status=job.status,
                 is_admin=True)
         return job

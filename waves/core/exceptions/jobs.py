@@ -1,8 +1,7 @@
-from waves.core.adaptors.exceptions import AdaptorJobException
 from waves.core.exceptions.base import WavesException
 
 __all__ = ['JobException', 'JobRunException', 'JobSubmissionException', 'JobCreateException',
-           'JobMissingMandatoryParam', 'JobInconsistentStateError', 'JobPrepareException']
+           'JobMissingMandatoryParam', 'JobInconsistentStateError']
 
 
 class JobException(WavesException):
@@ -57,8 +56,3 @@ class JobInconsistentStateError(JobException):
             message = u'{} [{}] - Inconsistent job  state: "{}" - expected {}'.format(
                 message, job.slug, job.get_status_display(), [str(i[1]) for i in expected], )
         super(JobInconsistentStateError, self).__init__(message)
-
-
-class JobPrepareException(AdaptorJobException):
-    """Preparation process errors """
-    pass

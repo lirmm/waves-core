@@ -13,7 +13,7 @@
             console.log('Prev val' + prev_val);
         }).change(function () {
             console.log('Changed triggered');
-            if (prev_val) {
+            if (prev_val && prev_val != "") {
                 if (confirm('Changing this value might cancel running jobs.\n\nAre you sure ?')) {
                     $("input[type='submit'][name='_continue']").trigger('click');
                 } else {
