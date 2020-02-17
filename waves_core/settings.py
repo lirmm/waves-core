@@ -15,11 +15,6 @@ import os
 
 from django.contrib import messages
 
-# python 3 compatibility
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
 
 from django.conf import settings
 from os.path import join, isfile
@@ -196,10 +191,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
         'log_file': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(LOG_DIR, 'waves-app.log'),
@@ -208,20 +199,19 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5
         },
     },
-
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['log_file'],
             'propagate': True,
             'level': 'ERROR',
         },
         'waves': {
-            'handlers': ['console'],
+            'handlers': ['log_file'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'rest_framework.request': {
-            'handlers': ['console'],
+            'handlers': ['log_file'],
             'level': 'DEBUG',
             'propagate': False,
         },

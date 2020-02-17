@@ -9,12 +9,12 @@ from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
 from waves.core.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
-from waves.core.models.services import Service, Submission, SubmissionExitCode
 from waves.core.models.base import ApiModel
 from waves.core.models.binaries import ServiceBinaryFile
 from waves.core.models.inputs import FileInputSample, FileInput
 from waves.core.models.jobs import Job, JobOutput
 from waves.core.models.runners import Runner
+from waves.core.models.services import Service, Submission, SubmissionExitCode
 from waves.utils import get_all_subclasses
 from waves.utils import random_job_title
 
@@ -63,13 +63,15 @@ def service_post_save_handler(sender, instance, created, **kwargs):
     """ service post delete handler """
     if created and not kwargs.get('raw', False) and instance.submissions.count() == 0:
         instance.submissions.add(Submission.objects.create(name='default', service=instance))
+    if not os.path.isdir(instance.sample_dir):
+        os.makedirs(instance.sample_dir, mode=0o775)
 
 
 @receiver(pre_save, sender=Submission)
 def submission_pre_save_handler(sender, instance, **kwargs):
     """ submission pre save """
     if not instance.name:
-        instance.name = instance.service.name
+        instance.name = 'sub_' + instance.service.name
 
 
 @receiver(post_save, sender=Submission)
@@ -150,6 +152,7 @@ def api_able_pre_save_handler(sender, instance, **kwargs):
 def job_output_post_save_handler(sender, instance, created, **kwargs):
     """ Job Output post save handler """
     pass
+    # TODO check code obsolescence
     """
     if created and instance.value and not kwargs.get('raw', False):
         # Create empty file for expected outputs

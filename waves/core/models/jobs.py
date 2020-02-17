@@ -571,12 +571,16 @@ class JobInput(Ordered, Slugged, ApiModel, UrlMixin):
     #: Reference to related :class:`waves.core.models.jobs.Job`
     job = models.ForeignKey(Job, related_name='job_inputs', on_delete=models.CASCADE)
     #: Value set to this service input for this job
-    value = models.CharField('Input content', max_length=255, null=True, blank=True,
+    value = models.CharField('Input content', max_length=255, null=True,
+                             blank=True,
                              help_text='Input value (filename, boolean value, int value etc.)')
     #: Each input may have its own identifier on remote adapter
-    remote_input_id = models.CharField('Remote input ID (on adapter)', max_length=255, editable=False, null=True)
+    remote_input_id = models.CharField('Remote input ID (on adapter)',
+                                       max_length=255,
+                                       editable=False, null=True)
     #: retrieved upon creation from related AParam object
-    param_type = models.CharField('Param param_type', choices=ParamType.IN_TYPE, max_length=50, editable=False,
+    param_type = models.CharField('Param param_type', choices=ParamType.IN_TYPE,
+                                  max_length=50, editable=False,
                                   null=True)
     #: retrieved upon creation from related AParam object
     name = models.CharField('Param name', max_length=50, editable=False, null=True)

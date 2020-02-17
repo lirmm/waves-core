@@ -16,6 +16,51 @@ User = get_user_model()
 class JobsTestCase(TestCase, WavesTestCaseMixin):
     fixtures = ("users",)
 
+    def run_job_workflow(self, job):
+        """ Run a full complete job workflow, you should call this method catching "AssertionError" to get
+        error messages in your tests
+        """
+        logger.info('Starting workflow process for job %s', job)
+        self.assertTrue(job.job_history.count() == 1,
+                        "Wrong job history count %s (expected 1)" % job.job_history.count())
+        job.run_prepare()
+        time.sleep(3)
+        self.assertTrue(job.status == JobStatus.JOB_PREPARED,
+                        "Wrong job status %s (expected %s) " % (job.status, JobStatus.JOB_PREPARED))
+        job.run_launch()
+        time.sleep(3)
+        logger.debug('Remote Job ID %s', job.remote_job_id)
+        self.assertTrue(job.status == JobStatus.JOB_QUEUED,
+                        "Wrong job status %s (expected %s) " % (job.status, JobStatus.JOB_QUEUED))
+        for ix in range(100):
+            job_state = job.run_status()
+            logger.info(u'Current job state (%i) : %s ', ix, job.get_status_display())
+            if job_state >= JobStatus.JOB_COMPLETED:
+                logger.info('Job state ended to %s ', job.get_status_display())
+                break
+            time.sleep(3)
+        if job.status in (JobStatus.JOB_COMPLETED, JobStatus.JOB_FINISHED):
+            # Get job run details
+            job.retrieve_run_details()
+            time.sleep(3)
+            history = job.job_history.first()
+            logger.debug("History timestamp %s", localtime(history.timestamp))
+            self.assertTrue(job.results_available, "Job results are not available")
+            for output_job in job.outputs.all():
+                # TODO reactivate job output verification as soon as possible
+                if not isfile(output_job.file_path):
+                    logger.warning("Job <<%s>> did not output expected %s (%s) ",
+                                   job.title, output_job.value, output_job.file_path)
+                    self.fail('Expected output not present')
+                else:
+                    logger.info("Expected output file found : %s ", output_job.file_path)
+            self.assertTrue(job.status == JobStatus.JOB_FINISHED)
+            self.assertEqual(job.exit_code, 0)
+            job.delete()
+        else:
+            logger.warning('problem with job status %s', job.get_status_display())
+            self.fail("Job failed")
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

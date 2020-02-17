@@ -8,16 +8,17 @@ import os
 
 from django import forms
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.db import transaction
 from django.urls import reverse
 
-from waves.core.models.managers import ServiceManager
 from waves.core.adaptors.const import JobStatus
-from waves.core.models.adaptors import AdaptorInitParam
+from waves.core.models import Runner
+from waves.core.models.adaptors import AdaptorInitParam, HasAdaptorClazzMixin
 from waves.core.models.base import TimeStamped, Described, ExportAbleMixin, Ordered, Slugged, ApiModel
-from waves.core.models.runners import HasRunnerParamsMixin
+from waves.core.models.managers import ServiceManager
 from waves.core.settings import waves_settings
 
 __all__ = ['ServiceRunParam', "SubmissionExitCode",
@@ -32,8 +33,83 @@ class ServiceRunParam(AdaptorInitParam):
     class Meta:
         proxy = True
 
+    def get_value(self):
+        if self.name == "command" and self.content_object is not None:
+            if self.content_object.binary_file is not None:
+                return self.content_object.binary_file.binary.path
+        return super().get_value()
 
-class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParamsMixin):
+
+class HasRunnerParamsMixin(HasAdaptorClazzMixin):
+    """ Model mixin to manage params overriding and shortcut method to retrieve concrete classes """
+
+    class Meta:
+        abstract = True
+
+    _runner = models.ForeignKey(Runner,
+                                verbose_name="Computing infrastructure",
+                                related_name='%(app_label)s_%(class)s_runs',
+                                null=True,
+                                db_column='runner_id',
+                                on_delete=models.SET_NULL,
+                                help_text='Service job runs configuration')
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        """ Executed each time a Service is restored from DB layer"""
+        instance = super(HasRunnerParamsMixin, cls).from_db(db, field_names, values)
+        instance.runner = instance._runner
+        return instance
+
+    @property
+    def runner(self):
+        return self._runner
+
+    @runner.setter
+    def runner(self, runner):
+        self._runner = runner
+
+    @property
+    def config_changed(self):
+        return self._runner != self.runner
+
+    @property
+    def run_params(self):
+        """
+        Return a list of tuples representing current service adapter init params
+
+        :return: a Dictionary (param_name=param_service_value or runner_param_default if not set
+        :rtype: dict
+        """
+        # Retrieve the ones defined in DB
+        object_params = super(HasRunnerParamsMixin, self).run_params
+        # Retrieve the ones defined for runner
+        runners_params = self.runner.run_params
+        # Merge params from runner (defaults and/or not override-able)
+        runners_params.update(object_params)
+        return runners_params
+
+    @property
+    def adaptor_defaults(self):
+        """ Retrieve init params defined associated concrete class (from runner attribute) """
+        return self._runner.run_params if self.get_runner() else {}
+
+    def get_runner(self):
+        """ Return effective runner (could be overridden is any subclasses) """
+        return self._runner
+
+    @property
+    def clazz(self):
+        return self.runner.clazz
+
+    @clazz.setter
+    def clazz(self, clazz):
+        # fake setter since the actual clazz is defined in runner
+        pass
+
+
+class Service(TimeStamped, Described, ApiModel, ExportAbleMixin,
+              HasRunnerParamsMixin):
     class Meta:
         db_table = 'wcore_service'
         ordering = ['name']
@@ -98,6 +174,9 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
     #: List of related EDAM ontology operation
     edam_operations = models.TextField('Edam operations', null=True, blank=True,
                                        help_text='Comma separated list of Edam ontology operations')
+    #: Service binary executable
+    binary_file = models.ForeignKey('ServiceBinaryFile', null=True, blank=True, on_delete=models.SET_NULL,
+                                    help_text="If set, 'Execution parameter' param line:'command' will be ignored")
 
     def clean(self):
         cleaned_data = super(Service, self).clean()
@@ -116,9 +195,29 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
         return "{} v({})".format(self.name, self.version)
 
     def set_defaults(self):
-        super(Service, self).set_defaults()
+        """Set runs params with defaults issued from adapter class object """
+        if self.runner is not None:
+            self.adaptor_params.all().delete()
+            object_type = ContentType.objects.get_for_model(self)
+            # Reset all old values
+            for runner_param in self.runner.adaptor_params.filter(prevent_override=False):
+                ServiceRunParam.objects.create(name=runner_param.name,
+                                               value=runner_param.value,
+                                               crypt=(runner_param.name == 'password'),
+                                               prevent_override=False,
+                                               content_type=object_type,
+                                               object_id=self.pk)
+
         for sub in self.submissions.all():
-            sub.set_defaults()
+            sub.adaptor_params.all().delete()
+            object_type = ContentType.objects.get_for_model(sub)
+            for runner_param in sub.runner.adaptor_params.filter(prevent_override=False):
+                SubmissionRunParam.objects.create(name=runner_param.name,
+                                                  value=runner_param.value,
+                                                  crypt=(runner_param.name == 'password'),
+                                                  prevent_override=False,
+                                                  content_type=object_type,
+                                                  object_id=self.pk)
 
     @property
     def operations(self):
@@ -194,7 +293,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
     @property
     def submissions_api(self):
         """ Returned submissions available on API """
-        return self.submissions.filter(availability=1)
+        return self.submissions.filter(availability=Submission.AVAILABLE_API)
 
     def available_for_user(self, user):
         """ Access rules for submission form according to user
@@ -209,7 +308,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
         if self.status == self.SRV_PUBLIC or user.is_superuser:
             return True
         # RULES to set if user can access submissions
-        return ((self.status == self.SRV_REGISTERED and not user.is_anonymous()) or
+        return ((self.status == self.SRV_REGISTERED and not user.is_anonymous) or
                 (self.status == self.SRV_DRAFT and self.created_by == user) or
                 (self.status == self.SRV_TEST and user.is_staff) or
                 (self.status == self.SRV_RESTRICTED and (
@@ -242,7 +341,8 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin, HasRunnerParams
         return reverse('admin:{}_{}_changelist'.format(self._meta.app_label, self._meta.model_name))
 
 
-class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
+class Submission(TimeStamped, ApiModel, Ordered, Slugged,
+                 HasRunnerParamsMixin):
     class Meta:
         db_table = 'wcore_submission'
         verbose_name = 'Submission method'
@@ -266,14 +366,19 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     #: Submission label
     name = models.CharField('Label', max_length=255, null=False, blank=False)
 
-    def get_runner(self):
+    @property
+    def runner(self):
         """ Return the run configuration associated with this submission, or the default service one if not set
         :return: :class:`core.models.Runner`
         """
-        if self.runner:
-            return self.runner
+        if self._runner:
+            return self._runner
         else:
             return self.service.runner
+
+    @runner.setter
+    def runner(self, runner):
+        self._runner = runner
 
     @property
     def run_params(self):
@@ -391,7 +496,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
                                    on_delete=models.CASCADE)
     #: Associated Submission Input if needed
     from_input = models.ForeignKey('AParam', null=True, blank=True, default=None, related_name='to_outputs',
-                                   help_text='Is valuated from an input', on_delete=models.SET_NULL)
+                                   help_text='Is valuated from an input', on_delete=models.CASCADE)
     #: Pattern to apply to associated input
     file_pattern = models.CharField('File name or name pattern', max_length=100, blank=False,
                                     help_text="Pattern is used to match input value (%s to retrieve value from input)")

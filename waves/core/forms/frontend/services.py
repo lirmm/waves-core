@@ -31,7 +31,6 @@ class ServiceSubmissionForm(forms.ModelForm):
             self.process_dependent(srv_input)
 
     def __init__(self, *args, **kwargs):
-        print('ihehehe')
         self.parent = kwargs.pop('parent', None)
         self.user = kwargs.pop('user', None)
         self.form_action = kwargs.pop('form_action', None)

@@ -151,7 +151,7 @@ class ExportError(Exception):
     pass
 
 
-class ExportAbleMixin(object):
+class ExportAbleMixin:
     """ Some models object may be 'exportable' in order to be imported elsewhere in another WAVES app.
     Based on Django serializer, because we don't want to select fields to export
     """

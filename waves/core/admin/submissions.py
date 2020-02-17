@@ -154,13 +154,13 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     current_obj = None
     form = ServiceSubmissionForm
     exclude = ['order']
-    list_display = ['name', 'api_name', 'get_service', 'availability', 'get_runner', 'updated']
+    list_display = ['name', 'api_name', 'get_service', 'availability', 'runner', 'updated']
     readonly_fields = ['get_command_line_pattern', 'get_run_params', 'api_url']
-    list_filter = ('service__name', 'availability', 'runner')
+    list_filter = ('service__name', 'availability', '_runner')
     list_editable = ('availability',)
     list_display_links = ('name',)
     ordering = ('name', 'updated', 'created')
-    search_fields = ('service__name', 'label', 'runner__name', 'service__runner__name')
+    search_fields = ('service__name', 'label', '_runner__name', 'service___runner__name')
 
     fieldsets = [
         ('General', {

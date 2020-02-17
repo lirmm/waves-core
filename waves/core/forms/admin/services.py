@@ -46,7 +46,7 @@ class ImportForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance')
         super(ImportForm, self).__init__(*args, **kwargs)
-        list_service = [(x.pk, x.name) for x in self.instance.running_services]
+        list_service = [(x.pk, x.name) for x in self.instance.running_services()]
         list_service.insert(0, (None, 'Create new service'))
         self.fields['tool'] = forms.ChoiceField(
             choices=self.instance.importer.list_services(),

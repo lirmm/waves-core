@@ -3,6 +3,7 @@ import logging
 from os.path import basename, join
 
 from django.conf import settings
+from django.test import TestCase
 
 from waves.core.models import JobInput, JobOutput, Job
 from waves.core.models import Service
@@ -12,9 +13,9 @@ from waves.core.tests.base import WavesTestCaseMixin, TestJobWorkflowMixin
 logger = logging.getLogger(__name__)
 
 
-class CopyServiceTestCase(WavesTestCaseMixin, TestJobWorkflowMixin):
-    fixtures = ['waves/tests/fixtures/users.json', 'waves/tests/fixtures/runners.json',
-                'waves/tests/fixtures/copy_service.json']
+class CopyServiceTestCase(TestCase, WavesTestCaseMixin, TestJobWorkflowMixin):
+    fixtures = ['waves/core/tests/fixtures/accounts.json', 'waves/core/tests/fixtures/runners.json',
+                'waves/core/tests/fixtures/copy_service.json']
 
     def create_cp_job(self, source_file, submission):
         job = self.create_base_job('Sample CP job', submission)

@@ -12,7 +12,7 @@ from waves.core.adaptors.saga.shell import LocalShellAdaptor, SshShellAdaptor, S
 from waves.core.exceptions import JobInconsistentStateError
 from waves.core.settings import waves_settings
 from waves.core.tests.base import WavesTestCaseMixin, TestJobWorkflowMixin
-from core.tests.mocks.services import MockJobRunnerAdaptor
+from waves.core.tests.mocks.services import MockJobRunnerAdaptor
 from waves.utils.encrypt import Encrypt
 from waves.core.adaptors.loader import AdaptorLoader
 

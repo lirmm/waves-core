@@ -3,6 +3,7 @@ from django.db import models
 from waves.utils.storage import binary_storage, binary_directory
 from waves.core.models.base import Slugged, TimeStamped
 
+__all__ = ['ServiceBinaryFile']
 
 class ServiceBinaryFile(Slugged, TimeStamped):
     class Meta:

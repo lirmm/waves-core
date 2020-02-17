@@ -43,5 +43,5 @@ def random_analysis_name():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
 
 
-def random_job_title(job):
+def random_job_title():
     return "Job [{}]".format(random_analysis_name())

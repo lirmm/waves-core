@@ -52,9 +52,9 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     filter_horizontal = ['restricted_client']
     readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link', 'display_run_params', 'api_url']
-    list_display = ('id', 'get_api_name', 'name', 'status', 'get_runner', 'version', 'created_by', 'updated',
+    list_display = ('id', 'get_api_name', 'name', 'status', 'runner', 'version', 'created_by', 'updated',
                     'submission_link')
-    list_filter = ('status', 'name', 'created_by', 'runner')
+    list_filter = ('status', 'name', 'created_by', '_runner')
     list_editable = ('status', 'name')
     list_display_links = ('get_api_name', 'id')
     ordering = ('name', 'updated')

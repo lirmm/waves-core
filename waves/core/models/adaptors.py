@@ -10,7 +10,6 @@ from django.utils.module_loading import import_string
 
 from waves.core.adaptors.loader import AdaptorLoader
 from waves.utils.encrypt import Encrypt
-from waves.core.models.binaries import ServiceBinaryFile
 
 logger = logging.getLogger(__name__)
 __all__ = ['AdaptorInitParam', 'HasAdaptorClazzMixin']
@@ -31,7 +30,6 @@ class AdaptorInitParam(models.Model):
     value = models.CharField('Value', max_length=500, null=True, blank=True, help_text='Default value')
     crypt = models.BooleanField('Encrypted', default=False, editable=False)
     prevent_override = models.BooleanField('Prevent override', default=False, help_text="Prevent override")
-
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(for_concrete_model=True)
@@ -62,9 +60,6 @@ class AdaptorInitParam(models.Model):
         return instance
 
     def get_value(self):
-        if self.name == "command" and self.content_object is not None:
-            if self.content_object.binary_file is not None:
-                return self.content_object.binary_file.binary.path
         if self.name == "password" and self.value:
             return "x" * len(self.value)
         return self.value
@@ -85,18 +80,17 @@ class HasAdaptorClazzMixin(models.Model):
 
     _adaptor = None
     _clazz = None
-    clazz = models.CharField('adapter object', max_length=100, null=False,
+    clazz = models.CharField('Adapter object',
+                             max_length=100,
+                             null=True,
                              help_text="This is the concrete class used to perform job execution")
     adaptor_params = GenericRelation(AdaptorInitParam)
-
-    binary_file = models.ForeignKey(ServiceBinaryFile, null=True, blank=True, on_delete=models.SET_NULL,
-                                    help_text="If set, 'Execution parameter' param line:'command' will be ignored")
 
     def set_defaults(self):
         """Set runs params with defaults issued from adapter class object """
         # Reset all old values
         self.adaptor_params.all().delete()
-        object_ctype = ContentType.objects.get_for_model(self)
+        object_type = ContentType.objects.get_for_model(self)
         for name, default in self.adaptor_defaults.items():
             if name == 'password':
                 defaults = {'name': name, 'crypt': True}
@@ -111,18 +105,12 @@ class HasAdaptorClazzMixin(models.Model):
             AdaptorInitParam.objects.create(name=defaults['name'],
                                             value=defaults['value'],
                                             prevent_override=defaults['prevent_override'],
-                                            content_type=object_ctype,
+                                            content_type=object_type,
                                             object_id=self.pk)
 
     @property
     def run_params(self):
-        """ Get defined params values from db
-
-            .. WARNING::
-
-                This method will display raw password non encoded value
-
-        """
+        """ Get defined params values from db """
         return {x.name: x.get_value() for x in self.adaptor_params.all()}
 
     def display_params(self):
@@ -145,7 +133,7 @@ class HasAdaptorClazzMixin(models.Model):
     def from_db(cls, db, field_names, values):
         """ Executed each time a Service is restored from DB layer"""
         instance = super(HasAdaptorClazzMixin, cls).from_db(db, field_names, values)
-        instance._clazz = instance.clazz
+        # instance._clazz = instance.clazz
         return instance
 
     @property

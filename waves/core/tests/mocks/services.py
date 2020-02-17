@@ -3,7 +3,7 @@ import random
 import string
 import time
 
-from core.adaptors.base import JobAdaptor
+from waves.core.adaptors.base import JobAdaptor
 from waves.core.models import *
 
 
@@ -99,17 +99,3 @@ class SampleService:
                                             label="Sample Output 2",
                                             extension="fasta")
         )
-
-    def create_simple_job(self, user=None):
-        job = Job.objects.create(submission=self.service.default_submission,
-                                 client=user,
-                                 email_to='waves@waves.com')
-        for param in self.service.default_submission.inputs:
-            job.job_inputs.add(JobInput.objects.create(name=f"Input_{param.name}",
-                                                       value=f"Value_{param.name}",
-                                                       job=job))
-        for out in self.service.default_submission.outputs:
-            job.outputs.add(JobOutput.objects.create(name=f"out {out.name}",
-                                                     value=f"out value {out.name}",
-                                                     job=job))
-        return job
