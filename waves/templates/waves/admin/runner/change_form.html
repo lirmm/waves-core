@@ -1,0 +1,47 @@
+{% extends "waves/admin/../change_form.html" %}
+{% load i18n admin_modify admin_urls static waves_tags %}
+{% block content %}
+    {% if is_popup %}
+        <script language="JavaScript">
+            window.onunload = refreshParent;
+            function refreshParent() {
+                window.opener.$("input[type='submit'][name='_continue']").trigger('click');
+            }
+        </script>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+{% block object-tools-items %}
+    {{ block.super }}
+    <!--li>
+        <a type="button" href="{% url 'admin:runner_export_form' original.pk %}"
+           title="View online"
+           class="btn btn-high btn-info"
+           id="view_jobs">
+            Export
+        </a>
+    </li-->
+    {% if original.clazz %}
+        <li>
+            <a type="button" href="{% url 'admin:runner_test_connection' original.pk %}"
+               title="Connection Test"
+               class="button"
+               id="test_connect">
+                Test Connection
+            </a>
+        </li>
+    {% endif %}
+    {% if original.adaptor.importer %}
+        <li>
+            <a type="button" href="{% url 'admin:runner_import_form' original.pk %}"
+               title="Import from adapter"
+               class="button"
+               data-toggle="modal"
+               data-target="#popup_modal_content"
+               data-tooltip
+                id="open_import_form">
+                Import a Service
+            </a>
+        </li>
+    {% endif %}
+{% endblock %}

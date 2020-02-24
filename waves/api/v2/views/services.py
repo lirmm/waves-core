@@ -1,4 +1,17 @@
-""" WAVES API services end points """
+"""
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
+   Licensed under the GNU GPL v3 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       https://www.gnu.org/licenses/gpl-3.0.en.html
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
 
 import logging
 
@@ -19,8 +32,8 @@ from rest_framework.reverse import reverse
 from waves.core.exceptions import JobException
 from waves.api.permissions import ServiceAccessPermission
 from waves.api.v2 import serializers
-from waves.core.models import Job, Service
-from waves.core.views import ServiceSubmissionForm
+from waves.models import Job, Service
+from waves.forms.frontend import ServiceSubmissionForm
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +92,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         """ Retrieve service form """
         from django.shortcuts import render
         from django.http import HttpResponse
-        from waves.core.forms.frontend.services import ServiceSubmissionForm
+        from forms.frontend.services import ServiceSubmissionForm
         api_name = self.kwargs.get('service_app_name')
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
         form = [{'submission': service_submission,

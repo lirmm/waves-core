@@ -1,4 +1,16 @@
-""" WAVES API services related serializers"""
+"""
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
+   Licensed under the GNU GPL v3 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       https://www.gnu.org/licenses/gpl-3.0.en.html
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
 
 import logging
 
@@ -8,8 +20,8 @@ from rest_framework.reverse import reverse as reverse
 
 from waves.api.share import DynamicFieldsModelSerializer
 from waves.api.v1.serializers.inputs import InputSerializer
-from waves.core.models import Service, Submission, SubmissionOutput as ServiceOutput
-from waves.core.settings import waves_settings
+from waves.models import Service, Submission, SubmissionOutput as ServiceOutput
+from waves.settings import waves_settings
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +136,7 @@ class ServiceFormSerializer(serializers.ModelSerializer):
 
     def get_form(self, obj):
         """ Create the form and return its content"""
-        from waves.core.forms.frontend.services import ServiceSubmissionForm
+        from forms.frontend.services import ServiceSubmissionForm
         from django.template import RequestContext
         import re
         form = ServiceSubmissionForm(instance=self.instance, parent=self.instance.service)

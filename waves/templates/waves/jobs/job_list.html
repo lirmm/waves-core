@@ -1,0 +1,79 @@
+{% extends "waves/services/../services/../services/base.html" %}
+
+{% block navbar-left %}
+    {% include "_navbar.html" with active_link="jobs" %}
+{% endblock %}
+
+{% block content_main %}
+    <div id="sec1" class="text-page">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h1><strong>Your jobs</strong></h1>
+                </div>
+            </div>
+        </div><!-- /.container -->
+    </div>
+    <div id="sec2" class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {% if is_paginated %}
+                    <div align="center">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li>
+                                    <a href="{% url 'wcore:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="#">previous</a></li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                <li {% ifequal i page_obj.number %}class="active"{% endifequal %}>
+                                    <a href="{% url 'wcore:job_list' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+                                </li>
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li><a href="{% url 'wcore:job_list' %}?page={{ page_obj.next_page_number }}">next</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="#">next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+                {% for job in job_list %}
+                    {% include "waves/jobs/parts/parts/job_list_element.html" with job=job %}
+                {% empty %}
+                    <div class="alert alert-info">
+                        <strong>Sorry!</strong> It seems that you don't have any job available
+                    </div>
+                {% endfor %}
+                {% if is_paginated %}
+                    <div align="center">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                                <li><a href="{% url 'wcore:job_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="#">previous</a></li>
+                            {% endif %}
+
+                            {% for i in paginator.page_range %}
+                                <li {% ifequal i page_obj.number %}class="active"{% endifequal %}>
+                                    <a href="{% url 'wcore:job_list' %}?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+                                </li>
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li><a href="{% url 'wcore:job_list' %}?page={{ page_obj.next_page_number }}">next</a>
+                                </li>
+                            {% else %}
+                                <li class="disabled"><a href="#">next</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

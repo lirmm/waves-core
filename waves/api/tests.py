@@ -1,3 +1,16 @@
+"""
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
+   Licensed under the GNU GPL v3 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       https://www.gnu.org/licenses/gpl-3.0.en.html
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
 import decimal
 import logging
 import random
@@ -10,10 +23,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from waves.core.adaptors.const import JobStatus
-from waves.core.models import Job, Service, Runner
-from waves.core.models.const import ParamType
-from waves.core.tests.base import WavesTestCaseMixin
+from waves.core.const import JobStatus
+from waves.models import Job, Service, Runner
+from waves.models.const import ParamType
+from waves.tests.base import WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)
 

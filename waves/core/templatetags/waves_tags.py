@@ -2,8 +2,8 @@
 
 from django import template
 
-from waves.core.settings import waves_settings
-from waves.core import __version_detail__, __version__
+from waves.settings import waves_settings
+from waves import __version_detail__, __version__
 
 register = template.Library()
 

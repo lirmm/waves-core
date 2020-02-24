@@ -1,9 +1,22 @@
+"""
+.. See the NOTICE file distributed with this work for additional information
+   regarding copyright ownership.
+   Licensed under the GNU GPL v3 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+       https://www.gnu.org/licenses/gpl-3.0.en.html
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
 from rest_framework import serializers
 from rest_framework.fields import empty
 
 from waves.api.share import DynamicFieldsModelSerializer, RecursiveField
-from waves.core.models.const import ParamType
-from waves.core.models.inputs import AParam, TextParam, DecimalParam, IntegerParam, FileInput, BooleanParam, ListParam
+from waves.models.const import ParamType
+from waves.models import AParam, TextParam, DecimalParam, IntegerParam, FileInput, BooleanParam, ListParam
 from .fields import ListElementField
 
 base_fields = ['label', 'name', 'default', 'format', 'type', 'mandatory', 'short_description', 'multiple',
