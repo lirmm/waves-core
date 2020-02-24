@@ -3,9 +3,9 @@
 
 {% block object-tools-items %}
     <li>
-        <a type="button" href="{% url 'admin:core_aparam_add' %}?for-submission={{ original.pk }}&_popup=1"
+        <a type="button"  href="{% url 'admin:core_aparam_add' %}?for-submission={{ original.pk }}&_popup=1"
            title="Service" style="opacity:1"
-           class="btn btn-high btn-primary related-widget-wrapper-link add-related"
+           class="btn btn-secondary related-widget-wrapper-link add-related"
            id="add_submission_input_link" style="">
             Add a new param
         </a>
@@ -14,14 +14,14 @@
         <a type="button" href="{{ original.service.get_admin_url }}"
            target="_self"
            title="Service"
-           class="btn btn-high btn-info"
+           class="btn btn btn-secondary"
            id="service_link">
             Edit Service
         </a>
     </li>
     <li>
         <a type="button" href="{% url 'admin:service_preview' original.service.pk %}"
-           class="btn btn-high btn-info js-popup-link" js-modal-title="Service Form Preview">
+           class="btn btn-secondary js-popup-link" js-modal-title="Service Form Preview">
             Preview
         </a>
     </li>
@@ -29,7 +29,7 @@
         <a type="button" href="{{ original.service.get_admin_changelist }}"
            target="_self"
            title="Service"
-           class="btn btn-high btn-info"
+           class="btn btn-secondary"
            id="service_list_link">
             Service's list
         </a>

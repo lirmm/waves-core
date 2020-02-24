@@ -46,28 +46,21 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
     class Meta:
         abstract = True
 
-    _runner = models.ForeignKey(Runner,
-                                verbose_name="Computing infrastructure",
-                                related_name='%(app_label)s_%(class)s_runs',
-                                null=True,
-                                db_column='runner_id',
-                                on_delete=models.SET_NULL,
-                                help_text='Service job runs configuration')
+    _runner = None
+    runner = models.ForeignKey(Runner,
+                               verbose_name="Computing infrastructure",
+                               related_name='%(app_label)s_%(class)s_runs',
+                               null=True,
+                               db_column='runner_id',
+                               on_delete=models.SET_NULL,
+                               help_text='Service job runs configuration')
 
     @classmethod
     def from_db(cls, db, field_names, values):
         """ Executed each time a Service is restored from DB layer"""
         instance = super(HasRunnerParamsMixin, cls).from_db(db, field_names, values)
-        instance.runner = instance._runner
+        # instance._runner = instance.get_runner()
         return instance
-
-    @property
-    def runner(self):
-        return self._runner
-
-    @runner.setter
-    def runner(self, runner):
-        self._runner = runner
 
     @property
     def config_changed(self):
@@ -84,7 +77,7 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
         # Retrieve the ones defined in DB
         object_params = super(HasRunnerParamsMixin, self).run_params
         # Retrieve the ones defined for runner
-        runners_params = self.runner.run_params
+        runners_params = self.get_runner().run_params
         # Merge params from runner (defaults and/or not override-able)
         runners_params.update(object_params)
         return runners_params
@@ -92,15 +85,15 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
     @property
     def adaptor_defaults(self):
         """ Retrieve init params defined associated concrete class (from runner attribute) """
-        return self._runner.run_params if self.get_runner() else {}
+        return self.get_runner().run_params if self.get_runner() else {}
 
     def get_runner(self):
         """ Return effective runner (could be overridden is any subclasses) """
-        return self._runner
+        return self.runner
 
     @property
     def clazz(self):
-        return self.runner.clazz
+        return self.get_runner().clazz
 
     @clazz.setter
     def clazz(self, clazz):
@@ -211,7 +204,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin,
         for sub in self.submissions.all():
             sub.adaptor_params.all().delete()
             object_type = ContentType.objects.get_for_model(sub)
-            for runner_param in sub.runner.adaptor_params.filter(prevent_override=False):
+            for runner_param in sub.get_runner().adaptor_params.filter(prevent_override=False):
                 SubmissionRunParam.objects.create(name=runner_param.name,
                                                   value=runner_param.value,
                                                   crypt=(runner_param.name == 'password'),
@@ -341,8 +334,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin,
         return reverse('admin:{}_{}_changelist'.format(self._meta.app_label, self._meta.model_name))
 
 
-class Submission(TimeStamped, ApiModel, Ordered, Slugged,
-                 HasRunnerParamsMixin):
+class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     class Meta:
         db_table = 'wcore_submission'
         verbose_name = 'Submission method'
@@ -366,19 +358,14 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged,
     #: Submission label
     name = models.CharField('Label', max_length=255, null=False, blank=False)
 
-    @property
-    def runner(self):
+    def get_runner(self):
         """ Return the run configuration associated with this submission, or the default service one if not set
         :return: :class:`core.models.Runner`
         """
-        if self._runner:
-            return self._runner
+        if self.runner:
+            return self.runner
         else:
             return self.service.runner
-
-    @runner.setter
-    def runner(self, runner):
-        self._runner = runner
 
     @property
     def run_params(self):

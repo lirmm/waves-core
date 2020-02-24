@@ -1,10 +1,14 @@
 import logging
 import os
+import random
+import time
+from os.path import isfile
 
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase
 
+from core.tests.utils import sample_job, bootstrap_runners, bootstrap_services
 from waves.core.adaptors.const import JobStatus
 from waves.core.tests.base import WavesTestCaseMixin
 
@@ -14,7 +18,10 @@ User = get_user_model()
 
 
 class JobsTestCase(TestCase, WavesTestCaseMixin):
-    fixtures = ("users",)
+    fixtures = ("accounts.json",)
+    services = []
+    runners = []
+    user = None
 
     def run_job_workflow(self, job):
         """ Run a full complete job workflow, you should call this method catching "AssertionError" to get
@@ -44,7 +51,7 @@ class JobsTestCase(TestCase, WavesTestCaseMixin):
             job.retrieve_run_details()
             time.sleep(3)
             history = job.job_history.first()
-            logger.debug("History timestamp %s", localtime(history.timestamp))
+            logger.debug("History timestamp %s", time.localtime(history.timestamp))
             self.assertTrue(job.results_available, "Job results are not available")
             for output_job in job.outputs.all():
                 # TODO reactivate job output verification as soon as possible
@@ -64,28 +71,14 @@ class JobsTestCase(TestCase, WavesTestCaseMixin):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-
-    def testJobsSignals(self):
-        print(User.objects.all())
-        job = self.create_random_job()
-        self.assertIsNotNone(job.title)
-        self.assertEqual(job.outputs.count(), 4)
-        job.logger.debug("Test Log message")
-        self.assertTrue(os.path.isdir(job.working_dir))
-        logger.warning('Job directories has been created %s ', job.working_dir)
-        self.assertEqual(job.status, JobStatus.JOB_CREATED)
-        self.assertEqual(job.job_history.count(), 1)
-        job.message = "Test job Message"
-        job.status = JobStatus.JOB_PREPARED
-        job.save()
-        self.assertGreaterEqual(job.job_history.filter(message__contains=job.message).count(), 0)
-        work_dir = job.working_dir
-        job.delete()
-        self.assertFalse(os.path.isdir(work_dir))
-        logger.debug('Job directories has been deleted')
+        cls.services = bootstrap_services()
+        cls.runners = bootstrap_runners()
+        cls.user = User.objects.create(username='TestDomain', is_active=True)
+        cls.user.waves_user.domain = 'https://waves.test.com'
+        cls.user.waves_user.save()
 
     def test_job_history(self):
-        job = self.create_random_job()
+        job = sample_job(service=random.choice(self.services), user=self.user)
         job.logger.info("Test log message")
         job.job_history.create(message="Test Admin message", status=job.status, is_admin=True)
         job.job_history.create(message="Test public message", status=job.status)
@@ -99,10 +92,8 @@ class JobsTestCase(TestCase, WavesTestCaseMixin):
         job.delete()
 
     def test_mail_job(self):
-        user = User.objects.create(username='TestDomain', is_active=True)
-        user.waves_user.domain = 'https://waves.test.com'
-        user.waves_user.save()
-        job = self.create_random_job(user=user)
+
+        job = sample_job(service=random.choice(self.services), user=self.user)
 
         logger.info("Job link: %s", job.link)
         logger.debug("Job notify: %s", job.notify)
@@ -110,6 +101,7 @@ class JobsTestCase(TestCase, WavesTestCaseMixin):
         self.assertEqual(len(mail.outbox), 1)
         sent_mail = mail.outbox[-1]
         self.assertTrue(job.service in sent_mail.subject)
+        self.assertTrue(job.get_status_display() in sent_mail.subject)
         self.assertEqual(job.email_to, sent_mail.to[0])
         logger.debug('Mail subject: %s', sent_mail.subject)
         logger.debug('Mail from: %s', sent_mail.from_email)

@@ -19,7 +19,7 @@ from rest_framework.exceptions import ValidationError
 from import_export.services import ServiceSerializer
 from waves.core.management.utils import choice_input
 from waves.core.models import Job
-from waves.core.settings import waves_settings as config
+from waves.core.settings import waves_settings
 
 __all__ = ['CleanUpCommand', 'ImportCommand', 'DumpConfigCommand']
 
@@ -39,7 +39,7 @@ class CleanUpCommand(BaseCommand):
 
     def handle(self, *args, **options):
         removed = []
-        for dir_name in os.listdir(config.JOB_BASE_DIR):
+        for dir_name in os.listdir(waves_settings.JOB_BASE_DIR):
             try:
                 # DO nothing, job exists in DB
                 Job.objects.get(slug=uuid.UUID('{%s}' % dir_name))
@@ -58,12 +58,12 @@ class CleanUpCommand(BaseCommand):
                 if choice == 1:
                     self.stdout.write("Directories to delete: ")
                     for dir_name in removed:
-                        self.stdout.write(os.path.join(config.JOB_BASE_DIR, dir_name))
+                        self.stdout.write(os.path.join(waves_settings.JOB_BASE_DIR, dir_name))
                 elif choice == 2:
                     for dir_name in removed:
                         self.stdout.write('Removed directory: %s' % dir_name)
                         # onerror(os.path.islink, path, sys.exc_info())
-                        rmtree(os.path.join(config.JOB_BASE_DIR, dir_name),
+                        rmtree(os.path.join(waves_settings.JOB_BASE_DIR, dir_name),
                                onerror=self.print_file_error)
                     removed = []
                 else:
@@ -107,7 +107,7 @@ class ImportCommand(BaseCommand):
                     raise NotImplementedError('Currently only services can be imported')
                 try:
                     db_version = json_srv.pop('db_version', None)
-                    if db_version != config.DB_VERSION:
+                    if db_version != waves_settings.DB_VERSION:
                         raise ValidationError('Uncompatible db versions')
                     if serializer.is_valid(raise_exception=True):
                         self.stdout.write("Service import from file %s ...." % exported_file)
@@ -123,12 +123,12 @@ class ImportCommand(BaseCommand):
 
     def find_export_files(self, export, type_model):
         file_name = '%s_%s.json' % (type_model, export)
-        export_file = os.path.join(config.DATA_ROOT, file_name)
+        export_file = os.path.join(waves_settings.DATA_ROOT, file_name)
         if os.path.isfile(export_file):
             return export_file
         else:
             raise CommandError("Unable to find exported file: %s, are they in your data root (%s)? " % (
-                file_name, config.DATA_ROOT))
+                file_name, waves_settings.DATA_ROOT))
 
 
 class DumpConfigCommand(BaseCommand):

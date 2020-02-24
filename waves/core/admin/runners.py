@@ -116,11 +116,10 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
         """ Add related Service / Jobs updates upon Runner modification """
         super(RunnerAdmin, self).save_model(request, obj, form, change)
         if obj is not None:
-            if 'update_init_params' in form.changed_data:
-                for service in obj.runs():
-                    message = 'Related %s has been reset' % service
-                    service.set_defaults()
-                    messages.info(request, message)
+            for running in obj.runs():
+                message = 'Related %s has been reset' % running
+                running.set_defaults()
+                messages.info(request, message)
 
     def connexion_string(self, obj):
         return obj.adaptor.connexion_string() if obj and obj.adaptor is not None else 'n/a'

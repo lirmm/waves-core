@@ -25,7 +25,7 @@ class MockJobRunnerAdaptor(JobAdaptor):
     }
 
     def __init__(self, command=None, protocol='http', host="localhost", **kwargs):
-        super(MockJobRunnerAdaptor, self).__init__('mock', protocol, host, **kwargs)
+        super(MockJobRunnerAdaptor, self).__init__(command, protocol, host, **kwargs)
 
     def _job_status(self, job):
         time.sleep(2)

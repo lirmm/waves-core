@@ -156,11 +156,11 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     exclude = ['order']
     list_display = ['name', 'api_name', 'get_service', 'availability', 'runner', 'updated']
     readonly_fields = ['get_command_line_pattern', 'get_run_params', 'api_url']
-    list_filter = ('service__name', 'availability', '_runner')
+    list_filter = ('service__name', 'availability', 'service__runner')
     list_editable = ('availability',)
     list_display_links = ('name',)
     ordering = ('name', 'updated', 'created')
-    search_fields = ('service__name', 'label', '_runner__name', 'service___runner__name')
+    search_fields = ('service__name', 'label', 'runner__name', 'service__runner__name')
 
     fieldsets = [
         ('General', {
@@ -168,7 +168,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
             'classes': ['collapse', 'open']
         }),
         ('Run ', {
-            'fields': ['runner', 'get_run_params', 'get_command_line_pattern', 'binary_file'],
+            'fields': ['runner', 'get_run_params', 'get_command_line_pattern'],
             'classes': ['collapse']
         }),
     ]
@@ -205,7 +205,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
         ]
         self.current_obj = obj
         self.inlines = _inlines
-        if obj.runner is not None \
+        if obj.get_runner() is not None \
                 and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
             self.inlines.insert(0, SubmissionRunnerParamInLine)
         return self.inlines
@@ -263,7 +263,7 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
         return HttpResponseRedirect(obj.service.get_admin_url() + "#/tab/inline_0/")
 
     def save_model(self, request, obj, form, change):
-        if obj and not obj.runner:
+        if obj and not obj.get_runner():
             obj.adaptor_params.all().delete()
         super(ServiceSubmissionAdmin, self).save_model(request, obj, form, change)
 

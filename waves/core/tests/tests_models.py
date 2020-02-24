@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class WavesModelsTestCase(TestCase):
-    fixtures = ("waves/core/tests/fixtures/accounts.json",)
+    fixtures = ("accounts.json",)
     services = []
     runners = []
 

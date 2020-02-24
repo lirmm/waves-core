@@ -14,7 +14,7 @@ class AdaptorInitParamForm(ModelForm):
     class Meta:
         """ Metas """
         model = AdaptorInitParam
-        fields = ['name', "value", 'prevent_override']
+        fields = ['name', "value", 'prevent_override', 'object_id', 'content_type']
 
     def __init__(self, **kwargs):
         super(AdaptorInitParamForm, self).__init__(**kwargs)

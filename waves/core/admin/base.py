@@ -17,7 +17,7 @@ __all__ = ['DuplicateInMassMixin', 'ExportInMassMixin', 'MarkPublicInMassMixin',
            'DynamicInlinesAdmin']
 
 
-@register.inclusion_tag('waves/admin/submit_line.html', takes_context=True)
+# @register.inclusion_tag('waves/admin/submit_line.html', takes_context=True)
 def submit_row(context):
     ctx = original_submit_row(context)
     ctx.update({

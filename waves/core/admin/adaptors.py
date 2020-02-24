@@ -1,11 +1,10 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
 
-from waves.core.forms.admin import adaptors
 from waves.core.models import AdaptorInitParam
 
 
 class AdaptorInitParamInline(GenericTabularInline):
-    form = adaptors.AdaptorInitParamForm
+    # form = adaptors.AdaptorInitParamForm
     model = AdaptorInitParam
     extra = 0
     max_num = 0
@@ -18,10 +17,6 @@ class AdaptorInitParamInline(GenericTabularInline):
     verbose_name_plural = "Execution parameters"
 
     def has_delete_permission(self, request, obj=None):
-        """ No delete permission for runners params
-
-        :return: False
-        """
         return False
 
     def has_add_permission(self, request, obj):
@@ -41,12 +36,8 @@ class RunnerParamInline(AdaptorInitParamInline):
     """ Job Runner class instantiation parameters insertion field
     Inline are automatically generated from effective implementation class 'init_params' property """
     model = AdaptorInitParam
-    verbose_name = 'Initial connexion parameter'
-    verbose_name_plural = "Connexion parameters"
-
-    def get_queryset(self, request):
-        queryset = super(RunnerParamInline, self).get_queryset(request).exclude(name='command')
-        return queryset
+    verbose_name = 'Adaptor parameter'
+    verbose_name_plural = "Adaptor parameters"
 
 
 class ServiceRunnerParamInLine(AdaptorInitParamInline):
@@ -59,16 +50,7 @@ class ServiceRunnerParamInLine(AdaptorInitParamInline):
         queryset = queryset.filter(prevent_override=False)
         return queryset
 
-    def has_add_permission(self, request, obj):
-        return False
 
-
-class SubmissionRunnerParamInLine(AdaptorInitParamInline):
+class SubmissionRunnerParamInLine(ServiceRunnerParamInLine):
     """ adapters parameters for submission when overridden """
-    model = AdaptorInitParam
-    fields = ['name', 'value', ]
-
-    def get_queryset(self, request):
-        queryset = super(SubmissionRunnerParamInLine, self).get_queryset(request)
-        queryset = queryset.filter(prevent_override=False)
-        return queryset
+    pass

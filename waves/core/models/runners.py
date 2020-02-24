@@ -41,9 +41,6 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
     def __str__(self):
         return self.name
 
-    def __unicode__(self):
-        return self.name
-
     @property
     def serializer(self, context=None):
         """ Retrieve a serializer for json export """
@@ -57,12 +54,12 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
         return runs_list
 
     def running_services(self):
-        return self.core_service_runs.all()
-        from waves.core.models import Service
+        from waves.core.models.services import Service
         return Service.objects.filter(runner=self)
 
     def running_submissions(self):
-        return self.core_submission_runs.all()
+        from waves.core.models.services import Submission
+        return Submission.objects.filter(runner=self)
 
     def get_admin_url(self):
         return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])

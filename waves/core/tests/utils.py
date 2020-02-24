@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 
 from waves.core.adaptors.loader import AdaptorLoader
-from waves.core.models import Runner, Service, TextParam, BooleanParam, FileInput, Job, JobInput, JobOutput, SubmissionOutput
+from waves.core.models import Runner, Service, TextParam, BooleanParam, Job, JobInput, JobOutput, SubmissionOutput
 
 User = get_user_model()
 
@@ -11,7 +11,7 @@ def bootstrap_runners():
     loader = AdaptorLoader
     runners = []
     for adaptor in loader.get_adaptors():
-        runner = Runner.objects.create(name="%s Runner" % adaptor.name,
+        runner = Runner.objects.create(name="%s" % adaptor.name,
                                        clazz='.'.join([adaptor.__module__, adaptor.__class__.__name__]))
         runners.append(runner)
     return runners
@@ -36,8 +36,8 @@ def bootstrap_services():
     return services
 
 
-def sample_service(runner):
-    service_runner = runner
+def sample_service(runner=None):
+    service_runner = runner or bootstrap_runners()[0]
     service = Service.objects.create(name='Sample Service', runner=service_runner, status=3)
     service.default_submission.inputs.add(
         TextParam.objects.create(name='param1',
@@ -52,16 +52,15 @@ def sample_service(runner):
     return service
 
 
-def sample_job(service, user):
-    job_service = service
+def sample_job(service=None, user=None):
+    job_service = service or bootstrap_services()[0]
     job = Job.objects.create(submission=job_service.default_submission,
                              client=user,
-                             email_to='marc@fake.com')
-    job.job_inputs.add(JobInput.objects.create(name="param1", value="Value1", job=job))
-    job.job_inputs.add(JobInput.objects.create(name="param2", value="Value2.txt", job=job))
-    job.job_inputs.add(JobInput.objects.create(name="param3", value="Value3", job=job))
-    job.outputs.add(JobOutput.objects.create(_name="out1", value="out1", job=job))
-    job.outputs.add(JobOutput.objects.create(_name="out2", value="out2", job=job))
+                             email_to='user@fake.com')
+    for param in service.default_submission.inputs.all():
+        job.job_inputs.add(JobInput.objects.create(name=param.api_name, value="Value", job=job))
+    for param in service.default_submission.outputs.all():
+        job.outputs.add(JobOutput.objects.create(_name=param.api_name, value="out Value", job=job))
     return job
 
 

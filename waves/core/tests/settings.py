@@ -1,6 +1,6 @@
 from waves_core.settings import *
 import configparser
-
+WAVES_BASE_DIR = os.path.join(BASE_DIR, 'tests')
 # WAVES
 ADAPTORS_DEFAULT_CLASSES = (
     'waves.core.adaptors.saga.shell.SshShellAdaptor',
@@ -9,15 +9,17 @@ ADAPTORS_DEFAULT_CLASSES = (
     'waves.core.adaptors.saga.shell.LocalShellAdaptor',
     'waves.core.adaptors.saga.cluster.SshClusterAdaptor',
     'waves.core.adaptors.saga.cluster.SshKeyClusterAdaptor',
+    # 'waves.core.tests.mocks.MockJobRunnerAdaptor'
 )
+
 WAVES_CORE = {
     'ACCOUNT_ACTIVATION_DAYS': 14,
     'ADMIN_EMAIL': 'admin@waves.atgc-montpellier.fr',
     'DATA_ROOT': os.path.join(BASE_DIR, 'data'),
-    'JOB_LOG_LEVEL': logging.DEBUG,
-    'JOB_BASE_DIR': os.path.join(BASE_DIR, 'data', 'jobs'),
-    'BINARIES_DIR': os.path.join(BASE_DIR, 'data', 'bin'),
-    'SAMPLE_DIR': os.path.join(BASE_DIR, 'data', 'sample'),
+    'JOB_LOG_LEVEL': 'DEBUG',
+    'JOB_BASE_DIR': os.path.join(WAVES_BASE_DIR, 'data', 'jobs'),
+    'BINARIES_DIR': os.path.join(WAVES_BASE_DIR, 'data', 'bin'),
+    'SAMPLE_DIR': os.path.join(WAVES_BASE_DIR, 'data', 'sample'),
     'KEEP_ANONYMOUS_JOBS': 2,
     'KEEP_REGISTERED_JOBS': 30,
     'ALLOW_JOB_SUBMISSION': True,
@@ -68,31 +70,47 @@ LOGGING = {
     }
 }
 
-configFile = join(BASE_DIR, 'tests', 'settings.ini')
+configFile = os.path.join(BASE_DIR, 'waves', 'core', 'tests', 'settings.ini')
+
 
 try:
-    assert (isfile(configFile))
+    assert (os.path.isfile(configFile))
     Config = configparser.RawConfigParser()
     Config.read(configFile)
-    WAVES_TEST_SSH_HOST = Config.get('saga', 'WAVES_TEST_SSH_HOST')
-    WAVES_TEST_SSH_USER_ID = Config.get('saga', 'WAVES_TEST_SSH_USER_ID')
-    WAVES_TEST_SSH_USER_PASS = Config.get('saga', 'WAVES_TEST_SSH_USER_PASS')
-    WAVES_TEST_SSH_BASE_DIR = Config.get('saga', 'WAVES_TEST_SSH_BASE_DIR')
+    try:
+        WAVES_TEST_SSH_HOST = Config.get('ssh', 'WAVES_TEST_SSH_HOST')
+        WAVES_TEST_SSH_USER_ID = Config.get('ssh', 'WAVES_TEST_SSH_USER_ID')
+        WAVES_TEST_SSH_USER_PASS = Config.get('ssh', 'WAVES_TEST_SSH_USER_PASS')
+        WAVES_TEST_SSH_BASE_DIR = Config.get('ssh', 'WAVES_TEST_SSH_BASE_DIR')
+        WAVES_TEST_SSH_PORT = Config.get('ssh', 'WAVES_TEST_SSH_PORT')
+    except configparser.NoSectionError:
+        # don't load if no entry
+        pass
+    try:
+        WAVES_LOCAL_TEST_SGE_CELL = Config.get('sge_cluster', 'WAVES_LOCAL_TEST_SGE_CELL')
+        WAVES_SSH_TEST_SGE_CELL = Config.get('sge_cluster', 'WAVES_SSH_TEST_SGE_CELL')
+        WAVES_SSH_TEST_SGE_BASE_DIR = Config.get('sge_cluster', 'WAVES_SSH_TEST_SGE_BASE_DIR')
+    except configparser.NoSectionError:
+        # don't load if no entry
+        pass
+    try:
+        WAVES_SSH_KEY_USER_ID = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_USER_ID')
+        WAVES_SSH_KEY_HOST = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_HOST')
+        WAVES_SSH_KEY_PASSPHRASE = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_PASSPHRASE')
+        WAVES_SSH_KEY_BASE_DIR = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_BASE_DIR')
+    except configparser.NoSectionError:
+        # don't load if no entry
+        pass
+    try:
+        WAVES_SLURM_TEST_SSH_HOST = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_HOST')
+        WAVES_SLURM_TEST_SSH_USER_ID = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_ID')
+        WAVES_SLURM_TEST_SSH_USER_PASS = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_PASS')
+        WAVES_SLURM_TEST_SSH_QUEUE = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_QUEUE')
+        WAVES_SLURM_TEST_SSH_BASE_DIR = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_BASE_DIR')
+    except configparser.NoSectionError:
+        # don't load if no entry
+        pass
 
-    WAVES_LOCAL_TEST_SGE_CELL = Config.get('sge_cluster', 'WAVES_LOCAL_TEST_SGE_CELL')
-    WAVES_SSH_TEST_SGE_CELL = Config.get('sge_cluster', 'WAVES_SSH_TEST_SGE_CELL')
-    WAVES_SSH_TEST_SGE_BASE_DIR = Config.get('sge_cluster', 'WAVES_SSH_TEST_SGE_BASE_DIR')
-
-    WAVES_SSH_KEY_USER_ID = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_USER_ID')
-    WAVES_SSH_KEY_HOST = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_HOST')
-    WAVES_SSH_KEY_PASSPHRASE = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_PASSPHRASE')
-    WAVES_SSH_KEY_BASE_DIR = Config.get('ssh_key_cluster', 'WAVES_SSH_KEY_BASE_DIR')
-
-    WAVES_SLURM_TEST_SSH_HOST = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_HOST')
-    WAVES_SLURM_TEST_SSH_USER_ID = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_ID')
-    WAVES_SLURM_TEST_SSH_USER_PASS = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_USER_PASS')
-    WAVES_SLURM_TEST_SSH_QUEUE = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_QUEUE')
-    WAVES_SLURM_TEST_SSH_BASE_DIR = Config.get('slurm_cluster', 'WAVES_SLURM_TEST_SSH_BASE_DIR')
 except AssertionError:
     # Don't load variables from ini files they are initialized elsewhere (i.e lab ci)
     pass
@@ -100,5 +118,5 @@ except AssertionError:
 # Broker configuration for celery
 URL_BROKER = "redis://localhost:6379"
 # CONF EMAIL TODO CHANGE BACKEND TO CONSOLE FOR TESTS
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = '/tmp/app-messages'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+

@@ -1,20 +1,26 @@
 import logging
 import os
 import unittest
+from os.path import join
 
+import radical.saga as rs
 from django.conf import settings
-from psutil.tests import TestCase
+from django.test import TestCase
+from django.db.models import ObjectDoesNotExist
+from django.test import override_settings
 
-from waves.core.adaptors.saga.cluster import SshClusterAdaptor
+from core.tests.utils import sample_service, sample_job
 from waves.core.adaptors.const import JobStatus
 from waves.core.adaptors.exceptions import AdaptorException
+from waves.core.adaptors.loader import AdaptorLoader
+from waves.core.adaptors.saga.cluster import SshClusterAdaptor
 from waves.core.adaptors.saga.shell import LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.core.exceptions import JobInconsistentStateError
 from waves.core.settings import waves_settings
-from waves.core.tests.base import WavesTestCaseMixin, TestJobWorkflowMixin
-from waves.core.tests.mocks.services import MockJobRunnerAdaptor
+from waves.core.tests.base import TestJobWorkflowMixin
+from waves.core.tests.mocks import MockJobRunnerAdaptor
+from waves.core.models import Job
 from waves.utils.encrypt import Encrypt
-from waves.core.adaptors.loader import AdaptorLoader
 
 logger = logging.getLogger(__name__)
 
@@ -28,19 +34,34 @@ def skip_unless_sge():
     return lambda f: f
 
 
-class AdaptorTestCase(TestCase, WavesTestCaseMixin, TestJobWorkflowMixin):
+@override_settings(
+    WAVES_CORE={
+        'JOB_BASE_DIR': join(settings.BASE_DIR, 'tests', 'data', 'jobs'),
+        'ADMIN_EMAIL': 'foo@bar-waves.com',
+        'ADAPTORS_CLASSES': (
+                'waves.core.adaptors.saga.shell.SshShellAdaptor',
+                'waves.core.adaptors.saga.cluster.LocalClusterAdaptor',
+                'waves.core.adaptors.saga.shell.SshKeyShellAdaptor',
+                'waves.core.adaptors.saga.shell.LocalShellAdaptor',
+                'waves.core.adaptors.saga.cluster.SshClusterAdaptor',
+                'waves.core.adaptors.saga.cluster.SshKeyClusterAdaptor',
+                'waves.core.tests.mocks.MockJobRunnerAdaptor',
+        )
+    }
+)
+class AdaptorTestCase(TestCase, TestJobWorkflowMixin):
     loader = AdaptorLoader
     adaptors = {"local": LocalShellAdaptor(command='cp')}
 
     def setUp(self):
         super(AdaptorTestCase, self).setUp()
-        if hasattr(settings, "WAVES_TEST_SSH_USER_ID"):
-            self.adaptors["sshShell"] = SshShellAdaptor(protocol='ssh', command='cp',
+        if hasattr(settings, "WAVES_TEST_SSH_HOST"):
+            self.adaptors["sshShell"] = SshShellAdaptor(command='cp',
                                                         user_id=settings.WAVES_TEST_SSH_USER_ID,
-                                                        password=Encrypt.encrypt(
-                                                            settings.WAVES_TEST_SSH_USER_PASS),
+                                                        password=settings.WAVES_TEST_SSH_USER_PASS,
                                                         basedir=settings.WAVES_TEST_SSH_BASE_DIR,
-                                                        host=settings.WAVES_TEST_SSH_HOST)
+                                                        host=settings.WAVES_TEST_SSH_HOST,
+                                                        port=settings.WAVES_TEST_SSH_PORT)
         if hasattr(settings, "WAVES_TEST_SGE_CELL"):
             self.adaptors['localSge'] = SshClusterAdaptor(protocol='sge', command='cp',
                                                           queue=settings.WAVES_TEST_SGE_CELL,
@@ -88,20 +109,15 @@ class AdaptorTestCase(TestCase, WavesTestCaseMixin, TestJobWorkflowMixin):
                     logger.debug("Saga host %s, protocol %s", adaptor.saga_host, adaptor.host)
                     self.assertTrue(adaptor.saga_host.startswith(adaptor.protocol))
             except AdaptorException as e:
-                logger.exception("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
-                pass
+                logger.exception("AdaptorException in %s: %s", adaptor.__class__.__name__, e)
             else:
                 logger.info("Adaptor not available for testing protocol %s " % adaptor.name)
 
-    def test_loader(self):
-        list_adaptors = self.loader.get_adaptors()
-        from waves.core.settings import waves_settings
-        self.assertTrue(all([clazz.__class__ in waves_settings.ADAPTORS_CLASSES for clazz in list_adaptors]))
-        [logger.debug(c) for c in list_adaptors]
-
     def test_init(self):
         for adaptor in waves_settings.ADAPTORS_CLASSES:
-            new_instance = self.loader.load(adaptor, host="localTestHost", protocol="httpTest",
+            new_instance = self.loader.load(adaptor,
+                                            host="localTestHost",
+                                            protocol="httpTest",
                                             command="CommandTest")
             self.assertEqual(new_instance.host, "localTestHost")
             self.assertEqual(new_instance.command, "CommandTest")
@@ -118,44 +134,41 @@ class AdaptorTestCase(TestCase, WavesTestCaseMixin, TestJobWorkflowMixin):
                     self.assertTrue(self.adaptor.connected)
                     logger.debug('Connected to %s ', self.adaptor.connexion_string())
                     self.adaptor.disconnect()
-            except AdaptorException as e:
-                logger.warning("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
-
-    def debug_job_state(self):
-        logger.debug('Internal state %s, current %s', self.current_job._status, self.current_job.status)
+            except (rs.exceptions.SagaException, AdaptorException) as e:
+                self.skipTest("Host not availabmle")
+                logger.error('Saga Exception in %s: %s', adaptor.__class__.__name__, e)
 
     def test_job_states(self):
         """
         Test exceptions raise when state inconsistency is detected in jobs
         """
-        self.service = self.sample_service()
-        self.current_job = self.sample_job(self.service)
-        self.adaptor = MockJobRunnerAdaptor(unexpected_param='unexpected value')
-        self.jobs.append(self.current_job)
-        self.debug_job_state()
-        self.current_job.status = JobStatus.JOB_RUNNING
-        logger.debug('Test Prepare')
-        self.debug_job_state()
+        job = sample_job(sample_service())
+        adaptor = MockJobRunnerAdaptor(command='faked', protocol='mock')
+        logger.debug('Internal state %s, current %s', job._status, job.status)
+        job.status = JobStatus.JOB_RUNNING
+        logger.debug('Internal state %s, current %s', job._status, job.status)
         with self.assertRaises(JobInconsistentStateError):
-            self.current_job.run_prepare()
+            adaptor.prepare_job(job)
 
-        self.debug_job_state()
+        logger.debug('Internal state %s, current %s', job._status, job.status)
         logger.debug('Test Run')
-        self.current_job.status = JobStatus.JOB_UNDEFINED
+        job.status = JobStatus.JOB_UNDEFINED
         with self.assertRaises(JobInconsistentStateError):
-            self.current_job.run_launch()
-        self.debug_job_state()
+            adaptor.run_job(job)
+        logger.debug('Internal state %s, current %s', job._status, job.status)
         logger.debug('Test Cancel')
-        self.current_job.status = JobStatus.JOB_COMPLETED
+        job.status = JobStatus.JOB_COMPLETED
         with self.assertRaises(JobInconsistentStateError):
-            self.current_job.run_cancel()
-            # self.adaptor.cancel_job(self.current_job)
-        logger.debug('Internal state %s, current %s', self.current_job._status, self.current_job.status)
+            adaptor.cancel_job(job)
+        logger.debug('Internal state %s, current %s', job._status, job.status)
         # status hasn't changed
-        self.assertEqual(self.current_job.status, JobStatus.JOB_COMPLETED)
-        logger.debug('%i => %s', len(self.current_job.job_history.values()), self.current_job.job_history.values())
+        self.assertEqual(job.status, JobStatus.JOB_COMPLETED)
+        logger.debug('%i => %s', len(job.job_history.values()), job.job_history.values())
         # assert that no history element has been added
-        self.current_job.status = JobStatus.JOB_RUNNING
-        self.current_job.run_cancel()
-        self.assertTrue(self.current_job.status == JobStatus.JOB_CANCELLED)
-        self.current_job.delete()
+        job.status = JobStatus.JOB_RUNNING
+        adaptor.cancel_job(job)
+        self.assertTrue(job.status == JobStatus.JOB_CANCELLED)
+        slug = job.slug
+        job.delete()
+        with self.assertRaises(ObjectDoesNotExist):
+            deleted = Job.objects.get(slug=slug)

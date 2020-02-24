@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class APIWavesTestCaseMixin(WavesTestCaseMixin, APITestCase, ):
-    fixtures = ['waves/core/tests/fixtures/users.json', 'waves/core/tests/fixtures/services.json']
+    fixtures = ['users.json', 'services.json']
 
     def create_job_inputs_for_submission(self, submission_data):
         submission = submission_data or {}

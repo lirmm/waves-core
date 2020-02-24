@@ -5,7 +5,7 @@ from os.path import join
 from django.contrib import messages
 from django.shortcuts import redirect
 
-from waves.core.settings import waves_settings as config
+from waves.core.settings import waves_settings
 from waves.core.views import DownloadFileView
 
 __all__ = ['ModelExportView', ]
@@ -34,7 +34,7 @@ class ModelExportView(DownloadFileView):
 
     @property
     def file_path(self):
-        return join(config.DATA_ROOT, 'export', self.file_name)
+        return join(waves_settings.DATA_ROOT, 'export', self.file_name)
 
     @property
     def file_name(self):

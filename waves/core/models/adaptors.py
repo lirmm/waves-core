@@ -5,6 +5,7 @@ import logging
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.module_loading import import_string
 
@@ -92,7 +93,7 @@ class HasAdaptorClazzMixin(models.Model):
         self.adaptor_params.all().delete()
         object_type = ContentType.objects.get_for_model(self)
         for name, default in self.adaptor_defaults.items():
-            if name == 'password':
+            if name in ('password', 'pass', 'auth', 'passphrase'):
                 defaults = {'name': name, 'crypt': True}
             else:
                 defaults = {'name': name, 'crypt': False}
@@ -102,11 +103,13 @@ class HasAdaptorClazzMixin(models.Model):
             else:
                 defaults['prevent_override'] = False
             defaults['value'] = default
-            AdaptorInitParam.objects.create(name=defaults['name'],
-                                            value=defaults['value'],
-                                            prevent_override=defaults['prevent_override'],
-                                            content_type=object_type,
-                                            object_id=self.pk)
+            AdaptorInitParam.objects.update_or_create(name=name,
+                                                      content_type=object_type,
+                                                      object_id=self.pk,
+                                                      defaults={
+                                                          'prevent_override': defaults['prevent_override'],
+                                                          'value': defaults['value']
+                                                      })
 
     @property
     def run_params(self):
@@ -161,8 +164,8 @@ class HasAdaptorClazzMixin(models.Model):
         """ Allow to temporarily override current adapter instance """
         self._adaptor = adaptor
 
-    def save(self, *args, **kwargs):
-        super(HasAdaptorClazzMixin, self).save(*args, **kwargs)
+    def clean(self):
         names = AdaptorLoader.get_class_names()
         if self.clazz and self.clazz not in names:
-            raise RuntimeError('The class [{}] not configured as ADAPTORS_CLASSES {}'.format(self.clazz, names))
+            raise ValidationError('The class [{}] not configured as ADAPTORS_CLASSES {}'.format(self.clazz, names))
+

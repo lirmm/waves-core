@@ -10,10 +10,12 @@ from os import access
 from django.apps import AppConfig
 from django.conf import settings
 from django.core.checks import Error, register, Warning
+from material.frontend.apps import ModuleMixin
+
 
 
 # noinspection PyUnresolvedReferences
-class WavesConfig(AppConfig):
+class WavesConfig(AppConfig, ModuleMixin):
     """
     WAVES main application AppConfig, add signals for waves_webapp
     """

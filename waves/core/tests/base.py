@@ -50,8 +50,6 @@ class WavesTestCaseMixin:
             jobs_submitted_input.append(submitted_input)
         return jobs_submitted_input
 
-
-
     def get_test_file(self):
         from waves.core.settings import waves_settings
         return open(join(waves_settings.DATA_ROOT, "test.fasta"), 'rb')
@@ -60,15 +58,12 @@ class WavesTestCaseMixin:
 class TestJobWorkflowMixin(object):
     jobs = []
 
-    def tearDown(self):
-        super(TestJobWorkflowMixin, self).tearDown()
-
     @staticmethod
     def service_sample_dir(service_api_name):
         return join(waves_settings.SAMPLE_DIR, service_api_name)
 
     @staticmethod
-    def create_base_job(title="Sample Empty Job -- Test", submission=None):
+    def create_base_job(title="Sample Copy Job -- Test", submission=None):
         job = Job.objects.create(title=title, submission=submission)
         return job
 

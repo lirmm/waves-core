@@ -1,6 +1,6 @@
 [
   {
-    "model": "wcore.service",
+    "model": "core.service",
     "pk": 1,
     "fields": {
       "created": "2019-02-19T20:39:22.712Z",
@@ -25,7 +25,7 @@
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 100,
     "fields": {
       "name": "command",
@@ -33,14 +33,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "service"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "wcore.submission",
+    "model": "core.submission",
     "pk": 1,
     "fields": {
       "created": "2019-02-19T20:39:22.716Z",
@@ -48,7 +48,6 @@
       "order": 0,
       "slug": "4cecc150-3db5-4f30-9f69-26e1fbbaee47",
       "api_name": "default",
-      "binary_file": null,
       "runner": null,
       "service": 1,
       "availability": 1,
@@ -56,7 +55,7 @@
     }
   },
   {
-    "model": "wcore.submissionoutput",
+    "model": "core.submissionoutput",
     "pk": 1,
     "fields": {
       "created": "2019-02-19T20:41:33.616Z",
@@ -74,7 +73,7 @@
     }
   },
   {
-    "model": "wcore.submissionexitcode",
+    "model": "core.submissionexitcode",
     "pk": 1,
     "fields": {
       "exit_code": 0,
@@ -84,7 +83,7 @@
     }
   },
   {
-    "model": "wcore.submissionexitcode",
+    "model": "core.submissionexitcode",
     "pk": 2,
     "fields": {
       "exit_code": 1,
@@ -94,10 +93,10 @@
     }
   },
   {
-    "model": "waves.aparam",
+    "model": "core.aparam",
     "pk": 1,
     "fields": {
-      "polymorphic_ctype": ["wcore", "fileinput"],
+      "polymorphic_ctype": ["core", "fileinput"],
       "order": 1,
       "api_name": "src",
       "label": "File to copy",
@@ -117,10 +116,10 @@
     }
   },
   {
-    "model": "waves.aparam",
+    "model": "core.aparam",
     "pk": 2,
     "fields": {
-      "polymorphic_ctype": ["wcore", "textparam"],
+      "polymorphic_ctype": ["core", "textparam"],
       "order": 2,
       "api_name": "dest",
       "label": "Destination file name",
@@ -140,14 +139,14 @@
     }
   },
   {
-    "model": "waves.textparam",
+    "model": "core.textparam",
     "pk": 2,
     "fields": {
       "max_length": "255"
     }
   },
   {
-    "model": "waves.fileinput",
+    "model": "core.fileinput",
     "pk": 1,
     "fields": {
       "max_size": 20480,

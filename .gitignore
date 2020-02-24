@@ -77,10 +77,10 @@ venv/
 /data/sample/*
 !/data/sample/.gitkeep
 # tests dirs
-/tests/settings.ini
+/waves/core/tests/settings.ini
 /tests/data/jobs/*/*
 !/tests/data/jobs/.gitkeep
-!/tests/settings.ini.sample
+!/waves/core/tests/settings.ini.sample
 *.sqlite3
 /staticfiles/
 /tests/data/*.json

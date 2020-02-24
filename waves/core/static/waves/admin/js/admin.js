@@ -37,7 +37,7 @@
 
 
     });
-    $(window).load(function () {
+    $(window).on('load', function () {
         $('fieldset.collapse.open').each(function () {
             $(this).removeClass('collapsed');
             $(this).find('a.collapse-toggle').html('Hide');
@@ -45,7 +45,7 @@
         $('.errorlist').parents('fieldset.collapsed').each(function () {
             $(this).removeClass('collapsed');
         });
-    })
+    });
 
 })(jQuery || django.jQuery);
 

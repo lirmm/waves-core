@@ -102,7 +102,7 @@ def service_input_post_delete_handler(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Runner)
 def runner_post_save_handler(sender, instance, created, **kwargs):
-    if created or instance.config_changed:
+    if created: # or instance.config_changed:
         instance.set_defaults()
 
 

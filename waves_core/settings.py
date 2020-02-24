@@ -10,36 +10,32 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import logging.config
 import os
 
 from django.contrib import messages
 
-
-from django.conf import settings
-from os.path import join, isfile
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '0jmf=ngd^2**h3km5@#&w21%hlj9kos($2=igsqh8-38_9g1$1'
+SECRET_KEY = os.getenv('SECRET_KEY', '0jmf=ngd^2**h3km5@#&w21%hlj9kos($2=igsqh8-38_9g1$1')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == "True"
+
 ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
     'polymorphic',
+    # STANDARD DJANGO
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    # WAVES CORE
     'waves.core',
     'waves.api',
     'waves.authentication',
@@ -48,6 +44,23 @@ INSTALLED_APPS = [
     'corsheaders',
     'adminsortable2',
 ]
+
+VALI_CONFIG = {
+    # the vali-admin themes  default, blue, purple, green,brown
+    'theme': 'default',
+    'dashboard': {'name': 'dashboard', 'url': '/admin/'},
+    # the order for applist  default, registry
+    # display applist by group: True
+    #  e.g. {group: True}
+    # default check decorators  vali.decorator.vali_models_group on ModelAdmin
+    #  * otherwize use group_marker in verbose_name_plural, (will be deprecated in future version 0.2.0)*
+    #  * e.g.  {group: True, group_marker : '-'}
+    #    verbose_name_plural = system-user
+    #  * display the model "user" in group "system"
+    'applist': {"order": "registry", "group": True},
+    # default: //maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css
+    # 'font_awesome_url': 'font-awesome-4.7.0/css/font-awesome.min.css',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -75,6 +88,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
+            ],
+            'builtins': [
+                'material.templatetags.material_form',
             ],
         },
     },
@@ -133,8 +150,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-     #   'waves.authentication.auth.TokenAuthentication',
-     #   'waves.authentication.auth.ApiKeyAuthentication',
+        #   'waves.authentication.auth.TokenAuthentication',
+        #   'waves.authentication.auth.ApiKeyAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],

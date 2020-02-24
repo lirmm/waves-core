@@ -265,7 +265,7 @@ class JobAdaptor:
 
     def serialize(self):
         return json.dumps({
-            "clazz": ".".join([self.__module__, self.__class__.__name__]),
+            "clazz": self.class_name,
             "params": self.init_params
         })
 

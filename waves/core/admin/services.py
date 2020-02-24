@@ -54,7 +54,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
     readonly_fields = ['remote_service_id', 'created', 'updated', 'submission_link', 'display_run_params', 'api_url']
     list_display = ('id', 'get_api_name', 'name', 'status', 'runner', 'version', 'created_by', 'updated',
                     'submission_link')
-    list_filter = ('status', 'name', 'created_by', '_runner')
+    list_filter = ('status', 'name', 'created_by', 'runner')
     list_editable = ('status', 'name')
     list_display_links = ('get_api_name', 'id')
     ordering = ('name', 'updated')
@@ -62,22 +62,18 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     fieldsets = [
         ('General', {
-            'fields': ['name', 'created_by', 'status', 'version', 'api_name', 'short_description'],
-            'classes': ('grp-collapse grp-closed', 'collapse', 'open')
-
+            'fields': ['name', 'status',  'created_by', 'short_description',
+                       'runner', 'binary_file', 'display_run_params'],
+            'classes': ('grp-collapse', 'open')
         }),
-        ('Computing infrastructure', {
-            'fields': ['runner', 'binary_file', 'display_run_params'],
-            'classes': ['collapse', ]
-        }),
-        ('Manage Access', {
+        ('Authorisation', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
             'fields': ['email_on', 'restricted_client', ]
         }),
         ('Details', {
             'classes': ('grp-collapse grp-closed', 'collapse'),
-            'fields': ['created', 'updated', 'description', 'edam_topics',
-                       'edam_operations', 'remote_service_id', 'api_url']
+            'fields': ['description', 'edam_topics', 'edam_operations',
+                       'version', 'api_name', 'remote_service_id', 'api_url', 'created', 'updated']
         }),
     ]
 
@@ -105,27 +101,15 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         ]
         return urls + extended_urls
 
-    def get_fieldsets(self, request, obj=None):
-        base_fieldsets = super(ServiceAdmin, self).get_fieldsets(request, obj)
-        if obj is None:
-            # create mode un-collapse RunConfig
-            try:
-                base_fieldsets[1][1]['classes'].remove(u'collapse')
-            except ValueError:
-                pass
-        else:
-            base_fieldsets[1][1]['classes'].append('collapse')
-        return base_fieldsets + self.extra_fieldsets
-
     def get_inlines(self, request, obj=None):
         _inlines = [
             ServiceSubmissionInline
         ]
         if obj is not None:
             self.inlines = _inlines
-        if obj and obj.get_runner() is not None \
-                and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
-            self.inlines.insert(0, ServiceRunnerParamInLine)
+            if obj.get_runner() is not None \
+               and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
+                self.inlines.insert(0, ServiceRunnerParamInLine)
         return self.inlines
 
     def display_run_params(self, obj):
@@ -175,9 +159,10 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         form = super(ServiceAdmin, self).get_form(request, obj, **kwargs)
         form.current_user = request.user
         try:
-            form.base_fields['created_by'].widget.can_change_related = False
-            form.base_fields['created_by'].widget.can_add_related = False
-            form.base_fields['created_by'].widget.can_delete_related = False
+            # form.base_fields['created_by'].widget.can_change_related = False
+            #form.base_fields['created_by'].widget.can_add_related = False
+            # form.base_fields['created_by'].widget.can_delete_related = False
+            pass
         except KeyError:
             # nothing to do
             pass

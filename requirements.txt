@@ -9,7 +9,7 @@ django-polymorphic==2.1.2
 djangorestframework==3.11.0
 backports.ssl-match-hostname
 inflection==0.3.1
-psutil==5.6.7
+psutil==5.7.0
 cryptography==2.8
 python-magic==0.4.15
 radical.saga==1.1.0

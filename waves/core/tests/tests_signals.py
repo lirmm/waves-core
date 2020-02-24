@@ -17,12 +17,12 @@ logger = logging.getLogger(__name__)
     WAVES_CORE={
         'JOB_BASE_DIR': join(settings.BASE_DIR, 'tests', 'data', 'jobs'),
         'ADAPTORS_CLASSES': (
-            'waves.tests.mocks.adaptors.MockJobRunnerAdaptor',
+            'waves.core.tests.mocks.MockJobRunnerAdaptor',
         )
     }
 )
 class SignalTestCase(TestCase, WavesTestCaseMixin):
-    fixtures = ("waves/core/tests/fixtures/accounts.json",)
+    fixtures = ("accounts.json",)
     services = []
     runners = []
 

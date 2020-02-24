@@ -1,6 +1,6 @@
 [
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 1,
     "fields": {
       "name": "protocol",
@@ -8,14 +8,14 @@
       "crypt": false,
       "prevent_override": true,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 2,
     "fields": {
       "name": "host",
@@ -23,14 +23,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 3,
     "fields": {
       "name": "command",
@@ -38,14 +38,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 14,
     "fields": {
       "name": "protocol",
@@ -53,14 +53,14 @@
       "crypt": false,
       "prevent_override": true,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 2
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 15,
     "fields": {
       "name": "host",
@@ -68,14 +68,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 2
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 16,
     "fields": {
       "name": "command",
@@ -83,14 +83,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 2
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 19,
     "fields": {
       "name": "queue",
@@ -98,14 +98,14 @@
       "crypt": false,
       "prevent_override": true,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 3
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 20,
     "fields": {
       "name": "protocol",
@@ -113,14 +113,14 @@
       "crypt": false,
       "prevent_override": true,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 3
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 21,
     "fields": {
       "name": "host",
@@ -128,14 +128,14 @@
       "crypt": false,
       "prevent_override": true,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 3
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 22,
     "fields": {
       "name": "command",
@@ -143,14 +143,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "runner"
       ],
       "object_id": 3
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 77,
     "fields": {
       "name": "command",
@@ -158,14 +158,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "service"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 78,
     "fields": {
       "name": "host",
@@ -173,14 +173,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "service"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 116,
     "fields": {
       "name": "command",
@@ -188,14 +188,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "submission"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "waves.adaptorinitparam",
+    "model": "core.adaptorinitparam",
     "pk": 117,
     "fields": {
       "name": "host",
@@ -203,50 +203,50 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "wcore",
+        "core",
         "submission"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "waves.runner",
+    "model": "core.runner",
     "pk": 1,
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.waves.core.adaptors.shell.LocalShellAdaptor",
+      "clazz": "waves.core.adaptors.saga.shell.LocalShellAdaptor",
       "binary_file": null,
       "name": "Local Shell Runner",
       "enabled": true
     }
   },
   {
-    "model": "waves.runner",
+    "model": "core.runner",
     "pk": 2,
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.waves.core.adaptors.shell.LocalShellAdaptor",
+      "clazz": "waves.core.adaptors.saga.shell.LocalShellAdaptor",
       "binary_file": null,
       "name": "Second One",
       "enabled": true
     }
   },
   {
-    "model": "waves.runner",
+    "model": "core.runner",
     "pk": 3,
     "fields": {
       "description": "",
       "short_description": "",
-      "clazz": "waves.waves.core.adaptors.cluster.LocalClusterAdaptor",
+      "clazz": "waves.core.adaptors.saga.cluster.LocalClusterAdaptor",
       "binary_file": null,
       "name": "LocalClusterAdaptor",
       "enabled": true
     }
   },
   {
-    "model": "wcore.service",
+    "model": "core.service",
     "pk": 1,
     "fields": {
       "created": "2017-09-19T08:29:25.229Z",
@@ -271,7 +271,7 @@
     }
   },
   {
-    "model": "wcore.submission",
+    "model": "core.submission",
     "pk": 1,
     "fields": {
       "created": "2017-09-19T08:29:25.239Z",
@@ -287,7 +287,7 @@
     }
   },
   {
-    "model": "wcore.submissionoutput",
+    "model": "core.submissionoutput",
     "pk": 1,
     "fields": {
       "created": "2017-09-19T10:22:57.595Z",
@@ -305,7 +305,7 @@
     }
   },
   {
-    "model": "wcore.submissionexitcode",
+    "model": "core.submissionexitcode",
     "pk": 1,
     "fields": {
       "exit_code": 0,
@@ -315,7 +315,7 @@
     }
   },
   {
-    "model": "wcore.submissionexitcode",
+    "model": "core.submissionexitcode",
     "pk": 2,
     "fields": {
       "exit_code": 1,
@@ -325,11 +325,11 @@
     }
   },
   {
-    "model": "waves.aparam",
+    "model": "core.aparam",
     "pk": 1,
     "fields": {
       "polymorphic_ctype": [
-        "wcore",
+        "core",
         "booleanparam"
       ],
       "order": 1,
@@ -351,11 +351,11 @@
     }
   },
   {
-    "model": "waves.aparam",
+    "model": "core.aparam",
     "pk": 5,
     "fields": {
       "polymorphic_ctype": [
-        "wcore",
+        "core",
         "textparam"
       ],
       "order": 2,
@@ -377,11 +377,11 @@
     }
   },
   {
-    "model": "waves.aparam",
+    "model": "core.aparam",
     "pk": 6,
     "fields": {
       "polymorphic_ctype": [
-        "wcore",
+        "core",
         "fileinput"
       ],
       "order": 3,
@@ -403,11 +403,11 @@
     }
   },
   {
-    "model": "waves.aparam",
+    "model": "core.aparam",
     "pk": 7,
     "fields": {
       "polymorphic_ctype": [
-        "wcore",
+        "core",
         "integerparam"
       ],
       "order": 4,
@@ -429,14 +429,14 @@
     }
   },
   {
-    "model": "waves.textparam",
+    "model": "core.textparam",
     "pk": 5,
     "fields": {
       "max_length": "255"
     }
   },
   {
-    "model": "waves.booleanparam",
+    "model": "core.booleanparam",
     "pk": 1,
     "fields": {
       "true_value": "True",
@@ -444,7 +444,7 @@
     }
   },
   {
-    "model": "waves.integerparam",
+    "model": "core.integerparam",
     "pk": 7,
     "fields": {
       "min_val": 0,
@@ -453,7 +453,7 @@
     }
   },
   {
-    "model": "waves.fileinput",
+    "model": "core.fileinput",
     "pk": 6,
     "fields": {
       "max_size": 20480,
@@ -461,7 +461,7 @@
     }
   },
   {
-    "model": "waves.fileinputsample",
+    "model": "core.fileinputsample",
     "pk": 1,
     "fields": {
       "label": "the label",
