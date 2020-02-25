@@ -25,7 +25,7 @@ from rest_framework.test import APITestCase
 
 from waves.core.const import JobStatus
 from waves.models import Job, Service, Runner
-from waves.models.const import ParamType
+from waves.core.const import ParamType
 from waves.tests.base import WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)

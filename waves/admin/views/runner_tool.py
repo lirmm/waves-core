@@ -20,7 +20,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, FormView
 
-from waves.core.adaptors.exceptions import AdaptorConnectException
+from waves.core.exceptions import AdaptorConnectException
 from waves.core.exceptions import RunnerException
 from waves.admin.forms import ImportForm
 from waves.models import Runner, Service

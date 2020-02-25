@@ -16,7 +16,7 @@ from os.path import join
 
 import radical.saga as rs
 
-from waves.core.adaptors.exceptions import AdaptorJobException
+from waves.core.exceptions import AdaptorJobException
 from .base import SagaAdaptor
 
 logger = logging.getLogger(__name__)

@@ -11,6 +11,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from views.services import *
-from views.jobs import *
-from views.files import *
+from .services import *
+from .jobs import *
+from .files import *

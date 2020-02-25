@@ -20,7 +20,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from waves.models import JobInput, JobOutput, Service, Job
-from waves.models.const import ParamType
+from waves.core.const import ParamType
 
 from tests.utils import bootstrap_services, api_user, super_user, admin_user
 

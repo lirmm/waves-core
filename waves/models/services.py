@@ -42,6 +42,7 @@ class ServiceRunParam(AdaptorInitParam):
 
     class Meta:
         proxy = True
+        app_label = "waves"
 
     def get_value(self):
         if self.name == "command" and self.content_object is not None:
@@ -119,6 +120,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin,
         verbose_name = 'Waves Service'
         verbose_name_plural = "Waves Services"
         unique_together = (('api_name', 'version', 'status'), ('api_name', 'version'))
+        app_label = "waves"
 
     #: Service DRAFT status: online access granted only to creator
     SRV_DRAFT = 0
@@ -351,6 +353,7 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
         verbose_name_plural = 'Submission methods'
         ordering = ('order',)
         unique_together = ('service', 'api_name')
+        app_label = "waves"
 
     NOT_AVAILABLE = 0
     AVAILABLE_API = 1
@@ -481,6 +484,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
         verbose_name = 'Expected output'
         verbose_name_plural = 'Expected outputs'
         ordering = ['-created']
+        app_label = "waves"
 
     #: Source field for api_name
     field_api_name = 'label'
@@ -542,6 +546,7 @@ class SubmissionExitCode(models.Model):
         db_table = 'wcore_submissionexitcode'
         verbose_name = 'Exit Code'
         unique_together = ('exit_code', 'submission')
+        app_label = "waves"
 
     exit_code = models.IntegerField('Exit code value', default=0)
     message = models.CharField('Exit code message', max_length=255)
@@ -563,3 +568,4 @@ class SubmissionRunParam(AdaptorInitParam):
 
     class Meta:
         proxy = True
+        app_label = "waves"

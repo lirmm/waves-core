@@ -11,9 +11,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from .base import WavesException
+
+__all__ = ['AdaptorException', 'AdaptorConnectException', 'AdaptorExecException', 'AdaptorNotAvailableException',
+           'AdaptorInitError', 'AdaptorJobException', 'AdaptorNotReady']
 
 
-class AdaptorException(BaseException):
+class AdaptorException(WavesException):
     """ Base adapter exception class, should be raise upon specific adapter class exception catch
     this exception class is supposed to be catched
     """

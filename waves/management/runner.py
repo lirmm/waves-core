@@ -24,7 +24,7 @@ from daemons.prefab import run
 
 import waves
 from waves.core.const import JobStatus
-from waves.core.adaptors.exceptions import AdaptorException
+from waves.core.exceptions import AdaptorException
 from waves.models import Job
 from waves.settings import waves_settings
 

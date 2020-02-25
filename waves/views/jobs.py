@@ -19,7 +19,7 @@ from django.template.loader import get_template
 from django.urls import reverse
 from django.views import generic
 
-from waves.forms.frontend import ServiceSubmissionForm
+from waves.forms import frontend
 from waves.models import JobOutput, JobInput, Job, Submission, Service
 from .files import DownloadFileView
 from .services import SubmissionFormView, ServiceDetailView
@@ -68,7 +68,7 @@ class JobInputView(JobFileView):
 class JobSubmissionView(ServiceDetailView, SubmissionFormView):
     model = Service
     template_name = 'waves/services/service_form.html'
-    form_class = ServiceSubmissionForm
+    form_class = frontend.ServiceSubmissionForm
     slug_field = 'api_name'
     slug_url_kwarg = 'service_app_name'
 

@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from waves.models.const import OptType
+from waves.core.const import OptType
 
 
 def command_line_element(elem):

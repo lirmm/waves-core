@@ -15,8 +15,7 @@ import json
 
 from waves.core.adaptors.utils import check_ready
 from waves.core.const import JobStatus
-from waves.core.adaptors.exceptions import AdaptorException
-from waves.core.exceptions import JobInconsistentStateError
+from waves.core.exceptions import AdaptorException, JobInconsistentStateError
 
 
 class JobAdaptor:

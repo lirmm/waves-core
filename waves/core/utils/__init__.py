@@ -1,13 +1,13 @@
 """ Base Utils classes """
 
-import logging
 import random
 import string
 
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .encrypt import Encrypt
+
 from .decorators import log_exception
+from .encrypt import Encrypt
 from .logged import LoggerClass
 from .storage import *
 from .validators import *

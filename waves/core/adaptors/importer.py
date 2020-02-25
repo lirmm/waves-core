@@ -17,7 +17,7 @@ import warnings
 
 import inflection
 
-from waves.core.adaptors.exceptions import ImporterException
+from waves.core.exceptions import ImporterException
 from waves.models import Submission
 from waves.settings import waves_settings
 from waves.core.utils import LoggerClass

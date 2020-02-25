@@ -12,7 +12,6 @@
    limitations under the License.
 """
 
-
 import logging
 
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -29,11 +28,11 @@ from rest_framework.renderers import StaticHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from waves.core.exceptions import JobException
 from waves.api.permissions import ServiceAccessPermission
 from waves.api.v2 import serializers
+from waves.core.exceptions import JobException
+from waves.forms import frontend
 from waves.models import Job, Service
-from waves.forms.frontend import ServiceSubmissionForm
 
 logger = logging.getLogger(__name__)
 
@@ -92,7 +91,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         """ Retrieve service form """
         from django.shortcuts import render
         from django.http import HttpResponse
-        from forms.frontend.services import ServiceSubmissionForm
+        from waves.forms.frontend import ServiceSubmissionForm
         api_name = self.kwargs.get('service_app_name')
         service_tool = get_object_or_404(self.get_queryset(), api_name=api_name)
         form = [{'submission': service_submission,
@@ -139,16 +138,16 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
         submission = obj.submissions_api.filter(api_name=submission_app_name)[0]
         template_pack = self.request.GET.get('tp', 'bootstrap3')
         form = [{'submission': submission,
-                 'form': ServiceSubmissionForm(instance=submission,
-                                               parent=submission.service,
-                                               submit_ajax=True,
-                                               template_pack=template_pack,
-                                               form_action=request.build_absolute_uri(
-                                                   reverse('wapi:v2:waves-services-submission-jobs',
-                                                           kwargs=dict(
-                                                               service_app_name=service_app_name,
-                                                               submission_app_name=submission_app_name
-                                                           ))))}]
+                 'form': frontend.ServiceSubmissionForm(instance=submission,
+                                                        parent=submission.service,
+                                                        submit_ajax=True,
+                                                        template_pack=template_pack,
+                                                        form_action=request.build_absolute_uri(
+                                                            reverse('wapi:v2:waves-services-submission-jobs',
+                                                                    kwargs=dict(
+                                                                        service_app_name=service_app_name,
+                                                                        submission_app_name=submission_app_name
+                                                                    ))))}]
         content = render(request=self.request,
                          template_name='waves/api/service_api_form.html',
                          context={'submissions': form,
@@ -186,7 +185,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                 # Now job is created (or raise an exception),
                 serializer = serializers.JobSerializer(created_job, many=False, context={'request': request},
                                                        fields=(
-                                                       'slug', 'url', 'created', 'status', 'service', 'submission'))
+                                                           'slug', 'url', 'created', 'status', 'service', 'submission'))
                 logger.debug('Job successfully created %s ' % created_job.slug)
                 return Response(serializer.data, status=201)
             except ValidationError as e:

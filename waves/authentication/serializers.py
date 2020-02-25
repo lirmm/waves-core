@@ -15,6 +15,7 @@ from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 
 
 class WavesApiUserSerializer(serializers.Serializer):
@@ -29,9 +30,6 @@ class WavesApiUserSerializer(serializers.Serializer):
             user = authenticate(username=username, password=password)
 
             if user:
-                # From Django 1.10 onwards the `authenticate` call simply
-                # returns `None` for is_active=False users.
-                # (Assuming the default `ModelBackend` authentication backend.)
                 if not user.is_active:
                     msg = _('User account is disabled.')
                     raise serializers.ValidationError(msg, code='authorization')
@@ -44,3 +42,9 @@ class WavesApiUserSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+    def update(self, instance, validated_data):
+        raise PermissionDenied()
+
+    def create(self, validated_data):
+        raise PermissionDenied()

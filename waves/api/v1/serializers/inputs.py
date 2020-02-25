@@ -15,7 +15,7 @@ from rest_framework import serializers
 from rest_framework.fields import empty
 
 from waves.api.share import DynamicFieldsModelSerializer, RecursiveField
-from waves.models.const import ParamType
+from waves.core.const import ParamType
 from waves.models import AParam, TextParam, DecimalParam, IntegerParam, FileInput, BooleanParam, ListParam
 from .fields import ListElementField
 

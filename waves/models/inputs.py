@@ -9,7 +9,7 @@ from django.db import models
 from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel
 
-from .const import OptType, ParamType
+from waves.core.const import OptType, ParamType
 from .base import Ordered, ApiModel
 from .managers import FileInputSampleManager
 from waves.settings import waves_settings
@@ -27,6 +27,7 @@ class RepeatedGroup(Ordered):
         db_table = 'wcore_repeatedgroup'
         verbose_name = "Repeated input"
         verbose_name_plural = "Repeated inputs"
+        app_label = "waves"
 
     submission = models.ForeignKey('Submission',
                                    related_name='submission_groups', null=True,
@@ -50,6 +51,7 @@ class AParam(PolymorphicModel, ApiModel, Ordered):
         verbose_name = "Input"
         ordering = ('order',)
         db_table = 'wcore_aparam'
+        app_label = "waves"
 
     # objects = PolymorphicManager()
     #: Input Label
@@ -177,6 +179,7 @@ class TextParam(AParam):
         verbose_name = "Text Input"
         verbose_name_plural = "Text Input"
         db_table = 'wcore_textparam'
+        app_label = "waves"
 
     max_length = models.CharField('Max length (<255)', max_length=255, default=255)
 
@@ -197,6 +200,7 @@ class BooleanParam(AParam):
         verbose_name = "Boolean choice"
         verbose_name_plural = "Boolean choices"
         db_table = 'wcore_booleanparam'
+        app_label = "waves"
 
     class_label = "Boolean"
     true_value = models.CharField('True value', default='True', max_length=50)
@@ -296,6 +300,7 @@ class DecimalParam(NumberParam, AParam):
         db_table = 'wcore_decimalparam'
         verbose_name = "Decimal"
         verbose_name_plural = "Decimal"
+        app_label = "waves"
 
     class_label = "Decimal"
     min_val = models.DecimalField('Min value', decimal_places=3, max_digits=50, default=None, null=True, blank=True,
@@ -320,6 +325,7 @@ class IntegerParam(NumberParam, AParam):
         db_table = 'wcore_integerparam'
         verbose_name = "Integer"
         verbose_name_plural = "Integer"
+        app_label = "waves"
 
     class_label = "Integer"
     min_val = models.IntegerField('Min value', default=0, null=True, blank=True,
@@ -344,6 +350,7 @@ class ListParam(AParam):
         db_table = 'wcore_listparam'
         verbose_name = "List"
         verbose_name_plural = "Lists"
+        app_label = "waves"
 
     DISPLAY_SELECT = 'select'
     DISPLAY_RADIO = 'radio'
@@ -429,6 +436,7 @@ class FileInput(AParam):
         ordering = ['order', ]
         verbose_name = "File input"
         verbose_name_plural = "Files inputs"
+        app_label = "waves"
 
     class_label = "File Input"
 
@@ -466,6 +474,7 @@ class FileInputSample(models.Model):
         db_table = 'wcore_fileinputsample'
         verbose_name_plural = "Input samples"
         verbose_name = "Input sample"
+        app_label = "waves"
 
     objects = FileInputSampleManager()
     class_label = "File Input Sample"
@@ -521,6 +530,7 @@ class SampleDepParam(models.Model):
         db_table = 'wcore_sampledepparam'
         verbose_name_plural = "Sample dependencies"
         verbose_name = "Sample dependency"
+        app_label = "waves"
 
     #: Related file input when sample is selected
     file_input = models.ForeignKey('FileInput', null=True, on_delete=models.CASCADE,

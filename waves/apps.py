@@ -20,7 +20,7 @@ from django.core.checks import Error, register, Warning
 
 
 # noinspection PyUnresolvedReferences
-class WavesConfig(AppConfig, ModuleMixin):
+class WavesConfig(AppConfig):
     """
     WAVES main application AppConfig, add signals for waves_webapp
     """

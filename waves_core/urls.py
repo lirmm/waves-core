@@ -23,7 +23,7 @@ from rest_framework.documentation import include_docs_urls
 admin.site.site_title = 'WAVES'
 
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='base.html')),
+    path('', TemplateView.as_view(template_name='waves/base.html')),
     path('django-sb-admin/', include('django_sb_admin.urls')),
     path('admin/', admin.site.urls),
     path('vali/', include('vali.urls')),

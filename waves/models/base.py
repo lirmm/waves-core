@@ -12,8 +12,6 @@
    limitations under the License.
 """
 
-
-
 import re
 import uuid
 
@@ -22,10 +20,11 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError, Multiple
 from django.db import models
 
 from waves.core.compat import RichTextField
+from waves.core.exceptions.base import ExportError
 from waves.settings import waves_settings
 
 __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 'ApiModel',
-           'UrlMixin', 'ExportError']
+           'UrlMixin']
 
 
 class TimeStamped(models.Model):
@@ -135,7 +134,7 @@ class ApiModel(models.Model):
             pass
 
 
-class UrlMixin(object):
+class UrlMixin:
     """ Url Mixin allow easy generation or absolute url related to any model object
 
     .. note::
@@ -158,11 +157,6 @@ class UrlMixin(object):
 
     def get_absolute_url(self):
         raise NotImplementedError
-
-
-class ExportError(Exception):
-    """ Export 'Error'"""
-    pass
 
 
 class ExportAbleMixin:

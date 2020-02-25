@@ -15,8 +15,9 @@ import logging
 
 import radical.saga as rs
 
-from waves.core.adaptors import exceptions, JobAdaptor
-from waves.core.adaptors import JobStatus, JobRunDetails
+from waves.core import exceptions
+from waves.core.adaptors.base import JobAdaptor
+from waves.core.const import JobStatus, JobRunDetails
 
 logger = logging.getLogger(__name__)
 

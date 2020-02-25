@@ -24,7 +24,7 @@ from django.test import override_settings
 
 from tests.utils import sample_service, sample_job
 from waves.core.const import JobStatus
-from waves.core.adaptors.exceptions import AdaptorException
+from waves.core.exceptions import AdaptorException
 from waves.core.loader import AdaptorLoader
 from waves.core.adaptors.saga import SshClusterAdaptor, LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.core.exceptions import JobInconsistentStateError

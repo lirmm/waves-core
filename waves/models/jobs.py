@@ -25,16 +25,12 @@ from django.db import models
 from django.utils.encoding import smart_text
 from django.utils.html import format_html
 
-from waves.core.adaptors.exceptions import AdaptorException
-from .managers import JobManager, JobInputManager, JobOutputManager
-from waves.core.exceptions import JobInconsistentStateError
-from waves.core.const import JobStatus, JobRunDetails
-from waves.core.utils import LoggerClass
-from waves.core.exceptions.base import WavesException
-from waves.core.utils.storage import allow_display_online
-from .base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
-from .const import OptType, ParamType
+from waves.core.const import OptType, ParamType, JobStatus, JobRunDetails
+from waves.core.exceptions import AdaptorException, JobInconsistentStateError, WavesException
+from waves.core.utils import LoggerClass, allow_display_online
 from waves.settings import waves_settings
+from .base import TimeStamped, Slugged, Ordered, UrlMixin, ApiModel
+from .managers import JobManager, JobInputManager, JobOutputManager
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +53,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         verbose_name_plural = "Jobs"
         ordering = ['-updated', '-created']
         db_table = 'wcore_job'
+        app_label = "waves"
 
     objects = JobManager()
     #: Job Title, automatic or set by user upon submission
@@ -578,6 +575,7 @@ class JobInput(Ordered, Slugged, ApiModel, UrlMixin):
     class Meta:
         unique_together = ('name', 'value', 'job')
         db_table = 'wcore_jobinput'
+        app_label = "waves"
 
     objects = JobInputManager()
     #: Reference to related :class:`waves.core.models.jobs.Job`
@@ -724,6 +722,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
     class Meta:
         unique_together = ('api_name', 'job')
         db_table = 'wcore_joboutput'
+        app_label = "waves"
 
     objects = JobOutputManager()
     field_api_name = "_name"

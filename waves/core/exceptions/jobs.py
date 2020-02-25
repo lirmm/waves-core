@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from waves.core.exceptions.base import WavesException
+from .base import WavesException
 
 __all__ = ['JobException', 'JobRunException', 'JobSubmissionException', 'JobCreateException',
            'JobMissingMandatoryParam', 'JobInconsistentStateError']

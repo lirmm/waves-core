@@ -22,8 +22,8 @@ from django.template.loader import get_template
 from django.urls import reverse
 from django.views import generic
 
+from waves.forms import frontend
 from waves.core.exceptions import JobException
-from forms.frontend import services
 from waves.models import Job, Submission, Service
 from waves.settings import waves_settings
 
@@ -35,7 +35,7 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
     context_object_name = 'service'
     queryset = Service.objects.all().prefetch_related('submissions')
     object = None
-    form_class = services.ServiceSubmissionForm
+    form_class = frontend.ServiceSubmissionForm
     view_mode = ''
     job = None
 
@@ -95,8 +95,8 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
             else:
                 context['submissions'].append(
                     {'submission': submission,
-                     'form': services.ServiceSubmissionForm(instance=submission, parent=self.object,
-                                                            user=self.request.user)})
+                     'form': frontend.ServiceSubmissionForm(instance=submission, parent=self.object,
+                                                                  user=self.request.user)})
         return context
 
     def get_form_kwargs(self):
@@ -109,10 +109,10 @@ class SubmissionFormView(generic.FormView, generic.DetailView):
         return extra_kwargs
 
     def post(self, request, *args, **kwargs):
-        form = services.ServiceSubmissionForm(parent=self.get_object(),
-                                              instance=self._get_selected_submission(),
-                                              data=self.request.POST,
-                                              files=self.request.FILES)
+        form = frontend.ServiceSubmissionForm(parent=self.get_object(),
+                                                    instance=self._get_selected_submission(),
+                                                    data=self.request.POST,
+                                                    files=self.request.FILES)
         if form.is_valid():
             return self.form_valid(form)
         else:

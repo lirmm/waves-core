@@ -12,8 +12,6 @@
    limitations under the License.
 """
 
-
-
 import logging
 
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -38,6 +36,7 @@ class AdaptorInitParam(models.Model):
         verbose_name = "Initial param"
         verbose_name_plural = "Init params"
         db_table = 'wcore_adaptorinitparam'
+        app_label = "waves"
 
     _value = None
     _override = None
@@ -182,4 +181,3 @@ class HasAdaptorClazzMixin(models.Model):
         names = AdaptorLoader.get_class_names()
         if self.clazz and self.clazz not in names:
             raise ValidationError('The class [{}] not configured as ADAPTORS_CLASSES {}'.format(self.clazz, names))
-

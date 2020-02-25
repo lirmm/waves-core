@@ -14,8 +14,8 @@
 
 from django.db import models, IntegrityError
 
-from .managers import JobHistoryManager, JobAdminHistoryManager
 from waves.core.const import JobStatus
+from .managers import JobHistoryManager, JobAdminHistoryManager
 
 
 class JobHistory(models.Model):
@@ -26,6 +26,7 @@ class JobHistory(models.Model):
         ordering = ['-timestamp', '-status']
         unique_together = ('job', 'timestamp', 'status', 'is_admin')
         db_table = 'wcore_jobhistory'
+        app_label = "waves"
 
     objects = JobHistoryManager()
     #: Related :class:`waves.core.models.jobs.Job`
@@ -59,5 +60,6 @@ class JobAdminHistory(JobHistory):
 
     class Meta:
         proxy = True
+        app_label = "waves"
 
     objects = JobAdminHistoryManager()

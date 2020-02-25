@@ -22,7 +22,7 @@ from psutil import long
 
 from waves.core.const import JobStatus
 from waves.core.exceptions import JobMissingMandatoryParam
-from .const import ParamType
+from waves.core.const import ParamType
 
 logger = logging.getLogger(__name__)
 
