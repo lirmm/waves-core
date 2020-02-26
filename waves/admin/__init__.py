@@ -11,8 +11,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-import waves.admin.runners as runners
-import waves.admin.inputs as inputs
-import waves.admin.services as services
-import waves.admin.submissions as submissions
-import waves.admin.jobs as jobs
+from .runners import *
+from .inputs import *
+from .services import *
+from .submissions import *
+from .jobs import *
+from .binaries import *

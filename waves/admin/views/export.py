@@ -36,7 +36,7 @@ class ModelExportView(DownloadFileView):
         return context
 
     def get(self, request, *args, **kwargs):
-        from waves.models import ExportError
+        from waves.core.exceptions import ExportError
         try:
             return super(ModelExportView, self).get(request, *args, **kwargs)
         except ExportError as e:

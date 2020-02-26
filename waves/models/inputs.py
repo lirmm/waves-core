@@ -10,11 +10,11 @@ from django.utils.safestring import mark_safe
 from polymorphic.models import PolymorphicModel
 
 from waves.core.const import OptType, ParamType
-from .base import Ordered, ApiModel
-from .managers import FileInputSampleManager
-from waves.settings import waves_settings
 from waves.core.utils.storage import file_sample_directory, waves_storage
 from waves.core.utils.validators import validate_list_comma, validate_list_param
+from waves.settings import waves_settings
+from .base import Ordered, ApiModel
+from .managers import FileInputSampleManager
 
 __all__ = ['AParam', 'RepeatedGroup', 'FileInput', 'BooleanParam', 'DecimalParam', 'NumberParam',
            'ListParam', 'IntegerParam', 'TextParam', 'FileInputSample', 'SampleDepParam']

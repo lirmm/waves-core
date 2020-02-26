@@ -20,9 +20,8 @@ from django.db import models, transaction
 from django.db.models import Q
 from psutil import long
 
-from waves.core.const import JobStatus
+from waves.core.const import JobStatus, ParamType
 from waves.core.exceptions import JobMissingMandatoryParam
-from waves.core.const import ParamType
 
 logger = logging.getLogger(__name__)
 
@@ -324,7 +323,7 @@ class JobOutputManager(models.Manager):
                 if isinstance(value_to_normalize, File):
                     logger.debug('Value to normalize is a real file %s', value_to_normalize.name)
                     value_to_normalize = value_to_normalize.name
-                elif isinstance(value_to_normalize, (str, unicode)):
+                elif isinstance(value_to_normalize, str):
                     logger.debug('Value to normalize is str %s', from_input.default)
                     value_to_normalize = from_input.default
             logger.debug("value to normalize %s", value_to_normalize)

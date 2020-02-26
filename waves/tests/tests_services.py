@@ -22,14 +22,14 @@ from django.urls import reverse
 from waves.models import JobInput, JobOutput, Service, Job
 from waves.core.const import ParamType
 
-from tests.utils import bootstrap_services, api_user, super_user, admin_user
+from tests.base import bootstrap_services, api_user, super_user, admin_user
 
 logger = logging.getLogger(__name__)
 
 
 class ServicesTestCase(TestCase):
-    fixtures = ("accounts.json",
-                "runners.json",
+    fixtures = ("accounts",
+                "runners",
                 # "services.json",
                 # "copy_service.json"
                 )

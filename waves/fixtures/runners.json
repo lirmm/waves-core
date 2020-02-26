@@ -1,6 +1,6 @@
 [
   {
-    "model": "core.runner",
+    "model": "waves.runner",
     "pk": 1,
     "fields": {
       "description": "",
@@ -11,7 +11,7 @@
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 1,
     "fields": {
       "name": "protocol",
@@ -26,7 +26,7 @@
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 2,
     "fields": {
       "name": "host",
@@ -34,14 +34,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "core",
+        "waves",
         "runner"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 3,
     "fields": {
       "name": "command",
@@ -49,14 +49,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "core",
+        "waves",
         "runner"
       ],
       "object_id": 1
     }
   },
   {
-    "model": "core.runner",
+    "model": "waves.runner",
     "pk": 2,
     "fields": {
       "description": "",
@@ -67,7 +67,7 @@
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 14,
     "fields": {
       "name": "protocol",
@@ -75,14 +75,14 @@
       "crypt": false,
       "prevent_override": true,
       "content_type": [
-        "core",
+        "waves",
         "runner"
       ],
       "object_id": 2
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 15,
     "fields": {
       "name": "host",
@@ -90,14 +90,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "core",
+        "waves",
         "runner"
       ],
       "object_id": 2
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 16,
     "fields": {
       "name": "command",
@@ -105,14 +105,14 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "core",
+        "waves",
         "runner"
       ],
       "object_id": 2
     }
   },
   {
-    "model": "core.runner",
+    "model": "waves.runner",
     "pk": 3,
     "fields": {
       "description": "",
@@ -123,7 +123,7 @@
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 19,
     "fields": {
       "name": "queue",
@@ -131,14 +131,14 @@
       "crypt": false,
       "prevent_override": true,
       "content_type": [
-        "core",
+        "waves",
         "runner"
       ],
       "object_id": 3
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 20,
     "fields": {
       "name": "protocol",
@@ -146,14 +146,14 @@
       "crypt": false,
       "prevent_override": true,
       "content_type": [
-        "core",
+        "waves",
         "runner"
       ],
       "object_id": 3
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 21,
     "fields": {
       "name": "host",
@@ -161,14 +161,14 @@
       "crypt": false,
       "prevent_override": true,
       "content_type": [
-        "core",
+        "waves",
         "runner"
       ],
       "object_id": 3
     }
   },
   {
-    "model": "core.adaptorinitparam",
+    "model": "waves.adaptorinitparam",
     "pk": 22,
     "fields": {
       "name": "command",
@@ -176,7 +176,7 @@
       "crypt": false,
       "prevent_override": false,
       "content_type": [
-        "core",
+        "waves",
         "runner"
       ],
       "object_id": 3

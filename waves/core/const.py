@@ -14,7 +14,6 @@
 
 from collections import namedtuple
 
-
 __all__ = ['JobStatus', 'JobRunDetails', 'OptType', 'ParamType']
 
 

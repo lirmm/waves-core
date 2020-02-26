@@ -12,7 +12,6 @@
    limitations under the License.
 """
 
-
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError
@@ -22,10 +21,11 @@ from django.urls import reverse
 from django.views import generic
 from django.views.generic import View
 
+from waves.models import Service
 from waves.settings import waves_settings
 from waves.views import SubmissionFormView
-from waves.admin.views import ModelExportView, RunnerImportToolView, RunnerTestConnectionView
-from waves.models import Service
+from .export import ModelExportView
+from .runner_tool import RunnerImportToolView, RunnerTestConnectionView
 
 __all__ = ['ServiceParamImportView', 'ServiceExportView', 'ServiceModalPreview', 'ServicePreviewForm',
            'ServiceTestConnectionView', 'ServiceDuplicateView']
@@ -59,10 +59,10 @@ class ServiceDuplicateView(View):
             new_service = service.duplicate()
             messages.add_message(request, level=messages.SUCCESS, message="Service successfully copied, "
                                                                           "you may edit it now")
-            return redirect(reverse('admin:wcore_service_change', args=[new_service.id]))
+            return redirect(reverse('admin:waves_service_change', args=[new_service.id]))
         except DatabaseError as e:
             messages.add_message(request, level=messages.WARNING, message="Error occurred during copy: %s " % e)
-            return redirect(reverse('admin:wcore_service_change', args=[self.kwargs.get('service_id')]))
+            return redirect(reverse('admin:waves_service_change', args=[self.kwargs.get('service_id')]))
 
 
 class ServiceExportView(ModelExportView):

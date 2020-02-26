@@ -15,8 +15,8 @@ from os.path import isfile
 
 from django.contrib import admin
 
-from .base import WavesModelAdmin
 from waves.models import ServiceBinaryFile
+from .base import WavesModelAdmin
 
 
 @admin.register(ServiceBinaryFile)

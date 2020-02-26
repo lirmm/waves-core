@@ -25,11 +25,11 @@ from django.db import transaction
 from django.urls import reverse
 
 from waves.core.const import JobStatus
-from .runners import Runner
+from waves.settings import waves_settings
 from .adaptors import AdaptorInitParam, HasAdaptorClazzMixin
 from .base import TimeStamped, Described, ExportAbleMixin, Ordered, Slugged, ApiModel
 from .managers import ServiceManager
-from waves.settings import waves_settings
+from .runners import Runner
 
 __all__ = ['ServiceRunParam', "SubmissionExitCode",
            'SubmissionOutput', 'SubmissionRunParam', 'Submission', 'Service']
@@ -263,7 +263,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin,
         """ Return command parser for current service
         TODO: add related BaseCommand from waves_settings (same as Adaptor class loading)
         :return: BaseCommand """
-        from waves import BaseCommand
+        from waves.core.commands.command import BaseCommand
         return BaseCommand()
 
     @transaction.atomic

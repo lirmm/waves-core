@@ -34,11 +34,11 @@ class WavesConfig(AppConfig):
         :return: None
         """
         super().ready()
-        import waves
+        import waves.signals
 
 
 @register()
-def check_waves_config(app_configs=('waves.core',), **kwargs):
+def check_waves_config(app_configs=('waves',), **kwargs):
     """
     WAVES configuration check up, added to classic ``manage.py check`` Django command
 

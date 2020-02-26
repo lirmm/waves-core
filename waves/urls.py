@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from waves.views import JobInputView, JobOutputView, JobSubmissionView, JobView, JobListView
 from waves.views import ServiceListView, ServiceDetailView
 
-app_name = "wcore"
+app_name = "waves"
 
 urlpatterns = [
     url(r'^services/$', ServiceListView.as_view(), name='services_list'),

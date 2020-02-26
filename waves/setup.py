@@ -13,11 +13,10 @@
 """
 from setuptools import setup
 
-
 setup(
-    name='core',
+    name='waves-core',
 
-    version='1',
+    version='2.0',
 
     description='',
     long_description='',
@@ -27,6 +26,6 @@ setup(
 
     license='Apache Software License',
 
-    packages=['waves.core'],
+    packages=['waves', 'waves.api', 'waves.authentication'],
     zip_safe=False,
 )

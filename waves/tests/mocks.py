@@ -17,6 +17,8 @@ import string
 import time
 
 from waves.core.adaptors import JobAdaptor
+from waves.core.const import JobStatus
+from waves.models import Runner, Service, TextParam, FileInput, BooleanParam, SubmissionOutput
 
 
 class MockConnector:

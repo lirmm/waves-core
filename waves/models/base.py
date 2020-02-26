@@ -20,7 +20,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError, Multiple
 from django.db import models
 
 from waves.core.compat import RichTextField
-from waves.core.exceptions.base import ExportError
+from waves.core.exceptions.misc import ExportError
 from waves.settings import waves_settings
 
 __all__ = ['TimeStamped', 'Ordered', 'ExportAbleMixin', 'Described', 'Slugged', 'ApiModel',

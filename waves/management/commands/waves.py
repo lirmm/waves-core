@@ -13,9 +13,9 @@
 """
 from abc import ABC
 
-from waves.management import SubcommandDispatcher
-from waves.management import JobQueueCommand, PurgeDaemonCommand
-from waves.management import CleanUpCommand, ImportCommand, DumpConfigCommand
+from waves.management.base import SubcommandDispatcher
+from waves.management.command import JobQueueCommand, PurgeDaemonCommand
+from waves.management.subcommands import CleanUpCommand, ImportCommand, DumpConfigCommand
 
 CLEAN = 'clean'
 CONFIG = 'config'

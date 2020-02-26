@@ -17,13 +17,12 @@ from django.contrib import admin, messages
 from django.contrib.admin import TabularInline
 from django.utils.safestring import mark_safe
 
-from waves.views import JobCancelView, JobRerunView
-from .forms import JobInputForm, JobOutputForm, JobForm
-from admin.base import WavesModelAdmin
-from waves import JobStatus
+from waves.core.const import JobStatus
 from waves.core.utils import url_to_edit_object
-from waves.models import JobHistory
-from waves.models import JobInput, Job, JobOutput
+from waves.models import JobHistory, JobInput, Job, JobOutput
+from .base import WavesModelAdmin
+from .forms import JobInputForm, JobOutputForm, JobForm
+from .views import JobCancelView, JobRerunView
 
 __all__ = ['JobAdmin']
 

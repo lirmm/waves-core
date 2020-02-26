@@ -18,7 +18,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 
 from waves.core.loader import AdaptorLoader
-from tests import WavesTestCaseMixin
+from waves.tests.base import WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)
 

@@ -1,9 +1,9 @@
-{% extends "waves/admin/../change_form.html" %}
+{% extends "waves/admin/change_form.html" %}
 {% load i18n admin_modify admin_urls static waves_tags %}
 
 {% block object-tools-items %}
     <li>
-        <a type="button"  href="{% url 'admin:core_aparam_add' %}?for-submission={{ original.pk }}&_popup=1"
+        <a type="button"  href="{% url 'admin:waves_aparam_add' %}?for-submission={{ original.pk }}&_popup=1"
            title="Service" style="opacity:1"
            class="btn btn-secondary related-widget-wrapper-link add-related"
            id="add_submission_input_link" style="">

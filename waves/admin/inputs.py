@@ -29,11 +29,10 @@ from django.utils.html import format_html
 from django.utils.http import urlquote
 from polymorphic.admin import PolymorphicChildModelFilter, PolymorphicChildModelAdmin, PolymorphicParentModelAdmin
 
+from waves.models import AParam, FileInput, BooleanParam, ListParam, IntegerParam, DecimalParam, \
+    RepeatedGroup, TextParam, Submission
 from .base import WavesModelAdmin
 from .submissions import FileInputSampleInline, SampleDependentInputInline
-from waves.models import Submission
-from waves.models import AParam, FileInput, BooleanParam, ListParam, IntegerParam, DecimalParam, \
-    RepeatedGroup, TextParam
 
 __all__ = ['AllParamModelAdmin']
 
@@ -158,7 +157,7 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
         elif "_addanother" in request.POST:
             pass
         else:
-            post_url_continue = reverse('admin:wcore_submission_change', args=[obj.submission.id])
+            post_url_continue = reverse('admin:waves_submission_change', args=[obj.submission.id])
         return super(AParamAdmin, self).response_add(request, obj, post_url_continue)
 
     def response_change(self, request, obj):
@@ -194,7 +193,7 @@ class AParamAdmin(WavesModelAdmin, PolymorphicChildModelAdmin):
             )
             self.message_user(request, msg, messages.SUCCESS)
             return HttpResponseRedirect(
-                reverse('admin:wcore_submission_change', args=[obj.submission.pk]) + '#/tab/inline_0/')
+                reverse('admin:waves_submission_change', args=[obj.submission.pk]) + '#/tab/inline_0/')
         return super(AParamAdmin, self).response_change(request, obj)
 
 

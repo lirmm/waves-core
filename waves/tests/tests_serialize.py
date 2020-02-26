@@ -16,7 +16,7 @@ import logging
 
 from waves.core.import_export import ServiceSerializer
 from waves.models import Service
-from waves.tests import WavesTestCaseMixin
+from .base import WavesTestCaseMixin, bootstrap_services
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class SerializationTestCase(WavesTestCaseMixin):
 
     # @skip("Serialize / Unserialize needs code refactoring")
     def test_serialize_service(self):
-        self.bootstrap_services()
+        services = bootstrap_services()
         init_count = Service.objects.all().count()
         self.assertGreater(init_count, 0)
         file_paths = []

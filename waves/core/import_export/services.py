@@ -16,25 +16,23 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from rest_framework import serializers as rest_serializer
 
-from waves.core.import_export import BaseSerializer, RelatedSerializerMixin
+from .runners import RunnerParamSerializer, RunnerSerializer
+from .base import RelatedSerializerMixin, BaseSerializer
 from waves.api.current import serializers as api_serializers
-from waves.core.import_export import serializers
-from waves.models import Submission, Service
-from waves.models import SubmissionExitCode, SubmissionOutput, SubmissionRunParam
-from waves.models import AParam
-from waves.models import Runner
+from waves.models import Submission, Service, SubmissionExitCode, SubmissionOutput, SubmissionRunParam
+from waves.models import AParam, Runner
 
 __all__ = ['ServiceSubmissionSerializer', 'ExitCodeSerializer', 'ServiceSerializer']
 
 
-class ServiceInputSerializer(BaseSerializer, RelatedSerializerMixin, serializers.InputSerializer):
+class ServiceInputSerializer(BaseSerializer, RelatedSerializerMixin, api_serializers.InputSerializer):
     """ Serialize a basic service input with its dependents parameters"""
 
     class Meta:
         model = AParam
         fields = ('label', 'name', 'default', 'type', 'mandatory', 'help_text', 'multiple',)  # 'dependents_inputs',)
 
-    # TODO reactivate dependent inputs serialzation
+    # TODO reactivate dependent inputs serialization
     # dependent_inputs = ServiceInputSerializer(many=True, required=False)
 
     def create(self, validated_data):
@@ -46,7 +44,7 @@ class ServiceInputSerializer(BaseSerializer, RelatedSerializerMixin, serializers
         return srv_input
 
 
-class ServiceSubmissionSerializer(BaseSerializer, serializers.ServiceSubmissionSerializer, RelatedSerializerMixin):
+class ServiceSubmissionSerializer(BaseSerializer, api_serializers.ServiceSubmissionSerializer, RelatedSerializerMixin):
     """ Service Submission export / import """
 
     class Meta:
@@ -113,7 +111,7 @@ class ServiceRunnerParamSerializer(BaseSerializer):
         model = SubmissionRunParam
         fields = ('param', '_value', 'service')
 
-    param = api_serializers.RunnerParamSerializer(many=False, required=False)
+    param = RunnerParamSerializer(many=False, required=False)
     service = ServiceTmpSerializer(required=False)
 
     def create(self, validated_data):
@@ -138,7 +136,7 @@ class ServiceSerializer(BaseSerializer, api_serializers.ServiceSerializer, Relat
     submissions = ServiceSubmissionSerializer(many=True, required=False)
     exit_codes = ExitCodeSerializer(many=True, required=False)
     service_outputs = ServiceOutputSerializer(many=True, required=False)
-    runner = api_serializers.RunnerSerializer(many=False, required=False)
+    runner = RunnerSerializer(many=False, required=False)
     srv_run_params = ServiceRunnerParamSerializer(many=True, required=False)
 
     def __init__(self, *args, **kwargs):
@@ -157,7 +155,7 @@ class ServiceSerializer(BaseSerializer, api_serializers.ServiceSerializer, Relat
             try:
                 run_on = Runner.objects.filter(clazz=runner['clazz']).first()
             except ObjectDoesNotExist:
-                srv = api_serializers.RunnerSerializer(data=runner)
+                srv = RunnerSerializer(data=runner)
                 if srv.is_valid():
                     run_on = srv.save()
                 else:

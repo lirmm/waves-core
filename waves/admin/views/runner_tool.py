@@ -20,9 +20,8 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView, FormView
 
-from waves.core.exceptions import AdaptorConnectException
-from waves.core.exceptions import RunnerException
-from waves.admin.forms import ImportForm
+from ..forms import ImportForm
+from waves.core.exceptions import RunnerException, AdaptorConnectException
 from waves.models import Runner, Service
 from .export import ModelExportView
 from .json_view import JSONDetailView
@@ -137,7 +136,7 @@ class RunnerExportView(ModelExportView):
 
     @property
     def return_view(self):
-        return reverse('admin:wcore_runner_change', args=[self.object.id])
+        return reverse('admin:waves_runner_change', args=[self.object.id])
 
 
 class RunnerTestConnectionView(JSONDetailView):

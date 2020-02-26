@@ -12,11 +12,13 @@
    limitations under the License.
 """
 import logging
+
 from django.test import TestCase
 from django.utils.module_loading import import_string
 
 from waves.core.adaptors import JobAdaptor
-from tests.utils import bootstrap_runners, bootstrap_services
+from waves.models import Service
+from .base import bootstrap_runners, bootstrap_services
 
 logger = logging.getLogger(__name__)
 

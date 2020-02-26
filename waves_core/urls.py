@@ -26,8 +26,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='waves/base.html')),
     path('django-sb-admin/', include('django_sb_admin.urls')),
     path('admin/', admin.site.urls),
-    path('vali/', include('vali.urls')),
-    path('waves/', include('waves.urls', namespace='core')),
+    path('waves/', include('waves.urls', namespace='wcore')),
     path('api/', include('waves.api.urls', namespace='wapi')),
     path('api-scheme', include_docs_urls(title='Waves API Documentation', public=False)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \

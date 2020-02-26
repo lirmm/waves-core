@@ -17,15 +17,11 @@ import shutil
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 
-from waves.models import AdaptorInitParam, HasAdaptorClazzMixin
-from waves.models.base import ApiModel
-from waves.models import ServiceBinaryFile
-from waves.models import FileInputSample, FileInput
-from waves.models import Job, JobOutput
-from waves.models import Runner
-from waves.models import Service, Submission, SubmissionExitCode
 from waves.core.utils import get_all_subclasses
 from waves.core.utils import random_job_title
+from waves.models import AdaptorInitParam, HasAdaptorClazzMixin, ServiceBinaryFile
+from waves.models import FileInputSample, FileInput, Job, JobOutput, Runner, Service, Submission, SubmissionExitCode
+from waves.models.base import ApiModel
 
 
 @receiver(pre_save, sender=Job)
@@ -111,7 +107,7 @@ def service_input_post_delete_handler(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Runner)
 def runner_post_save_handler(sender, instance, created, **kwargs):
-    if created: # or instance.config_changed:
+    if created:  # or instance.config_changed:
         instance.set_defaults()
 
 

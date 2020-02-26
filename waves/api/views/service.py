@@ -13,7 +13,7 @@
 """
 from django.contrib.staticfiles.storage import staticfiles_storage
 
-from waves.forms.frontend import SubmissionFormView
+from waves.views import SubmissionFormView
 
 
 class JobSubmissionView(SubmissionFormView):

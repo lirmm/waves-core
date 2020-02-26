@@ -55,7 +55,7 @@ def process_job_queue():
                 logger.debug("[JobExecutionEnded] %s (adapter:%s)", job.get_status_display(), runner)
             else:
                 job.run_status()
-        except (waves.exceptions.WavesException, AdaptorException) as e:
+        except (waves.core.exceptions.WavesException, AdaptorException) as e:
             logger.error("Error Job %s (adapter:%s-state:%s): %s", job, runner, job.get_status_display(),
                          e.message)
         except IOError as exc:

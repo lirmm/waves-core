@@ -11,19 +11,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-"""
-WAVES Service models forms
-"""
 
 from django import forms
 from django.conf import settings
 
+from waves.models import ListParam, AParam, BooleanParam, FileInput, FileInputSample, Runner, Service, Submission, \
+    SubmissionOutput, SubmissionExitCode
 from waves.settings import waves_settings
-from waves.models import Service, Submission
-from waves.models import ListParam, AParam, BooleanParam, FileInput, \
-    FileInputSample
-from waves.models import Runner
-from waves.models import SubmissionOutput, SubmissionExitCode
 
 __all__ = ['ServiceForm', 'ImportForm', 'SubmissionInlineForm', 'InputInlineForm', 'SubmissionExitCodeForm',
            'SubmissionOutputForm', 'SampleDepForm', 'InputSampleForm', 'SampleDepForm2',

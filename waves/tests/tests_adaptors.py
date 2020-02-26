@@ -18,21 +18,19 @@ from os.path import join
 
 import radical.saga as rs
 from django.conf import settings
-from django.test import TestCase
 from django.db.models import ObjectDoesNotExist
 from django.test import override_settings
 
-from tests.utils import sample_service, sample_job
+from tests.mocks import MockJobRunnerAdaptor
+from waves.core.adaptors.saga import SshClusterAdaptor, LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.core.const import JobStatus
 from waves.core.exceptions import AdaptorException
-from waves.core.loader import AdaptorLoader
-from waves.core.adaptors.saga import SshClusterAdaptor, LocalShellAdaptor, SshShellAdaptor, SshKeyShellAdaptor
 from waves.core.exceptions import JobInconsistentStateError
-from waves.settings import waves_settings
-from .base import TestJobWorkflowMixin
-from tests.mocks import MockJobRunnerAdaptor
-from waves.models import Job
+from waves.core.loader import AdaptorLoader
 from waves.core.utils import Encrypt
+from waves.models import Job
+from waves.settings import waves_settings
+from .base import sample_service, sample_job, WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)
 
@@ -46,75 +44,63 @@ def skip_unless_sge():
     return lambda f: f
 
 
-@override_settings(
-    WAVES_CORE={
-        'JOB_BASE_DIR': join(settings.BASE_DIR, 'tests', 'data', 'jobs'),
-        'ADMIN_EMAIL': 'foo@bar-waves.com',
-        'ADAPTORS_CLASSES': (
-                'waves.core.adaptors.saga.shell.SshShellAdaptor',
-                'waves.core.adaptors.saga.cluster.LocalClusterAdaptor',
-                'waves.core.adaptors.saga.shell.SshKeyShellAdaptor',
-                'waves.core.adaptors.saga.shell.LocalShellAdaptor',
-                'waves.core.adaptors.saga.cluster.SshClusterAdaptor',
-                'waves.core.adaptors.saga.cluster.SshKeyClusterAdaptor',
-                'waves.core.tests.mocks.MockJobRunnerAdaptor',
-        )
-    }
-)
-class AdaptorTestCase(TestCase, TestJobWorkflowMixin):
+def skip_unless_slurm():
+    if not any(os.path.islink(os.path.join(_, 'sbatch')) for _ in os.environ['PATH'].split(os.pathsep)):
+        return unittest.skip(NO_CLUSTER_MESSAGE)
+    return lambda f: f
+
+
+class AdaptorTestCase(WavesTestCaseMixin):
     loader = AdaptorLoader
-    adaptors = {"local": LocalShellAdaptor(command='cp')}
 
     def setUp(self):
         super(AdaptorTestCase, self).setUp()
-        if hasattr(settings, "WAVES_TEST_SSH_HOST"):
-            self.adaptors["sshShell"] = SshShellAdaptor(command='cp',
-                                                        user_id=settings.WAVES_TEST_SSH_USER_ID,
-                                                        password=settings.WAVES_TEST_SSH_USER_PASS,
-                                                        basedir=settings.WAVES_TEST_SSH_BASE_DIR,
-                                                        host=settings.WAVES_TEST_SSH_HOST,
-                                                        port=settings.WAVES_TEST_SSH_PORT)
-        if hasattr(settings, "WAVES_TEST_SGE_CELL"):
-            self.adaptors['localSge'] = SshClusterAdaptor(protocol='sge', command='cp',
-                                                          queue=settings.WAVES_TEST_SGE_CELL,
-                                                          basedir=settings.WAVES_TEST_SGE_BASE_DIR,
-                                                          host="localhost")
-        if hasattr(settings, "WAVES_SSH_TEST_SGE_CELL"):
-            self.adaptors['sshSge'] = SshClusterAdaptor(protocol='sge', command='cp',
-                                                        queue=settings.WAVES_SSH_TEST_SGE_CELL,
-                                                        user_id=settings.WAVES_TEST_SSH_USER_ID,
-                                                        password=Encrypt.encrypt(
-                                                            settings.WAVES_TEST_SSH_USER_PASS),
-                                                        basedir=settings.WAVES_SSH_TEST_SGE_BASE_DIR,
-                                                        host=settings.WAVES_TEST_SSH_HOST)
-        if hasattr(settings, "WAVES_SSH_KEY_USER_ID"):
-            self.adaptors["sshShell"] = SshKeyShellAdaptor(command='cp', user_id=settings.WAVES_SSH_KEY_USER_ID,
-                                                           password=Encrypt.encrypt(settings.WAVES_SSH_KEY_PASSPHRASE),
-                                                           basedir=settings.WAVES_SSH_KEY_BASE_DIR,
-                                                           host=settings.WAVES_SSH_KEY_HOST)
-        if hasattr(settings, "WAVES_SLURM_TEST_SSH_QUEUE"):
-            self.adaptors["sshSlurm"] = SshClusterAdaptor(protocol='slurm', command='cp',
-                                                          queue=settings.WAVES_SLURM_TEST_SSH_QUEUE,
-                                                          user_id=settings.WAVES_SLURM_TEST_SSH_USER_ID,
-                                                          password=settings.WAVES_SLURM_TEST_SSH_USER_PASS,
-                                                          basedir=settings.WAVES_SLURM_TEST_SSH_BASE_DIR,
-                                                          host=settings.WAVES_SLURM_TEST_SSH_HOST)
+        self.local = LocalShellAdaptor(command='cp')
+        self.sshShell = SshShellAdaptor(command='cp',
+                                        user_id=settings.WAVES_TEST_SSH_USER_ID,
+                                        password=settings.WAVES_TEST_SSH_USER_PASS,
+                                        basedir=settings.WAVES_TEST_SSH_BASE_DIR,
+                                        host=settings.WAVES_TEST_SSH_HOST,
+                                        port=settings.WAVES_TEST_SSH_PORT)
+        self.localSge = SshClusterAdaptor(protocol='sge', command='cp',
+                                          queue=settings.WAVES_TEST_SGE_CELL,
+                                          basedir=settings.WAVES_TEST_SGE_BASE_DIR,
+                                          host="localhost")
+        self.sshSge = SshClusterAdaptor(protocol='sge', command='cp',
+                                        queue=settings.WAVES_SSH_TEST_SGE_CELL,
+                                        user_id=settings.WAVES_TEST_SSH_USER_ID,
+                                        password=Encrypt.encrypt(
+                                            settings.WAVES_TEST_SSH_USER_PASS),
+                                        basedir=settings.WAVES_SSH_TEST_SGE_BASE_DIR,
+                                        host=settings.WAVES_TEST_SSH_HOST)
+        self.sshShell = SshKeyShellAdaptor(command='cp', user_id=settings.WAVES_SSH_KEY_USER_ID,
+                                           password=Encrypt.encrypt(settings.WAVES_SSH_KEY_PASSPHRASE),
+                                           basedir=settings.WAVES_SSH_KEY_BASE_DIR,
+                                           host=settings.WAVES_SSH_KEY_HOST)
+        self.sshSlurm = SshClusterAdaptor(protocol='slurm', command='cp',
+                                          queue=settings.WAVES_SLURM_TEST_SSH_QUEUE,
+                                          user_id=settings.WAVES_SLURM_TEST_SSH_USER_ID,
+                                          password=settings.WAVES_SLURM_TEST_SSH_USER_PASS,
+                                          basedir=settings.WAVES_SLURM_TEST_SSH_BASE_DIR,
+                                          host=settings.WAVES_SLURM_TEST_SSH_HOST)
+        self.adaptors = [self.local, self.localSge, self.sshSge, self.sshShell, self.sshSlurm]
 
     def test_serialize(self):
-        for code, adaptor in self.adaptors.items():
+        for code, adaptor in self.adaptors:
             logger.info("Testing serialization for %s ", adaptor.name)
             try:
                 serialized = AdaptorLoader.serialize(adaptor)
                 unserialized = AdaptorLoader.unserialize(serialized)
                 self.assertEqual(adaptor.__class__, unserialized.__class__)
+                self.assertEqual(adaptor.command, unserialized.command)
             except AdaptorException as e:
-                logger.exception("AdaptorException in %s: %s", adaptor.__class__.__name__, e.message)
-                pass
-            else:
-                logger.info("Adaptor not available for testing protocol %s " % adaptor.name)
+                logger.exception("AdaptorException in %s: %s", adaptor.__class__.__name__, e)
 
-    def test_protocol(self):
-        for code, adaptor in self.adaptors.items():
+    @skip_unless_sge
+    def test_sge_protocol(self):
+        local = self.localSge
+        ssh = self.sshSge
+        for adaptor in (local, ssh):
             logger.info("Testing availability for %s ", adaptor.name)
             try:
                 if adaptor.available:
@@ -183,4 +169,4 @@ class AdaptorTestCase(TestCase, TestJobWorkflowMixin):
         slug = job.slug
         job.delete()
         with self.assertRaises(ObjectDoesNotExist):
-            deleted = Job.objects.get(slug=slug)
+            Job.objects.get(slug=slug)

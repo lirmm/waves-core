@@ -14,7 +14,7 @@
 from .base import WavesException
 
 __all__ = ['AdaptorException', 'AdaptorConnectException', 'AdaptorExecException', 'AdaptorNotAvailableException',
-           'AdaptorInitError', 'AdaptorJobException', 'AdaptorNotReady']
+           'AdaptorInitError', 'AdaptorJobException', 'AdaptorNotReady', 'ImporterException']
 
 
 class AdaptorException(WavesException):

@@ -11,16 +11,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+import logging
 import random
-from os.path import isdir, isfile
+from os.path import isdir, isfile, join
 
 from django.conf import settings
-from django.test import TestCase
 from django.test import override_settings
 
 from waves.core.const import JobStatus
-from tests.utils import api_user, simple_job
-from tests.utils import bootstrap_runners, bootstrap_services
+from waves.models import Service, Submission
+from .base import bootstrap_runners, bootstrap_services, api_user, simple_job, WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)
 
@@ -29,11 +29,11 @@ logger = logging.getLogger(__name__)
     WAVES_CORE={
         'JOB_BASE_DIR': join(settings.BASE_DIR, 'tests', 'data', 'jobs'),
         'ADAPTORS_CLASSES': (
-            'waves.core.tests.mocks.MockJobRunnerAdaptor',
+                'waves.tests.mocks.MockJobRunnerAdaptor',
         )
     }
 )
-class SignalTestCase(TestCase, WavesTestCaseMixin):
+class SignalTestCase(WavesTestCaseMixin):
     fixtures = ("accounts.json",)
     services = []
     runners = []
@@ -97,4 +97,3 @@ class SignalTestCase(TestCase, WavesTestCaseMixin):
         # job_post_delete_handler (delete)
         self.assertFalse(isdir(work_dir))
         logger.debug('Job directories has been deleted - job_post_delete_handler')
-

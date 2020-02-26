@@ -20,9 +20,8 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase
 
-from tests.utils import sample_job, bootstrap_runners, bootstrap_services
 from waves.core.const import JobStatus
-from tests import WavesTestCaseMixin
+from .base import sample_job, bootstrap_runners, bootstrap_services, WavesTestCaseMixin
 
 logger = logging.getLogger(__name__)
 

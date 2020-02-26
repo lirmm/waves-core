@@ -27,6 +27,3 @@ class WavesException(Exception):
         logger.exception('[%s] - %s', self.__class__.__name__, self)
 
 
-class ExportError(Exception):
-    """ Export 'Error'"""
-    pass

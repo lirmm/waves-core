@@ -1,4 +1,4 @@
-{% extends "waves/admin/../change_form.html" %}
+{% extends "waves/admin/change_form.html" %}
 {% load i18n admin_modify admin_urls static waves_tags %}
 
 {% block field_sets %}
@@ -17,7 +17,7 @@
 
 {% block object-tools-items %}
     <li>
-        <a type="button" href="{% url 'admin:core_job_changelist' %}?service__id__exact={{ original.pk }}"
+        <a type="button" href="{% url 'admin:waves_job_changelist' %}?service__id__exact={{ original.pk }}"
            title="View online"
            class="btn btn-high btn-info"
            id="view_jobs">
@@ -34,7 +34,7 @@
     </li>
     {% if original.runner %}
         <li>
-            <a type="button" href="{% url 'admin:core_runner_change' original.runner.pk %}"
+            <a type="button" href="{% url 'admin:waves_runner_change' original.runner.pk %}"
                title="View online"
                class="btn btn-high btn-info"
                id="view runner">

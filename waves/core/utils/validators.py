@@ -44,7 +44,7 @@ class ServiceInputValidator(object):
                                self.invalid_message % (the_input.label, the_input.type, self.specific_message, value))
             return True
         except AssertionError as e:
-            form.add_error(the_input.name, 'Wrong input "%s": %s' % (the_input, e.message))
+            form.add_error(the_input.name, 'Wrong input "%s": %s' % (the_input, e))
         except AttributeError as e:
             form.add_error(the_input.name,
                            'Unknown param_type for input: %s - param_type: %s' % (the_input, the_input.type))

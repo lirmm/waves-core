@@ -17,14 +17,13 @@ from django.contrib.auth import get_user_model
 from django.utils.safestring import mark_safe
 
 from waves.core.compat import SortableInlineAdminMixin
-from waves.models import Service, Submission
-from waves.models import ServiceBinaryFile
 from waves.core.utils import url_to_edit_object
-from admin.adaptors import ServiceRunnerParamInLine
-from admin.base import WavesModelAdmin, ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, \
+from waves.models import Service, Submission, ServiceBinaryFile
+from .adaptors import ServiceRunnerParamInLine
+from .base import WavesModelAdmin, ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixin, \
     DynamicInlinesAdmin
 from .forms import SubmissionInlineForm, ServiceForm
-from waves.admin.views import ServiceParamImportView, ServiceDuplicateView, ServiceExportView, \
+from .views import ServiceParamImportView, ServiceDuplicateView, ServiceExportView, \
     ServiceModalPreview, ServiceTestConnectionView
 
 User = get_user_model()
@@ -75,7 +74,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
 
     fieldsets = [
         ('General', {
-            'fields': ['name', 'status',  'created_by', 'short_description',
+            'fields': ['name', 'status', 'created_by', 'short_description',
                        'runner', 'binary_file', 'display_run_params'],
             'classes': ('grp-collapse', 'open')
         }),
@@ -121,7 +120,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         if obj is not None:
             self.inlines = _inlines
             if obj.get_runner() is not None \
-               and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
+                    and obj.get_runner().adaptor_params.filter(prevent_override=False).count() > 0:
                 self.inlines.insert(0, ServiceRunnerParamInLine)
         return self.inlines
 
@@ -173,7 +172,7 @@ class ServiceAdmin(ExportInMassMixin, DuplicateInMassMixin, MarkPublicInMassMixi
         form.current_user = request.user
         try:
             # form.base_fields['created_by'].widget.can_change_related = False
-            #form.base_fields['created_by'].widget.can_add_related = False
+            # form.base_fields['created_by'].widget.can_add_related = False
             # form.base_fields['created_by'].widget.can_delete_related = False
             pass
         except KeyError:
