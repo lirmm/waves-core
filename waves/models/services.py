@@ -372,7 +372,8 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     name = models.CharField('Label', max_length=255, null=False, blank=False)
 
     def get_runner(self):
-        """ Return the run configuration associated with this submission, or the default service one if not set
+        """
+        Return the run configuration associated with this submission, or the default service one if not set
         :return: :class:`core.models.Runner`
         """
         if self.runner:

@@ -11,19 +11,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-import logging
-
-logger = logging.getLogger(__name__)
 
 
 class WavesException(Exception):
     """
-    Waves base exception class, simply log exception in standard web logs
-    TODO: This class may be obsolete depending of running / logging configuration
+    Waves base exception class, simple wrapper for naming logic convenience
     """
-
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
-        logger.exception('[%s] - %s', self.__class__.__name__, self)
-
-

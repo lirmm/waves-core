@@ -99,11 +99,11 @@ def sample_job(service, user=None):
     """
     job = Job.objects.create(title='SubmissionSample Job',
                              submission=service.submissions.first(),
-                             user=user)
+                             client=user)
     srv_submission = service.default_submission
 
     for srv_input in srv_submission.inputs.all():
-        job.job_inputs.add(JobInput.objects.create(srv_input=srv_input, job=job, value="fake_value"))
+        job.job_inputs.add(JobInput.objects.create(name=srv_input.name, job=job, value="fake_value"))
     return job
 
 
@@ -134,6 +134,7 @@ def bootstrap_runners():
     runners = []
     for adaptor in loader.get_adaptors():
         runner = Runner.objects.create(name="%s" % adaptor.name,
+                                       description="Bootstrapped runner %s" % adaptor.name,
                                        clazz='.'.join([adaptor.__module__, adaptor.__class__.__name__]))
         runners.append(runner)
     return runners

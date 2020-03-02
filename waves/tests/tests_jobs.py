@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
-class JobsTestCase(TestCase, WavesTestCaseMixin):
+class JobsTestCase(WavesTestCaseMixin):
     fixtures = ("accounts.json",)
     services = []
     runners = []
