@@ -163,6 +163,7 @@ class JobManager(models.Manager):
         :return: a newly create Job instance
         :rtype: :class:`waves.wcore.models.jobs.Job`
         """
+        from waves.models import JobInput, JobOutput
         default_email = user.email if user and not user.is_anonymous else None
         follow_email = email_to or default_email
         client = user if user and not user.is_anonymous else None
@@ -201,16 +202,17 @@ class JobManager(models.Manager):
             logger.debug('Param %s', service_input.api_name)
             job.save()
             if incoming_input:
-                # transform single incoming into list to keep process iso
+                # transform single incoming into list
                 incoming_input = [incoming_input] if type(incoming_input) is not list else incoming_input
                 for in_input in incoming_input:
+                    logger.debug('Adding Job Input %s %s %s %s', job, service_input, service_input.order, in_input)
                     job.job_inputs.add(
-                        JobInputManager.create_from_submission(job, service_input, service_input.order, in_input))
+                        JobInput.objects.create_from_submission(job, service_input, service_input.order, in_input))
 
         # create expected outputs
         for service_output in submission.outputs.all():
             job.outputs.add(
-                JobOutputManager.create_from_submission(job, service_output, submitted_inputs))
+                JobOutput.objects.create_from_submission(job, service_output, submitted_inputs))
         job.logger.debug('Job %s created with %i inputs', job.slug, job.job_inputs.count())
         if job.logger.isEnabledFor(logging.DEBUG):
             # LOG full command line
