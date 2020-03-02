@@ -1,0 +1,185 @@
+[
+  {
+    "model": "waves.runner",
+    "pk": 1,
+    "fields": {
+      "description": "",
+      "short_description": "",
+      "clazz": "waves.core.adaptors.saga.shell.LocalShellAdaptor",
+      "name": "Local shell runner #1",
+      "enabled": true
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 1,
+    "fields": {
+      "name": "protocol",
+      "value": "fork",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": [
+        "core",
+        "runner"
+      ],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 2,
+    "fields": {
+      "name": "host",
+      "value": "localhost",
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": [
+        "waves",
+        "runner"
+      ],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 3,
+    "fields": {
+      "name": "command",
+      "value": null,
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": [
+        "waves",
+        "runner"
+      ],
+      "object_id": 1
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 2,
+    "fields": {
+      "description": "",
+      "short_description": "",
+      "clazz": "waves.core.adaptors.saga.shell.LocalShellAdaptor",
+      "name": "Local shell runner #2",
+      "enabled": true
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 14,
+    "fields": {
+      "name": "protocol",
+      "value": "fork",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": [
+        "waves",
+        "runner"
+      ],
+      "object_id": 2
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 15,
+    "fields": {
+      "name": "host",
+      "value": "localhost",
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": [
+        "waves",
+        "runner"
+      ],
+      "object_id": 2
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 16,
+    "fields": {
+      "name": "command",
+      "value": null,
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": [
+        "waves",
+        "runner"
+      ],
+      "object_id": 2
+    }
+  },
+  {
+    "model": "waves.runner",
+    "pk": 3,
+    "fields": {
+      "description": "",
+      "short_description": "",
+      "clazz": "waves.core.adaptors.saga.cluster.LocalClusterAdaptor",
+      "name": "LocalClusterAdaptor",
+      "enabled": true
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 19,
+    "fields": {
+      "name": "queue",
+      "value": "myqueue",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": [
+        "waves",
+        "runner"
+      ],
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 20,
+    "fields": {
+      "name": "protocol",
+      "value": "condor",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": [
+        "waves",
+        "runner"
+      ],
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 21,
+    "fields": {
+      "name": "host",
+      "value": "localhost",
+      "crypt": false,
+      "prevent_override": true,
+      "content_type": [
+        "waves",
+        "runner"
+      ],
+      "object_id": 3
+    }
+  },
+  {
+    "model": "waves.adaptorinitparam",
+    "pk": 22,
+    "fields": {
+      "name": "command",
+      "value": null,
+      "crypt": false,
+      "prevent_override": false,
+      "content_type": [
+        "waves",
+        "runner"
+      ],
+      "object_id": 3
+    }
+  }
+]
