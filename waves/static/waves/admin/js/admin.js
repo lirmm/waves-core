@@ -39,6 +39,7 @@
     });
     $(window).on('load', function () {
         $('fieldset.collapse.open').each(function () {
+            console.log('current ' + $(this));
             $(this).removeClass('collapsed');
             $(this).find('a.collapse-toggle').html('Hide');
         })

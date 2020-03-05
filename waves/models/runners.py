@@ -35,7 +35,7 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
 
     name = models.CharField('Label', max_length=50, null=False, help_text='Displayed name')
     enabled = models.BooleanField('Enabled', default=True, null=False, blank=True,
-                                  help_text="Runner is enable for job runs")
+                                  help_text="Runner enabled to run jobs")
 
     @property
     def importer(self):
@@ -61,18 +61,14 @@ class Runner(Described, ExportAbleMixin, HasAdaptorClazzMixin):
         return RunnerSerializer
 
     def runs(self):
-        services_list = self.running_services().all()
-        submissions_list = self.running_submissions().all()
-        runs_list = list(chain(services_list, submissions_list))
-        return runs_list
+        return list(chain(self.running_services(), self.running_submissions()))
 
     def running_services(self):
-        from waves.models import Service
-        return Service.objects.filter(runner=self)
+        return self.waves_service_runs.all()
 
     def running_submissions(self):
-        from waves.models import Submission
-        return Submission.objects.filter(runner=self)
+        return self.waves_submission_runs.all()
 
     def get_admin_url(self):
         return reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.pk])
+

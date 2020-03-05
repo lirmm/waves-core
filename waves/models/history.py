@@ -44,9 +44,6 @@ class JobHistory(models.Model):
     def __str__(self):
         return '{}:{}:{}'.format(self.status, self.job, self.message) + ('(admin)' if self.is_admin else '')
 
-    def __unicode__(self):
-        return '{}:{}:{}'.format(self.status, self.job, self.message) + ('(admin)' if self.is_admin else '')
-
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         try:
             super(JobHistory, self).save(force_insert, force_update, using, update_fields)

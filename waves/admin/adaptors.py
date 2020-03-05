@@ -24,17 +24,11 @@ class AdaptorInitParamInline(GenericTabularInline):
     max_num = 0
     fields = ['name', 'value', 'default_value', 'prevent_override']
     readonly_fields = ('name', 'default_value')
-    classes = ('collapse grp-collapse grp-closed',)
+    # classes = ('collapse grp-collapse grp-closed',)
     suit_classes = 'suit-tab suit-tab-adaptor'
-    can_delete = False
+    # can_delete = False
     verbose_name = 'Execution param'
     verbose_name_plural = "Execution parameters"
-
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def has_add_permission(self, request, obj):
-        return False
 
     def default_value(self, obj):
         """ Get default values from related adapter concrete class instance """
@@ -50,14 +44,16 @@ class RunnerParamInline(AdaptorInitParamInline):
     """ Job Runner class instantiation parameters insertion field
     Inline are automatically generated from effective implementation class 'init_params' property """
     model = AdaptorInitParam
-    verbose_name = 'Adaptor parameter'
-    verbose_name_plural = "Adaptor parameters"
+    can_delete = False
+    verbose_name = 'Initialisation parameter'
+    verbose_name_plural = "Initialisation parameters"
 
 
 class ServiceRunnerParamInLine(AdaptorInitParamInline):
     """ adapters parameters for Service """
     model = AdaptorInitParam
     fields = ['name', 'value', ]
+    can_delete = False
 
     def get_queryset(self, request):
         queryset = super(ServiceRunnerParamInLine, self).get_queryset(request)
@@ -66,5 +62,5 @@ class ServiceRunnerParamInLine(AdaptorInitParamInline):
 
 
 class SubmissionRunnerParamInLine(ServiceRunnerParamInLine):
-    """ adapters parameters for submission when overridden """
+    """ Proxy for submission adaptor override """
     pass

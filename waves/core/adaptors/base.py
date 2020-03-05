@@ -32,9 +32,6 @@ class JobAdaptor:
     def __str__(self):
         return self.__class__.__name__
 
-    def __unicode__(self):
-        return self.__class__.__name__
-
     def __init__(self, command='', protocol='', host="localhost", **kwargs):
         """ Initialize a adapter
         Set _initialized value (True or False) if all non default expected params are set
@@ -52,6 +49,7 @@ class JobAdaptor:
     def init_value_editable(self, init_param):
         """ By default all fields are editable, override this function for your specific needs in your adapter """
         return True
+
 
     @property
     def init_params(self):

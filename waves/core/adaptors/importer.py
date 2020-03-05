@@ -67,9 +67,6 @@ class AdaptorImporter(LoggerClass):
     def __str__(self):
         return self.__class__.__name__
 
-    def __unicode__(self):
-        return self.__class__.__name__
-
     @property
     def connected(self):
         return self.adaptor.connected

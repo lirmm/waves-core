@@ -13,14 +13,14 @@
 {% endblock %}
 {% block object-tools-items %}
     {{ block.super }}
-    <!--li>
+    <li>
         <a type="button" href="{% url 'admin:runner_export_form' original.pk %}"
            title="View online"
            class="btn btn-high btn-info"
            id="view_jobs">
             Export
         </a>
-    </li-->
+    </li>
     {% if original.clazz %}
         <li>
             <a type="button" href="{% url 'admin:runner_test_connection' original.pk %}"
@@ -45,3 +45,4 @@
         </li>
     {% endif %}
 {% endblock %}
+

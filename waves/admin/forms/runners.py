@@ -26,7 +26,7 @@ def get_runners_list():
     """
     from waves.core.loader import AdaptorLoader
     adaptors = AdaptorLoader.get_adaptors()
-    grp_impls = {'': 'Select a environment...'}
+    grp_impls = {'': 'Select an adaptor...'}
     for adaptor in adaptors:
         grp_name = adaptor.__class__.__module__.split('.')[-1].capitalize()
         if grp_name not in grp_impls:
@@ -44,12 +44,7 @@ class RunnerForm(ModelForm):
         model = Runner
         exclude = ['id']
 
-    # noinspection PyClassHasNoInit
-    class Media:
-        """ Medias """
-        js = ('waves/admin/js/runner.js',
-              'waves/admin/js/connect.js')
-
+    # TODO may not be needed if checked elsewhere when admin page submitted
     update_init_params = BooleanField(required=False, label='Reset related services')
 
     def __init__(self, *args, **kwargs):

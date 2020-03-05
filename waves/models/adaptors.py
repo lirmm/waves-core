@@ -33,7 +33,7 @@ class AdaptorInitParam(models.Model):
     class Meta:
         ordering = ['name']
         verbose_name = "Initial param"
-        verbose_name_plural = "Init params"
+        verbose_name_plural = "Initial params"
         db_table = 'wcore_adaptorinitparam'
         app_label = "waves"
 
@@ -48,19 +48,15 @@ class AdaptorInitParam(models.Model):
     content_object = GenericForeignKey(for_concrete_model=True)
 
     def __str__(self):
-        if self.crypt:
-            return "{}|********|{}".format(self.name, self.prevent_override)
-        return "{}|{}|{}".format(self.name, self.value, self.prevent_override)
-
-    def __unicode__(self):
-        if self.crypt:
-            return "{}|********|{}".format(self.name, self.prevent_override)
-        return "{}|{}|{}".format(self.name, self.value, self.prevent_override)
+        return "Name:{}|Override:{}".format(self.name, self.prevent_override)
 
     def __init__(self, *args, **kwargs):
         super(AdaptorInitParam, self).__init__(*args, **kwargs)
         self._value = None
         self._override = None
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
 
     @classmethod
     def from_db(cls, db, field_names, values):
@@ -73,13 +69,26 @@ class AdaptorInitParam(models.Model):
         return instance
 
     def get_value(self):
+        # FIXME clearly define separation between display and retrieve for crypted values
         if self.name == "password" and self.value:
             return "x" * len(self.value)
         return self.value
 
-    @property
-    def config_changed(self):
-        return self._value != self.value or self._override != self.prevent_override
+
+def get_runners_list():
+    """
+    Retrieve enabled waves.core.adapters list from waves settings env file
+    :return: a list of Tuple 'value'/'label'
+    """
+    from waves.core.loader import AdaptorLoader
+    adaptors = AdaptorLoader.get_adaptors()
+    grp_impls = {'': 'Select an adaptor...'}
+    for adaptor in adaptors:
+        grp_name = adaptor.__class__.__module__.split('.')[-1].capitalize()
+        if grp_name not in grp_impls:
+            grp_impls[grp_name] = []
+        grp_impls[grp_name].append((adaptor.__module__ + '.' + adaptor.__class__.__name__, adaptor.__class__.name))
+    return sorted((grp_key, grp_val) for grp_key, grp_val in grp_impls.items())
 
 
 class HasAdaptorClazzMixin(models.Model):
@@ -96,14 +105,16 @@ class HasAdaptorClazzMixin(models.Model):
     clazz = models.CharField('Adapter object',
                              max_length=100,
                              null=True,
+                             choices=get_runners_list(),
                              help_text="This is the concrete class used to perform job execution")
     adaptor_params = GenericRelation(AdaptorInitParam)
 
-    def set_defaults(self):
+    def     set_defaults(self):
         """Set runs params with defaults issued from adapter class object """
         # Reset all old values
-        self.adaptor_params.all().delete()
         object_type = ContentType.objects.get_for_model(self)
+        AdaptorInitParam.objects.filter(content_type=object_type, object_id=self.pk).delete()
+
         for name, default in self.adaptor_defaults.items():
             if name in ('password', 'pass', 'auth', 'passphrase'):
                 defaults = {'name': name, 'crypt': True}
@@ -126,7 +137,7 @@ class HasAdaptorClazzMixin(models.Model):
     @property
     def run_params(self):
         """ Get defined params values from db """
-        return {x.name: x.get_value() for x in self.adaptor_params.all()}
+        return {x.name: x.value for x in self.adaptor_params.all()} or {}
 
     def display_params(self):
         """ return string representation for related params """
@@ -138,23 +149,11 @@ class HasAdaptorClazzMixin(models.Model):
         """ Retrieve init params defined associated concrete class (from clazz attribute) """
         return self.adaptor.init_params
 
-    def __init__(self, *args, **kwargs):
-        super(HasAdaptorClazzMixin, self).__init__(*args, **kwargs)
-
-    def __repr__(self):
-        return super().__repr__()
-
     @classmethod
     def from_db(cls, db, field_names, values):
         """ Executed each time a Service is restored from DB layer"""
         instance = super(HasAdaptorClazzMixin, cls).from_db(db, field_names, values)
-        # instance._clazz = instance.clazz
         return instance
-
-    @property
-    def config_changed(self):
-        """ Set whether config has changed before saving """
-        return self._clazz != self.clazz  # or any([x.has_changed for x in self.adaptor_params.all()])
 
     @property
     def adaptor(self):
@@ -163,7 +162,7 @@ class HasAdaptorClazzMixin(models.Model):
         :return: a subclass JobAdaptor object instance
         :rtype: JobAdaptor
         """
-        if self.clazz and (self._adaptor is None or self.config_changed):
+        if self.clazz and (self._adaptor is None):
             try:
                 self._adaptor = import_string(self.clazz)(**self.run_params)
             except ImportError as e:

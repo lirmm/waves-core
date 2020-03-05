@@ -105,15 +105,10 @@ def service_input_post_delete_handler(sender, instance, **kwargs):
             sample.file.delete()
 
 
-@receiver(post_save, sender=Runner)
-def runner_post_save_handler(sender, instance, created, **kwargs):
-    if created:  # or instance.config_changed:
-        instance.set_defaults()
-
-
 @receiver(post_save, sender=HasAdaptorClazzMixin)
 def adaptor_mixin_post_save_handler(sender, instance, created, **kwargs):
-    if not kwargs.get('raw', False) and (instance.config_changed or created):
+    if not kwargs.get('raw', False) and created:
+        # TODO check if this is not obsolete
         instance.set_defaults()
 
 
@@ -126,7 +121,7 @@ for subclass in get_all_subclasses(HasAdaptorClazzMixin):
 @receiver(pre_save, sender=AdaptorInitParam)
 def adaptor_param_pre_save_handler(sender, instance, **kwargs):
     """ Runner param pre save handler """
-    if instance.config_changed and instance.name == "password" and instance.value:
+    if (instance.name == "password" or instance.crypt) and instance.value:
         from waves.core.utils import Encrypt
         instance.crypt = True
         instance.value = Encrypt.encrypt(instance.value)

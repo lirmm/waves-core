@@ -57,6 +57,9 @@ class WavesModelsTestCase(TestCase):
             logger.debug("Config %s", adaptor.dump_config())
             self.assertEquals(sorted(expected_params), sorted(runner_params))
 
+    def test_runs_relationship(self):
+        self.fail("testing generated reverse relationship naming ")
+
     def test_create_service(self):
         self.assertGreater(len(self.services), 0)
         for service in self.services:

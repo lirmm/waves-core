@@ -43,7 +43,7 @@ class SubmissionOutputInline(CompactInline):
     sortable_field_name = "order"
     sortable_options = []
     fk_name = 'submission'
-    # fields = ['label', 'file_pattern', 'api_name', 'extension', 'edam_format', 'edam_data', 'from_input', 'help_text']
+    fields = ['label', 'file_pattern', 'api_name', 'extension', 'edam_format', 'edam_data', 'from_input', 'help_text']
     verbose_name_plural = "Outputs"
     classes = ('grp-collapse', 'grp-closed', 'collapse')
 
@@ -166,9 +166,9 @@ class ServiceSubmissionAdmin(WavesModelAdmin, DynamicInlinesAdmin):
     current_obj = None
     form = ServiceSubmissionForm
     exclude = ['order']
-    list_display = ['name', 'api_name', 'get_service', 'availability', 'runner', 'updated']
+    list_display = ['name', 'api_name', 'get_service', 'availability', '_runner', 'updated']
     readonly_fields = ['get_command_line_pattern', 'get_run_params', 'api_url']
-    list_filter = ('service__name', 'availability', 'service__runner')
+    list_filter = ('service__name', 'availability', 'service___runner')
     list_editable = ('availability',)
     list_display_links = ('name',)
     ordering = ('name', 'updated', 'created')

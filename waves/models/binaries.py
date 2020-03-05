@@ -32,6 +32,3 @@ class ServiceBinaryFile(Slugged, TimeStamped):
 
     def __str__(self):
         return self.label
-
-    def __unicode__(self):
-        return self.label

@@ -57,59 +57,88 @@ class HasRunnerParamsMixin(HasAdaptorClazzMixin):
     class Meta:
         abstract = True
 
-    _runner = None
-    runner = models.ForeignKey(Runner,
-                               verbose_name="Computing infrastructure",
-                               related_name='%(app_label)s_%(class)s_runs',
-                               null=True,
-                               db_column='runner_id',
-                               on_delete=models.SET_NULL,
-                               help_text='Service job runs configuration')
+    _runner = models.ForeignKey(Runner,
+                                verbose_name="Computing infrastructure",
+                                related_name='%(app_label)s_%(class)s_runs',
+                                null=True,
+                                db_column='runner_id',
+                                on_delete=models.SET_NULL,
+                                help_text='Service job runs configuration')
 
     @classmethod
     def from_db(cls, db, field_names, values):
         """ Executed each time a Service is restored from DB layer"""
         instance = super(HasRunnerParamsMixin, cls).from_db(db, field_names, values)
-        # instance._runner = instance.get_runner()
         return instance
-
-    @property
-    def config_changed(self):
-        return self._runner != self.runner
 
     @property
     def run_params(self):
         """
-        Return a list of tuples representing current service adapter init params
-
-        :return: a Dictionary (param_name=param_service_value or runner_param_default if not set
+        Return a dictionary with defined set of run parameters
         :rtype: dict
         """
         # Retrieve the ones defined in DB
-        object_params = super(HasRunnerParamsMixin, self).run_params
+        defined_params = super(HasRunnerParamsMixin, self).run_params
         # Retrieve the ones defined for runner
-        runners_params = self.get_runner().run_params
+        runner_params = self.runner.run_params
         # Merge params from runner (defaults and/or not override-able)
-        runners_params.update(object_params)
-        return runners_params
+        runner_params.update(defined_params)
+        return runner_params
 
     @property
     def adaptor_defaults(self):
         """ Retrieve init params defined associated concrete class (from runner attribute) """
-        return self.get_runner().run_params if self.get_runner() else {}
+        return self._runner.run_params if self.runner else {}
 
     def get_runner(self):
         """ Return effective runner (could be overridden is any subclasses) """
-        return self.runner
+        return self._runner
 
     @property
     def clazz(self):
-        return self.get_runner().clazz
+        return self._runner.clazz
 
     @clazz.setter
     def clazz(self, clazz):
         # fake setter since the actual clazz is defined in runner
         pass
+
+    def set_defaults(self):
+        """
+        Set defaults from associated runner
+        """
+        # get current base runner parameters
+        base_runner_params = self.runner.adaptor_params.all()
+        if self.runner is not None:
+            object_type = ContentType.objects.get_for_model(self)
+            # Delete parameters which are not defined anymore for runner
+            AdaptorInitParam.objects.filter(content_type=object_type, object_id=self.pk).exclude(
+                name__in=base_runner_params.values_list('name', flat=True)).delete()
+            # Delete newly prevent overridden values
+            AdaptorInitParam.objects.filter(
+                content_type=object_type, object_id=self.pk,
+                name__in=base_runner_params.filter(prevent_override=True).values_list('name', flat=True)).delete()
+            # get current values defined or create new one with defaults
+            for runner_param in base_runner_params.filter(prevent_override=False):
+                ServiceRunParam.objects.get_or_create(name=runner_param.name,
+                                                      content_type=object_type,
+                                                      object_id=self.pk,
+                                                      defaults={
+                                                          'prevent_override': False,
+                                                          'value': runner_param.value
+                                                      })
+
+    @property
+    def runner(self):
+        """
+        Return the run configuration associated with this submission, or the default service one if not set
+        :return: :class:`core.models.Runner`
+        """
+        return self._runner
+
+    @runner.setter
+    def runner(self, runner):
+        self._runner = runner
 
 
 class Service(TimeStamped, Described, ApiModel, ExportAbleMixin,
@@ -183,46 +212,11 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin,
     binary_file = models.ForeignKey('ServiceBinaryFile', null=True, blank=True, on_delete=models.SET_NULL,
                                     help_text="If set, 'Execution parameter' param line:'command' will be ignored")
 
-    def clean(self):
-        cleaned_data = super(Service, self).clean()
-        return cleaned_data
-
     def __str__(self):
         """ String representation
         :return: str
         """
         return "{} v({})".format(self.name, self.version)
-
-    def __unicode__(self):
-        """ String representation
-        :return: str
-        """
-        return "{} v({})".format(self.name, self.version)
-
-    def set_defaults(self):
-        """Set runs params with defaults issued from adapter class object """
-        if self.runner is not None:
-            self.adaptor_params.all().delete()
-            object_type = ContentType.objects.get_for_model(self)
-            # Reset all old values
-            for runner_param in self.runner.adaptor_params.filter(prevent_override=False):
-                ServiceRunParam.objects.create(name=runner_param.name,
-                                               value=runner_param.value,
-                                               crypt=(runner_param.name == 'password'),
-                                               prevent_override=False,
-                                               content_type=object_type,
-                                               object_id=self.pk)
-
-        for sub in self.submissions.all():
-            sub.adaptor_params.all().delete()
-            object_type = ContentType.objects.get_for_model(sub)
-            for runner_param in sub.get_runner().adaptor_params.filter(prevent_override=False):
-                SubmissionRunParam.objects.create(name=runner_param.name,
-                                                  value=runner_param.value,
-                                                  crypt=(runner_param.name == 'password'),
-                                                  prevent_override=False,
-                                                  content_type=object_type,
-                                                  object_id=self.pk)
 
     @property
     def operations(self):
@@ -337,7 +331,7 @@ class Service(TimeStamped, Described, ApiModel, ExportAbleMixin,
     @property
     def running_jobs(self):
         return self.jobs.filter(
-            status__in=[JobStatus.JOB_CREATED, JobStatus.JOB_COMPLETED])
+            status__in=[JobStatus.JOB_UNDEFINED, JobStatus.JOB_CREATED, JobStatus.JOB_COMPLETED])
 
     def get_admin_url(self):
         return reverse('admin:{}_{}_change'.format(self._meta.app_label, self._meta.model_name), args=[self.pk])
@@ -362,7 +356,6 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
         (NOT_AVAILABLE, "Disabled API"),
         (AVAILABLE_API, "Enabled API")
     )
-
     #: Related service model
     service = models.ForeignKey('Service', on_delete=models.CASCADE, null=False,
                                 related_name='submissions')
@@ -371,21 +364,20 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
     #: Submission label
     name = models.CharField('Label', max_length=255, null=False, blank=False)
 
-    def get_runner(self):
+    @property
+    def runner(self):
         """
         Return the run configuration associated with this submission, or the default service one if not set
         :return: :class:`core.models.Runner`
         """
-        if self.runner:
-            return self.runner
+        if self._runner is not None:
+            return self._runner
         else:
             return self.service.runner
 
     @property
-    def run_params(self):
-        if not self.runner:
-            return self.service.run_params
-        return super(Submission, self).run_params
+    def clazz(self):
+        return self.runner.clazz
 
     @property
     def command_parser(self):
@@ -395,9 +387,6 @@ class Submission(TimeStamped, ApiModel, Ordered, Slugged, HasRunnerParamsMixin):
         return self.service.command_parser
 
     def __str__(self):
-        return '{}'.format(self.name)
-
-    def __unicode__(self):
         return '{}'.format(self.name)
 
     @property
@@ -518,10 +507,6 @@ class SubmissionOutput(TimeStamped, ApiModel):
         """ String representation, return label """
         return "[{}] {}".format(self.label, self.name)
 
-    def __unicode__(self):
-        """ String representation, return label """
-        return "[{}] {}".format(self.label, self.name)
-
     def clean(self):
         """ Check validity before saving """
         cleaned_data = super(SubmissionOutput, self).clean()
@@ -558,9 +543,6 @@ class SubmissionExitCode(models.Model):
     is_error = models.BooleanField('Is an Error', default=False, blank=False)
 
     def __str__(self):
-        return '{}:{}...'.format(self.exit_code, self.message[0:20])
-
-    def __unicode__(self):
         return '{}:{}...'.format(self.exit_code, self.message[0:20])
 
 

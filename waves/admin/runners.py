@@ -67,21 +67,27 @@ class SubmissionRunInline(TabularInline):
 @register(Runner)
 class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     """ Admin for Job Runner """
+
+    # noinspection PyClassHasNoInit
+    class Media:
+        """ Medias """
+        js = ('waves/admin/js/runner.js',
+              'waves/admin/js/connect.js')
+
     model = Runner
-    form = RunnerForm
+    # form = RunnerForm
     inlines = (RunnerParamInline, ServiceRunInline)
-    list_display = ('name', 'runner_clazz', 'short_description', 'connexion_string', 'nb_services', 'id')
+    list_display = ('name', 'runner_clazz', 'short_description', 'connexion_string', 'enabled', 'nb_services', 'id')
     list_filter = ('name', 'clazz')
     list_display_links = ('name',)
     readonly_fields = ['connexion_string']
     fieldsets = [
         ('Main', {
-            'fields': ['name', 'clazz', 'connexion_string', 'update_init_params'],
-            'classes': ('collapse grp-collapse',),
+            'fields': ['name', 'clazz', 'connexion_string', 'enabled'] #, 'update_init_params'],
         }),
-        ('Description', {
+        ('Extended Description', {
             'fields': ['short_description', 'description'],
-            'classes': ('collapse grp-collapse grp-closed',),
+            'classes': ('collapse grp-collapse',),
         }),
     ]
     change_form_template = "waves/admin/runner/change_form.html"
@@ -98,8 +104,9 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     def add_view(self, request, form_url='', extra_context=None):
         context = extra_context or {}
         context['show_save_as_new'] = IS_POPUP_VAR in request.GET
-        context['show_save_and_add_another'] = False
-        context['show_save'] = IS_POPUP_VAR in request.GET
+        context['show_save'] = False  # IS_POPUP_VAR in request.GET
+        # TODO check if really needed for in pop_up context
+        context['show_save_and_continue'] = IS_POPUP_VAR not in request.GET
         return super(RunnerAdmin, self).add_view(request, form_url, context)
 
     def nb_services(self, obj):
@@ -124,17 +131,32 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
         return obj.adaptor.name if obj.adaptor else "Implementation class not available !"
 
     def save_model(self, request, obj, form, change):
-        """ Add related Service / Jobs updates upon Runner modification """
         super(RunnerAdmin, self).save_model(request, obj, form, change)
-        if obj is not None:
-            for running in obj.runs():
-                message = 'Related %s has been reset' % running
-                running.set_defaults()
-                messages.info(request, message)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        if form.changed_data:
+            if 'clazz' in form.changed_data:
+                # Reset current runner adaptor initial params since underlying class changed
+                form.instance.set_defaults()
+            if 'enabled' in form.changed_data and form.cleaned_data['enabled'] is False:
+                # Disable related services if runner has been disabled
+                for running in form.instance.running_services():
+                    running.status = Service.SRV_DRAFT
+                    running.save(update_fields=['status'])
+        # Force save current object for subsequents request
+        for form_set in formsets:
+            if form_set.has_changed():
+                form.instance.save()
+                # Reset Services / Submission configs if Runner configuration has changed
+                for running in form.instance.runs():
+                    message = '%s has been updated/deactivated' % running
+                    running.set_defaults()
+                    messages.info(request, message)
 
     def connexion_string(self, obj):
-        return obj.adaptor.connexion_string() if obj and obj.adaptor is not None else 'n/a'
+        return obj.adaptor.connexion_string() if obj and obj.adaptor is not None else 'N/A'
 
-    nb_services.short_description = "Running Services"
+    nb_services.short_description = "Related Services"
     runner_clazz.short_description = "Type"
-    connexion_string.short_description = 'Connexion String'
+    connexion_string.short_description = 'Connexion string'

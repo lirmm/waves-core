@@ -54,7 +54,7 @@ class RunnerImportToolView(DetailView, FormView):
         return self.get_object().importer.list_services()
 
     def get_service_list(self):
-        return self.get_object().running_services().all()
+        return self.get_object().running_services()
 
     def get_form(self, form_class=None):
         form = self.form_class(instance=self.get_object())
