@@ -34,12 +34,6 @@ NO_CLUSTER_MESSAGE = "A valid local SGE cluster is needed to run this tests"
 MISSING_TOOL_MESSAGE = "Executable script is not in PATH : %s"
 
 
-def skip_unless_sge(func) -> object:
-    if not any(os.path.islink(os.path.join(_, 'qsub')) for _ in os.environ['PATH'].split(os.pathsep)):
-        return unittest.skip(NO_CLUSTER_MESSAGE)
-    return lambda f: f
-
-
 def skip_unless_slurm(func):
     if not any(os.path.islink(os.path.join(_, 'sbatch')) for _ in os.environ['PATH'].split(os.pathsep)):
         return unittest.skip(NO_CLUSTER_MESSAGE)
@@ -53,36 +47,44 @@ class AdaptorTestCase(WavesTestCaseMixin):
         super(AdaptorTestCase, self).setUp()
         self.local = LocalShellAdaptor(command='cp')
         self.sshShell = SshShellAdaptor(command='cp',
-                                        user_id='root',
-                                        password='root',
+                                        user_id='testuser',
+                                        password='testuser',
                                         host='localhost',
-                                        port='2222')
-        self.localSge = SshClusterAdaptor(protocol='sge',
+                                        port=10022)
+        self.sshSge = SshClusterAdaptor(protocol='sge',
+                                        command='cp',
+                                        queue='all',
+                                        user_id='testuser',
+                                        password='testuser',
+                                        host='localhost',
+                                        port=10022
+                                        )
+        self.sshSlurm = SshClusterAdaptor(protocol='slurm',
                                           command='cp',
-                                          queue='all',
-                                          host="localhost")
-        self.localSlurm = SshClusterAdaptor(protocol='slurm',
-                                            command='cp',
-                                            queue='main',
-                                            host='localhost')
+                                          queue='main',
+                                          user_id='testuser',
+                                          password='testuser',
+                                          host='localhost',
+                                          port=10022)
         # TODO use docker to add a sge through ssh
-        self.adaptors = [self.local, self.sshShell, self.localSge, self.sshShell, self.localSlurm]
+        self.adaptors = [self.local, self.sshShell, self.sshSge, self.sshSlurm]
 
     def test_serialize(self):
         for adaptor in self.adaptors:
             logger.info("Testing serialization for %s ", adaptor.name)
             try:
                 serialized = AdaptorLoader.serialize(adaptor)
-                unserialized = AdaptorLoader.unserialize(serialized)
-                self.assertEqual(adaptor.__class__, unserialized.__class__)
-                self.assertEqual(adaptor.command, unserialized.command)
+                un_serialized = AdaptorLoader.unserialize(serialized)
+                self.assertEqual(adaptor.__class__, un_serialized.__class__)
+                self.assertEqual(adaptor.command, un_serialized.command)
             except AdaptorException as e:
                 logger.exception("AdaptorException in %s: %s", adaptor.__class__.__name__, e)
 
-    @skip_unless_sge
-    def test_sge_local(self):
-        local = self.localSge
+    def test_sge_ssh(self):
+        """ Test SGE over ssh on local cluster - deployed through Docker (Simple Echo Job)"""
+        local = self.sshSge
         logger.info("Testing availability for %s ", local.name)
+        self.assertTrue(local.available)
         try:
             if local.available:
                 logger.debug("Saga host %s, protocol %s", local.saga_host, local.host)
@@ -120,7 +122,7 @@ class AdaptorTestCase(WavesTestCaseMixin):
                 else:
                     logger.info('Adaptor not available %s: %s', adaptor.__class__.__name__)
             except (rs.exceptions.SagaException, AdaptorException) as e:
-                logger.info('Adaptor not available %s: %s', adaptor.__class__.__name__)
+                logger.info('Adaptor not available %s: %s', adaptor.__class__.__name__, self.adaptor.connexion_string())
 
     def test_job_states(self):
         """

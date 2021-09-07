@@ -80,9 +80,6 @@ class SagaAdaptor(JobAdaptor):
             raise exceptions.AdaptorNotAvailableException(e)
         return service.valid
 
-    def connexion_string(self):
-        return self.saga_host
-
     @property
     def saga_host(self):
         """ Construct Saga-python adapter uri scheme """

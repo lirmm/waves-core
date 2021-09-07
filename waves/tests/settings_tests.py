@@ -160,7 +160,7 @@ LOGGING = {
         },
         'radical': {
             'handlers': ['console'],
-            'level': 'FATAL',
+            'level': 'DEBUG',
             'propagate': False,
         }
 

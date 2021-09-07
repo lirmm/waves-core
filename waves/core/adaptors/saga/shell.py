@@ -59,7 +59,10 @@ class SshShellAdaptor(LocalShellAdaptor):
         self._session = None
 
     def _init_service(self):
-        return rs.job.Service(self.saga_host, self.session)
+        service = rs.job.Service(self.saga_host, self.session)
+        ids = service.list()
+        print(ids)
+        return service
 
     @property
     def saga_host(self):

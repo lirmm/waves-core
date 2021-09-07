@@ -59,7 +59,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'waves_core.urls'
-
+print(os.path.join(BASE_DIR, 'templates'))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -217,6 +217,9 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'saga': {
+
+        }
     }
 }
 
