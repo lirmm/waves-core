@@ -40,7 +40,7 @@ class JobInputInline(TabularInline):
     fields = ('name', 'api_name', 'value', 'file_path')
     classes = ['collapse', ]
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj):
         """ Never add any job input from admin """
         return False
 
@@ -57,7 +57,7 @@ class JobOutputInline(TabularInline):
     ordering = ('order',)
     fields = ('name', 'api_name', 'value', 'file_path')
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj):
         """ Never add any job output from admin """
         return False
 
@@ -73,7 +73,7 @@ class JobHistoryInline(TabularInline):
     can_delete = False
     extra = 0
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request, obj):
         """ Never add any job output from admin """
         return False
 
