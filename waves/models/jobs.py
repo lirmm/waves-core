@@ -318,7 +318,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         :return: the absolute uri of this job (without host)
         """
         from django.urls import reverse
-        return reverse('core:job_details', kwargs={'unique_id': self.slug})
+        return reverse('wcore:job_details', kwargs={'unique_id': self.slug})
 
     @property
     def stdout(self):
@@ -699,7 +699,7 @@ class JobInput(Ordered, Slugged, ApiModel, UrlMixin):
         :return: the absolute uri of this job (without host)
         """
         from django.urls import reverse
-        return reverse('core:job_input', kwargs={'slug': self.slug})
+        return reverse('wcore:job_input', kwargs={'slug': self.slug})
 
     def duplicate_api_name(self, api_name):
         """ Check is another entity is set with same api_name
@@ -789,7 +789,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
 
     def get_absolute_url(self):
         from django.urls import reverse
-        return "%s?export=1" % reverse('core:job_output', kwargs={'slug': self.slug})
+        return "%s?export=1" % reverse('wcore:job_output', kwargs={'slug': self.slug})
 
     @property
     def download_url(self):
