@@ -26,6 +26,8 @@ from .views import JobCancelView, JobRerunView
 
 __all__ = ['JobAdmin']
 
+import logging
+logger = logging.getLogger('waves')
 
 class JobInputInline(TabularInline):
     """ List JobModels inputs """
@@ -151,7 +153,7 @@ class JobAdmin(WavesModelAdmin):
 
     def get_run_details(self, obj):
         return "N/A" if obj.run_details is None else mark_safe("<pre>" + "".join(
-            ['\n{}: {}'.format(det[0], det[1]) for det in vars(obj.run_details).items()]) + "</pre>")
+            ['\n{}: {}'.format(det[0], det[1]) for det in obj.run_details._asdict().items()]) + "</pre>")
 
     def submission_name(self, obj):
         return url_to_edit_object(obj.submission)
