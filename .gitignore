@@ -35,6 +35,7 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+/static/
 
 # Flask stuff:
 instance/
@@ -76,13 +77,13 @@ venv/
 !/data/media/.gitkeep
 /data/sample/*
 !/data/sample/.gitkeep
+
 # tests dirs
 /waves/tests/settings.ini
 /tests/data/jobs/*/*
 !/tests/data/jobs/.gitkeep
 !/waves/tests/settings.ini.sample
 *.sqlite3
-/staticfiles/
 /tests/data/*.json
 /data/tests/*.json
 local.env
