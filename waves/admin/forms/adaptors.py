@@ -18,6 +18,7 @@ from waves.models import AdaptorInitParam, Submission, Service
 
 __all__ = ['AdaptorInitParamForm']
 
+import logging
 
 class AdaptorInitParamForm(ModelForm):
     """
@@ -59,7 +60,7 @@ class AdaptorInitParamForm(ModelForm):
             if isinstance(self.instance.content_object, Submission):
                 raise ValidationError({'value': 'Value is mandatory'})
             elif isinstance(self.instance.content_object, Service) \
-                    and Submission.objects.filter(runner__isnull=True,
+                    and Submission.objects.filter(_runner__isnull=True,
                                                   service=self.instance.content_object).count() > 0:
                 raise ValidationError({'value': 'Value is mandatory for forms with no overrides'})
 
