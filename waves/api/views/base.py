@@ -17,7 +17,6 @@ from rest_framework.decorators import api_view, renderer_classes, permission_cla
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView, Response
 
-
 class WavesAuthenticatedView(APIView):
     """ Base WAVES API view, set up for all subclasses permissions / authentication """
     permission_classes = [IsAuthenticated, ]
@@ -27,10 +26,9 @@ class WavesAuthenticatedView(APIView):
             self.permission_classes = [AllowAny, ]
         return super(WavesAuthenticatedView, self).get_permissions()
 
-
+# Openapi
 @api_view(['GET', ])
 @permission_classes((AllowAny,))
-@renderer_classes([renderers.CoreJSONRenderer])
 def schema_view(request):
-    generator = schemas.SchemaGenerator(title='WAVES API schema')
+    generator = schemas.openapi.SchemaGenerator(title='WAVES API schema')
     return Response(generator.get_schema())

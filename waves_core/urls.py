@@ -18,7 +18,9 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import TemplateView
-from rest_framework.documentation import include_docs_urls
+
+#DEBUG
+import debug_toolbar
 
 admin.site.site_title = 'WAVES'
 
@@ -28,6 +30,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('waves/', include('waves.urls', namespace='wcore')),
     path('api/', include('waves.api.urls', namespace='wapi')),
-    path('api-scheme', include_docs_urls(title='Waves API Documentation', public=False)),
+    path('api-scheme', TemplateView.as_view(
+        template_name='waves/api/swagger-ui.html',
+        extra_context={'title':'Waves API Documentation', 'schema_url':'wapi:openapi-schema'}
+    ), name='swagger-ui'),
+    path('__debug__/', include(debug_toolbar.urls)), #DEBUG
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
