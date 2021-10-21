@@ -282,4 +282,3 @@ class JobAdaptor:
     @property
     def class_name(self):
         return "{}.{}".format(self.__module__, self.__class__.__name__)
-

@@ -109,7 +109,7 @@ class HasAdaptorClazzMixin(models.Model):
                              help_text="This is the concrete class used to perform job execution")
     adaptor_params = GenericRelation(AdaptorInitParam)
 
-    def     set_defaults(self):
+    def set_defaults(self):
         """Set runs params with defaults issued from adapter class object """
         # Reset all old values
         object_type = ContentType.objects.get_for_model(self)

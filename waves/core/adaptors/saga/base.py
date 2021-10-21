@@ -63,9 +63,10 @@ class SagaAdaptor(JobAdaptor):
             self.connector = self._init_service()
             self._connected = self.connector is not None and self.connector.valid and self.connector.session is not None
             logger.debug('Connected to %s', self.saga_host)
+            # logger.debug(f'dump_config : {self.dump_config()}')
         except rs.SagaException as exc:
             self._connected = False
-            # logger.exception(exc.message)
+            # logger.debug(exc)
             raise exceptions.AdaptorConnectException(exc.message)
 
     def job_work_dir(self, job, mode=rs.filesystem.READ):

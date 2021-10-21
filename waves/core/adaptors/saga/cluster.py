@@ -58,8 +58,6 @@ class SshClusterAdaptor(LocalClusterAdaptor, SshShellAdaptor):
     pass
 
 
-
-
 class SshKeyClusterAdaptor(LocalClusterAdaptor, SshKeyShellAdaptor):
     """
     Cluster calls over SSH with private key and pass phrase

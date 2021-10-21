@@ -69,7 +69,7 @@ def service_post_save_handler(sender, instance, created, **kwargs):
     if created and not kwargs.get('raw', False) and instance.submissions.count() == 0:
         instance.submissions.add(Submission.objects.create(name='default', service=instance))
     if not os.path.isdir(instance.sample_dir):
-        os.makedirs(instance.sample_dir, mode=0o775)
+        os.makedirs(instance.sample_dir, mode=0o2775)
 
 
 @receiver(pre_save, sender=Submission)

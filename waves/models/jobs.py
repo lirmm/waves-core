@@ -148,8 +148,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
     def make_job_dirs(self):
         """ Create job working dir """
         if not os.path.isdir(self.working_dir):
-            os.makedirs(self.working_dir, mode=0o775)
-            os.chmod(self.working_dir, 0o775)
+            os.makedirs(self.working_dir, mode=0o2775)
 
     def delete_job_dirs(self):
         """ Upon job deletion in database, cleanup associated working dirs """
@@ -498,6 +497,7 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
                 remote_details = self.default_run_details()
             with open(file_run_details, 'w') as fp:
                 json.dump(obj=remote_details, fp=fp, ensure_ascii=False)
+            os.chmod(file_run_details, 0o664)
             return remote_details
         return self.run_details
 
