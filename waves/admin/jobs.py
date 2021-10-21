@@ -26,9 +26,6 @@ from .views import JobCancelView, JobRerunView
 
 __all__ = ['JobAdmin']
 
-import logging
-logger = logging.getLogger('waves')
-
 class JobInputInline(TabularInline):
     """ List JobModels inputs """
     model = JobInput

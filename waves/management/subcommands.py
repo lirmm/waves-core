@@ -115,8 +115,7 @@ class ImportCommand(BaseCommand):
             with transaction.atomic(using=using) and open(exported_file) as fp:
                 json_srv = json.load(fp)
                 if type_mode == 'service':
-                    serializer = ServiceSerializer(data=json_srv, skip_cat=options.get('skip_cat'),
-                                                   skip_run=options.get('skip_run'))
+                    serializer = ServiceSerializer(data=json_srv, skip_run=options.get('skip_run'))
                 else:
                     raise NotImplementedError('Currently only services can be imported')
                 try:
@@ -137,7 +136,7 @@ class ImportCommand(BaseCommand):
 
     def find_export_files(self, export, type_model):
         file_name = '%s_%s.json' % (type_model, export)
-        export_file = os.path.join(waves_settings.DATA_ROOT, file_name)
+        export_file = os.path.join(waves_settings.DATA_ROOT, 'export', file_name)
         if os.path.isfile(export_file):
             return export_file
         else:

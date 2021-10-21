@@ -50,6 +50,7 @@ class RunnerForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(RunnerForm, self).__init__(*args, **kwargs)
         self.fields['clazz'] = ChoiceField(label="Run on", choices=get_runners_list)
+
         if not self.instance.pk:
             self.fields['update_init_params'].widget = HiddenInput()
             self.fields['update_init_params'].initial = False

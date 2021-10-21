@@ -83,7 +83,8 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
     readonly_fields = ['connexion_string']
     fieldsets = [
         ('Main', {
-            'fields': ['name', 'clazz', 'connexion_string', 'enabled'] #, 'update_init_params'],
+            #'fields': ['name', 'clazz', 'connexion_string', 'enabled', 'update_init_params']
+            'fields': ['name', 'clazz', 'connexion_string', 'enabled']#, 'update_init_params']
         }),
         ('Extended Description', {
             'fields': ['short_description', 'description'],
@@ -116,7 +117,8 @@ class RunnerAdmin(ExportInMassMixin, WavesModelAdmin):
         if obj is None or obj.adaptor is None:
             return [
                 ('Main', {
-                    'fields': ['name', 'clazz', 'connexion_string', 'update_init_params']
+                    #'fields': ['name', 'clazz', 'connexion_string', 'update_init_params']
+                    'fields': ['name', 'clazz', 'connexion_string', 'enabled']#, 'update_init_params']
                 })
             ]
         else:
