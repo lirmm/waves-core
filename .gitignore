@@ -71,6 +71,8 @@ venv/
 !/data/.gitkeep
 /data/bin/*
 !/data/bin/.gitkeep
+/data/export/*
+!/data/export/.gitkeep
 /data/jobs/*
 !/data/jobs/.gitkeep
 /data/media/*
