@@ -34,8 +34,12 @@ class Encrypt(object):
         if len(waves_settings.SECRET_KEY) < 32:
             raise RuntimeError('Encoded values must use a key at least a 32 chars length secret')
         encoder = Fernet(base64.urlsafe_b64encode(waves_settings.SECRET_KEY.encode()))
-        encoded = encoder.encrypt(to_encode.encode())
-        return str(encoded)
+
+        # to_encode casted as bytes
+        encoded = encoder.encrypt(to_encode.encode()).decode()
+
+        # return str to store in db
+        return encoded
 
     @staticmethod
     def decrypt(to_decode):
@@ -46,4 +50,8 @@ class Encrypt(object):
         if len(waves_settings.SECRET_KEY) < 32:
             raise RuntimeError('Encoded values must use a key at least a 32 chars length secret')
         encoder = Fernet(base64.urlsafe_b64encode(waves_settings.SECRET_KEY.encode()))
-        return encoder.decrypt(bytes(to_decode))
+
+        # encode to cast as bytes
+        decoded = encoder.decrypt(to_decode.encode()).decode()
+
+        return decoded

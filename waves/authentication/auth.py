@@ -68,6 +68,10 @@ class TokenAuthentication(TokenAuthentication):
     Override classic TokenAuthentication processes to use WAVES dedicated user class
     """
     model = WavesApiUser
+    # keyword override : from default Token to Bearer (compliance issue to RFC 6750 & OpenAPI 3.0)
+    # Authorization: Token <token>
+    # Authorization: Bearer <token>
+    keyword = "Bearer"
 
     def authenticate(self, request):
         auth_tuple = super(TokenAuthentication, self).authenticate(request)

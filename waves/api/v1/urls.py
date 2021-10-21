@@ -11,7 +11,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from django.conf.urls import url, include
+
+from django.urls import include, path, re_path
 from rest_framework import routers
 
 from waves.api.v1.views import jobs, services
@@ -30,9 +31,9 @@ router.register(prefix=r'jobs',
                 basename='waves-jobs')
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^services/(?P<service>[^/.]+)/submissions/(?P<api_name>[^/.]+)/$',
+    path('', include(router.urls)),
+    re_path(r'^services/(?P<service>[^/.]+)/submissions/(?P<api_name>[^/.]+)/$',
         services.ServiceJobSubmissionView.as_view(), name='waves-services-submissions'),
-    url(r'^jobs/outputs/(?P<slug>[\w-]+)/$', JobOutputView.as_view(), name="waves-job-output"),
-    url(r'^jobs/inputs/(?P<slug>[\w-]+)/$', JobInputView.as_view(), name="waves-job-input"),
+    re_path(r'^jobs/outputs/(?P<slug>[\w-]+)/$', JobOutputView.as_view(), name="waves-job-output"),
+    re_path(r'^jobs/inputs/(?P<slug>[\w-]+)/$', JobInputView.as_view(), name="waves-job-input"),
 ]

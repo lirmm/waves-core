@@ -11,14 +11,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from django.conf.urls import url, include
+from django.urls import include, path, re_path
 
-from waves.api.views.base import schema_view
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 app_name = "waves.api"
 
 urlpatterns = [
-    url(r'openapi-schema', schema_view, name='openapi-schema'),
-    url(r'^', include('waves.api.v2.urls', namespace='v2')),
-    url(r'^v1/', include('waves.api.v1.urls', namespace='v1')),
+    path('', include('waves.api.v2.urls', namespace='v2')),
+    #path('v1/', include('waves.api.v1.urls', namespace='v1')), # disabled for schema lisibility
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='wapi:schema'), name='swagger-ui'),
+    path('schema/redoc/', SpectacularRedocView.as_view(url_name='wapi:schema'), name='redoc'),
 ]

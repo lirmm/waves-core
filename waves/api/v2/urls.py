@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from django.conf.urls import url, include
+from django.urls import include, path
 from rest_framework import routers
 
 from waves.api.v2.views import jobs, services
@@ -29,5 +29,5 @@ router.register(prefix=r'jobs',
                 basename='waves-jobs')
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
+    path('', include(router.urls)),
 ]

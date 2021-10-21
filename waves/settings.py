@@ -89,7 +89,7 @@ DEFAULTS = {
     ),
     'PURGE_WAIT': 86400,
     'PERMISSION_CLASSES': (),
-    'MAILER_CLASS': 'waves.core.mails.JobMailer',
+    'MAILER_CLASS': 'waves.mails.JobMailer',
 }
 
 TEMPLATES_PACKS = ['bootstrap3', 'bootstrap2'],
