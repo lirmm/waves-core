@@ -6,13 +6,14 @@ django-crispy-forms==1.8.1
 django-crontab==0.7.1
 django-polymorphic==2.1.2
 djangorestframework==3.12.4
+django-debug-toolbar=3.2.2
 drf-spectacular==0.20.2
 backports.ssl-match-hostname
 inflection==0.3.1
 psutil==5.7.0
 cryptography==2.8
 python-magic==0.4.15
-radical.saga==1.1.0
+radical.saga==1.8.0
 setproctitle==1.1.10
 celery==4.4.0
 six==1.14.0
