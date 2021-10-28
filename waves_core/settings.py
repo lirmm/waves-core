@@ -22,10 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Add custom path for RADICAL state storage
 # https://github.com/radical-cybertools/radical.utils/blob/devel/src/radical/utils/misc.py @739
 # os.environ['RADICAL_BASE'] = os.path.join(BASE_DIR)
-os.environ["RADICAL_BASE"] = "/var/www/html/waves"
-os.environ["RADICAL_SAGA_LOG_TGT"] = os.path.join(BASE_DIR, "data/logs/radical.saga.log")
-os.environ["RADICAL_UTILS_LOG_TGT"] = os.path.join(BASE_DIR, "data/logs/radical.utils.log")
-os.environ["RADICAL_CONFIG_USER_DIR"] = os.environ["RADICAL_BASE"]
+os.environ["RADICAL_BASE"] = "/var/www/html/waves/data"
+# distant directory for sync files
+os.environ["RADICAL_BASE_TGT"] = "/auto/alimouzinlamothe"
+os.environ["RADICAL_SAGA_LOG_TGT"] = os.path.join(os.environ["RADICAL_BASE"], "logs/radical.saga.log")
+os.environ["RADICAL_UTILS_LOG_TGT"] = os.path.join(os.environ["RADICAL_BASE"], "logs/radical.utils.log")
+# os.environ["RADICAL_CONFIG_USER_DIR"] = os.environ["RADICAL_BASE"]
 os.environ["RADICAL_LOG_LVL"] = 'DEBUG'
 
 # from radical.saga.utils.config import getConfig
@@ -117,9 +119,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator", },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
@@ -167,9 +167,6 @@ REST_FRAMEWORK = {
         "rest_framework.renderers.JSONRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ),
-    # Perso Hack
-    # Used to avoid duplicated operationId from action with two methods (ex GET+POST)
-    #"DEFAULT_SCHEMA_CLASS": "waves.api.schemas.MethodPrefixedOPIDSchema",
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 ALLOWED_TEMPLATE_PACKS = ["bootstrap3", "bootstrap4"]

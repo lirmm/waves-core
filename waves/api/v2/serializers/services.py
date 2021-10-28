@@ -17,6 +17,8 @@ import collections
 
 from rest_framework import serializers
 from rest_framework.reverse import reverse
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema_field
 
 from waves.api.share import DynamicFieldsModelSerializer
 from waves.api.v2.serializers import InputSerializer as BaseInputSerializer
@@ -26,6 +28,7 @@ from waves.models import SubmissionOutput
 __all__ = ['OutputSerializer', 'ServiceSerializer', 'ServiceSubmissionSerializer']
 
 
+@extend_schema_field(OpenApiTypes.OBJECT)
 class OutputSerializer(DynamicFieldsModelSerializer):
     """ Serialize an service expected output """
 
@@ -53,7 +56,11 @@ class OutputSerializer(DynamicFieldsModelSerializer):
         return to_repr
 
 
+@extend_schema_field(OpenApiTypes.OBJECT)
+# extended schema to specify object return type
 class InputSerializer(BaseInputSerializer):
+    """ Serialize a submission input. """
+
     def to_representation(self, instance):
         to_repr = {}
         for baseinst in instance.all():
@@ -77,7 +84,7 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
     form = serializers.SerializerMethodField()
     service = serializers.SerializerMethodField()
     jobs = serializers.SerializerMethodField()
-    outputs = OutputSerializer(read_only=True, many=False)
+    outputs = OutputSerializer(many=False, read_only=True)
     name = serializers.CharField(read_only=True)
     submission_app_name = serializers.CharField(read_only=True, source="api_name")
     title = serializers.CharField(write_only=True, required=False)

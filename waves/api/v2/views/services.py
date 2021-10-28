@@ -56,10 +56,17 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     API entry point to Services (Retrieve, job submission)
     """
     permission_classes = (ServiceAccessPermission,)
-    serializer_class = serializers.ServiceSerializer
+    # serializer_class = serializers.ServiceSerializer # overidden to handle multiple serializers in the same endpoint
     parser_classes = (MultiPartParser,)
     lookup_field = 'api_name'
     lookup_url_kwarg = 'service_app_name'
+
+    def get_serializer_class(self):
+        # handle multiple serializer in introspection schema
+        method = self.action.split("_")
+        if(method[0] == "submission"):
+            return serializers.ServiceSubmissionSerializer
+        return serializers.ServiceSerializer
 
     def get_queryset(self):
         """ retrieve available services for current request user """

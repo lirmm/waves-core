@@ -778,7 +778,7 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
             return os.path.join(self.job.working_dir, self.job.stdout)
         elif self.value == self.job.stderr:
             return os.path.join(self.job.working_dir, self.job.stderr)
-        return os.path.join(self.job.working_dir, self.file_name)
+        return os.path.join(self.job.working_dir, self.file_name + self.extension)
 
     @property
     def file_content(self):
