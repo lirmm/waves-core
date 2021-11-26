@@ -18,7 +18,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 app_name = "waves.api"
 
 urlpatterns = [
-    path('', include('waves.api.v2.urls', namespace='v2')),
+    path('', include('waves.api.v2.urls', namespace='v2')), 
     # path('v1/', include('waves.api.v1.urls', namespace='v1')), # disabled for schema lisibility
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='wapi:schema'), name='swagger-ui'),

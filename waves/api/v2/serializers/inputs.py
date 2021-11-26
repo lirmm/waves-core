@@ -96,7 +96,6 @@ class ListSerializer(AParamSerializer):
 
     values_list = ListElementField(source='list_elements')
 
-
 class InputSerializer(DynamicFieldsModelSerializer):
     """ Serialize JobInput """
 

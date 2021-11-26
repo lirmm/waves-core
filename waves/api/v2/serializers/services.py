@@ -17,13 +17,12 @@ import collections
 
 from rest_framework import serializers
 from rest_framework.reverse import reverse
-from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.types import OpenApiTypes
 
 from waves.api.share import DynamicFieldsModelSerializer
 from waves.api.v2.serializers import InputSerializer as BaseInputSerializer
-from waves.models import Service, Submission
-from waves.models import SubmissionOutput
+from waves.models import Service, Submission, SubmissionOutput
 
 __all__ = ['OutputSerializer', 'ServiceSerializer', 'ServiceSubmissionSerializer']
 
@@ -48,7 +47,7 @@ class OutputSerializer(DynamicFieldsModelSerializer):
                     ('file_name', output.file_pattern),
                     ('help_text', output.help_text),
                     ('edam_format', output.edam_format),
-                    ('edam_data', output.edam_data)
+                    ('edam_data', output.edam_data),
                 ]
                 if hasattr(output, 'from_input') and output.from_input is not None:
                     tmp_repr.append(('issued_from', output.from_input.api_name))
@@ -56,7 +55,7 @@ class OutputSerializer(DynamicFieldsModelSerializer):
         return to_repr
 
 
-@extend_schema_field(OpenApiTypes.OBJECT)
+@extend_schema_field({'type': 'object', 'additionalProperties': {'$ref': '#/components/schemas/JobInput'}, 'readOnly': True})
 # extended schema to specify object return type
 class InputSerializer(BaseInputSerializer):
     """ Serialize a submission input. """
@@ -80,10 +79,10 @@ class ServiceSubmissionSerializer(DynamicFieldsModelSerializer,
 
     view_name = 'wapi:v2:waves-services-submission-detail'
 
-    inputs = InputSerializer(many=False, read_only=True, source='expected_inputs')
     form = serializers.SerializerMethodField()
     service = serializers.SerializerMethodField()
     jobs = serializers.SerializerMethodField()
+    inputs = InputSerializer(many=False, read_only=True, source='expected_inputs')
     outputs = OutputSerializer(many=False, read_only=True)
     name = serializers.CharField(read_only=True)
     submission_app_name = serializers.CharField(read_only=True, source="api_name")

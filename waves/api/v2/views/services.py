@@ -28,6 +28,9 @@ from rest_framework.renderers import StaticHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
+
 from waves.api.permissions import ServiceAccessPermission
 from waves.api.v2 import serializers
 from waves.core.exceptions import JobException
@@ -92,6 +95,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                                hidden=['inputs', 'outputs', 'history'])
         return Response(serializer.data)
 
+    @extend_schema(responses={(200, 'text/html'): OpenApiTypes.STR})
     @action(detail=True, methods=['get'])
     @renderer_classes((StaticHTMLRenderer,))
     def form(self, request, *args, **kwargs):
@@ -130,6 +134,7 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                                              context={'request': self.request})
         return Response(serializer.data)
 
+    @extend_schema(responses={(200, 'text/html'): OpenApiTypes.STR})
     @action(detail=True, methods=['get'], url_name="submission-form",
             url_path="submissions/(?P<submission_app_name>[\w-]+)/form")
     @renderer_classes((StaticHTMLRenderer,))
@@ -161,49 +166,56 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
                                   'js': get_js(self)})
         return HttpResponse(content=content, content_type="text/html; charset=utf8")
 
-    @action(detail=True, methods=['get', 'post'], url_name='submission-jobs',
+    @extend_schema(responses={200: serializers.JobSerializer(many=True)})
+    @action(detail=True, methods=['get'], url_name='submission-jobs',
             url_path="submissions/(?P<submission_app_name>[\w-]+)/jobs")
-    def submission_jobs(self, request, service_app_name, submission_app_name, *args, **kwargs):
+    def submission_jobs_list(self, request, service_app_name, submission_app_name, *args, **kwargs):
         service = self.get_object()
         obj = service.submissions_api.filter(api_name=submission_app_name)[0]
-        if self.request.method == 'GET':
-            queryset_jobs = Job.objects.get_submission_job(user=request.user, submission=obj)
-            serializer = serializers.JobSerializer(queryset_jobs, many=True, context={'request': request},
-                                                   hidden=['inputs', 'outputs', 'history'])
-            return Response(serializer.data)
-        elif self.request.method == 'POST':
-            # CREATE a new job for this submission
-            logger.debug("Create Job")
-            if logger.isEnabledFor(logging.DEBUG):
-                for name, param in request.data.items():
-                    logger.debug('param key ' + name)
-                    logger.debug(param)
-                logger.debug('Request Data %s', request.data)
-            passed_data = request.data
-            ass_email = passed_data.get('email', None)
-            try:
-                passed_data.get('api_key', None)
-                # bad hack to allow openapi calls
-                data = passed_data.get('params', passed_data)
-                created_job = Job.objects.create_from_submission(submission=obj,
-                                                                 email_to=ass_email,
-                                                                 submitted_inputs=data,
-                                                                 user=self.request.user)
-                # Now job is created (or raise an exception),
-                serializer = serializers.JobSerializer(created_job, many=False, context={'request': request},
-                                                       fields=(
-                                                           'slug', 'url', 'created', 'status', 'service', 'submission'))
-                logger.debug('Job successfully created %s ' % created_job.slug)
-                return Response(serializer.data, status=201)
-            except ValidationError as e:
-                logger.warning("Validation error %s", e)
-                raise DRFValidationError(e.message_dict)
-            except JobException as e:
-                logger.fatal("Create Error %s", e)
-                return Response({'error': e}, status=status.HTTP_400_BAD_REQUEST)
+        queryset_jobs = Job.objects.get_submission_job(user=request.user, submission=obj)
+        serializer = serializers.JobSerializer(queryset_jobs, many=True, context={'request': request},
+                                               hidden=['inputs', 'outputs', 'history'])
+        return Response(serializer.data)
 
-    @action(detail=True, methods=['get'], url_name='submission-list')
-    def submissions_list(self, request, service_app_name):
+    @extend_schema(responses={201: serializers.JobSerializer(many=False)})
+    @action(detail=True, methods=['post'], url_name='submission-job-create',
+            url_path="submissions/(?P<submission_app_name>[\w-]+)/jobs")
+    def submission_jobs_create(self, request, service_app_name, submission_app_name, *args, **kwargs):
+        service = self.get_object()
+        obj = service.submissions_api.filter(api_name=submission_app_name)[0]
+
+        # CREATE a new job for this submission
+        logger.debug("Create Job")
+        if logger.isEnabledFor(logging.DEBUG):
+            for name, param in request.data.items():
+                logger.debug('param key ' + name)
+                logger.debug(param)
+            logger.debug('Request Data %s', request.data)
+        passed_data = request.data
+        ass_email = passed_data.get('email', None)
+        try:
+            passed_data.get('api_key', None)
+            # bad hack to allow openapi calls
+            data = passed_data.get('params', passed_data)
+            created_job = Job.objects.create_from_submission(submission=obj,
+                                                             email_to=ass_email,
+                                                             submitted_inputs=data,
+                                                             user=self.request.user)
+            # Now job is created (or raise an exception),
+            serializer = serializers.JobSerializer(created_job, many=False, context={'request': request})
+            # logger.debug(f'Job created {serializer.data}')
+            logger.debug('Job successfully created %s ' % created_job.slug)
+            return Response(serializer.data, status=201)
+        except ValidationError as e:
+            logger.warning("Validation error %s", e)
+            raise DRFValidationError(e.message_dict)
+        except JobException as e:
+            logger.fatal("Create Error %s", e)
+            return Response({'error': e}, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(responses={200: serializers.ServiceSubmissionSerializer(many=True)})
+    @action(detail=True, methods=['get'], url_name='submissions')
+    def submissions(self, request, service_app_name):
         obj = self.get_object()
         submission = obj.submissions_api.all()
         serializer = serializers.ServiceSubmissionSerializer(many=True, instance=submission,
