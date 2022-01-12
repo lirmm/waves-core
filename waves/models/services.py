@@ -501,7 +501,7 @@ class SubmissionOutput(TimeStamped, ApiModel):
     help_text = models.TextField('Help Text', null=True, blank=True, )
     #: Expected file extension
     extension = models.CharField('File extension (internal)', max_length=15, blank=True, default="",
-                                 help_text="Used on WEB for display/download ")
+                                 help_text="Used on WEB for display/download (ex: .nwk)")
 
     def __str__(self):
         """ String representation, return label """

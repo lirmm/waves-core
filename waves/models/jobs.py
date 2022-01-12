@@ -16,6 +16,7 @@ import json
 import logging
 import os
 import shutil
+import re
 from os.path import join
 
 from django.conf import settings
@@ -186,9 +187,12 @@ class Job(TimeStamped, Slugged, UrlMixin, LoggerClass):
         :return: list of file path
         :rtype: list
         """
+        logger.debug('Checking outputs availability...')
         all_outputs = self.outputs.all()
         existing = []
+        logger.debug(f'{all_outputs}')
         for the_output in all_outputs:
+            logger.debug(f"Output : {the_output.name} {the_output.file_path}")
             existing.append(
                 dict(file_path=the_output.file_path,
                      name=os.path.basename(the_output.file_path),
@@ -778,6 +782,12 @@ class JobOutput(Ordered, Slugged, UrlMixin, ApiModel):
             return os.path.join(self.job.working_dir, self.job.stdout)
         elif self.value == self.job.stderr:
             return os.path.join(self.job.working_dir, self.job.stderr)
+
+        filepath = os.path.join(self.job.working_dir, self.file_name)
+        if re.search(rf'{re.escape(self.extension)}$', self.extension, flags=re.IGNORECASE):
+            # extension is already inside filename
+            return filepath
+
         return os.path.join(self.job.working_dir, self.file_name + self.extension)
 
     @property
