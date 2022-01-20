@@ -6,7 +6,7 @@ django-crispy-forms==1.8.1
 django-crontab==0.7.1
 django-polymorphic==2.1.2
 djangorestframework==3.12.4
-django-debug-toolbar=3.2.2
+django-debug-toolbar==3.2.2
 drf-spectacular==0.20.2
 backports.ssl-match-hostname
 inflection==0.3.1
