@@ -22,9 +22,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Add custom path for RADICAL state storage
 # https://github.com/radical-cybertools/radical.utils/blob/devel/src/radical/utils/misc.py @739
 # os.environ['RADICAL_BASE'] = os.path.join(BASE_DIR)
-os.environ["RADICAL_BASE"] = "/var/www/html/waves/data"
+# os.environ["RADICAL_BASE"] = "/var/www/html/waves/data"
+os.environ["RADICAL_BASE"] = os.path.join(BASE_DIR, "data")
 # distant directory for sync files
-os.environ["RADICAL_BASE_TGT"] = "/auto/alimouzinlamothe"
+#os.environ["RADICAL_BASE_TGT"] = "/auto/alimouzinlamothe"
+os.environ["RADICAL_BASE_TGT"] = os.environ["RADICAL_BASE"]
 os.environ["RADICAL_SAGA_LOG_TGT"] = os.path.join(os.environ["RADICAL_BASE"], "logs/radical.saga.log")
 os.environ["RADICAL_UTILS_LOG_TGT"] = os.path.join(os.environ["RADICAL_BASE"], "logs/radical.utils.log")
 # os.environ["RADICAL_CONFIG_USER_DIR"] = os.environ["RADICAL_BASE"]
@@ -72,6 +74,7 @@ INSTALLED_APPS = [
     "django_sb_admin",
     "debug_toolbar",
     "django_crontab",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
