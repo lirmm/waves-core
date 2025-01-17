@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     "django_sb_admin",
     "debug_toolbar",
     "django_crontab",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
