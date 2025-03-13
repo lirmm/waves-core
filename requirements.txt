@@ -16,4 +16,4 @@ saga-python==0.60.1
 setproctitle==1.1.10
 six==1.11.0
 swapper==1.1.0
-celery==4.3.0
+celery==5.2.2
